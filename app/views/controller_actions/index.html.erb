@@ -1,0 +1,148 @@
+<h1><a href="/">Log Jam on Rails</a></h1>
+<div id='left' class='clear-left'>
+	<div id='filter'>
+	  <% form_tag({:action => :index}, :method => :get) do -%>
+	  <fieldset>
+	    <legend>Filtering</legend>
+	    <p class='clear-left'>
+	      <%= label :filter, 'date' %><br />
+	      <%= select_tag 'starts_at', options_for_select(ControllerAction.log_data_dates, @starts_at.to_s(:db)[0..9]) %>
+	    </p>
+	    <p class='filter-widget'>
+	      <%= label :filter, 'server' %><br />
+	      <%= select_tag 'server', options_for_select([''] + @hosts, params['server']) %>
+	    </p>
+	    <p class='filter-widget'>
+	      <%= label :filter, 'response code' %><br />
+	      <%= select_tag 'response', options_for_select([''] + @response_codes, params['response']) %> <br />
+	    </p>
+	    <p class='filter-widget'>
+	      <%= label :filter, 'heap growing actions only' %><br />
+	      <%= check_box_tag 'heap_growth_only', "1", params['heap_growth_only']=="1" %>
+	    </p>
+	    <p class='clear-left'>
+	      <%= label :filter, 'user id' %><br />
+	      <%= text_field_tag 'user_id', params['user_id'] %>
+	    </p>
+	    <p class='filter-widget'>
+	      <%= label :filter, 'page name' %><br />
+	      <%= text_field_with_auto_complete :controller_action, :page, {:value => @page, :size => 60} %>
+	    </p>
+		</fieldset>
+		<fieldset>
+			<legend>Display</legend>
+	    <p class='clear-left'>
+	      <%= label :filter, 'plot timeslice' %><br />
+	      <%= select_tag 'interval', options_for_select(ControllerAction.durations.map{|i| [pluralize(i, 'minute'), i]}, params[:interval]) %>
+	    </p>
+	    <p class='filter-widget' id='resource-widget'>
+	      <%= label :filter, 'resource' %><br />
+	      <%= select_tag 'resource', options_for_select(Resource.resource_options, params['resource']) %>
+	    </p>
+	    <p class='filter-widget'>
+	      <%= label :filter, 'group by' %><br />
+	      <%= select_tag 'grouping', options_for_select(Resource.groupings, params['grouping']) %>
+	    </p>
+	    <p class='filter-widget'>
+	      <%= label :filter, 'from each group, display' %><br />
+	      <%= select_tag 'grouping_function', options_for_select(Resource.grouping_functions, params['grouping_function']) %>
+	    </p>
+	  </fieldset>
+	  <%= submit_tag 'GO', :class => 'submit' %><br /><br />
+	  <% end -%>
+	</div>
+
+	<% if @dataset.empty? -%>
+	  <p class='warning'>Dataset is empty.</p>
+	<% else -%>
+	  <div id='graph-counts' class='clear-left'>
+		  <p class='stats'>
+		    <%= @dataset.starts_at.strftime('%d-%b-%Y') %>: showing
+	  	  <%= number_with_delimiter @dataset.count_requests %> of <%= number_with_delimiter @klazz.count %> requests and
+		    <%= number_with_delimiter @dataset.count_distinct_users %> of <%= number_with_delimiter @klazz.count_distinct_users %> users
+		  </p>
+		  <%= link_to image_tag(@dataset.png_file, :alt => 'enlarge plot', :title => 'enlarge plot'), {:params => params.merge(:action => 'enlarged_plot')} %>
+	  </div>
+
+		<table class='stats clear-left' id='graph-stats'>
+		  <tr>
+		    <th></th>
+		    <th>avg</th>
+		    <th>stddev</th>
+		  </tr>
+		  <% @attributes.each do |attr| -%>
+		    <tr>
+		      <td><%= attr.to_s.sub(/_time$/, '') %></td>
+                      <% if attr =~ /_time/ %>
+		      <td class='number'><%= time_number(@dataset.statistics(@plot_kind)["avg_#{attr}"].to_f) %></td>
+		      <td class='number'><%= time_number(@dataset.statistics(@plot_kind)["std_#{attr}"].to_f) %></td>
+                      <% else %>
+		      <td class='number'><%= memory_number(@dataset.statistics(@plot_kind)["avg_#{attr}"].to_f) %></td>
+		      <td class='number'><%= memory_number(@dataset.statistics(@plot_kind)["std_#{attr}"].to_f) %></td>
+                      <% end %>
+		    </tr>
+		  <% end -%>
+		</table>
+
+		<table class='stats' id='quintile-stats'>
+		  <% if @plot_kind == :time %>
+		   <tr><td>&nbsp;</td></tr>
+		   <tr><td>&nbsp;</td></tr>
+		   <tr><td>fastest 20%</td><td class='number'><%= time_number(@dataset.average_total_time_by_quintile(1)) %></td></tr>
+		   <tr><td>next fastest</td><td class='number'><%= time_number(@dataset.average_total_time_by_quintile(2)) %></td></tr>
+		   <tr><td>median</td><td class='number'><%= time_number(@dataset.average_total_time_by_quintile(3)) %></td></tr>
+		   <tr><td>next slowest</td><td class='number'><%= time_number(@dataset.average_total_time_by_quintile(4)) %></td></tr>
+		   <tr><td>slowest 20%</td><td class='number'><%= time_number(@dataset.average_total_time_by_quintile(5)) %></td></tr>
+		    <tr><td>&nbsp;</td></tr>
+		    <tr><td>happy (rt &lt; 100)</td><td class='number'><%= '%.1f' % (100.0 * @dataset.happy) %>%</td></tr>
+		    <tr><td>satisfied (rt &lt; 500)</td><td class='number'><%= '%.1f' % (100.0 * @dataset.satisfied) %>%</td></tr>
+		    <tr><td>tolerating (500 &lt;= rt &lt; 2000)</td><td class='number'><%= '%.1f' % (100.0 * @dataset.tolerating) %>%</td></tr>
+		    <tr><td>frustrated (rt &gt; 2000)</td><td class='number'><%= '%.1f' % (100.0 * @dataset.frustrated) %>%</td></tr>
+		    <tr><td><%= link_to 'apdex score', 'http://www.apdex.org/overview.html' %></td><td class='number'><%= '%.2f' % @dataset.apdex %></td></tr>
+		  <% elsif @plot_kind == :memory -%>
+		   <tr><td>&nbsp;</td></tr>
+		   <tr><td>&nbsp;</td></tr>
+		   <tr><td>leanest 20%</td><td class='number'><%= memory_number(@dataset.average_total_memory_by_quintile(1)) %></td></tr>
+		   <tr><td>next leanest</td><td class='number'><%= memory_number(@dataset.average_total_memory_by_quintile(2)) %></td></tr>
+		   <tr><td>median</td><td class='number'><%= memory_number(@dataset.average_total_memory_by_quintile(3)) %></td></tr>
+		   <tr><td>next fattest</td><td class='number'><%= memory_number(@dataset.average_total_memory_by_quintile(4)) %></td></tr>
+		   <tr><td>fattest 20%</td><td class='number'><%= memory_number(@dataset.average_total_memory_by_quintile(5)) %></td></tr>
+		  <% else -%>
+		  <% end -%>
+		  <tr><td>&nbsp;</td></tr>
+		</table>
+  <% end -%>
+</div>
+
+<% unless @dataset.empty? -%>
+  <div id='pagetimes'>
+	  <h3><%= @dataset.description %></h3>
+    <table class='full_stats'>
+      <tr>
+			  <% if @dataset.grouping? -%>
+          <th><%= @dataset.grouping %></th>
+	        <th>requests</th>
+					<% unless @dataset.resource == '1' -%>
+			      <% unless @dataset.grouping_function == :avg -%>
+		          <th>avg (<%= @dataset.resource %>)</th>
+					  <% end -%>
+		        <th>stddev (<%= @dataset.resource %>)</th>
+		        <th><%= @dataset.grouping_function %> (<%= @dataset.resource %>)</th>
+					  <% if @dataset.accumulates_time? -%>
+  				    <th>% of total <%= @dataset.resource %></th>
+					    <% unless @dataset.resource.to_sym == :total_time -%>
+							  <th>% of total time</th>
+							<% end -%>
+					  <% end -%>
+					<% end -%>
+				<% else -%>
+	        <th>user</th>
+	        <th>page</th>
+          <th><%= @dataset.resource %></th>
+			  <% end -%>
+      </tr>
+      <%= render :partial => 'statistics' %>
+    </table>
+    <p class='query'><%= @dataset.the_query %></p>
+  </div>
+<% end -%>

@@ -1,0 +1,3 @@
+public/images/plot-*
+db/schema.rb
+log/*.log

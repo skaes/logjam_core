@@ -1,0 +1,33 @@
+Factory.define :yesterday do |a|
+  a.host 'server'
+  a.process_id 0
+  a.user_id 0
+  a.page 'controller#action'
+  a.minute1 0
+  a.minute2 0
+  a.minute5 0
+  a.started_at Date.yesterday.beginning_of_day
+  a.response_code 200
+  a.session_id 'session'
+  a.new_session false
+  a.total_time 0.0
+  a.view_time 0.0
+  a.db_time 0.0
+  a.api_time 0.0
+  a.search_time 0.0
+  a.other_time 0.0
+  a.gc_time 0.0
+  a.memcache_time 0.0
+  a.db_calls 0
+  a.db_sql_query_cache_hits 0
+  a.api_calls 0
+  a.memcache_calls 0
+  a.memcache_misses 0
+  a.search_calls 0
+  a.gc_calls 0
+  a.heap_size 0
+  a.heap_growth 0
+  a.allocated_memory 0
+  a.allocated_objects 0
+  a.allocated_bytes 0
+end

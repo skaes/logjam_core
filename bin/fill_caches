@@ -1,0 +1,64 @@
+#!/usr/bin/env ruby
+
+require File.expand_path(File.dirname(__FILE__)+'/../config/environment.rb')
+require "rest_client"
+
+require 'optparse'
+require 'ostruct'
+
+options = OpenStruct.new
+options.limit = 1
+options.base_url = ''
+options.basic = false
+
+OptionParser.new do |opts|
+
+  opts.banner = "Usage: fill_caches [options] "
+
+  opts.separator ""
+
+  opts.on('--basic', "do a quicker, but incomplete job"){|v| options.basic = true}
+
+  opts.on('--server S', String,
+          "which server to visit (mandatory)") {|v| options.base_url = "http://#{v}"}
+
+  opts.on('--limit N', Integer,
+          "how many days to visit (oldest first), default: #{options.limit}") {|v| options.limit = v}
+
+  opts.on_tail("-h", "--help", "Show this message") do
+    puts opts
+    exit
+  end
+
+end.parse!(ARGV)
+
+$logjam = RestClient::Resource.new options.base_url, :timeout => 60.minutes, :headers => {:accept => "text/html"}
+
+# request older dates first
+dates = ControllerAction.log_data_dates.sort[0,options.limit]
+
+def benchmark(url, headers={})
+  $stdout.printf "%-60s", url
+  $stdout.flush
+  begin
+    seconds = Benchmark.realtime { $logjam[url].get(headers) }
+    $stdout.puts "#{"%7.2f" % seconds } seconds"
+  rescue => e
+    $stdout.puts e.to_s
+  end
+end
+
+dates.each do |date|
+  year, month, day = date.split("-")
+  ControllerAction.durations.each do |duration|
+    ControllerAction.resources.each do |resource|
+      [:page].each do |grouping|
+        [:avg, :sum].each do |grouping_function|
+          benchmark("/#{year}/#{month}/#{day}/?duration=#{duration}&resource=#{resource}&grouping=#{grouping}&grouping_function=#{grouping_function}")
+        end
+      end
+    end
+  end
+end
+
+puts "done!"

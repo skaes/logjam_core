@@ -1,0 +1,53 @@
+=LogJam
+
+LogJam is a Ruby on Rails application used for finding performance hot spots in Ruby on Rails applications. 
+It can produce various graphs and tables showing how much time and memory are consumed by different parts of your application.
+The interface is flexible enough to be able to provide answers to a great many questions you may have about your application, such as
+
+* which pages in my application are most in need of optimization?
+* in the worst case, how slow is my application?
+* for which users is my application slowest?
+* under peak load, how busy are my servers?
+* which pages and which users are causing the most exceptions?
+* what pages are causing the ruby heap to be expanded?
+* which pages are making the most DB queries?
+
+Note that some of LogJam's features (eg those involving GC and memory data) depend on using a specially built ruby and some rails plugins, which are available separately.
+
+==Authors
+
+{David Anderson}[http://github.com/alpinegizmo] david@alpinegizmo.com
+and {Stefan Kaes}[http://github.com/skaes] skaes@railsexpress.de
+
+Development on LogJam began while the authors were working at Xing AG.
+
+==Installation
+
+This documentation assumes that you are a rails developer, and generally familiar with how to configure, install, and deploy rails applications. 
+
+Included with LogJam is a script (in bin/import_local_log) that will parse and import your production rails log files into a database.
+
+You will want to review and modify these files.
+
+* config/initializers/matchers.rb
+* db/migrate/20090708080254_create_controller_actions.rb
+* db/migrate/20090709085133_add_indexes_to_controller_actions.rb
+* config/logjam.yml
+
+LogJam has only been tested on OS X, but it should be straightforward to get it running under Linux.
+
+In addition to the gems defined in environment.rb, you will need to install gnuplot. On the Mac,
+
+    sudo port install gnuplot
+
+Both ruby 1.8.7 and 1.9.2 are used by the authors.
+
+==License
+
+Copyright (c) 2009 David Anderson, Stefan Kaes
+Copyright (c) 2009 XING AG
+Copyright 2005 Eric Hodel, The Robot Co-op.
+
+See LICENSES for details.
+
+
