@@ -16,8 +16,8 @@ Note that some of LogJam's features (eg those involving GC and memory data) depe
 
 ==Authors
 
-{David Anderson}[http://github.com/alpinegizmo] david@alpinegizmo.com
-and {Stefan Kaes}[http://github.com/skaes] skaes@railsexpress.de
+{David Anderson}[http://github.com/alpinegizmo] <david@alpinegizmo.com>
+and {Stefan Kaes}[http://github.com/skaes] <skaes@railsexpress.de>
 
 Development on LogJam began while the authors were working at Xing AG.
 
@@ -42,10 +42,50 @@ In addition to the gems defined in environment.rb, you will need to install gnup
 
 Both ruby 1.8.7 and 1.9.2 are used by the authors.
 
+==What to do in the application being studied
+
+LogJam can be used with a standard rails application running under any version of ruby. Under these circumstances, only the following performance attributes will be imported:
+
+		t.timestamp :started_at
+		t.string :page
+		t.integer :response_code
+		t.float :total_time
+		t.float :view_time
+		t.float :db_time
+		t.float :other_time
+
+If you use the {time_bandits}[http://github.com/skaes/time_bandits] plugin in your application, you can easily capture the following additional information:
+
+		t.integer :db_calls
+		t.integer :db_sql_query_cache_hits
+		t.float :memcache_time
+		t.integer :memcache_calls
+		t.integer :memcache_misses
+
+And if you use {gc_hacks}[http://github.com/skaes/gc_hacks] with time_bandits, you can also get (assuming you use a compatible ruby, such as skaes' {matzruby}[http://github.com/skaes/matzruby]):
+
+		t.float :gc_time
+		t.integer :gc_calls
+		t.integer :heap_size
+		t.integer :heap_growth
+		t.integer :allocated_objects
+		t.integer :allocated_bytes
+		t.integer :allocated_memory
+
+If you are running more than one server process, you must modify the log line to include the process_id and host. We recommend you also include the user_id. See config/initializers/matchers.rb for more info on how to add:
+
+		t.string :host
+		t.integer :process_id
+		t.integer :user_id
+
+It is also easy to add additional custom information, including session_ids, time spent waiting for specific web services, etc.
+
 ==License
 
 Copyright (c) 2009 David Anderson, Stefan Kaes
+
 Copyright (c) 2009 XING AG
+
 Copyright 2005 Eric Hodel, The Robot Co-op.
 
 See LICENSES for details.
