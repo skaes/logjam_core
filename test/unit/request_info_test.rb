@@ -37,7 +37,11 @@ class RequestInfoTest < ActiveSupport::TestCase
      :view_time=>225.796,
      :memcache_misses=>0}
     expected.keys.each do |key|
-      assert_equal expected[key].to_s, info.to_hash[key].to_s
+      if expected[key].is_a? Float
+        assert_in_delta(expected[key], info.to_hash[key], 0.001)
+      else
+        assert_equal expected[key], info.to_hash[key]
+      end
     end
   end
 end
