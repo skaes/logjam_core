@@ -8,7 +8,7 @@ require 'ostruct'
 
 options = OpenStruct.new
 options.limit = 1
-options.base_url = ''
+options.base_url = 'localhost:3000'
 options.basic = false
 
 OptionParser.new do |opts|
@@ -32,6 +32,10 @@ OptionParser.new do |opts|
 
 end.parse!(ARGV)
 
+# require 'ruby-debug'
+# Debugger.start
+# debugger
+
 $logjam = RestClient::Resource.new options.base_url, :timeout => 60.minutes, :headers => {:accept => "text/html"}
 
 # request older dates first
@@ -48,13 +52,24 @@ def benchmark(url, headers={})
   end
 end
 
+durations = ControllerAction.durations.sort_by{|d| -(d.to_i)}
+resources = Resource.time_resources + Resource.memory_resources + Resource.call_resources
+groupings = Resource.groupings
+grouping_functions = Resource.grouping_functions.reject(&:blank?)
+
+if options.basic
+  durations = Array(durations.first)
+  groupings = [:page, :request]
+  grouping_functions = [:avg, :sum]
+end
+
 dates.each do |date|
   year, month, day = date.split("-")
-  ControllerAction.durations.each do |duration|
-    ControllerAction.resources.each do |resource|
-      [:page].each do |grouping|
-        [:avg, :sum].each do |grouping_function|
-          benchmark("/#{year}/#{month}/#{day}/?duration=#{duration}&resource=#{resource}&grouping=#{grouping}&grouping_function=#{grouping_function}")
+  durations.each do |duration|
+    resources.each do |resource|
+      groupings.each do |grouping|
+        grouping_functions.each do |grouping_function|
+          benchmark("/#{year}/#{month}/#{day}?duration=#{duration}&resource=#{resource}&grouping=#{grouping}&grouping_function=#{grouping_function}")
         end
       end
     end
