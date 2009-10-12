@@ -7,8 +7,8 @@ require 'optparse'
 require 'ostruct'
 
 options = OpenStruct.new
-options.limit = 1
-options.base_url = 'localhost:3000'
+options.days = 1
+options.base_url = 'localhost'
 options.basic = false
 
 OptionParser.new do |opts|
@@ -22,8 +22,8 @@ OptionParser.new do |opts|
   opts.on('--server S', String,
           "which server to visit (mandatory)") {|v| options.base_url = "http://#{v}"}
 
-  opts.on('--limit N', Integer,
-          "how many days to visit (oldest first), default: #{options.limit}") {|v| options.limit = v}
+  opts.on('--days N', Integer,
+          "how many days to visit (youngest first), default: #{options.days}") {|v| options.days = v}
 
   opts.on_tail("-h", "--help", "Show this message") do
     puts opts
@@ -38,15 +38,15 @@ end.parse!(ARGV)
 
 $logjam = RestClient::Resource.new options.base_url, :timeout => 60.minutes, :headers => {:accept => "text/html"}
 
-# request older dates first
-dates = ControllerAction.log_data_dates.sort[0,options.limit]
+# request younger dates first
+dates = ControllerAction.log_data_dates.sort.reverse[0,options.days]
 
 def benchmark(url, headers={})
   $stdout.printf "%-60s", url
   $stdout.flush
   begin
     seconds = Benchmark.realtime { $logjam[url].get(headers) }
-    $stdout.puts "#{"%7.2f" % seconds } seconds"
+    $stdout.puts "#{"%9.2f" % seconds } seconds"
   rescue => e
     $stdout.puts e.to_s
   end
