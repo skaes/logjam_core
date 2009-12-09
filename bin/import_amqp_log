@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+require File.expand_path(File.dirname(__FILE__)+'/../config/environment.rb')
+
+trap("INT") do 
+  puts "Cleaning up AMQP connection"
+  @amqp_importer.stop
+  exit
+end
+
+@amqp_importer = AMQPImporter.new
+@amqp_importer.process

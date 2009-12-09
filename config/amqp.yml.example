@@ -1,0 +1,8 @@
+production:
+    hostname: productionhost
+    exchange: production-exchange
+    queue:    production-queue
+development:
+    hostname: localhost
+    exchange: development-exchange
+    queue:    development-queue

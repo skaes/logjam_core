@@ -16,7 +16,7 @@ trap("INT") do
   puts "#{$0} received an interrupt and ignored it"
 end
 
-importer = Importer.new file_name
+importer = MysqlImporter.new file_name
 importer.process
 
 exit return_code
