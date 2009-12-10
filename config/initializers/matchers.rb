@@ -16,9 +16,9 @@ module Matchers
   # standard syslog format would be
   # Jul 08 07:42:53 ext-xeapp52-5 rails[31023]: ... rails log content ...
   # the following matcher works in both cases
-  # unlike the other matchers, this one returns an array of [host, process_id, user_id, remaining_log_line_content]
+  # unlike the other matchers, this one returns an array of [host, process_id, user_id, engine, remaining_log_line_content]
   SYSLOG_LINE_SPLITTER = lambda do |line|
-    line =~ / ([\S]+) [\S]+\[(\d+)\](?: user\[(.+)\])?: (.*)/ and
+    line =~ / ([\S]+) [\S]+\[(\d+)\](?: user\[(.+?)\])?(?: engine\[(.+?)\])?: (.*)/ and
       Regexp.last_match.captures
   end
 

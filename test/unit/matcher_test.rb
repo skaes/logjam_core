@@ -79,15 +79,21 @@ class MatcherTest < ActiveSupport::TestCase
     assert_equal expected, Matchers::COMPLETED_XING.call(log_line)
   end
 
-  test "log line can be recognized (xing format)" do
+  test "log line can be recognized (xing format with engine)" do
+    log_line = "Aug 31 06:05:52 localhost rails[15019] user[Anonymous] engine[xws]: DADADA"
+    expected = ["localhost", "15019", "Anonymous", "xws", "DADADA"]
+    assert_equal expected, Matchers::LOG_LINE_SPLITTER.call(log_line)
+  end
+
+  test "log line can be recognized (xing format without engine)" do
     log_line = "Aug 31 06:05:52 localhost rails[15019] user[Anonymous]: DADADA"
-    expected = ["localhost", "15019", "Anonymous", "DADADA"]
+    expected = ["localhost", "15019", "Anonymous", nil, "DADADA"]
     assert_equal expected, Matchers::LOG_LINE_SPLITTER.call(log_line)
   end
 
   test "log line can be recognized (syslog format)" do
     log_line = "Aug 31 06:05:52 localhost rails[15019]: DADADA"
-    expected = ["localhost", "15019", nil, "DADADA"]
+    expected = ["localhost", "15019", nil, nil, "DADADA"]
     assert_equal expected, Matchers::LOG_LINE_SPLITTER.call(log_line)
   end
 end

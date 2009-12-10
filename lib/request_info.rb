@@ -10,7 +10,7 @@ class RequestInfo
   end
 
   def initialize(host, process_id, user_id, lines)
-    @info = {:host => host, :process_id => process_id, :user_id => user_id, :page => nil, :ip => nil}
+    @info = {:host => host, :process_id => process_id.to_i, :user_id => user_id.to_i, :page => nil, :ip => nil}
     @info.merge!(default_values)
     process lines
     unless @info[:page]

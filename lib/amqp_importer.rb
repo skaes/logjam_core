@@ -22,7 +22,7 @@ class AMQPImporter
       end
     end
   end
-  
+
   def stop
     AMQP.stop { EM.stop }
   end
@@ -75,11 +75,11 @@ class AMQPImporter
     def columns
       @columns ||= ControllerAction.column_names.map(&:to_sym).reject{|c|c==:id}
     end
-    
+
     def setup_mysql
       EventedMysql.settings.update(mysql_config)
     end
-    
+
     def load_config(config_name)
       YAML.load_file(File.join(File.dirname(__FILE__), '..', 'config', config_name))[RAILS_ENV].symbolize_keys
     end

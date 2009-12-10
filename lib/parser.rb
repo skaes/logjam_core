@@ -34,7 +34,7 @@ module Parser
 
   def self.parse_line(line)
     if parts = Matchers::LOG_LINE_SPLITTER.call(line)
-      host, process_id, user_id, payload = *parts
+      host, process_id, user_id, engine, payload = *parts
 
       # extract generic parameters and stash away the line
       key = "#{host}-#{process_id}"
