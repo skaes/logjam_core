@@ -34,7 +34,7 @@ class AMQPImporter
 
         channel = MQ.new(AMQP::connect(:host => config[:hostname]))
         exchange = channel.topic(config[:exchange])
-        queue = channel.queue(config[:queue], :auto_delete => true, :exclusive => true)
+        queue = channel.queue("#{config[:queue]}-#{`hostname`.chomp}", :auto_delete => true, :exclusive => true)
 
         queue.bind(exchange, :routing_key => "logs.app.*.statistics")
         queue
