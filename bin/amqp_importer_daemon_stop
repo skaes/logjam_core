@@ -1,0 +1,2 @@
+#!/bin/bash
+exec "amqp_importer_daemon stop"
