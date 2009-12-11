@@ -2,4 +2,6 @@
 require 'rubygems'
 require 'daemons'
 
-Daemons.run(File.expand_path(File.dirname(__FILE__) + '/import_amqp_log'))
+script = File.expand_path(File.dirname(__FILE__) + '/import_amqp_log')
+pid_file_dir = File.expand_path(File.dirname(__FILE__) + '/../tmp/pids')
+Daemons.run(script, :dir_mode => :normal, :dir => pid_file_dir)
