@@ -1,2 +1,3 @@
 #!/bin/bash
-exec "amqp_importer_daemon restart"
+source ~/.profile
+amqp_importer_daemon restart
