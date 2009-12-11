@@ -49,7 +49,7 @@ class ControllerActionsController < ApplicationController
 
   private
   def default_date
-    ControllerAction.log_data_dates.first.to_date rescue Date.yesterday
+    (ControllerAction.log_data_dates.select{|d| Date.parse(d) <= Date.yesterday}.first || Date.yesterday).to_date
   end
 
   def prepare_params
