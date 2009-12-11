@@ -8,6 +8,6 @@ script = File.expand_path(script_dir + '/import_amqp_log')
 
 capistrano_install = File.exist?(script_dir + '/../../shared')
 
-pid_file_dir = File.expand_path(capistrano_install ? "#{script_dir}/../tmp/pids" : "#{script_dir}/../../shared/pids")
+pid_file_dir = File.expand_path(capistrano_install ? "#{script_dir}/../../shared/pids" : "#{script_dir}/../tmp/pids")
 
 Daemons.run(script, :dir_mode => :normal, :dir => pid_file_dir)
