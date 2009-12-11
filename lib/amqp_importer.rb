@@ -91,6 +91,6 @@ class AMQPImporter
       }
 
       loaded_config = load_config('database.yml')
-      defaults.update(loaded_config.slice(:host, :database))
+      defaults.update(loaded_config.slice(:host, :database, :password))
     end
 end
