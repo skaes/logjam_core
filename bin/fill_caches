@@ -10,6 +10,7 @@ options = OpenStruct.new
 options.days = 1
 options.base_url = 'localhost'
 options.basic = false
+options.start_date = Date.yesterday
 
 OptionParser.new do |opts|
 
@@ -21,6 +22,9 @@ OptionParser.new do |opts|
 
   opts.on('--server S', String,
           "which server to visit (mandatory)") {|v| options.base_url = "http://#{v}"}
+
+  opts.on('--start-date S', String,
+          "visit only pages on and before given date, default: #{options.start_date}") {|v| options.start_date = Date.parse v}
 
   opts.on('--days N', Integer,
           "how many days to visit (youngest first), default: #{options.days}") {|v| options.days = v}
@@ -38,8 +42,11 @@ end.parse!(ARGV)
 
 $logjam = RestClient::Resource.new options.base_url, :timeout => 60.minutes, :headers => {:accept => "text/html"}
 
+# select dates younger or equal to start date
+potential_dates = ControllerAction.log_data_dates.select{|d| Date.parse(d) <= options.start_date}
+
 # request younger dates first
-dates = ControllerAction.log_data_dates.sort.reverse[0,options.days]
+dates = potential_dates.sort.reverse[0,options.days]
 
 def benchmark(url, headers={})
   $stdout.printf "%-60s", url
