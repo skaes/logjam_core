@@ -6,8 +6,10 @@ script_dir = File.dirname(__FILE__)
 
 script = File.expand_path(script_dir + '/import_amqp_log')
 
-capistrano_install = File.exist?(script_dir + '/../../shared')
+capistrano_install = File.exist?(script_dir + '/../../shared') && File.exist?(script_dir + '/../../current')
 
 pid_file_dir = File.expand_path(capistrano_install ? "#{script_dir}/../../shared/pids" : "#{script_dir}/../tmp/pids")
 
-Daemons.run(script, :dir_mode => :normal, :dir => pid_file_dir)
+puts "starting amqp log importer daemon"
+
+Daemons.run(script, :dir_mode => :normal, :dir => pid_file_dir, :backtrace => true, :log_output => true)
