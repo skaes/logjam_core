@@ -11,7 +11,6 @@ class ControllerActionsController < ApplicationController
     re = /#{params[:controller_action][:page]}/i
     @pages = @klazz.distinct_pages.select {|name| name =~ re}
 
-    puts @pages
     render :inline => "<%= content_tag(:ul, @pages.map { |page| content_tag(:li, page) }) %>"
   end
 
