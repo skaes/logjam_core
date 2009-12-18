@@ -1,22 +1,20 @@
-require 'rubygems'
-require 'yaml'
 require 'amqp'
 require 'mq'
 require 'date'
-require 'em/mysql'
-
 
 class AMQPImporter
   attr_accessor :last_processed_date
   RAILS_ENV = ENV['RAILS_ENV'] || 'development'
-  SQL = EventedMysql
 
   def initialize
-    setup_mysql
+    @importer = MysqlImporter.new("/dev/null")
   end
 
   def process
     EM.run do
+      EM.add_periodic_timer(60) do
+        import_csv_data
+      end
       queue.subscribe do |msg|
         process_line(msg)
       end
@@ -25,9 +23,17 @@ class AMQPImporter
 
   def stop
     AMQP.stop { EM.stop }
+    import_csv_data
   end
 
   private
+
+    def import_csv_data
+      @importer.close_csv_files
+      @importer.import_csv_files
+      @importer.remove_csv_files
+    end
+
     def queue
       @queue ||= begin
         config = load_config('amqp.yml')
@@ -43,54 +49,12 @@ class AMQPImporter
 
     def process_line(msg)
       Parser.parse_line(msg) do |entry|
-        write_to_db_async(entry)
+        @importer.add_entry entry.to_hash
       end
-    end
-
-    def ensure_table_exists(current_date_str)
-      if current_date_str != self.last_processed_date
-        self.last_processed_date = current_date_str
-        ControllerAction.ensure_table_exists(current_date_str)
-      end
-    end
-
-    def write_to_db_async(entry)
-      current_date_str = Date.today.to_s
-      ensure_table_exists(current_date_str)
-
-      used_values = entry.to_hash.slice(*columns)
-
-      keys    = []
-      values  = []
-
-      used_values.each_pair do |key, value|
-        keys << key
-        values << (value.is_a?(Numeric) ? value : "\'#{value}\'")
-      end
-
-      query = "INSERT INTO log_data_#{current_date_str.gsub('-', '_')} (#{keys.join(',')}) VALUES (#{values.join(',')})"
-      SQL.insert(query)
-    end
-
-    def columns
-      @columns ||= ControllerAction.column_names.map(&:to_sym).reject{|c|c==:id}
-    end
-
-    def setup_mysql
-      EventedMysql.settings.update(mysql_config)
     end
 
     def load_config(config_name)
       YAML.load_file(File.join(File.dirname(__FILE__), '..', 'config', config_name))[RAILS_ENV].symbolize_keys
     end
 
-    def mysql_config
-      defaults = {
-        :host => "localhost",
-        :connections => 4
-      }
-
-      loaded_config = load_config('database.yml')
-      defaults.update(loaded_config.slice(:host, :database, :password))
-    end
 end
