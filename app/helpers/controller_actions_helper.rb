@@ -26,13 +26,13 @@ module ControllerActionsHelper
       nil
     end
   end
-  
+
   def sometimes_link_grouping_result(result, grouping)
     value = result[grouping]
     if [:user_id, :page].include? grouping.to_sym
-      link_to value, :params => params.merge(grouping => value)
+      link_to(h(value), :params => params.merge(grouping => value))
     else
-      value
+      h(value)
     end
   end
 
@@ -40,7 +40,7 @@ module ControllerActionsHelper
     if :page == grouping.to_sym
       link_to number_with_delimiter(result[:number_of_requests]), options
     else
-      result[:number_of_requests]
+      h(result[:number_of_requests])
     end
   end
 end

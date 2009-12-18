@@ -8,9 +8,10 @@ class ControllerActionsController < ApplicationController
 
   def auto_complete_for_controller_action_page
     prepare_params
-    re = /#{params[:controller_action][:page]}/
+    re = /#{params[:controller_action][:page]}/i
     @pages = @klazz.distinct_pages.select {|name| name =~ re}
 
+    puts @pages
     render :inline => "<%= content_tag(:ul, @pages.map { |page| content_tag(:li, page) }) %>"
   end
 
