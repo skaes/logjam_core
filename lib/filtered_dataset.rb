@@ -1,7 +1,7 @@
 class FilteredDataset
   HEAP_SLOT_SIZE = 40
 
-  attr_accessor :klazz, :interval_duration, :user_id, :host, :page, :response_code, 
+  attr_accessor :klazz, :interval_duration, :user_id, :host, :page, :response_code,
                 :plot_kind, :heap_growth_only, :resource, :grouping, :grouping_function
 
   def initialize(options = {})
@@ -18,7 +18,7 @@ class FilteredDataset
     @grouping = options[:grouping]
     @grouping_function = options[:grouping_function] || 'sum'
   end
-  
+
   def description
     Resource.description(resource, grouping, grouping_function)
   end
@@ -26,11 +26,11 @@ class FilteredDataset
   def grouping?
     Resource.grouping?(grouping)
   end
-  
+
   def starts_at
     @klazz.date
   end
-  
+
   def ends_at
     starts_at + 24.hours
   end
@@ -38,55 +38,61 @@ class FilteredDataset
   def hash
     Digest::MD5.hexdigest "#{starts_at} #{interval_duration} #{user_id} #{host} #{page} #{response_code} #{plot_kind}"
   end
-  
+
   def svg_file
     "plot-#{hash}.svg"
   end
-  
+
   def png_file
     "plot-#{hash}.png"
   end
-  
+
   def path(file)
     "public/images/#{file}"
   end
-  
+
   def accumulates_time?
     (Resource.resource_type(resource) == :time) && grouping? && grouping_function.to_sym == :sum
   end
-  
+
   def intervals_per_plot
     24 * 60 / interval_duration
   end
-  
+
   def intervals_per_hour
     60 / interval_duration
   end
-  
+
   def empty?
     count_requests == 0
   end
-  
+
   def count_requests(extra_condition = nil)
     @count_requests ||= {}
     @count_requests[extra_condition] ||= @klazz.connection.select_value("select count(id) from #{@klazz.table_name} #{sql_conditions(extra_condition)}").to_i
   end
-  
+
   def count_distinct_users
     @count_distinct_users ||= @klazz.connection.select_value("select count(distinct user_id) from #{@klazz.table_name} #{sql_conditions}").to_i
   end
-  
+
   def sum(time_attr = 'total_time')
     @sum ||= {}
     @sum[time_attr] ||= @klazz.connection.select_value("select sum(#{time_attr}) from #{@klazz.table_name} #{sql_conditions}").to_f
   end
 
-  
+
   def sql_conditions(extra_condition = nil)
     result = []
     result << "(user_id = #{user_id})" if user_id
     result << "(host = '#{host}')" if host
-    result << "(page LIKE '%#{page}%')" if page
+    unless page.blank?
+      if page =~ /%/
+        result << "(page LIKE '#{page}')"
+      else
+        result << "(page = '#{page}')"
+      end
+    end
     result << "(response_code = #{response_code})" if response_code
     result << "(heap_growth > 0)" if heap_growth_only
     result << "(#{extra_condition})" if extra_condition
@@ -201,19 +207,19 @@ class FilteredDataset
     limit, offset = limit_and_offset(n)
     @klazz.connection.select_value("SELECT avg(allocated_memory) FROM (SELECT allocated_memory FROM #{@klazz.table_name} #{sql_conditions} ORDER BY allocated_memory LIMIT #{limit} OFFSET #{offset}) AS log") || 0
   end
-  
+
   def happy
     count_requests('total_time < 100').to_f / count_requests.to_f
   end
-  
+
   def satisfied
     count_requests('total_time < 500').to_f / count_requests.to_f
   end
-  
+
   def tolerating
     count_requests('total_time >= 500 and total_time < 2000').to_f / count_requests.to_f
   end
-  
+
   def frustrated
     count_requests('(total_time >= 2000) or (response_code = 500)').to_f / count_requests.to_f
   end
