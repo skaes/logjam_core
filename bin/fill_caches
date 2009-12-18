@@ -64,10 +64,14 @@ resources = Resource.time_resources + Resource.memory_resources + Resource.call_
 groupings = Resource.groupings
 grouping_functions = Resource.grouping_functions.reject(&:blank?)
 
+config = YAML.load_file(File.expand_path(File.dirname(__FILE__)+'/../config/fill_caches.yml'))
+
+pages = config["pages"] || []
+
 if options.basic
-  durations = Array(durations.first)
-  groupings = [:page, :request]
-  grouping_functions = [:avg, :sum]
+  durations = config["basic"]["durations"] || []
+  groupings = config["basic"]["groupings"] || []
+  grouping_functions = config["basic"]["functions"] || []
 end
 
 dates.each do |date|
@@ -76,7 +80,11 @@ dates.each do |date|
     resources.each do |resource|
       groupings.each do |grouping|
         grouping_functions.each do |grouping_function|
-          benchmark("/#{year}/#{month}/#{day}?duration=#{duration}&resource=#{resource}&grouping=#{grouping}&grouping_function=#{grouping_function}")
+          url = "/#{year}/#{month}/#{day}?duration=#{duration}&resource=#{resource}&grouping=#{grouping}&grouping_function=#{grouping_function}"
+          benchmark(url)
+          pages.each do |page|
+            benchmark("#{url}&controller_action[page]=#{page}")
+          end
         end
       end
     end

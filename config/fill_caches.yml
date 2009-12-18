@@ -1,0 +1,11 @@
+basic:
+  durations:
+    - 5
+  groupings:
+    - page
+    - request
+  functions:
+    - avg
+    - sum
+
+pages:
