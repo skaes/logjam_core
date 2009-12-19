@@ -1,0 +1,468 @@
+# Logfile created on Sat Dec 19 15:17:40 +0100 2009 by logger.rb/22285
+Dec 19 15:17:41 starbuck-2 rails[80234]: [4;36;1mSQL (0.1ms)[0m   [0;1mSET SQL_AUTO_IS_NULL=0[0m
+Dec 19 15:17:41 starbuck-2 rails[80234]: [4;35;1mLogfileImportRecord Columns (1.3ms)[0m   [0mSHOW FIELDS FROM `logfile_import_records`[0m
+Dec 19 15:17:41 starbuck-2 rails[80234]: [4;36;1mLogfileImportRecord Load (0.4ms)[0m   [0;1mSELECT * FROM `logfile_import_records` WHERE (`logfile_import_records`.`md5hash` = '1d57b9ef3cc21adcb46d0eac9e6fc5f6') LIMIT 1[0m
+Dec 19 15:17:41 starbuck-2 rails[80234]: [4;35;1mControllerAction Columns (1.3ms)[0m   [0mSHOW FIELDS FROM `controller_actions`[0m
+Dec 19 15:17:41 starbuck-2 rails[80234]: [4;36;1mSQL (33.4ms)[0m   [0;1mcreate table if not exists log_data_2009_12_18 like controller_actions[0m
+Dec 19 15:17:41 starbuck-2 rails[80234]: [4;35;1mSQL (2.6ms)[0m   [0mload data local infile '/tmp/logfile-2009-12-18-80234.csv' into table log_data_2009_12_18 fields terminated by ',' (host,process_id,user_id,page,minute1,minute2,minute5,started_at,response_code,total_time,view_time,db_time,other_time) [0m
+Dec 19 15:17:42 starbuck-2 rails[80234]: [4;36;1mSQL (140.0ms)[0m   [0;1mcreate table if not exists log_data_2009_12_19 like controller_actions[0m
+Dec 19 15:17:42 starbuck-2 rails[80234]: [4;35;1mSQL (7.6ms)[0m   [0mload data local infile '/tmp/logfile-2009-12-19-80234.csv' into table log_data_2009_12_19 fields terminated by ',' (host,process_id,user_id,page,minute1,minute2,minute5,started_at,response_code,total_time,view_time,db_time,other_time) [0m
+Dec 19 15:17:42 starbuck-2 rails[80234]: [4;36;1mSQL (0.1ms)[0m   [0;1mBEGIN[0m
+Dec 19 15:17:42 starbuck-2 rails[80234]: [4;35;1mLogfileImportRecord Create (0.3ms)[0m   [0mINSERT INTO `logfile_import_records` (`md5hash`, `created_at`) VALUES('1d57b9ef3cc21adcb46d0eac9e6fc5f6', '2009-12-19 14:17:42')[0m
+Dec 19 15:17:42 starbuck-2 rails[80234]: [4;36;1mSQL (0.4ms)[0m   [0;1mCOMMIT[0m
+Dec 19 15:17:49 starbuck-2 rails[80240]: [4;36;1mSQL (0.1ms)[0m   [0;1mSET SQL_AUTO_IS_NULL=0[0m
+Dec 19 15:17:49 starbuck-2 rails[80240]: Processing ControllerActionsController#index (for 127.0.0.1 at 2009-12-19 15:17:49) [GET]
+Dec 19 15:17:49 starbuck-2 rails[80240]: Parameters: {"response"=>"", "commit"=>"GO", "month"=>"12", "grouping_function"=>"sum", "starts_at"=>"2009-12-19", "resource"=>"1", "grouping"=>"page", "server"=>"", "day"=>"19", "user_id"=>"", "year"=>"2009", "controller_action"=>{"page"=>"UsersController#show"}, "interval"=>"5"}
+Dec 19 15:17:49 starbuck-2 rails[80240]: Redirected to http://localhost:3000/2009/12/19?controller_action%5Bpage%5D=UsersController%23show&grouping=page&grouping_function=sum&interval=5&resource=1
+Dec 19 15:17:49 starbuck-2 rails[80240]: Filter chain halted as [:redirect_to_clean_url] rendered_or_redirected.
+Dec 19 15:17:49 starbuck-2 rails[80240]: Completed in 1ms (DB: 0) | 302 Found [http://localhost/2009/12/19?starts_at=2009-12-19&server=&response=&user_id=&controller_action%5Bpage%5D=UsersController%23show&interval=5&resource=1&grouping=page&grouping_function=sum&commit=GO]
+Dec 19 15:17:49 starbuck-2 rails[80240]: [4;35;1mSQL (0.1ms)[0m   [0mSET SQL_AUTO_IS_NULL=0[0m
+Dec 19 15:17:49 starbuck-2 rails[80240]: Processing ControllerActionsController#index (for 127.0.0.1 at 2009-12-19 15:17:49) [GET]
+Dec 19 15:17:49 starbuck-2 rails[80240]: Parameters: {"month"=>"12", "grouping_function"=>"sum", "grouping"=>"page", "resource"=>"1", "day"=>"19", "year"=>"2009", "controller_action"=>{"page"=>"UsersController#show"}, "interval"=>"5"}
+Dec 19 15:17:49 starbuck-2 rails[80240]: [4;36;1mSQL (0.2ms)[0m   [0;1mcreate table if not exists log_data_2009_12_19 like controller_actions[0m
+Dec 19 15:17:49 starbuck-2 rails[80240]: [4;35;1mSQL (0.6ms)[0m   [0mSELECT DISTINCT page FROM log_data_2009_12_19 ORDER BY page ASC[0m
+Dec 19 15:17:49 starbuck-2 rails[80240]: [4;36;1mSQL (0.2ms)[0m   [0;1mSELECT DISTINCT host FROM log_data_2009_12_19 ORDER BY host ASC[0m
+Dec 19 15:17:49 starbuck-2 rails[80240]: [4;35;1mSQL (0.1ms)[0m   [0mSELECT DISTINCT response_code FROM log_data_2009_12_19 ORDER BY response_code ASC[0m
+Dec 19 15:17:49 starbuck-2 rails[80240]: [4;36;1mSQL (0.4ms)[0m   [0;1mshow tables[0m
+Dec 19 15:17:49 starbuck-2 rails[80240]: [4;35;1mControllerAction_2009_12_19 Columns (1.3ms)[0m   [0mSHOW FIELDS FROM `log_data_2009_12_19`[0m
+Dec 19 15:17:49 starbuck-2 rails[80240]: [4;36;1mControllerAction_2009_12_19 Load (0.2ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:17:49 starbuck-2 rails[80240]: [4;35;1mSQL (0.1ms)[0m   [0mcreate table if not exists log_data_2009_12_18 like controller_actions[0m
+Dec 19 15:17:49 starbuck-2 rails[80240]: [4;36;1mControllerAction_2009_12_18 Columns (1.1ms)[0m   [0;1mSHOW FIELDS FROM `log_data_2009_12_18`[0m
+Dec 19 15:17:49 starbuck-2 rails[80240]: [4;35;1mControllerAction_2009_12_18 Load (0.3ms)[0m   [0mSELECT * FROM `log_data_2009_12_18` LIMIT 1[0m
+Dec 19 15:17:49 starbuck-2 rails[80240]: Rendering template within layouts/controller_actions
+Dec 19 15:17:49 starbuck-2 rails[80240]: Rendering /controller_actions/index.html.erb
+Dec 19 15:17:49 starbuck-2 rails[80240]: [4;36;1mSQL (0.5ms)[0m   [0;1mshow tables[0m
+Dec 19 15:17:49 starbuck-2 rails[80240]: [4;35;1mCACHE (0.0ms)[0m   [0mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:17:49 starbuck-2 rails[80240]: [4;36;1mCACHE (0.0ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_18` LIMIT 1[0m
+Dec 19 15:17:49 starbuck-2 rails[80240]: [4;35;1mSQL (1.1ms)[0m   [0mselect count(id) from log_data_2009_12_19 WHERE (page = 'UsersController#show')[0m
+Dec 19 15:17:49 starbuck-2 rails[80240]: [4;36;1mSQL (0.1ms)[0m   [0;1mSELECT count(*) AS count_all FROM `log_data_2009_12_19` [0m
+Dec 19 15:17:49 starbuck-2 rails[80240]: [4;35;1mSQL (1.1ms)[0m   [0mselect count(distinct user_id) from log_data_2009_12_19 WHERE (page = 'UsersController#show')[0m
+Dec 19 15:17:49 starbuck-2 rails[80240]: [4;36;1mSQL (0.3ms)[0m   [0;1mselect count(distinct user_id) from log_data_2009_12_19[0m
+Dec 19 15:17:49 starbuck-2 rails[80240]: [4;35;1mControllerAction_2009_12_19 Load (1.2ms)[0m   [0mSELECT page, count(id) AS number_of_requests, sum(1) AS sum, avg(1) AS avg, stddev_pop(1) AS stddev FROM log_data_2009_12_19 WHERE (page = 'UsersController#show') GROUP BY page ORDER BY number_of_requests DESC LIMIT 35[0m
+Dec 19 15:17:49 starbuck-2 rails[80240]: Rendered controller_actions/_statistics (5.7ms)
+Dec 19 15:17:49 starbuck-2 rails[80240]: Completed in 212ms (View: 53, DB: 9) | 200 OK [http://localhost/2009/12/19?controller_action%5Bpage%5D=UsersController%23show&grouping=page&grouping_function=sum&interval=5&resource=1]
+Dec 19 15:17:52 starbuck-2 rails[80240]: [4;36;1mSQL (0.1ms)[0m   [0;1mSET SQL_AUTO_IS_NULL=0[0m
+Dec 19 15:17:52 starbuck-2 rails[80240]: Processing ControllerActionsController#index (for 127.0.0.1 at 2009-12-19 15:17:52) [GET]
+Dec 19 15:17:52 starbuck-2 rails[80240]: Parameters: {"month"=>"12", "grouping_function"=>"sum", "grouping"=>"page", "resource"=>"1", "day"=>"19", "year"=>"2009", "controller_action"=>{"page"=>"UsersController#show"}, "interval"=>"5"}
+Dec 19 15:17:52 starbuck-2 rails[80240]: [4;35;1mSQL (0.6ms)[0m   [0mSELECT DISTINCT page FROM log_data_2009_12_19 ORDER BY page ASC[0m
+Dec 19 15:17:52 starbuck-2 rails[80240]: [4;36;1mSQL (0.2ms)[0m   [0;1mSELECT DISTINCT host FROM log_data_2009_12_19 ORDER BY host ASC[0m
+Dec 19 15:17:52 starbuck-2 rails[80240]: [4;35;1mSQL (0.1ms)[0m   [0mSELECT DISTINCT response_code FROM log_data_2009_12_19 ORDER BY response_code ASC[0m
+Dec 19 15:17:52 starbuck-2 rails[80240]: [4;36;1mSQL (0.4ms)[0m   [0;1mshow tables[0m
+Dec 19 15:17:52 starbuck-2 rails[80240]: [4;35;1mControllerAction_2009_12_19 Load (0.2ms)[0m   [0mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:17:52 starbuck-2 rails[80240]: [4;36;1mControllerAction_2009_12_18 Load (0.2ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_18` LIMIT 1[0m
+Dec 19 15:17:52 starbuck-2 rails[80240]: Rendering template within layouts/controller_actions
+Dec 19 15:17:52 starbuck-2 rails[80240]: Rendering /controller_actions/index.html.erb
+Dec 19 15:17:52 starbuck-2 rails[80240]: [4;35;1mSQL (0.5ms)[0m   [0mshow tables[0m
+Dec 19 15:17:52 starbuck-2 rails[80240]: [4;36;1mCACHE (0.0ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:17:52 starbuck-2 rails[80240]: [4;35;1mCACHE (0.0ms)[0m   [0mSELECT * FROM `log_data_2009_12_18` LIMIT 1[0m
+Dec 19 15:17:52 starbuck-2 rails[80240]: [4;36;1mSQL (1.2ms)[0m   [0;1mselect count(id) from log_data_2009_12_19 WHERE (page = 'UsersController#show')[0m
+Dec 19 15:17:53 starbuck-2 rails[80240]: [4;35;1mSQL (0.2ms)[0m   [0mSELECT count(*) AS count_all FROM `log_data_2009_12_19` [0m
+Dec 19 15:17:53 starbuck-2 rails[80240]: [4;36;1mSQL (1.1ms)[0m   [0;1mselect count(distinct user_id) from log_data_2009_12_19 WHERE (page = 'UsersController#show')[0m
+Dec 19 15:17:53 starbuck-2 rails[80240]: [4;35;1mSQL (0.3ms)[0m   [0mselect count(distinct user_id) from log_data_2009_12_19[0m
+Dec 19 15:17:53 starbuck-2 rails[80240]: [4;36;1mControllerAction_2009_12_19 Load (1.1ms)[0m   [0;1mSELECT page, count(id) AS number_of_requests, sum(1) AS sum, avg(1) AS avg, stddev_pop(1) AS stddev FROM log_data_2009_12_19 WHERE (page = 'UsersController#show') GROUP BY page ORDER BY number_of_requests DESC LIMIT 35[0m
+Dec 19 15:17:53 starbuck-2 rails[80240]: Rendered controller_actions/_statistics (4.0ms)
+Dec 19 15:17:53 starbuck-2 rails[80240]: Completed in 113ms (View: 22, DB: 6) | 200 OK [http://localhost/2009/12/19?controller_action%5Bpage%5D=UsersController%23show&grouping=page&grouping_function=sum&interval=5&resource=1]
+Dec 19 15:18:02 starbuck-2 rails[80240]: [4;35;1mSQL (0.1ms)[0m   [0mSET SQL_AUTO_IS_NULL=0[0m
+Dec 19 15:18:02 starbuck-2 rails[80240]: Processing ControllerActionsController#index (for 127.0.0.1 at 2009-12-19 15:18:02) [GET]
+Dec 19 15:18:02 starbuck-2 rails[80240]: Parameters: {"response"=>"", "commit"=>"GO", "month"=>"12", "grouping_function"=>"sum", "starts_at"=>"2009-12-19", "resource"=>"1", "grouping"=>"page", "server"=>"", "day"=>"19", "user_id"=>"", "year"=>"2009", "controller_action"=>{"page"=>"UsersController#show"}, "interval"=>"5"}
+Dec 19 15:18:02 starbuck-2 rails[80240]: Redirected to http://localhost:3000/2009/12/19?controller_action%5Bpage%5D=UsersController%23show&grouping=page&grouping_function=sum&interval=5&resource=1
+Dec 19 15:18:02 starbuck-2 rails[80240]: Filter chain halted as [:redirect_to_clean_url] rendered_or_redirected.
+Dec 19 15:18:02 starbuck-2 rails[80240]: Completed in 2ms (DB: 0) | 302 Found [http://localhost/2009/12/19?starts_at=2009-12-19&server=&response=&user_id=&controller_action%5Bpage%5D=UsersController%23show&interval=5&resource=1&grouping=page&grouping_function=sum&commit=GO]
+Dec 19 15:18:02 starbuck-2 rails[80240]: [4;36;1mSQL (0.1ms)[0m   [0;1mSET SQL_AUTO_IS_NULL=0[0m
+Dec 19 15:18:02 starbuck-2 rails[80240]: Processing ControllerActionsController#index (for 127.0.0.1 at 2009-12-19 15:18:02) [GET]
+Dec 19 15:18:02 starbuck-2 rails[80240]: Parameters: {"month"=>"12", "grouping_function"=>"sum", "grouping"=>"page", "resource"=>"1", "day"=>"19", "year"=>"2009", "controller_action"=>{"page"=>"UsersController#show"}, "interval"=>"5"}
+Dec 19 15:18:02 starbuck-2 rails[80240]: [4;35;1mSQL (0.6ms)[0m   [0mSELECT DISTINCT page FROM log_data_2009_12_19 ORDER BY page ASC[0m
+Dec 19 15:18:02 starbuck-2 rails[80240]: [4;36;1mSQL (0.2ms)[0m   [0;1mSELECT DISTINCT host FROM log_data_2009_12_19 ORDER BY host ASC[0m
+Dec 19 15:18:02 starbuck-2 rails[80240]: [4;35;1mSQL (0.1ms)[0m   [0mSELECT DISTINCT response_code FROM log_data_2009_12_19 ORDER BY response_code ASC[0m
+Dec 19 15:18:02 starbuck-2 rails[80240]: [4;36;1mSQL (0.4ms)[0m   [0;1mshow tables[0m
+Dec 19 15:18:02 starbuck-2 rails[80240]: [4;35;1mControllerAction_2009_12_19 Load (0.3ms)[0m   [0mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:18:02 starbuck-2 rails[80240]: [4;36;1mControllerAction_2009_12_18 Load (0.2ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_18` LIMIT 1[0m
+Dec 19 15:18:02 starbuck-2 rails[80240]: Rendering template within layouts/controller_actions
+Dec 19 15:18:02 starbuck-2 rails[80240]: Rendering /controller_actions/index.html.erb
+Dec 19 15:18:02 starbuck-2 rails[80240]: [4;35;1mSQL (0.5ms)[0m   [0mshow tables[0m
+Dec 19 15:18:02 starbuck-2 rails[80240]: [4;36;1mCACHE (0.0ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:18:02 starbuck-2 rails[80240]: [4;35;1mCACHE (0.0ms)[0m   [0mSELECT * FROM `log_data_2009_12_18` LIMIT 1[0m
+Dec 19 15:18:02 starbuck-2 rails[80240]: [4;36;1mSQL (1.3ms)[0m   [0;1mselect count(id) from log_data_2009_12_19 WHERE (page = 'UsersController#show')[0m
+Dec 19 15:18:02 starbuck-2 rails[80240]: [4;35;1mSQL (0.2ms)[0m   [0mSELECT count(*) AS count_all FROM `log_data_2009_12_19` [0m
+Dec 19 15:18:02 starbuck-2 rails[80240]: [4;36;1mSQL (1.1ms)[0m   [0;1mselect count(distinct user_id) from log_data_2009_12_19 WHERE (page = 'UsersController#show')[0m
+Dec 19 15:18:02 starbuck-2 rails[80240]: [4;35;1mSQL (0.2ms)[0m   [0mselect count(distinct user_id) from log_data_2009_12_19[0m
+Dec 19 15:18:02 starbuck-2 rails[80240]: [4;36;1mControllerAction_2009_12_19 Load (1.1ms)[0m   [0;1mSELECT page, count(id) AS number_of_requests, sum(1) AS sum, avg(1) AS avg, stddev_pop(1) AS stddev FROM log_data_2009_12_19 WHERE (page = 'UsersController#show') GROUP BY page ORDER BY number_of_requests DESC LIMIT 35[0m
+Dec 19 15:18:02 starbuck-2 rails[80240]: Rendered controller_actions/_statistics (4.2ms)
+Dec 19 15:18:02 starbuck-2 rails[80240]: Completed in 116ms (View: 25, DB: 6) | 200 OK [http://localhost/2009/12/19?controller_action%5Bpage%5D=UsersController%23show&grouping=page&grouping_function=sum&interval=5&resource=1]
+Dec 19 15:18:23 starbuck-2 rails[80240]: [4;35;1mSQL (0.1ms)[0m   [0mSET SQL_AUTO_IS_NULL=0[0m
+Dec 19 15:18:23 starbuck-2 rails[80240]: Processing ControllerActionsController#index (for 127.0.0.1 at 2009-12-19 15:18:23) [GET]
+Dec 19 15:18:23 starbuck-2 rails[80240]: Parameters: {"response"=>"", "commit"=>"GO", "month"=>"12", "grouping_function"=>"sum", "starts_at"=>"2009-12-18", "resource"=>"1", "grouping"=>"page", "server"=>"", "day"=>"19", "user_id"=>"", "year"=>"2009", "controller_action"=>{"page"=>""}, "interval"=>"5"}
+Dec 19 15:18:23 starbuck-2 rails[80240]: Redirected to http://localhost:3000/2009/12/18?controller_action%5Bpage%5D=&grouping=page&grouping_function=sum&interval=5&resource=1
+Dec 19 15:18:23 starbuck-2 rails[80240]: Filter chain halted as [:redirect_to_clean_url] rendered_or_redirected.
+Dec 19 15:18:23 starbuck-2 rails[80240]: Completed in 1ms (DB: 0) | 302 Found [http://localhost/2009/12/19?starts_at=2009-12-18&server=&response=&user_id=&controller_action%5Bpage%5D=&interval=5&resource=1&grouping=page&grouping_function=sum&commit=GO]
+Dec 19 15:18:23 starbuck-2 rails[80240]: [4;36;1mSQL (0.1ms)[0m   [0;1mSET SQL_AUTO_IS_NULL=0[0m
+Dec 19 15:18:23 starbuck-2 rails[80240]: Processing ControllerActionsController#index (for 127.0.0.1 at 2009-12-19 15:18:23) [GET]
+Dec 19 15:18:23 starbuck-2 rails[80240]: Parameters: {"month"=>"12", "grouping_function"=>"sum", "grouping"=>"page", "resource"=>"1", "day"=>"18", "year"=>"2009", "controller_action"=>{"page"=>""}, "interval"=>"5"}
+Dec 19 15:18:23 starbuck-2 rails[80240]: [4;35;1mSQL (0.4ms)[0m   [0mSELECT DISTINCT host FROM log_data_2009_12_18 ORDER BY host ASC[0m
+Dec 19 15:18:23 starbuck-2 rails[80240]: [4;36;1mSQL (0.1ms)[0m   [0;1mSELECT DISTINCT response_code FROM log_data_2009_12_18 ORDER BY response_code ASC[0m
+Dec 19 15:18:23 starbuck-2 rails[80240]: [4;35;1mSQL (0.4ms)[0m   [0mshow tables[0m
+Dec 19 15:18:23 starbuck-2 rails[80240]: [4;36;1mControllerAction_2009_12_19 Load (0.2ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:18:23 starbuck-2 rails[80240]: [4;35;1mControllerAction_2009_12_18 Load (0.2ms)[0m   [0mSELECT * FROM `log_data_2009_12_18` LIMIT 1[0m
+Dec 19 15:18:23 starbuck-2 rails[80240]: Rendering template within layouts/controller_actions
+Dec 19 15:18:23 starbuck-2 rails[80240]: Rendering /controller_actions/index.html.erb
+Dec 19 15:18:23 starbuck-2 rails[80240]: [4;36;1mSQL (0.5ms)[0m   [0;1mshow tables[0m
+Dec 19 15:18:23 starbuck-2 rails[80240]: [4;35;1mCACHE (0.0ms)[0m   [0mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:18:23 starbuck-2 rails[80240]: [4;36;1mCACHE (0.0ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_18` LIMIT 1[0m
+Dec 19 15:18:23 starbuck-2 rails[80240]: [4;35;1mSQL (0.2ms)[0m   [0mselect count(id) from log_data_2009_12_18 [0m
+Dec 19 15:18:23 starbuck-2 rails[80240]: [4;36;1mSQL (0.2ms)[0m   [0;1mSELECT count(*) AS count_all FROM `log_data_2009_12_18` [0m
+Dec 19 15:18:23 starbuck-2 rails[80240]: [4;35;1mSQL (0.3ms)[0m   [0mselect count(distinct user_id) from log_data_2009_12_18 [0m
+Dec 19 15:18:23 starbuck-2 rails[80240]: [4;36;1mSQL (0.2ms)[0m   [0;1mselect count(distinct user_id) from log_data_2009_12_18[0m
+Dec 19 15:18:23 starbuck-2 rails[80240]: [4;35;1mControllerAction_2009_12_18 Load (1.2ms)[0m   [0mSELECT page, count(id) AS number_of_requests, sum(1) AS sum, avg(1) AS avg, stddev_pop(1) AS stddev FROM log_data_2009_12_18 GROUP BY page ORDER BY number_of_requests DESC LIMIT 35[0m
+Dec 19 15:18:23 starbuck-2 rails[80240]: Rendered controller_actions/_statistics (36.6ms)
+Dec 19 15:18:23 starbuck-2 rails[80240]: Completed in 387ms (View: 59, DB: 4) | 200 OK [http://localhost/2009/12/18?controller_action%5Bpage%5D=&grouping=page&grouping_function=sum&interval=5&resource=1]
+Dec 19 15:18:35 starbuck-2 rails[80240]: [4;36;1mSQL (0.1ms)[0m   [0;1mSET SQL_AUTO_IS_NULL=0[0m
+Dec 19 15:18:35 starbuck-2 rails[80240]: Processing ControllerActionsController#index (for 127.0.0.1 at 2009-12-19 15:18:35) [GET]
+Dec 19 15:18:35 starbuck-2 rails[80240]: [4;35;1mSQL (0.4ms)[0m   [0mshow tables[0m
+Dec 19 15:18:35 starbuck-2 rails[80240]: [4;36;1mControllerAction_2009_12_19 Load (0.2ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:18:35 starbuck-2 rails[80240]: [4;35;1mControllerAction_2009_12_18 Load (0.2ms)[0m   [0mSELECT * FROM `log_data_2009_12_18` LIMIT 1[0m
+Dec 19 15:18:35 starbuck-2 rails[80240]: [4;36;1mSQL (0.3ms)[0m   [0;1mSELECT DISTINCT host FROM log_data_2009_12_18 ORDER BY host ASC[0m
+Dec 19 15:18:35 starbuck-2 rails[80240]: [4;35;1mSQL (0.1ms)[0m   [0mSELECT DISTINCT response_code FROM log_data_2009_12_18 ORDER BY response_code ASC[0m
+Dec 19 15:18:35 starbuck-2 rails[80240]: [4;36;1mSQL (0.5ms)[0m   [0;1mshow tables[0m
+Dec 19 15:18:36 starbuck-2 rails[80240]: [4;35;1mCACHE (0.0ms)[0m   [0mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:18:36 starbuck-2 rails[80240]: [4;36;1mCACHE (0.0ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_18` LIMIT 1[0m
+Dec 19 15:18:36 starbuck-2 rails[80240]: [4;35;1mSQL (0.8ms)[0m   [0mSELECT minute5, avg(other_time) as other_time, avg(db_time) as db_time, avg(view_time) as view_time FROM log_data_2009_12_18 GROUP BY 1[0m
+Dec 19 15:18:36 starbuck-2 rails[80240]: Rendering template within layouts/controller_actions
+Dec 19 15:18:36 starbuck-2 rails[80240]: Rendering /controller_actions/index.html.erb
+Dec 19 15:18:36 starbuck-2 rails[80240]: [4;36;1mSQL (0.5ms)[0m   [0;1mshow tables[0m
+Dec 19 15:18:36 starbuck-2 rails[80240]: [4;35;1mCACHE (0.0ms)[0m   [0mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:18:36 starbuck-2 rails[80240]: [4;36;1mCACHE (0.0ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_18` LIMIT 1[0m
+Dec 19 15:18:36 starbuck-2 rails[80240]: [4;35;1mSQL (0.2ms)[0m   [0mselect count(id) from log_data_2009_12_18 [0m
+Dec 19 15:18:36 starbuck-2 rails[80240]: [4;36;1mSQL (0.2ms)[0m   [0;1mSELECT count(*) AS count_all FROM `log_data_2009_12_18` [0m
+Dec 19 15:18:36 starbuck-2 rails[80240]: [4;35;1mSQL (0.4ms)[0m   [0mselect count(distinct user_id) from log_data_2009_12_18 [0m
+Dec 19 15:18:36 starbuck-2 rails[80240]: [4;36;1mSQL (0.3ms)[0m   [0;1mselect count(distinct user_id) from log_data_2009_12_18[0m
+Dec 19 15:18:36 starbuck-2 rails[80240]: [4;35;1mSQL (0.3ms)[0m   [0mSELECT avg(other_time) as avg_other_time, avg(db_time) as avg_db_time, avg(view_time) as avg_view_time, avg(total_time) as avg_total_time, stddev_pop(other_time) as std_other_time, stddev_pop(db_time) as std_db_time, stddev_pop(view_time) as std_view_time, stddev_pop(total_time) as std_total_time FROM log_data_2009_12_18 [0m
+Dec 19 15:18:36 starbuck-2 rails[80240]: [4;36;1mSQL (0.3ms)[0m   [0;1mSELECT avg(total_time) FROM (SELECT total_time FROM log_data_2009_12_18 ORDER BY total_time LIMIT 17 OFFSET 0) AS log[0m
+Dec 19 15:18:36 starbuck-2 rails[80240]: [4;35;1mSQL (0.2ms)[0m   [0mSELECT avg(total_time) FROM (SELECT total_time FROM log_data_2009_12_18 ORDER BY total_time LIMIT 17 OFFSET 17) AS log[0m
+Dec 19 15:18:36 starbuck-2 rails[80240]: [4;36;1mSQL (0.2ms)[0m   [0;1mSELECT avg(total_time) FROM (SELECT total_time FROM log_data_2009_12_18 ORDER BY total_time LIMIT 16 OFFSET 34) AS log[0m
+Dec 19 15:18:36 starbuck-2 rails[80240]: [4;35;1mSQL (0.2ms)[0m   [0mSELECT avg(total_time) FROM (SELECT total_time FROM log_data_2009_12_18 ORDER BY total_time LIMIT 16 OFFSET 50) AS log[0m
+Dec 19 15:18:36 starbuck-2 rails[80240]: [4;36;1mSQL (0.2ms)[0m   [0;1mSELECT avg(total_time) FROM (SELECT total_time FROM log_data_2009_12_18 ORDER BY total_time LIMIT 16 OFFSET 66) AS log[0m
+Dec 19 15:18:36 starbuck-2 rails[80240]: [4;35;1mSQL (0.2ms)[0m   [0mselect count(id) from log_data_2009_12_18 WHERE (total_time < 100)[0m
+Dec 19 15:18:36 starbuck-2 rails[80240]: [4;36;1mSQL (0.2ms)[0m   [0;1mselect count(id) from log_data_2009_12_18 WHERE (total_time < 500)[0m
+Dec 19 15:18:36 starbuck-2 rails[80240]: [4;35;1mSQL (0.2ms)[0m   [0mselect count(id) from log_data_2009_12_18 WHERE (total_time >= 500 and total_time < 2000)[0m
+Dec 19 15:18:36 starbuck-2 rails[80240]: [4;36;1mSQL (0.1ms)[0m   [0;1mselect count(id) from log_data_2009_12_18 WHERE ((total_time >= 2000) or (response_code = 500))[0m
+Dec 19 15:18:36 starbuck-2 rails[80240]: [4;35;1mControllerAction_2009_12_18 Load (1.2ms)[0m   [0mSELECT page, count(id) AS number_of_requests, sum(total_time) AS sum, avg(total_time) AS avg, stddev_pop(total_time) AS stddev FROM log_data_2009_12_18 GROUP BY page ORDER BY sum DESC LIMIT 35[0m
+Dec 19 15:18:36 starbuck-2 rails[80240]: [4;36;1mSQL (0.2ms)[0m   [0;1mselect sum(total_time) from log_data_2009_12_18 [0m
+Dec 19 15:18:36 starbuck-2 rails[80240]: Rendered controller_actions/_statistics (37.6ms)
+Dec 19 15:18:36 starbuck-2 rails[80240]: Completed in 260ms (View: 64, DB: 8) | 200 OK [http://localhost/]
+Dec 19 15:18:56 starbuck-2 rails[80240]: [4;35;1mSQL (0.2ms)[0m   [0mSET SQL_AUTO_IS_NULL=0[0m
+Dec 19 15:18:56 starbuck-2 rails[80240]: Processing ControllerActionsController#request_time_distribution (for 127.0.0.1 at 2009-12-19 15:18:56) [GET]
+Dec 19 15:18:56 starbuck-2 rails[80240]: Parameters: {"grouping_function"=>"sum", "grouping"=>"page", "resource"=>"total_time", "page"=>"UsersController#show", "controller_action"=>{"page"=>"UsersController#show"}, "interval"=>"5"}
+Dec 19 15:18:57 starbuck-2 rails[80240]: [4;36;1mSQL (0.4ms)[0m   [0;1mshow tables[0m
+Dec 19 15:18:57 starbuck-2 rails[80240]: [4;35;1mControllerAction_2009_12_19 Load (0.3ms)[0m   [0mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:18:57 starbuck-2 rails[80240]: [4;36;1mControllerAction_2009_12_18 Load (0.2ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_18` LIMIT 1[0m
+Dec 19 15:18:57 starbuck-2 rails[80240]: [4;35;1mSQL (0.4ms)[0m   [0mSELECT DISTINCT page FROM log_data_2009_12_18 ORDER BY page ASC[0m
+Dec 19 15:18:57 starbuck-2 rails[80240]: [4;36;1mSQL (0.1ms)[0m   [0;1mSELECT DISTINCT host FROM log_data_2009_12_18 ORDER BY host ASC[0m
+Dec 19 15:18:57 starbuck-2 rails[80240]: [4;35;1mSQL (0.1ms)[0m   [0mSELECT DISTINCT response_code FROM log_data_2009_12_18 ORDER BY response_code ASC[0m
+Dec 19 15:18:57 starbuck-2 rails[80240]: [4;36;1mSQL (0.4ms)[0m   [0;1mshow tables[0m
+Dec 19 15:18:57 starbuck-2 rails[80240]: [4;35;1mCACHE (0.0ms)[0m   [0mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:18:57 starbuck-2 rails[80240]: [4;36;1mCACHE (0.0ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_18` LIMIT 1[0m
+Dec 19 15:18:57 starbuck-2 rails[80240]: [4;35;1mSQL (0.7ms)[0m   [0mselect avg(other_time) as avg, stddev_pop(other_time) as stddev from log_data_2009_12_18 WHERE (page = 'UsersController#show')[0m
+Dec 19 15:18:57 starbuck-2 rails[80240]: [4;36;1mSQL (0.6ms)[0m   [0;1mselect ceil(((other_time-5)*sign(other_time-5)/10))*10 as quant, count(*) as count from log_data_2009_12_18 WHERE (page = 'UsersController#show') group by 1[0m
+Dec 19 15:18:57 starbuck-2 rails[80240]: [4;35;1mSQL (0.4ms)[0m   [0mselect avg(db_time) as avg, stddev_pop(db_time) as stddev from log_data_2009_12_18 WHERE (page = 'UsersController#show')[0m
+Dec 19 15:18:57 starbuck-2 rails[80240]: [4;36;1mSQL (0.5ms)[0m   [0;1mselect ceil(((db_time-5)*sign(db_time-5)/10))*10 as quant, count(*) as count from log_data_2009_12_18 WHERE (page = 'UsersController#show') group by 1[0m
+Dec 19 15:18:57 starbuck-2 rails[80240]: [4;35;1mSQL (0.4ms)[0m   [0mselect avg(view_time) as avg, stddev_pop(view_time) as stddev from log_data_2009_12_18 WHERE (page = 'UsersController#show')[0m
+Dec 19 15:18:57 starbuck-2 rails[80240]: [4;36;1mSQL (0.6ms)[0m   [0;1mselect ceil(((view_time-5)*sign(view_time-5)/10))*10 as quant, count(*) as count from log_data_2009_12_18 WHERE (page = 'UsersController#show') group by 1[0m
+Dec 19 15:18:57 starbuck-2 rails[80240]: [4;35;1mSQL (0.4ms)[0m   [0mselect avg(total_time) as avg, stddev_pop(total_time) as stddev from log_data_2009_12_18 WHERE (page = 'UsersController#show')[0m
+Dec 19 15:18:57 starbuck-2 rails[80240]: [4;36;1mSQL (0.5ms)[0m   [0;1mselect ceil(((total_time-5)*sign(total_time-5)/10))*10 as quant, count(*) as count from log_data_2009_12_18 WHERE (page = 'UsersController#show') group by 1[0m
+Dec 19 15:18:57 starbuck-2 rails[80240]: [4;35;1mSQL (17.6ms)[0m   [0mselect count(id) from log_data_2009_12_18 WHERE (page = 'UsersController#show')[0m
+Dec 19 15:18:57 starbuck-2 rails[80240]: Rendering template within layouts/controller_actions
+Dec 19 15:18:57 starbuck-2 rails[80240]: Rendering controller_actions/request_time_distribution
+Dec 19 15:18:57 starbuck-2 rails[80240]: Completed in 439ms (View: 323, DB: 24) | 200 OK [http://localhost/controller_actions/request_time_distribution?controller_action%5Bpage%5D=UsersController%23show&grouping=page&grouping_function=sum&interval=5&page=UsersController%23show&resource=total_time]
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;36;1mSQL (0.1ms)[0m   [0;1mSET SQL_AUTO_IS_NULL=0[0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: Processing ControllerActionsController#index (for 127.0.0.1 at 2009-12-19 15:19:06) [GET]
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;35;1mSQL (0.5ms)[0m   [0mshow tables[0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;36;1mControllerAction_2009_12_19 Load (0.3ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;35;1mControllerAction_2009_12_18 Load (0.2ms)[0m   [0mSELECT * FROM `log_data_2009_12_18` LIMIT 1[0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;36;1mSQL (0.3ms)[0m   [0;1mSELECT DISTINCT host FROM log_data_2009_12_18 ORDER BY host ASC[0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;35;1mSQL (0.1ms)[0m   [0mSELECT DISTINCT response_code FROM log_data_2009_12_18 ORDER BY response_code ASC[0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;36;1mSQL (0.5ms)[0m   [0;1mshow tables[0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;35;1mCACHE (0.0ms)[0m   [0mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;36;1mCACHE (0.0ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_18` LIMIT 1[0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;35;1mSQL (1.0ms)[0m   [0mSELECT minute5, avg(other_time) as other_time, avg(db_time) as db_time, avg(view_time) as view_time FROM log_data_2009_12_18 GROUP BY 1[0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: Rendering template within layouts/controller_actions
+Dec 19 15:19:06 starbuck-2 rails[80240]: Rendering /controller_actions/index.html.erb
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;36;1mSQL (0.5ms)[0m   [0;1mshow tables[0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;35;1mCACHE (0.0ms)[0m   [0mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;36;1mCACHE (0.0ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_18` LIMIT 1[0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;35;1mSQL (0.2ms)[0m   [0mselect count(id) from log_data_2009_12_18 [0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;36;1mSQL (0.2ms)[0m   [0;1mSELECT count(*) AS count_all FROM `log_data_2009_12_18` [0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;35;1mSQL (0.3ms)[0m   [0mselect count(distinct user_id) from log_data_2009_12_18 [0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;36;1mSQL (0.3ms)[0m   [0;1mselect count(distinct user_id) from log_data_2009_12_18[0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;35;1mSQL (0.3ms)[0m   [0mSELECT avg(other_time) as avg_other_time, avg(db_time) as avg_db_time, avg(view_time) as avg_view_time, avg(total_time) as avg_total_time, stddev_pop(other_time) as std_other_time, stddev_pop(db_time) as std_db_time, stddev_pop(view_time) as std_view_time, stddev_pop(total_time) as std_total_time FROM log_data_2009_12_18 [0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;36;1mSQL (0.2ms)[0m   [0;1mSELECT avg(total_time) FROM (SELECT total_time FROM log_data_2009_12_18 ORDER BY total_time LIMIT 17 OFFSET 0) AS log[0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;35;1mSQL (0.2ms)[0m   [0mSELECT avg(total_time) FROM (SELECT total_time FROM log_data_2009_12_18 ORDER BY total_time LIMIT 17 OFFSET 17) AS log[0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;36;1mSQL (0.2ms)[0m   [0;1mSELECT avg(total_time) FROM (SELECT total_time FROM log_data_2009_12_18 ORDER BY total_time LIMIT 16 OFFSET 34) AS log[0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;35;1mSQL (0.2ms)[0m   [0mSELECT avg(total_time) FROM (SELECT total_time FROM log_data_2009_12_18 ORDER BY total_time LIMIT 16 OFFSET 50) AS log[0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;36;1mSQL (0.2ms)[0m   [0;1mSELECT avg(total_time) FROM (SELECT total_time FROM log_data_2009_12_18 ORDER BY total_time LIMIT 16 OFFSET 66) AS log[0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;35;1mSQL (0.2ms)[0m   [0mselect count(id) from log_data_2009_12_18 WHERE (total_time < 100)[0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;36;1mSQL (0.2ms)[0m   [0;1mselect count(id) from log_data_2009_12_18 WHERE (total_time < 500)[0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;35;1mSQL (0.2ms)[0m   [0mselect count(id) from log_data_2009_12_18 WHERE (total_time >= 500 and total_time < 2000)[0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;36;1mSQL (0.2ms)[0m   [0;1mselect count(id) from log_data_2009_12_18 WHERE ((total_time >= 2000) or (response_code = 500))[0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;35;1mControllerAction_2009_12_18 Load (1.1ms)[0m   [0mSELECT page, count(id) AS number_of_requests, sum(total_time) AS sum, avg(total_time) AS avg, stddev_pop(total_time) AS stddev FROM log_data_2009_12_18 GROUP BY page ORDER BY sum DESC LIMIT 35[0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: [4;36;1mSQL (0.2ms)[0m   [0;1mselect sum(total_time) from log_data_2009_12_18 [0m
+Dec 19 15:19:06 starbuck-2 rails[80240]: Rendered controller_actions/_statistics (126.9ms)
+Dec 19 15:19:06 starbuck-2 rails[80240]: Completed in 254ms (View: 150, DB: 8) | 200 OK [http://localhost/]
+Dec 19 15:19:20 starbuck-2 rails[80252]: [4;36;1mSQL (0.1ms)[0m   [0;1mSET SQL_AUTO_IS_NULL=0[0m
+Dec 19 15:19:20 starbuck-2 rails[80252]: [4;35;1mSQL (0.3ms)[0m   [0mSHOW TABLES[0m
+Dec 19 15:19:20 starbuck-2 rails[80252]: [4;36;1mSQL (48.4ms)[0m   [0;1mCREATE TABLE `schema_migrations` (`version` varchar(255) NOT NULL) ENGINE=InnoDB[0m
+Dec 19 15:19:20 starbuck-2 rails[80252]: [4;35;1mSQL (144.3ms)[0m   [0mCREATE UNIQUE INDEX `unique_schema_migrations` ON `schema_migrations` (`version`)[0m
+Dec 19 15:19:20 starbuck-2 rails[80252]: [4;36;1mSQL (0.4ms)[0m   [0;1mSHOW TABLES[0m
+Dec 19 15:19:20 starbuck-2 rails[80252]: [4;35;1mSQL (0.2ms)[0m   [0mSELECT version FROM schema_migrations[0m
+Dec 19 15:19:20 starbuck-2 rails[80252]: Migrating to CreateControllerActions (20090708080254)
+Dec 19 15:19:20 starbuck-2 rails[80252]: [4;36;1mSQL (83.5ms)[0m   [0;1mCREATE TABLE `controller_actions` (`id` int(11) DEFAULT NULL auto_increment PRIMARY KEY, `host` varchar(255) NOT NULL, `process_id` int(11) NOT NULL, `user_id` int(11) NOT NULL, `page` varchar(255) NOT NULL, `minute1` int(11) NOT NULL, `minute2` int(11) NOT NULL, `minute5` int(11) NOT NULL, `started_at` datetime NOT NULL, `response_code` int(11) NOT NULL, `total_time` float NOT NULL, `view_time` float NOT NULL, `db_time` float NOT NULL, `other_time` float NOT NULL) ENGINE=MyISAM[0m
+Dec 19 15:19:20 starbuck-2 rails[80252]: [4;35;1mSQL (0.5ms)[0m   [0mINSERT INTO schema_migrations (version) VALUES ('20090708080254')[0m
+Dec 19 15:19:20 starbuck-2 rails[80252]: Migrating to AddIndexesToControllerActions (20090709085133)
+Dec 19 15:19:20 starbuck-2 rails[80252]: [4;36;1mSQL (95.8ms)[0m   [0;1mCREATE INDEX `index_controller_actions_on_page` ON `controller_actions` (`page`)[0m
+Dec 19 15:19:20 starbuck-2 rails[80252]: [4;35;1mSQL (80.0ms)[0m   [0mCREATE INDEX `index_controller_actions_on_host` ON `controller_actions` (`host`)[0m
+Dec 19 15:19:20 starbuck-2 rails[80252]: [4;36;1mSQL (78.2ms)[0m   [0;1mCREATE INDEX `index_controller_actions_on_response_code` ON `controller_actions` (`response_code`)[0m
+Dec 19 15:19:20 starbuck-2 rails[80252]: [4;35;1mSQL (77.9ms)[0m   [0mCREATE INDEX `index_controller_actions_on_user_id` ON `controller_actions` (`user_id`)[0m
+Dec 19 15:19:20 starbuck-2 rails[80252]: [4;36;1mSQL (78.2ms)[0m   [0;1mCREATE INDEX `index_controller_actions_on_minute1` ON `controller_actions` (`minute1`)[0m
+Dec 19 15:19:20 starbuck-2 rails[80252]: [4;35;1mSQL (79.7ms)[0m   [0mCREATE INDEX `index_controller_actions_on_minute2` ON `controller_actions` (`minute2`)[0m
+Dec 19 15:19:20 starbuck-2 rails[80252]: [4;36;1mSQL (87.9ms)[0m   [0;1mCREATE INDEX `index_controller_actions_on_minute5` ON `controller_actions` (`minute5`)[0m
+Dec 19 15:19:20 starbuck-2 rails[80252]: [4;35;1mSQL (88.6ms)[0m   [0mCREATE INDEX `index_controller_actions_on_total_time` ON `controller_actions` (`total_time`)[0m
+Dec 19 15:19:21 starbuck-2 rails[80252]: [4;36;1mSQL (88.7ms)[0m   [0;1mCREATE INDEX `index_controller_actions_on_other_time` ON `controller_actions` (`other_time`)[0m
+Dec 19 15:19:21 starbuck-2 rails[80252]: [4;35;1mSQL (89.4ms)[0m   [0mCREATE INDEX `index_controller_actions_on_view_time` ON `controller_actions` (`view_time`)[0m
+Dec 19 15:19:21 starbuck-2 rails[80252]: [4;36;1mSQL (89.0ms)[0m   [0;1mCREATE INDEX `index_controller_actions_on_db_time` ON `controller_actions` (`db_time`)[0m
+Dec 19 15:19:21 starbuck-2 rails[80252]: [4;35;1mSQL (0.5ms)[0m   [0mINSERT INTO schema_migrations (version) VALUES ('20090709085133')[0m
+Dec 19 15:19:21 starbuck-2 rails[80252]: Migrating to CreateLogfileImportRecords (20090805132300)
+Dec 19 15:19:21 starbuck-2 rails[80252]: [4;36;1mSQL (96.1ms)[0m   [0;1mCREATE TABLE `logfile_import_records` (`id` int(11) DEFAULT NULL auto_increment PRIMARY KEY, `md5hash` varchar(255), `created_at` datetime) ENGINE=InnoDB[0m
+Dec 19 15:19:22 starbuck-2 rails[80252]: [4;35;1mSQL (860.1ms)[0m   [0mCREATE INDEX `index_logfile_import_records_on_md5hash` ON `logfile_import_records` (`md5hash`)[0m
+Dec 19 15:19:22 starbuck-2 rails[80252]: [4;36;1mSQL (0.5ms)[0m   [0;1mINSERT INTO schema_migrations (version) VALUES ('20090805132300')[0m
+Dec 19 15:19:22 starbuck-2 rails[80252]: [4;35;1mSQL (0.5ms)[0m   [0mSHOW TABLES[0m
+Dec 19 15:19:22 starbuck-2 rails[80252]: [4;36;1mSQL (0.2ms)[0m   [0;1mSELECT version FROM schema_migrations[0m
+Dec 19 15:19:22 starbuck-2 rails[80252]: [4;35;1mSQL (0.3ms)[0m   [0mSHOW TABLES[0m
+Dec 19 15:19:22 starbuck-2 rails[80252]: [4;36;1mSQL (1.4ms)[0m   [0;1mSHOW FIELDS FROM `controller_actions`[0m
+Dec 19 15:19:22 starbuck-2 rails[80252]: [4;35;1mSQL (1.3ms)[0m   [0mdescribe `controller_actions`[0m
+Dec 19 15:19:22 starbuck-2 rails[80252]: [4;36;1mSQL (0.4ms)[0m   [0;1mSHOW KEYS FROM `controller_actions`[0m
+Dec 19 15:19:22 starbuck-2 rails[80252]: [4;35;1mSQL (1.0ms)[0m   [0mSHOW FIELDS FROM `logfile_import_records`[0m
+Dec 19 15:19:22 starbuck-2 rails[80252]: [4;36;1mSQL (1.1ms)[0m   [0;1mdescribe `logfile_import_records`[0m
+Dec 19 15:19:22 starbuck-2 rails[80252]: [4;35;1mSQL (0.3ms)[0m   [0mSHOW KEYS FROM `logfile_import_records`[0m
+Dec 19 15:19:38 starbuck-2 rails[80271]: [4;36;1mSQL (0.2ms)[0m   [0;1mSET SQL_AUTO_IS_NULL=0[0m
+Dec 19 15:19:38 starbuck-2 rails[80271]: [4;35;1mLogfileImportRecord Columns (1.5ms)[0m   [0mSHOW FIELDS FROM `logfile_import_records`[0m
+Dec 19 15:19:38 starbuck-2 rails[80271]: [4;36;1mLogfileImportRecord Load (0.3ms)[0m   [0;1mSELECT * FROM `logfile_import_records` WHERE (`logfile_import_records`.`md5hash` = '1f1650b62aec6cc0f842d670f146ef98') LIMIT 1[0m
+Dec 19 15:19:38 starbuck-2 rails[80271]: [4;35;1mControllerAction Columns (1.5ms)[0m   [0mSHOW FIELDS FROM `controller_actions`[0m
+Dec 19 15:19:38 starbuck-2 rails[80271]: [4;36;1mSQL (48.2ms)[0m   [0;1mcreate table if not exists log_data_2009_12_19 like controller_actions[0m
+Dec 19 15:19:38 starbuck-2 rails[80271]: [4;35;1mSQL (1.3ms)[0m   [0mload data local infile '/tmp/logfile-2009-12-19-80271.csv' into table log_data_2009_12_19 fields terminated by ',' (host,process_id,user_id,page,minute1,minute2,minute5,started_at,response_code,total_time,view_time,db_time,other_time) [0m
+Dec 19 15:19:38 starbuck-2 rails[80271]: [4;36;1mSQL (0.1ms)[0m   [0;1mBEGIN[0m
+Dec 19 15:19:38 starbuck-2 rails[80271]: [4;35;1mLogfileImportRecord Create (0.3ms)[0m   [0mINSERT INTO `logfile_import_records` (`md5hash`, `created_at`) VALUES('1f1650b62aec6cc0f842d670f146ef98', '2009-12-19 14:19:38')[0m
+Dec 19 15:19:38 starbuck-2 rails[80271]: [4;36;1mSQL (0.4ms)[0m   [0;1mCOMMIT[0m
+Dec 19 15:20:00 starbuck-2 rails[80277]: [4;36;1mSQL (0.1ms)[0m   [0;1mSET SQL_AUTO_IS_NULL=0[0m
+Dec 19 15:20:00 starbuck-2 rails[80277]: Processing ControllerActionsController#index (for 127.0.0.1 at 2009-12-19 15:20:00) [GET]
+Dec 19 15:20:00 starbuck-2 rails[80277]: [4;35;1mSQL (0.5ms)[0m   [0mshow tables[0m
+Dec 19 15:20:00 starbuck-2 rails[80277]: [4;36;1mSQL (0.1ms)[0m   [0;1mcreate table if not exists log_data_2009_12_19 like controller_actions[0m
+Dec 19 15:20:00 starbuck-2 rails[80277]: [4;35;1mControllerAction_2009_12_19 Columns (43.6ms)[0m   [0mSHOW FIELDS FROM `log_data_2009_12_19`[0m
+Dec 19 15:20:00 starbuck-2 rails[80277]: [4;36;1mControllerAction_2009_12_19 Load (0.2ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:20:00 starbuck-2 rails[80277]: [4;35;1mSQL (203.3ms)[0m   [0mcreate table if not exists log_data_2009_12_18 like controller_actions[0m
+Dec 19 15:20:00 starbuck-2 rails[80277]: [4;36;1mSQL (0.4ms)[0m   [0;1mSELECT DISTINCT host FROM log_data_2009_12_18 ORDER BY host ASC[0m
+Dec 19 15:20:00 starbuck-2 rails[80277]: [4;35;1mSQL (0.1ms)[0m   [0mSELECT DISTINCT response_code FROM log_data_2009_12_18 ORDER BY response_code ASC[0m
+Dec 19 15:20:00 starbuck-2 rails[80277]: [4;36;1mSQL (0.4ms)[0m   [0;1mshow tables[0m
+Dec 19 15:20:00 starbuck-2 rails[80277]: [4;35;1mCACHE (0.0ms)[0m   [0mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:20:00 starbuck-2 rails[80277]: [4;36;1mControllerAction_2009_12_18 Columns (1.3ms)[0m   [0;1mSHOW FIELDS FROM `log_data_2009_12_18`[0m
+Dec 19 15:20:00 starbuck-2 rails[80277]: [4;35;1mControllerAction_2009_12_18 Load (0.2ms)[0m   [0mSELECT * FROM `log_data_2009_12_18` LIMIT 1[0m
+Dec 19 15:20:00 starbuck-2 rails[80277]: [4;36;1mSQL (0.5ms)[0m   [0;1mSELECT minute5, avg(other_time) as other_time, avg(db_time) as db_time, avg(view_time) as view_time FROM log_data_2009_12_18 GROUP BY 1[0m
+Dec 19 15:20:00 starbuck-2 rails[80277]: Rendering template within layouts/controller_actions
+Dec 19 15:20:00 starbuck-2 rails[80277]: Rendering /controller_actions/index.html.erb
+Dec 19 15:20:00 starbuck-2 rails[80277]: [4;35;1mSQL (0.4ms)[0m   [0mshow tables[0m
+Dec 19 15:20:00 starbuck-2 rails[80277]: [4;36;1mCACHE (0.0ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:20:00 starbuck-2 rails[80277]: [4;35;1mCACHE (0.0ms)[0m   [0mSELECT * FROM `log_data_2009_12_18` LIMIT 1[0m
+Dec 19 15:20:00 starbuck-2 rails[80277]: [4;36;1mSQL (0.2ms)[0m   [0;1mselect count(id) from log_data_2009_12_18 [0m
+Dec 19 15:20:00 starbuck-2 rails[80277]: Completed in 438ms (View: 41, DB: 251) | 200 OK [http://localhost/]
+Dec 19 15:20:05 starbuck-2 rails[80277]: [4;35;1mSQL (0.1ms)[0m   [0mSET SQL_AUTO_IS_NULL=0[0m
+Dec 19 15:20:05 starbuck-2 rails[80277]: Processing ControllerActionsController#index (for 127.0.0.1 at 2009-12-19 15:20:05) [GET]
+Dec 19 15:20:05 starbuck-2 rails[80277]: Parameters: {"response"=>"", "commit"=>"GO", "grouping_function"=>"sum", "starts_at"=>"2009-12-19", "resource"=>"total_time", "grouping"=>"page", "server"=>"", "user_id"=>"", "controller_action"=>{"page"=>""}, "interval"=>"5"}
+Dec 19 15:20:05 starbuck-2 rails[80277]: Redirected to http://localhost:3000/2009/12/19?controller_action%5Bpage%5D=&grouping=page&grouping_function=sum&interval=5&resource=total_time
+Dec 19 15:20:05 starbuck-2 rails[80277]: Filter chain halted as [:redirect_to_clean_url] rendered_or_redirected.
+Dec 19 15:20:05 starbuck-2 rails[80277]: Completed in 1ms (DB: 0) | 302 Found [http://localhost/?starts_at=2009-12-19&server=&response=&user_id=&controller_action%5Bpage%5D=&interval=5&resource=total_time&grouping=page&grouping_function=sum&commit=GO]
+Dec 19 15:20:05 starbuck-2 rails[80277]: [4;36;1mSQL (0.1ms)[0m   [0;1mSET SQL_AUTO_IS_NULL=0[0m
+Dec 19 15:20:05 starbuck-2 rails[80277]: Processing ControllerActionsController#index (for 127.0.0.1 at 2009-12-19 15:20:05) [GET]
+Dec 19 15:20:05 starbuck-2 rails[80277]: Parameters: {"month"=>"12", "grouping_function"=>"sum", "grouping"=>"page", "resource"=>"total_time", "day"=>"19", "year"=>"2009", "controller_action"=>{"page"=>""}, "interval"=>"5"}
+Dec 19 15:20:05 starbuck-2 rails[80277]: [4;35;1mSQL (0.3ms)[0m   [0mSELECT DISTINCT host FROM log_data_2009_12_19 ORDER BY host ASC[0m
+Dec 19 15:20:05 starbuck-2 rails[80277]: [4;36;1mSQL (0.1ms)[0m   [0;1mSELECT DISTINCT response_code FROM log_data_2009_12_19 ORDER BY response_code ASC[0m
+Dec 19 15:20:05 starbuck-2 rails[80277]: [4;35;1mSQL (0.5ms)[0m   [0mshow tables[0m
+Dec 19 15:20:05 starbuck-2 rails[80277]: [4;36;1mControllerAction_2009_12_19 Load (0.3ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:20:05 starbuck-2 rails[80277]: [4;35;1mControllerAction_2009_12_18 Load (0.2ms)[0m   [0mSELECT * FROM `log_data_2009_12_18` LIMIT 1[0m
+Dec 19 15:20:05 starbuck-2 rails[80277]: [4;36;1mSQL (4.3ms)[0m   [0;1mSELECT minute5, avg(other_time) as other_time, avg(db_time) as db_time, avg(view_time) as view_time FROM log_data_2009_12_19 GROUP BY 1[0m
+Dec 19 15:20:05 starbuck-2 rails[80277]: Rendering template within layouts/controller_actions
+Dec 19 15:20:05 starbuck-2 rails[80277]: Rendering /controller_actions/index.html.erb
+Dec 19 15:20:05 starbuck-2 rails[80277]: [4;35;1mSQL (0.5ms)[0m   [0mshow tables[0m
+Dec 19 15:20:05 starbuck-2 rails[80277]: [4;36;1mCACHE (0.0ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:20:05 starbuck-2 rails[80277]: [4;35;1mCACHE (0.0ms)[0m   [0mSELECT * FROM `log_data_2009_12_18` LIMIT 1[0m
+Dec 19 15:20:05 starbuck-2 rails[80277]: [4;36;1mSQL (0.2ms)[0m   [0;1mselect count(id) from log_data_2009_12_19 [0m
+Dec 19 15:20:05 starbuck-2 rails[80277]: [4;35;1mSQL (0.2ms)[0m   [0mSELECT count(*) AS count_all FROM `log_data_2009_12_19` [0m
+Dec 19 15:20:05 starbuck-2 rails[80277]: [4;36;1mSQL (0.3ms)[0m   [0;1mselect count(distinct user_id) from log_data_2009_12_19 [0m
+Dec 19 15:20:05 starbuck-2 rails[80277]: [4;35;1mSQL (0.2ms)[0m   [0mselect count(distinct user_id) from log_data_2009_12_19[0m
+Dec 19 15:20:05 starbuck-2 rails[80277]: [4;36;1mSQL (0.2ms)[0m   [0;1mSELECT avg(other_time) as avg_other_time, avg(db_time) as avg_db_time, avg(view_time) as avg_view_time, avg(total_time) as avg_total_time, stddev_pop(other_time) as std_other_time, stddev_pop(db_time) as std_db_time, stddev_pop(view_time) as std_view_time, stddev_pop(total_time) as std_total_time FROM log_data_2009_12_19 [0m
+Dec 19 15:20:05 starbuck-2 rails[80277]: [4;35;1mSQL (0.2ms)[0m   [0mSELECT avg(total_time) FROM (SELECT total_time FROM log_data_2009_12_19 ORDER BY total_time LIMIT 2 OFFSET 0) AS log[0m
+Dec 19 15:20:05 starbuck-2 rails[80277]: [4;36;1mSQL (0.2ms)[0m   [0;1mSELECT avg(total_time) FROM (SELECT total_time FROM log_data_2009_12_19 ORDER BY total_time LIMIT 2 OFFSET 2) AS log[0m
+Dec 19 15:20:05 starbuck-2 rails[80277]: [4;35;1mSQL (0.1ms)[0m   [0mSELECT avg(total_time) FROM (SELECT total_time FROM log_data_2009_12_19 ORDER BY total_time LIMIT 2 OFFSET 4) AS log[0m
+Dec 19 15:20:05 starbuck-2 rails[80277]: [4;36;1mSQL (0.1ms)[0m   [0;1mSELECT avg(total_time) FROM (SELECT total_time FROM log_data_2009_12_19 ORDER BY total_time LIMIT 2 OFFSET 6) AS log[0m
+Dec 19 15:20:05 starbuck-2 rails[80277]: [4;35;1mSQL (0.1ms)[0m   [0mSELECT avg(total_time) FROM (SELECT total_time FROM log_data_2009_12_19 ORDER BY total_time LIMIT 2 OFFSET 8) AS log[0m
+Dec 19 15:20:05 starbuck-2 rails[80277]: [4;36;1mSQL (0.2ms)[0m   [0;1mselect count(id) from log_data_2009_12_19 WHERE (total_time < 100)[0m
+Dec 19 15:20:05 starbuck-2 rails[80277]: [4;35;1mSQL (0.2ms)[0m   [0mselect count(id) from log_data_2009_12_19 WHERE (total_time < 500)[0m
+Dec 19 15:20:05 starbuck-2 rails[80277]: [4;36;1mSQL (0.2ms)[0m   [0;1mselect count(id) from log_data_2009_12_19 WHERE (total_time >= 500 and total_time < 2000)[0m
+Dec 19 15:20:05 starbuck-2 rails[80277]: [4;35;1mSQL (0.2ms)[0m   [0mselect count(id) from log_data_2009_12_19 WHERE ((total_time >= 2000) or (response_code = 500))[0m
+Dec 19 15:20:05 starbuck-2 rails[80277]: [4;36;1mControllerAction_2009_12_19 Load (1.4ms)[0m   [0;1mSELECT page, count(id) AS number_of_requests, sum(total_time) AS sum, avg(total_time) AS avg, stddev_pop(total_time) AS stddev FROM log_data_2009_12_19 GROUP BY page ORDER BY sum DESC LIMIT 35[0m
+Dec 19 15:20:05 starbuck-2 rails[80277]: [4;35;1mSQL (0.2ms)[0m   [0mselect sum(total_time) from log_data_2009_12_19 [0m
+Dec 19 15:20:05 starbuck-2 rails[80277]: Rendered controller_actions/_statistics (12.3ms)
+Dec 19 15:20:05 starbuck-2 rails[80277]: Completed in 146ms (View: 39, DB: 11) | 200 OK [http://localhost/2009/12/19?controller_action%5Bpage%5D=&grouping=page&grouping_function=sum&interval=5&resource=total_time]
+Dec 19 15:21:20 starbuck-2 rails[80277]: [4;36;1mSQL (0.1ms)[0m   [0;1mSET SQL_AUTO_IS_NULL=0[0m
+Dec 19 15:21:20 starbuck-2 rails[80277]: Processing ControllerActionsController#auto_complete_for_controller_action_page (for 127.0.0.1 at 2009-12-19 15:21:20) [POST]
+Dec 19 15:21:20 starbuck-2 rails[80277]: Parameters: {"controller_action"=>{"page"=>"con"}, "_"=>""}
+Dec 19 15:21:20 starbuck-2 rails[80277]: [4;35;1mSQL (0.4ms)[0m   [0mshow tables[0m
+Dec 19 15:21:20 starbuck-2 rails[80277]: [4;36;1mControllerAction_2009_12_19 Load (0.2ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:21:20 starbuck-2 rails[80277]: [4;35;1mControllerAction_2009_12_18 Load (0.2ms)[0m   [0mSELECT * FROM `log_data_2009_12_18` LIMIT 1[0m
+Dec 19 15:21:20 starbuck-2 rails[80277]: [4;36;1mSQL (0.2ms)[0m   [0;1mSELECT DISTINCT page FROM log_data_2009_12_18 ORDER BY page ASC[0m
+Dec 19 15:21:20 starbuck-2 rails[80277]: [4;35;1mSQL (0.1ms)[0m   [0mSELECT DISTINCT page FROM log_data_2009_12_18 ORDER BY page ASC[0m
+Dec 19 15:21:20 starbuck-2 rails[80277]: [4;36;1mSQL (0.1ms)[0m   [0;1mSELECT DISTINCT page FROM log_data_2009_12_18 ORDER BY page ASC[0m
+Dec 19 15:21:20 starbuck-2 rails[80277]: Completed in 65ms (View: 55, DB: 1) | 200 OK [http://localhost/controller_actions/auto_complete_for_controller_action_page]
+Dec 19 15:21:25 starbuck-2 rails[80277]: [4;35;1mSQL (0.1ms)[0m   [0mSET SQL_AUTO_IS_NULL=0[0m
+Dec 19 15:21:25 starbuck-2 rails[80277]: Processing ControllerActionsController#auto_complete_for_controller_action_page (for 127.0.0.1 at 2009-12-19 15:21:25) [POST]
+Dec 19 15:21:25 starbuck-2 rails[80277]: Parameters: {"controller_action"=>{"page"=>"Controller"}, "_"=>""}
+Dec 19 15:21:25 starbuck-2 rails[80277]: [4;36;1mSQL (0.4ms)[0m   [0;1mshow tables[0m
+Dec 19 15:21:25 starbuck-2 rails[80277]: [4;35;1mControllerAction_2009_12_19 Load (0.2ms)[0m   [0mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:21:25 starbuck-2 rails[80277]: [4;36;1mControllerAction_2009_12_18 Load (0.1ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_18` LIMIT 1[0m
+Dec 19 15:21:25 starbuck-2 rails[80277]: [4;35;1mSQL (0.2ms)[0m   [0mSELECT DISTINCT page FROM log_data_2009_12_18 ORDER BY page ASC[0m
+Dec 19 15:21:25 starbuck-2 rails[80277]: [4;36;1mSQL (0.1ms)[0m   [0;1mSELECT DISTINCT page FROM log_data_2009_12_18 ORDER BY page ASC[0m
+Dec 19 15:21:25 starbuck-2 rails[80277]: [4;35;1mSQL (0.1ms)[0m   [0mSELECT DISTINCT page FROM log_data_2009_12_18 ORDER BY page ASC[0m
+Dec 19 15:21:25 starbuck-2 rails[80277]: Completed in 11ms (View: 1, DB: 1) | 200 OK [http://localhost/controller_actions/auto_complete_for_controller_action_page]
+Dec 19 15:21:27 starbuck-2 rails[80277]: [4;36;1mSQL (0.1ms)[0m   [0;1mSET SQL_AUTO_IS_NULL=0[0m
+Dec 19 15:21:27 starbuck-2 rails[80277]: Processing ControllerActionsController#auto_complete_for_controller_action_page (for 127.0.0.1 at 2009-12-19 15:21:27) [POST]
+Dec 19 15:21:27 starbuck-2 rails[80277]: Parameters: {"controller_action"=>{"page"=>"ControllerActions"}, "_"=>""}
+Dec 19 15:21:27 starbuck-2 rails[80277]: [4;35;1mSQL (0.5ms)[0m   [0mshow tables[0m
+Dec 19 15:21:27 starbuck-2 rails[80277]: [4;36;1mControllerAction_2009_12_19 Load (0.2ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:21:27 starbuck-2 rails[80277]: [4;35;1mControllerAction_2009_12_18 Load (0.1ms)[0m   [0mSELECT * FROM `log_data_2009_12_18` LIMIT 1[0m
+Dec 19 15:21:27 starbuck-2 rails[80277]: [4;36;1mSQL (0.2ms)[0m   [0;1mSELECT DISTINCT page FROM log_data_2009_12_18 ORDER BY page ASC[0m
+Dec 19 15:21:27 starbuck-2 rails[80277]: [4;35;1mSQL (0.1ms)[0m   [0mSELECT DISTINCT page FROM log_data_2009_12_18 ORDER BY page ASC[0m
+Dec 19 15:21:27 starbuck-2 rails[80277]: [4;36;1mSQL (0.1ms)[0m   [0;1mSELECT DISTINCT page FROM log_data_2009_12_18 ORDER BY page ASC[0m
+Dec 19 15:21:27 starbuck-2 rails[80277]: Completed in 11ms (View: 1, DB: 1) | 200 OK [http://localhost/controller_actions/auto_complete_for_controller_action_page]
+Dec 19 15:21:31 starbuck-2 rails[80277]: [4;35;1mSQL (0.1ms)[0m   [0mSET SQL_AUTO_IS_NULL=0[0m
+Dec 19 15:21:31 starbuck-2 rails[80277]: Processing ControllerActionsController#auto_complete_for_controller_action_page (for 127.0.0.1 at 2009-12-19 15:21:31) [POST]
+Dec 19 15:21:31 starbuck-2 rails[80277]: Parameters: {"controller_action"=>{"page"=>"ControllerActions"}, "_"=>""}
+Dec 19 15:21:31 starbuck-2 rails[80277]: [4;36;1mSQL (0.4ms)[0m   [0;1mshow tables[0m
+Dec 19 15:21:31 starbuck-2 rails[80277]: [4;35;1mControllerAction_2009_12_19 Load (0.2ms)[0m   [0mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:21:31 starbuck-2 rails[80277]: [4;36;1mControllerAction_2009_12_18 Load (0.1ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_18` LIMIT 1[0m
+Dec 19 15:21:31 starbuck-2 rails[80277]: [4;35;1mSQL (0.2ms)[0m   [0mSELECT DISTINCT page FROM log_data_2009_12_18 ORDER BY page ASC[0m
+Dec 19 15:21:31 starbuck-2 rails[80277]: [4;36;1mSQL (0.1ms)[0m   [0;1mSELECT DISTINCT page FROM log_data_2009_12_18 ORDER BY page ASC[0m
+Dec 19 15:21:31 starbuck-2 rails[80277]: [4;35;1mSQL (0.1ms)[0m   [0mSELECT DISTINCT page FROM log_data_2009_12_18 ORDER BY page ASC[0m
+Dec 19 15:21:31 starbuck-2 rails[80277]: Completed in 11ms (View: 1, DB: 1) | 200 OK [http://localhost/controller_actions/auto_complete_for_controller_action_page]
+Dec 19 15:21:34 starbuck-2 rails[80277]: [4;36;1mSQL (0.1ms)[0m   [0;1mSET SQL_AUTO_IS_NULL=0[0m
+Dec 19 15:21:34 starbuck-2 rails[80277]: Processing ControllerActionsController#auto_complete_for_controller_action_page (for 127.0.0.1 at 2009-12-19 15:21:34) [POST]
+Dec 19 15:21:34 starbuck-2 rails[80277]: Parameters: {"controller_action"=>{"page"=>"ControllerActio"}, "_"=>""}
+Dec 19 15:21:34 starbuck-2 rails[80277]: [4;35;1mSQL (0.4ms)[0m   [0mshow tables[0m
+Dec 19 15:21:34 starbuck-2 rails[80277]: [4;36;1mControllerAction_2009_12_19 Load (0.2ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:21:34 starbuck-2 rails[80277]: [4;35;1mControllerAction_2009_12_18 Load (0.1ms)[0m   [0mSELECT * FROM `log_data_2009_12_18` LIMIT 1[0m
+Dec 19 15:21:34 starbuck-2 rails[80277]: [4;36;1mSQL (0.2ms)[0m   [0;1mSELECT DISTINCT page FROM log_data_2009_12_18 ORDER BY page ASC[0m
+Dec 19 15:21:34 starbuck-2 rails[80277]: [4;35;1mSQL (0.1ms)[0m   [0mSELECT DISTINCT page FROM log_data_2009_12_18 ORDER BY page ASC[0m
+Dec 19 15:21:34 starbuck-2 rails[80277]: [4;36;1mSQL (0.1ms)[0m   [0;1mSELECT DISTINCT page FROM log_data_2009_12_18 ORDER BY page ASC[0m
+Dec 19 15:21:34 starbuck-2 rails[80277]: Completed in 11ms (View: 1, DB: 1) | 200 OK [http://localhost/controller_actions/auto_complete_for_controller_action_page]
+Dec 19 15:21:42 starbuck-2 rails[80277]: [4;35;1mSQL (0.1ms)[0m   [0mSET SQL_AUTO_IS_NULL=0[0m
+Dec 19 15:21:42 starbuck-2 rails[80277]: Processing ControllerActionsController#auto_complete_for_controller_action_page (for 127.0.0.1 at 2009-12-19 15:21:42) [POST]
+Dec 19 15:21:42 starbuck-2 rails[80277]: Parameters: {"controller_action"=>{"page"=>"Contr"}, "_"=>""}
+Dec 19 15:21:42 starbuck-2 rails[80277]: [4;36;1mSQL (0.4ms)[0m   [0;1mshow tables[0m
+Dec 19 15:21:42 starbuck-2 rails[80277]: [4;35;1mControllerAction_2009_12_19 Load (0.2ms)[0m   [0mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:21:42 starbuck-2 rails[80277]: [4;36;1mControllerAction_2009_12_18 Load (0.1ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_18` LIMIT 1[0m
+Dec 19 15:21:42 starbuck-2 rails[80277]: [4;35;1mSQL (0.2ms)[0m   [0mSELECT DISTINCT page FROM log_data_2009_12_18 ORDER BY page ASC[0m
+Dec 19 15:21:42 starbuck-2 rails[80277]: [4;36;1mSQL (0.1ms)[0m   [0;1mSELECT DISTINCT page FROM log_data_2009_12_18 ORDER BY page ASC[0m
+Dec 19 15:21:42 starbuck-2 rails[80277]: [4;35;1mSQL (0.1ms)[0m   [0mSELECT DISTINCT page FROM log_data_2009_12_18 ORDER BY page ASC[0m
+Dec 19 15:21:42 starbuck-2 rails[80277]: Completed in 11ms (View: 1, DB: 1) | 200 OK [http://localhost/controller_actions/auto_complete_for_controller_action_page]
+Dec 19 15:21:46 starbuck-2 rails[80277]: [4;36;1mSQL (0.1ms)[0m   [0;1mSET SQL_AUTO_IS_NULL=0[0m
+Dec 19 15:21:46 starbuck-2 rails[80277]: Processing ControllerActionsController#auto_complete_for_controller_action_page (for 127.0.0.1 at 2009-12-19 15:21:46) [POST]
+Dec 19 15:21:46 starbuck-2 rails[80277]: Parameters: {"controller_action"=>{"page"=>"request"}, "_"=>""}
+Dec 19 15:21:46 starbuck-2 rails[80277]: [4;35;1mSQL (0.4ms)[0m   [0mshow tables[0m
+Dec 19 15:21:46 starbuck-2 rails[80277]: [4;36;1mControllerAction_2009_12_19 Load (0.2ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:21:46 starbuck-2 rails[80277]: [4;35;1mControllerAction_2009_12_18 Load (0.1ms)[0m   [0mSELECT * FROM `log_data_2009_12_18` LIMIT 1[0m
+Dec 19 15:21:46 starbuck-2 rails[80277]: [4;36;1mSQL (0.2ms)[0m   [0;1mSELECT DISTINCT page FROM log_data_2009_12_18 ORDER BY page ASC[0m
+Dec 19 15:21:46 starbuck-2 rails[80277]: [4;35;1mSQL (0.1ms)[0m   [0mSELECT DISTINCT page FROM log_data_2009_12_18 ORDER BY page ASC[0m
+Dec 19 15:21:46 starbuck-2 rails[80277]: [4;36;1mSQL (0.1ms)[0m   [0;1mSELECT DISTINCT page FROM log_data_2009_12_18 ORDER BY page ASC[0m
+Dec 19 15:21:46 starbuck-2 rails[80277]: Completed in 11ms (View: 1, DB: 1) | 200 OK [http://localhost/controller_actions/auto_complete_for_controller_action_page]
+Dec 19 15:21:48 starbuck-2 rails[80277]: [4;35;1mSQL (0.1ms)[0m   [0mSET SQL_AUTO_IS_NULL=0[0m
+Dec 19 15:21:48 starbuck-2 rails[80277]: Processing ControllerActionsController#auto_complete_for_controller_action_page (for 127.0.0.1 at 2009-12-19 15:21:48) [POST]
+Dec 19 15:21:48 starbuck-2 rails[80277]: Parameters: {"controller_action"=>{"page"=>"reques"}, "_"=>""}
+Dec 19 15:21:48 starbuck-2 rails[80277]: [4;36;1mSQL (0.4ms)[0m   [0;1mshow tables[0m
+Dec 19 15:21:48 starbuck-2 rails[80277]: [4;35;1mControllerAction_2009_12_19 Load (0.2ms)[0m   [0mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:21:48 starbuck-2 rails[80277]: [4;36;1mControllerAction_2009_12_18 Load (0.1ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_18` LIMIT 1[0m
+Dec 19 15:21:48 starbuck-2 rails[80277]: [4;35;1mSQL (0.2ms)[0m   [0mSELECT DISTINCT page FROM log_data_2009_12_18 ORDER BY page ASC[0m
+Dec 19 15:21:48 starbuck-2 rails[80277]: [4;36;1mSQL (0.1ms)[0m   [0;1mSELECT DISTINCT page FROM log_data_2009_12_18 ORDER BY page ASC[0m
+Dec 19 15:21:48 starbuck-2 rails[80277]: [4;35;1mSQL (0.1ms)[0m   [0mSELECT DISTINCT page FROM log_data_2009_12_18 ORDER BY page ASC[0m
+Dec 19 15:21:48 starbuck-2 rails[80277]: Completed in 11ms (View: 1, DB: 1) | 200 OK [http://localhost/controller_actions/auto_complete_for_controller_action_page]
+Dec 19 15:22:07 starbuck-2 rails[80291]: [4;36;1mSQL (0.1ms)[0m   [0;1mSET SQL_AUTO_IS_NULL=0[0m
+Dec 19 15:22:07 starbuck-2 rails[80291]: [4;35;1mSQL (0.3ms)[0m   [0mSHOW TABLES[0m
+Dec 19 15:22:07 starbuck-2 rails[80291]: [4;36;1mSQL (40.2ms)[0m   [0;1mCREATE TABLE `schema_migrations` (`version` varchar(255) NOT NULL) ENGINE=InnoDB[0m
+Dec 19 15:22:08 starbuck-2 rails[80291]: [4;35;1mSQL (165.3ms)[0m   [0mCREATE UNIQUE INDEX `unique_schema_migrations` ON `schema_migrations` (`version`)[0m
+Dec 19 15:22:08 starbuck-2 rails[80291]: [4;36;1mSQL (0.4ms)[0m   [0;1mSHOW TABLES[0m
+Dec 19 15:22:08 starbuck-2 rails[80291]: [4;35;1mSQL (0.3ms)[0m   [0mSELECT version FROM schema_migrations[0m
+Dec 19 15:22:08 starbuck-2 rails[80291]: Migrating to CreateControllerActions (20090708080254)
+Dec 19 15:22:08 starbuck-2 rails[80291]: [4;36;1mSQL (82.0ms)[0m   [0;1mCREATE TABLE `controller_actions` (`id` int(11) DEFAULT NULL auto_increment PRIMARY KEY, `host` varchar(255) NOT NULL, `process_id` int(11) NOT NULL, `user_id` int(11) NOT NULL, `page` varchar(255) NOT NULL, `minute1` int(11) NOT NULL, `minute2` int(11) NOT NULL, `minute5` int(11) NOT NULL, `started_at` datetime NOT NULL, `response_code` int(11) NOT NULL, `total_time` float NOT NULL, `view_time` float NOT NULL, `db_time` float NOT NULL, `other_time` float NOT NULL) ENGINE=MyISAM[0m
+Dec 19 15:22:08 starbuck-2 rails[80291]: [4;35;1mSQL (0.5ms)[0m   [0mINSERT INTO schema_migrations (version) VALUES ('20090708080254')[0m
+Dec 19 15:22:08 starbuck-2 rails[80291]: Migrating to AddIndexesToControllerActions (20090709085133)
+Dec 19 15:22:08 starbuck-2 rails[80291]: [4;36;1mSQL (86.9ms)[0m   [0;1mCREATE INDEX `index_controller_actions_on_page` ON `controller_actions` (`page`)[0m
+Dec 19 15:22:08 starbuck-2 rails[80291]: [4;35;1mSQL (78.0ms)[0m   [0mCREATE INDEX `index_controller_actions_on_host` ON `controller_actions` (`host`)[0m
+Dec 19 15:22:08 starbuck-2 rails[80291]: [4;36;1mSQL (77.9ms)[0m   [0;1mCREATE INDEX `index_controller_actions_on_response_code` ON `controller_actions` (`response_code`)[0m
+Dec 19 15:22:08 starbuck-2 rails[80291]: [4;35;1mSQL (77.5ms)[0m   [0mCREATE INDEX `index_controller_actions_on_user_id` ON `controller_actions` (`user_id`)[0m
+Dec 19 15:22:08 starbuck-2 rails[80291]: [4;36;1mSQL (77.8ms)[0m   [0;1mCREATE INDEX `index_controller_actions_on_minute1` ON `controller_actions` (`minute1`)[0m
+Dec 19 15:22:08 starbuck-2 rails[80291]: [4;35;1mSQL (78.8ms)[0m   [0mCREATE INDEX `index_controller_actions_on_minute2` ON `controller_actions` (`minute2`)[0m
+Dec 19 15:22:08 starbuck-2 rails[80291]: [4;36;1mSQL (77.3ms)[0m   [0;1mCREATE INDEX `index_controller_actions_on_minute5` ON `controller_actions` (`minute5`)[0m
+Dec 19 15:22:08 starbuck-2 rails[80291]: [4;35;1mSQL (90.9ms)[0m   [0mCREATE INDEX `index_controller_actions_on_total_time` ON `controller_actions` (`total_time`)[0m
+Dec 19 15:22:08 starbuck-2 rails[80291]: [4;36;1mSQL (89.0ms)[0m   [0;1mCREATE INDEX `index_controller_actions_on_other_time` ON `controller_actions` (`other_time`)[0m
+Dec 19 15:22:08 starbuck-2 rails[80291]: [4;35;1mSQL (89.9ms)[0m   [0mCREATE INDEX `index_controller_actions_on_view_time` ON `controller_actions` (`view_time`)[0m
+Dec 19 15:22:09 starbuck-2 rails[80291]: [4;36;1mSQL (100.0ms)[0m   [0;1mCREATE INDEX `index_controller_actions_on_db_time` ON `controller_actions` (`db_time`)[0m
+Dec 19 15:22:09 starbuck-2 rails[80291]: [4;35;1mSQL (0.5ms)[0m   [0mINSERT INTO schema_migrations (version) VALUES ('20090709085133')[0m
+Dec 19 15:22:09 starbuck-2 rails[80291]: Migrating to CreateLogfileImportRecords (20090805132300)
+Dec 19 15:22:09 starbuck-2 rails[80291]: [4;36;1mSQL (95.6ms)[0m   [0;1mCREATE TABLE `logfile_import_records` (`id` int(11) DEFAULT NULL auto_increment PRIMARY KEY, `md5hash` varchar(255), `created_at` datetime) ENGINE=InnoDB[0m
+Dec 19 15:22:09 starbuck-2 rails[80291]: [4;35;1mSQL (101.8ms)[0m   [0mCREATE INDEX `index_logfile_import_records_on_md5hash` ON `logfile_import_records` (`md5hash`)[0m
+Dec 19 15:22:09 starbuck-2 rails[80291]: [4;36;1mSQL (0.4ms)[0m   [0;1mINSERT INTO schema_migrations (version) VALUES ('20090805132300')[0m
+Dec 19 15:22:09 starbuck-2 rails[80291]: [4;35;1mSQL (0.4ms)[0m   [0mSHOW TABLES[0m
+Dec 19 15:22:09 starbuck-2 rails[80291]: [4;36;1mSQL (0.2ms)[0m   [0;1mSELECT version FROM schema_migrations[0m
+Dec 19 15:22:09 starbuck-2 rails[80291]: [4;35;1mSQL (0.3ms)[0m   [0mSHOW TABLES[0m
+Dec 19 15:22:09 starbuck-2 rails[80291]: [4;36;1mSQL (1.6ms)[0m   [0;1mSHOW FIELDS FROM `controller_actions`[0m
+Dec 19 15:22:09 starbuck-2 rails[80291]: [4;35;1mSQL (1.1ms)[0m   [0mdescribe `controller_actions`[0m
+Dec 19 15:22:09 starbuck-2 rails[80291]: [4;36;1mSQL (0.8ms)[0m   [0;1mSHOW KEYS FROM `controller_actions`[0m
+Dec 19 15:22:09 starbuck-2 rails[80291]: [4;35;1mSQL (0.9ms)[0m   [0mSHOW FIELDS FROM `logfile_import_records`[0m
+Dec 19 15:22:09 starbuck-2 rails[80291]: [4;36;1mSQL (1.1ms)[0m   [0;1mdescribe `logfile_import_records`[0m
+Dec 19 15:22:09 starbuck-2 rails[80291]: [4;35;1mSQL (0.4ms)[0m   [0mSHOW KEYS FROM `logfile_import_records`[0m
+Dec 19 15:22:12 starbuck-2 rails[80296]: [4;36;1mSQL (0.1ms)[0m   [0;1mSET SQL_AUTO_IS_NULL=0[0m
+Dec 19 15:22:12 starbuck-2 rails[80296]: [4;35;1mLogfileImportRecord Columns (30.7ms)[0m   [0mSHOW FIELDS FROM `logfile_import_records`[0m
+Dec 19 15:22:12 starbuck-2 rails[80296]: [4;36;1mLogfileImportRecord Load (0.3ms)[0m   [0;1mSELECT * FROM `logfile_import_records` WHERE (`logfile_import_records`.`md5hash` = '243ab7b3a5cbb256e1e361417c8ed5d6') LIMIT 1[0m
+Dec 19 15:22:12 starbuck-2 rails[80296]: [4;35;1mControllerAction Columns (1.3ms)[0m   [0mSHOW FIELDS FROM `controller_actions`[0m
+Dec 19 15:22:12 starbuck-2 rails[80296]: [4;36;1mSQL (50.1ms)[0m   [0;1mcreate table if not exists log_data_2009_12_19 like controller_actions[0m
+Dec 19 15:22:12 starbuck-2 rails[80296]: [4;35;1mSQL (1.3ms)[0m   [0mload data local infile '/tmp/logfile-2009-12-19-80296.csv' into table log_data_2009_12_19 fields terminated by ',' (host,process_id,user_id,page,minute1,minute2,minute5,started_at,response_code,total_time,view_time,db_time,other_time) [0m
+Dec 19 15:22:12 starbuck-2 rails[80296]: [4;36;1mSQL (0.1ms)[0m   [0;1mBEGIN[0m
+Dec 19 15:22:12 starbuck-2 rails[80296]: [4;35;1mLogfileImportRecord Create (0.3ms)[0m   [0mINSERT INTO `logfile_import_records` (`md5hash`, `created_at`) VALUES('243ab7b3a5cbb256e1e361417c8ed5d6', '2009-12-19 14:22:12')[0m
+Dec 19 15:22:12 starbuck-2 rails[80296]: [4;36;1mSQL (0.4ms)[0m   [0;1mCOMMIT[0m
+Dec 19 15:22:24 starbuck-2 rails[80302]: [4;36;1mSQL (0.2ms)[0m   [0;1mSET SQL_AUTO_IS_NULL=0[0m
+Dec 19 15:22:24 starbuck-2 rails[80302]: Processing ControllerActionsController#index (for 127.0.0.1 at 2009-12-19 15:22:24) [GET]
+Dec 19 15:22:24 starbuck-2 rails[80302]: Parameters: {"month"=>"12", "grouping_function"=>"sum", "grouping"=>"page", "resource"=>"total_time", "day"=>"19", "year"=>"2009", "controller_action"=>{"page"=>""}, "interval"=>"5"}
+Dec 19 15:22:24 starbuck-2 rails[80302]: [4;35;1mSQL (0.2ms)[0m   [0mcreate table if not exists log_data_2009_12_19 like controller_actions[0m
+Dec 19 15:22:24 starbuck-2 rails[80302]: [4;36;1mSQL (0.4ms)[0m   [0;1mSELECT DISTINCT host FROM log_data_2009_12_19 ORDER BY host ASC[0m
+Dec 19 15:22:24 starbuck-2 rails[80302]: [4;35;1mSQL (0.1ms)[0m   [0mSELECT DISTINCT response_code FROM log_data_2009_12_19 ORDER BY response_code ASC[0m
+Dec 19 15:22:24 starbuck-2 rails[80302]: [4;36;1mSQL (0.4ms)[0m   [0;1mshow tables[0m
+Dec 19 15:22:24 starbuck-2 rails[80302]: [4;35;1mControllerAction_2009_12_19 Columns (1.5ms)[0m   [0mSHOW FIELDS FROM `log_data_2009_12_19`[0m
+Dec 19 15:22:24 starbuck-2 rails[80302]: [4;36;1mControllerAction_2009_12_19 Load (0.2ms)[0m   [0;1mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:22:24 starbuck-2 rails[80302]: [4;35;1mSQL (0.6ms)[0m   [0mSELECT minute5, avg(other_time) as other_time, avg(db_time) as db_time, avg(view_time) as view_time FROM log_data_2009_12_19 GROUP BY 1[0m
+Dec 19 15:22:24 starbuck-2 rails[80302]: Rendering template within layouts/controller_actions
+Dec 19 15:22:24 starbuck-2 rails[80302]: Rendering /controller_actions/index.html.erb
+Dec 19 15:22:24 starbuck-2 rails[80302]: [4;36;1mSQL (0.4ms)[0m   [0;1mshow tables[0m
+Dec 19 15:22:24 starbuck-2 rails[80302]: [4;35;1mCACHE (0.0ms)[0m   [0mSELECT * FROM `log_data_2009_12_19` LIMIT 1[0m
+Dec 19 15:22:24 starbuck-2 rails[80302]: [4;36;1mSQL (0.2ms)[0m   [0;1mselect count(id) from log_data_2009_12_19 [0m
+Dec 19 15:22:24 starbuck-2 rails[80302]: [4;35;1mSQL (0.1ms)[0m   [0mSELECT count(*) AS count_all FROM `log_data_2009_12_19` [0m
+Dec 19 15:22:24 starbuck-2 rails[80302]: [4;36;1mSQL (0.3ms)[0m   [0;1mselect count(distinct user_id) from log_data_2009_12_19 [0m
+Dec 19 15:22:24 starbuck-2 rails[80302]: [4;35;1mSQL (0.2ms)[0m   [0mselect count(distinct user_id) from log_data_2009_12_19[0m
+Dec 19 15:22:24 starbuck-2 rails[80302]: [4;36;1mSQL (0.2ms)[0m   [0;1mSELECT avg(other_time) as avg_other_time, avg(db_time) as avg_db_time, avg(view_time) as avg_view_time, avg(total_time) as avg_total_time, stddev_pop(other_time) as std_other_time, stddev_pop(db_time) as std_db_time, stddev_pop(view_time) as std_view_time, stddev_pop(total_time) as std_total_time FROM log_data_2009_12_19 [0m
+Dec 19 15:22:24 starbuck-2 rails[80302]: [4;35;1mSQL (0.2ms)[0m   [0mSELECT avg(total_time) FROM (SELECT total_time FROM log_data_2009_12_19 ORDER BY total_time LIMIT 5 OFFSET 0) AS log[0m
+Dec 19 15:22:24 starbuck-2 rails[80302]: [4;36;1mSQL (0.2ms)[0m   [0;1mSELECT avg(total_time) FROM (SELECT total_time FROM log_data_2009_12_19 ORDER BY total_time LIMIT 4 OFFSET 5) AS log[0m
+Dec 19 15:22:24 starbuck-2 rails[80302]: [4;35;1mSQL (0.2ms)[0m   [0mSELECT avg(total_time) FROM (SELECT total_time FROM log_data_2009_12_19 ORDER BY total_time LIMIT 4 OFFSET 9) AS log[0m
+Dec 19 15:22:24 starbuck-2 rails[80302]: [4;36;1mSQL (0.2ms)[0m   [0;1mSELECT avg(total_time) FROM (SELECT total_time FROM log_data_2009_12_19 ORDER BY total_time LIMIT 4 OFFSET 13) AS log[0m
+Dec 19 15:22:24 starbuck-2 rails[80302]: [4;35;1mSQL (0.2ms)[0m   [0mSELECT avg(total_time) FROM (SELECT total_time FROM log_data_2009_12_19 ORDER BY total_time LIMIT 4 OFFSET 17) AS log[0m
+Dec 19 15:22:24 starbuck-2 rails[80302]: [4;36;1mSQL (0.2ms)[0m   [0;1mselect count(id) from log_data_2009_12_19 WHERE (total_time < 100)[0m
+Dec 19 15:22:24 starbuck-2 rails[80302]: [4;35;1mSQL (0.2ms)[0m   [0mselect count(id) from log_data_2009_12_19 WHERE (total_time < 500)[0m
+Dec 19 15:22:24 starbuck-2 rails[80302]: [4;36;1mSQL (0.2ms)[0m   [0;1mselect count(id) from log_data_2009_12_19 WHERE (total_time >= 500 and total_time < 2000)[0m
+Dec 19 15:22:24 starbuck-2 rails[80302]: [4;35;1mSQL (0.2ms)[0m   [0mselect count(id) from log_data_2009_12_19 WHERE ((total_time >= 2000) or (response_code = 500))[0m
+Dec 19 15:22:24 starbuck-2 rails[80302]: [4;36;1mControllerAction_2009_12_19 Load (1.8ms)[0m   [0;1mSELECT page, count(id) AS number_of_requests, sum(total_time) AS sum, avg(total_time) AS avg, stddev_pop(total_time) AS stddev FROM log_data_2009_12_19 GROUP BY page ORDER BY sum DESC LIMIT 35[0m
+Dec 19 15:22:24 starbuck-2 rails[80302]: [4;35;1mSQL (0.3ms)[0m   [0mselect sum(total_time) from log_data_2009_12_19 [0m
+Dec 19 15:22:24 starbuck-2 rails[80302]: Rendered controller_actions/_statistics (15.8ms)
+Dec 19 15:22:24 starbuck-2 rails[80302]: Completed in 231ms (View: 66, DB: 9) | 200 OK [http://localhost/2009/12/19?controller_action%5Bpage%5D=&grouping=page&grouping_function=sum&interval=5&resource=total_time]
