@@ -21,26 +21,28 @@ class TimingActionsTest < ActionController::TestCase
   end
 end
 
-class MemoryActionsTest < ActionController::TestCase
-  tests ControllerActionsController
+if Resource.memory_resources.any?
+  class MemoryActionsTest < ActionController::TestCase
+    tests ControllerActionsController
   
-  def setup
-    Factory.create(:yesterday, :allocated_bytes => 1024, :allocated_objects => 1024, :heap_size => 1024)
-  end
+    def setup
+      Factory.create(:yesterday, :allocated_bytes => 1024, :allocated_objects => 1024, :heap_size => 1024)
+    end
 
-  test "should get allocated_objects_distribution" do
-    # avoiding warnings about empty xrange and yrange
-    Factory.create(:yesterday, :allocated_bytes => 2048, :allocated_objects => 2048, :heap_size => 2048)
-    Factory.create(:yesterday, :allocated_bytes => 2048, :allocated_objects => 2048, :heap_size => 2048)
-    get :allocated_objects_distribution
-    assert_response :success
-  end
+    test "should get allocated_objects_distribution" do
+      # avoiding warnings about empty xrange and yrange
+      Factory.create(:yesterday, :allocated_bytes => 2048, :allocated_objects => 2048, :heap_size => 2048)
+      Factory.create(:yesterday, :allocated_bytes => 2048, :allocated_objects => 2048, :heap_size => 2048)
+      get :allocated_objects_distribution
+      assert_response :success
+    end
 
-  test "should get allocated_size_distribution" do
-    # avoiding warnings about empty xrange and yrange
-    Factory.create(:yesterday, :allocated_bytes => 2048, :allocated_objects => 2048, :heap_size => 2048)
-    Factory.create(:yesterday, :allocated_bytes => 2048, :allocated_objects => 2048, :heap_size => 2048)
-    get :allocated_size_distribution
-    assert_response :success
+    test "should get allocated_size_distribution" do
+      # avoiding warnings about empty xrange and yrange
+      Factory.create(:yesterday, :allocated_bytes => 2048, :allocated_objects => 2048, :heap_size => 2048)
+      Factory.create(:yesterday, :allocated_bytes => 2048, :allocated_objects => 2048, :heap_size => 2048)
+      get :allocated_size_distribution
+      assert_response :success
+    end
   end
 end

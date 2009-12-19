@@ -7,7 +7,8 @@ class RequestInfoTest < ActiveSupport::TestCase
     lines = [processing_line, completed_line]
 
     info = RequestInfo.new 'localhost', 1001, 42, lines
-    expected = {:search_time=>7.409,
+    expected = {
+     :search_time=>7.409,
      :allocated_objects=>0,
      :user_id=>42,
      :minute5=>72,
@@ -37,6 +38,7 @@ class RequestInfoTest < ActiveSupport::TestCase
      :view_time=>225.796,
      :memcache_misses=>0}
     expected.keys.each do |key|
+      next unless ControllerAction.instance_methods.include? key
       if expected[key].is_a? Float
         assert_in_delta(expected[key], info.to_hash[key], 0.001)
       else

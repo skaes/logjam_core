@@ -165,7 +165,6 @@ class FilteredDataset
         results = []
         minute = "minute#{interval_duration}"
         query = "SELECT #{minute}, #{attributes} FROM #{@klazz.table_name} #{sql_conditions} GROUP BY 1"
-        puts "-------------------> #{query}"
         from_db = @klazz.connection.select_all query
         zero = Hash.new(0)
         results = (1..intervals_per_plot).to_a.map{zero}
