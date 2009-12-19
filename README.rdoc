@@ -80,6 +80,14 @@ If you are running more than one server process, you must modify the log line to
 
 It is also easy to add additional custom information, including session_ids, time spent waiting for specific web services, etc.
 
+==Log Files
+
+LogJam can import its data from AMQP or from log files. As an example of how to setup an application for LogJam, it uses topfunky's Hodel 3000 Compliant Logger to generate suitable log files. LogJam can therefore be used to study itself (but it's not very interesting as a case study).
+
+To import the sample log file
+
+		bin/import_local_file sample.log
+
 ==License
 
 Copyright (c) 2009 David Anderson, Stefan Kaes
@@ -88,6 +96,6 @@ Copyright (c) 2009 XING AG
 
 Copyright 2005 Eric Hodel, The Robot Co-op.
 
+The Hodel 3000 compliant logger is from http://github.com/topfunky/hodel_3000_compliant_logger.
+
 See LICENSES for details.
-
-

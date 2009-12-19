@@ -24,7 +24,7 @@ class RequestInfo
   end
 
   def allocated_memory
-    @info[:allocated_bytes] + @info[:allocated_objects] * 40
+    @info[:allocated_bytes] + @info[:allocated_objects] * 40 rescue 0
   end
 
   def to_hash

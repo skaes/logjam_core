@@ -13,7 +13,10 @@ class Resource
     end
 
     def resource_map
-      @resource_map ||= YAML.load_file(RAILS_ROOT + '/config/logjam.yml')
+      @resource_map ||= begin
+        hash = YAML.load_file(RAILS_ROOT + '/config/logjam.yml')
+        hash.merge(hash){|k, v| v||[]} # convert nils to []
+      end
     end
 
     def time_resources
