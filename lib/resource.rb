@@ -28,7 +28,7 @@ class Resource
     end
 
     def call_resources
-      resource_map["call_resources"].map{|r| r.keys}.flatten + ['1'] # for requests
+      resource_map["call_resources"].map{|r| r.keys}.flatten
     end
 
     # returns a Hash mapping resources to colors, used for plotting

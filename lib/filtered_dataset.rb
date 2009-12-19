@@ -130,7 +130,13 @@ class FilteredDataset
   end
 
   def sql_for_call_attributes(attributes, func, prefix = '')
-    attributes.map{|type| "#{func}(#{type}) as #{prefix}#{type}"}.join(', ')
+    attributes.uniq.map do |type|
+      if type == '1'
+        "count(1) as requests"
+      else
+        "#{func}(#{type}) as #{prefix}#{type}"
+      end
+    end.join(', ')
   end
 
   def measures_bytes?(attr)
@@ -158,7 +164,9 @@ class FilteredDataset
         attributes = send("sql_for_#{resource_type}_attributes", resources, func)
         results = []
         minute = "minute#{interval_duration}"
-        from_db = @klazz.connection.select_all "SELECT #{minute}, #{attributes} FROM #{@klazz.table_name} #{sql_conditions} GROUP BY 1"
+        query = "SELECT #{minute}, #{attributes} FROM #{@klazz.table_name} #{sql_conditions} GROUP BY 1"
+        puts "-------------------> #{query}"
+        from_db = @klazz.connection.select_all query
         zero = Hash.new(0)
         results = (1..intervals_per_plot).to_a.map{zero}
         from_db.each {|row| results[row[minute].to_i] = row}
