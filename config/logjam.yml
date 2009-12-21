@@ -16,7 +16,7 @@ time_resources:
 - total_time: '#000000'
 
 call_resources:
-- resources: '#0000ff'
+- requests: '#0000ff'
 #- gc_calls: '#000000'
 #- search_calls: '#ff00ff'
 #- api_calls: '#00aaaa'
