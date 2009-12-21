@@ -9,9 +9,10 @@ class ControllerActionsController < ApplicationController
   def auto_complete_for_controller_action_page
     prepare_params
     re = /#{params[:controller_action][:page]}/i
-    @pages = @klazz.distinct_pages.select {|name| name =~ re}
-
-    render :inline => "<%= content_tag(:ul, @pages.map { |page| content_tag(:li, page) }) %>"
+    pages = @klazz.distinct_pages.select {|name| name =~ re}
+    modules = pages.map{|p| p =~ /^(.+?)::/ && $1 }.compact.uniq
+    @completions = (pages + modules).sort
+    render :inline => "<%= content_tag(:ul, @completions.map { |page| content_tag(:li, page) }) %>"
   end
 
   def index
