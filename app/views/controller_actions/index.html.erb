@@ -124,7 +124,7 @@
         <% if @dataset.grouping? -%>
           <th><%= @dataset.grouping %></th>
           <th>requests</th>
-          <% unless @dataset.resource == '1' -%>
+          <% unless @dataset.resource == 'requests' -%>
             <% unless @dataset.grouping_function == :avg -%>
               <th>avg (<%= @dataset.resource %>)</th>
             <% end -%>

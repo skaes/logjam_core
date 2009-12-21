@@ -37,20 +37,13 @@ class Resource
     end
 
     def resource_name(resource)
-      case resource
-      when '1'
-        'requests'
-      when nil
-        ''
-      else
-        resource.to_s.gsub('_', ' ')
-      end
+      resource.to_s.gsub('_', ' ')
     end
 
     def resource_options
       (memory_resources + [nil] + call_resources + [nil] + time_resources).map {|r| [resource_name(r), r]}
     end
-  
+
     def resource_type(resource)
       if time_resources.include? resource
         :time

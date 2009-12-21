@@ -5,7 +5,7 @@ class BasicFilteredDatasetTest < ActiveSupport::TestCase
   def setup
     @dataset = FilteredDataset.new(:class => Yesterday)
   end
-  
+
   test "with no data, empty? should return true" do
     assert @dataset.empty?
   end

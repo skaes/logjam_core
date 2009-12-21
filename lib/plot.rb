@@ -35,8 +35,20 @@ class Plot
 
   YLABELS = {:time => 'Response time (ms)', :call => '# of calls', :memory => 'Allocations (bytes)'}
 
+  def ylabel
+    if data.plot_kind == :call && data.resource == "requests"
+      '# requests'
+    else
+      YLABELS[data.plot_kind]
+    end
+  end
+
   def resources_excluded_from_plot
-    ['total_time', 'allocated_memory']
+    if data.resource == "requests"
+      Resource.resources_for_type(data.plot_kind) - ["requests"]
+    else
+      ['total_time', 'allocated_memory', 'requests']
+    end
   end
 
   def plot
@@ -44,7 +56,7 @@ class Plot
       Gnuplot::Plot.new( gp ) do |plot|
         plot.terminal   terminal
         plot.output     filename
-        plot.ylabel     YLABELS[data.plot_kind]
+        plot.ylabel     ylabel
         plot.xlabel     'Time of day'
         plot.xrange     "[0 : #{data.intervals_per_plot}]"
         plot.style      'fill solid 1.0 noborder'
@@ -61,9 +73,8 @@ class Plot
         plot.data = []
 
         (Resource.resources_for_type(data.plot_kind) - resources_excluded_from_plot).reverse.each do |resource|
-          key = resource == '1' ? 'requests' : resource
-          next unless plot_data = data.plot_data(data.plot_kind, resources_excluded_from_plot).map{|i| i[key]}
-          plot.data << Gnuplot::DataSet.new([[key] + plot_data]) do |ds|
+          next unless plot_data = data.plot_data(data.plot_kind, resources_excluded_from_plot).map{|i| i[resource]}
+          plot.data << Gnuplot::DataSet.new([[resource] + plot_data]) do |ds|
             ds.with = 'steps' if resource == 'gc_time' || resource == 'heap_size'
             ds.using = "1 title 1 lc rgb '#{Resource.colors[resource]}'"
           end

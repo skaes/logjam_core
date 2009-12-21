@@ -22,7 +22,7 @@ class InterestingQueriesWithFilteredDatasetsTest < ActiveSupport::TestCase
   test "most frequently requested pages" do
     2.times { |t| Factory.create(:yesterday, :page => 'popular') }
     1.times { |t| Factory.create(:yesterday, :page => 'unpopular') }
-    dataset = FilteredDataset.new(:class => Yesterday, :resource => '1', :grouping => :page, :grouping_function => :sum)
+    dataset = FilteredDataset.new(:class => Yesterday, :resource => 'requests', :grouping => :page, :grouping_function => :sum)
     assert_equal ['popular', 'unpopular'], dataset.do_the_query.map {|p| p.page}
   end
 

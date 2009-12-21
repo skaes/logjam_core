@@ -105,19 +105,25 @@ class FilteredDataset
     if grouping?
       selects << grouping if grouping?
       selects << "count(id) AS number_of_requests"
-      selects << "#{grouping_function}(#{resource}) AS #{grouping_function}"
-      selects << "avg(#{resource}) AS avg" unless grouping_function == :avg
-      selects << "stddev_pop(#{resource}) AS stddev"
-      order = resource == '1' ? 'number_of_requests' : grouping_function
+      if resource == "requests"
+        order = 'number_of_requests'
+      else
+        selects << "#{grouping_function}(#{resource}) AS #{grouping_function}"
+        selects << "avg(#{resource}) AS avg" unless grouping_function == :avg
+        selects << "stddev_pop(#{resource}) AS stddev"
+        order = resource == 'requests' ? 'number_of_requests' : grouping_function
+      end
       direction = grouping_function == :min ? 'ASC' : 'DESC'
     else
       selects << 'user_id'
       selects << 'page'
-      selects << resource
-      order = resource
+      if resource != "requests"
+        selects << resource
+        order = resource
+      end
       direction = 'DESC'
     end
-    %Q|SELECT #{selects.join(', ')} FROM #{@klazz.table_name} #{sql_conditions} #{"GROUP BY #{grouping}" if grouping?} ORDER BY #{order} #{direction} LIMIT 35|
+    %Q|SELECT #{selects.join(', ')} FROM #{@klazz.table_name} #{sql_conditions} #{"GROUP BY #{grouping}" if grouping?} #{"ORDER BY #{order} #{direction}" if order} LIMIT 35|
   end
 
   def do_the_query
@@ -131,7 +137,7 @@ class FilteredDataset
 
   def sql_for_call_attributes(attributes, func, prefix = '')
     attributes.uniq.map do |type|
-      if type == '1'
+      if type == "requests"
         "count(1) as requests"
       else
         "#{func}(#{type}) as #{prefix}#{type}"
@@ -160,6 +166,7 @@ class FilteredDataset
   def plot_data(resource_type, resources_to_skip = [], func = :avg)
     @plot_data ||=
       begin
+        func = grouping_function.to_sym if @resource == "requests" && resource_type.to_sym == :call
         resources = Resource.resources_for_type(resource_type) - resources_to_skip
         attributes = send("sql_for_#{resource_type}_attributes", resources, func)
         results = []

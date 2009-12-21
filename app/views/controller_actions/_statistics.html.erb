@@ -10,7 +10,7 @@
       <td class='number'>
         <%= sometimes_link_number_of_requests(result, @dataset.grouping, {:params => params.merge(:action => distribution_kind(@dataset), :page => result[:page])}) %>
       </td>
-      <% unless @dataset.resource == '1' -%>
+      <% unless @dataset.resource == "requests" -%>
         <% unless @dataset.grouping_function == :avg -%>
           <td class='number'><%= number_with_delimiter(result[:avg].to_i) %></td>
         <% end -%>

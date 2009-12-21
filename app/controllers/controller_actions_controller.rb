@@ -61,8 +61,12 @@ class ControllerActionsController < ApplicationController
     params[:resource] ||= 'total_time'
     params[:grouping] ||= 'page'
     params[:grouping_function] ||= 'sum'
+    if params[:resource] == "requests"
+      params[:grouping] = 'page' if params[:grouping] == 'request'
+      params[:grouping_function] = 'sum'
+    end
     @plot_kind = Resource.resource_type(params[:resource])
-    @attributes = Resource.resources_for_type(@plot_kind) - ['1']
+    @attributes = Resource.resources_for_type(@plot_kind) - ['requests']
     @page = params[:controller_action] ? params[:controller_action][:page] : nil
     determine_page_pattern
   end
