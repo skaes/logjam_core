@@ -61,7 +61,7 @@ class ControllerActionsController < ApplicationController
     params[:resource] ||= 'total_time'
     params[:grouping] ||= 'page'
     params[:grouping_function] ||= 'sum'
-    if params[:resource] == "requests"
+    if params[:resource] == 'requests'
       params[:grouping] = 'page' if params[:grouping] == 'request'
       params[:grouping_function] = 'sum'
     end

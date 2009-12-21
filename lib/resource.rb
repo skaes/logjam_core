@@ -41,7 +41,7 @@ class Resource
     end
 
     def resource_options
-      (memory_resources + [nil] + call_resources + [nil] + time_resources).map {|r| [resource_name(r), r]}
+      ((memory_resources.empty? ? [] : memory_resources + [nil]) + call_resources + [nil] + time_resources).map {|r| [resource_name(r), r]}
     end
 
     def resource_type(resource)

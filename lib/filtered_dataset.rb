@@ -104,20 +104,20 @@ class FilteredDataset
     selects = []
     if grouping?
       selects << grouping if grouping?
-      selects << "count(id) AS number_of_requests"
-      if resource == "requests"
+      selects << 'count(id) AS number_of_requests'
+      if resource == 'requests'
         order = 'number_of_requests'
       else
         selects << "#{grouping_function}(#{resource}) AS #{grouping_function}"
         selects << "avg(#{resource}) AS avg" unless grouping_function == :avg
         selects << "stddev_pop(#{resource}) AS stddev"
-        order = resource == 'requests' ? 'number_of_requests' : grouping_function
+        order = grouping_function
       end
       direction = grouping_function == :min ? 'ASC' : 'DESC'
     else
       selects << 'user_id'
       selects << 'page'
-      if resource != "requests"
+      if resource != 'requests'
         selects << resource
         order = resource
       end
