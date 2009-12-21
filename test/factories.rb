@@ -8,26 +8,18 @@ Factory.define :yesterday do |a|
   a.minute5 0
   a.started_at Date.yesterday.beginning_of_day
   a.response_code 200
-  a.session_id 'session'
-  a.new_session false
-  a.total_time 0.0
-  a.view_time 0.0
-  a.db_time 0.0
-  a.api_time 0.0
-  a.search_time 0.0
-  a.other_time 0.0
-  a.gc_time 0.0
-  a.memcache_time 0.0
-  a.db_calls 0
-  a.db_sql_query_cache_hits 0
-  a.api_calls 0
-  a.memcache_calls 0
-  a.memcache_misses 0
-  a.search_calls 0
-  a.gc_calls 0
-  a.heap_size 0
-  a.heap_growth 0
-  a.allocated_memory 0
-  a.allocated_objects 0
-  a.allocated_bytes 0
+
+  a.session_id 'session' if ControllerAction.instance_methods.include? :session_id=
+  a.new_session false if ControllerAction.instance_methods.include? :new_session=
+  a.heap_growth 0 if ControllerAction.instance_methods.include? :heap_growth=
+
+  Resource.time_resources.each do |resource|
+    a.send(resource, 0.0)
+  end
+  (Resource.call_resources - ['1']).each do |resource|
+    a.send(resource, 0)
+  end
+  Resource.memory_resources.each do |resource|
+    a.send(resource, 0)
+  end
 end

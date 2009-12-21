@@ -4,24 +4,8 @@ load 'yesterday.rb'
 class StatisticsTest < ActiveSupport::TestCase
   test "timing statistics keys" do
     timing = FilteredDataset.new(:class => Yesterday).statistics(:time)
-    assert_equal [
-      'avg_api_time',
-      'avg_db_time',
-      'avg_gc_time',
-      'avg_memcache_time',
-      'avg_other_time',
-      'avg_search_time',
-      'avg_total_time',
-      'avg_view_time',
-      'std_api_time',
-      'std_db_time',
-      'std_gc_time',
-      'std_memcache_time',
-      'std_other_time',
-      'std_search_time',
-      'std_total_time',
-      'std_view_time',
-    ], timing.keys.sort
+    expected = Resource.time_resources.map{|r| "avg_#{r}"} + Resource.time_resources.map{|r| "std_#{r}"}
+    assert_equal expected.sort, timing.keys.sort
   end
 
   test "timing statistics values" do
@@ -36,20 +20,14 @@ class StatisticsTest < ActiveSupport::TestCase
   end
 
   test "memory statistics keys" do
+    return if Resource.memory_resources.empty?
     memory = FilteredDataset.new(:class => Yesterday).statistics(:memory)
-    assert_equal [
-      'avg_allocated_bytes',
-      'avg_allocated_memory',
-      'avg_allocated_objects',
-      'avg_heap_size',
-      'std_allocated_bytes',
-      'std_allocated_memory',
-      'std_allocated_objects',
-      'std_heap_size'
-    ], memory.keys.sort
+    expected = Resource.memory_resources.map{|r| "avg_#{r}"} + Resource.memory_resources.map{|r| "std_#{r}"}
+    assert_equal expected.sort, memory.keys.sort
   end
 
   test "memory statistics values should be measured in units of bytes" do
+    return if Resource.memory_resources.empty?
     Factory.create(:yesterday, :allocated_memory => 40*1024+1024, :allocated_objects => 1024, :allocated_bytes => 1024, :heap_size => 1024)
     memory = FilteredDataset.new(:class => Yesterday).statistics(:memory)
     keys = %w(avg_allocated_bytes avg_allocated_memory avg_allocated_objects avg_heap_size

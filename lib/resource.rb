@@ -13,7 +13,10 @@ class Resource
     end
 
     def resource_map
-      @resource_map ||= YAML.load_file(RAILS_ROOT + '/config/logjam.yml')
+      @resource_map ||= begin
+        hash = YAML.load_file(RAILS_ROOT + '/config/logjam.yml')
+        hash.merge(hash){|k, v| v||[]} # convert nils to []
+      end
     end
 
     def time_resources
@@ -25,7 +28,7 @@ class Resource
     end
 
     def call_resources
-      resource_map["call_resources"].map{|r| r.keys}.flatten + ['1'] # for requests
+      resource_map["call_resources"].map{|r| r.keys}.flatten
     end
 
     # returns a Hash mapping resources to colors, used for plotting

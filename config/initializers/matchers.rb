@@ -96,6 +96,6 @@ module Matchers
 end # Matchers
 
 RequestInfo.register_matcher Matchers::PROCESSING
-RequestInfo.register_matcher Matchers::SESSION_XING
-RequestInfo.register_matcher Matchers::COMPLETED_XING
-#RequestInfo.register_matcher Matchers::COMPLETED_RAILS
+#RequestInfo.register_matcher Matchers::SESSION_XING
+#RequestInfo.register_matcher Matchers::COMPLETED_XING
+RequestInfo.register_matcher Matchers::COMPLETED_RAILS

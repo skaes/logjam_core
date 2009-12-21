@@ -7,6 +7,9 @@ RAILS_GEM_VERSION = '2.3.4' unless defined? RAILS_GEM_VERSION
 require File.join(File.dirname(__FILE__), 'boot')
 
 Rails::Initializer.run do |config|
+  require 'hodel_3000_compliant_logger'
+  config.logger = Hodel3000CompliantLogger.new(config.log_path)
+
   config.action_controller.session_store = :nil_session_store
 
   # Settings in config/environments/* take precedence over those specified here.

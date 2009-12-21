@@ -36,7 +36,7 @@ class Plot
   YLABELS = {:time => 'Response time (ms)', :call => '# of calls', :memory => 'Allocations (bytes)'}
 
   def resources_excluded_from_plot
-    ['total_time', '1', 'allocated_memory']
+    ['total_time', 'allocated_memory']
   end
 
   def plot
@@ -59,9 +59,11 @@ class Plot
         plot.grid       'back linetype 0 linewidth 0.7'
 
         plot.data = []
+
         (Resource.resources_for_type(data.plot_kind) - resources_excluded_from_plot).reverse.each do |resource|
-          next unless plot_data = data.plot_data(data.plot_kind, resources_excluded_from_plot).map{|i| i[resource]}
-          plot.data << Gnuplot::DataSet.new([[resource] + plot_data]) do |ds|
+          key = resource == '1' ? 'requests' : resource
+          next unless plot_data = data.plot_data(data.plot_kind, resources_excluded_from_plot).map{|i| i[key]}
+          plot.data << Gnuplot::DataSet.new([[key] + plot_data]) do |ds|
             ds.with = 'steps' if resource == 'gc_time' || resource == 'heap_size'
             ds.using = "1 title 1 lc rgb '#{Resource.colors[resource]}'"
           end

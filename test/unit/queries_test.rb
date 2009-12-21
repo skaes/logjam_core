@@ -26,18 +26,27 @@ class InterestingQueriesWithFilteredDatasetsTest < ActiveSupport::TestCase
     assert_equal ['popular', 'unpopular'], dataset.do_the_query.map {|p| p.page}
   end
 
-  test "object allocation pigs" do
-    Factory.create(:yesterday, :page => 'very piggish', :allocated_objects => 1000)
-    Factory.create(:yesterday, :page => 'not piggish', :allocated_objects => 0)
-    dataset = FilteredDataset.new(:class => Yesterday, :resource => :allocated_objects, :grouping => :page, :grouping_function => :avg)
-    assert_equal ['very piggish', 'not piggish'], dataset.do_the_query.map {|p| p.page}
-  end
+  if Resource.memory_resources.any?
+    test "object allocation pigs" do
+      Factory.create(:yesterday, :page => 'very piggish', :allocated_objects => 1000)
+      Factory.create(:yesterday, :page => 'not piggish', :allocated_objects => 0)
+      dataset = FilteredDataset.new(:class => Yesterday, :resource => :allocated_objects, :grouping => :page, :grouping_function => :avg)
+      assert_equal ['very piggish', 'not piggish'], dataset.do_the_query.map {|p| p.page}
+    end
 
-  test "malloc pigs" do
-    Factory.create(:yesterday, :page => 'very piggish', :allocated_bytes => 1000)
-    Factory.create(:yesterday, :page => 'not piggish', :allocated_bytes => 0)
-    dataset = FilteredDataset.new(:class => Yesterday, :resource => :allocated_bytes, :grouping => :page, :grouping_function => :avg)
-    assert_equal ['very piggish', 'not piggish'], dataset.do_the_query.map {|p| p.page}
+    test "malloc pigs" do
+      Factory.create(:yesterday, :page => 'very piggish', :allocated_bytes => 1000)
+      Factory.create(:yesterday, :page => 'not piggish', :allocated_bytes => 0)
+      dataset = FilteredDataset.new(:class => Yesterday, :resource => :allocated_bytes, :grouping => :page, :grouping_function => :avg)
+      assert_equal ['very piggish', 'not piggish'], dataset.do_the_query.map {|p| p.page}
+    end
+
+    test "average total memory by quintile" do
+      [1,2,3,4,5].each { |i| Factory.create(:yesterday, :allocated_memory => 1024 * i) }
+      dataset = FilteredDataset.new(:class => Yesterday)
+      quintiles = [1,2,3,4,5].map{|i| dataset.average_total_memory_by_quintile(i)}
+      assert_equal [1,2,3,4,5].map{|i| 1024 * i}, quintiles.map{|q| q.to_f}
+    end
   end
 
   test "worst user experience" do
@@ -55,10 +64,4 @@ class InterestingQueriesWithFilteredDatasetsTest < ActiveSupport::TestCase
     assert_equal [1,2,3,4,5].map{|i| i.to_s}, quintiles
   end
 
-  test "average total memory by quintile" do
-    [1,2,3,4,5].each { |i| Factory.create(:yesterday, :allocated_memory => 1024 * i) }
-    dataset = FilteredDataset.new(:class => Yesterday)
-    quintiles = [1,2,3,4,5].map{|i| dataset.average_total_memory_by_quintile(i)}
-    assert_equal [1,2,3,4,5].map{|i| 1024 * i}, quintiles.map{|q| q.to_f}
-  end
 end
