@@ -20,8 +20,8 @@ class CreateControllerActions < ActiveRecord::Migration
       t.float :other_time, :null => false
 #      t.float :gc_time, :null => false
 #      t.float :memcache_time, :null => false
-#      t.integer :db_calls, :null => false
-#      t.integer :db_sql_query_cache_hits, :null => false
+      t.integer :db_calls, :null => false
+      t.integer :db_sql_query_cache_hits, :null => false
 #      t.integer :api_calls, :null => false
 #      t.integer :memcache_calls, :null => false
 #      t.integer :memcache_misses, :null => false

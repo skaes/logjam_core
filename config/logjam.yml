@@ -20,8 +20,8 @@ call_resources:
 #- gc_calls: '#000000'
 #- search_calls: '#ff00ff'
 #- api_calls: '#00aaaa'
-#- db_calls: '#ff0000'
-#- db_sql_query_cache_hits: '#00ff00'
+- db_calls: '#ff0000'
+- db_sql_query_cache_hits: '#00ff00'
 #- memcache_calls: '#ffa500'
 #- memcache_misses: '#00dd00'
 
