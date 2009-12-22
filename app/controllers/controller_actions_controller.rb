@@ -10,7 +10,6 @@ class ControllerActionsController < ApplicationController
     prepare_params
     re = /#{params[:controller_action][:page]}/i
     pages = @klazz.distinct_pages.select {|name| name =~ re}
-    puts pages.inspect
     modules = pages.map{|p| p =~ /^(.+?)::/ && $1 }.compact.uniq
     @completions = (pages + modules).sort
     render :inline => "<%= content_tag(:ul, @completions.map { |page| content_tag(:li, page) }) %>"
