@@ -16,14 +16,18 @@
           <%= label :filter, 'response code' %><br />
           <%= select_tag 'response', options_for_select([''] + @response_codes, params['response']) %> <br />
         </p>
-        <p class='filter-widget'>
-          <%= label :filter, 'heap growing actions only' %><br />
-          <%= check_box_tag 'heap_growth_only', "1", params['heap_growth_only']=="1" %>
-        </p>
-        <p class='clear-left'>
-          <%= label :filter, 'user id' %><br />
-          <%= text_field_tag 'user_id', params['user_id'] %>
-        </p>
+        <%- if ControllerAction.column_names.include? 'heap_growth' -%>
+          <p class='filter-widget'>
+            <%= label :filter, 'heap growing actions only' %><br />
+            <%= check_box_tag 'heap_growth_only', "1", params['heap_growth_only']=="1" %>
+          </p>
+        <%- end -%>
+        <%- if ControllerAction.column_names.include? 'user_id' -%>
+          <p class='clear-left'>
+            <%= label :filter, 'user id' %><br />
+            <%= text_field_tag 'user_id', params['user_id'] %>
+          </p>
+        <%- end -%>
         <p class='filter-widget'>
           <%= label :filter, 'page name' %><br />
           <%= text_field_with_auto_complete :controller_action, :page, {:value => @page, :size => 60} %>
