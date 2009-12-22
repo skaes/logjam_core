@@ -1,9 +1,11 @@
-# this module contains methods to extract information out of log lines.
-# matcher method must exhibit the following behavior:
+# This module contains methods to extract information out of log lines.
+# A matcher method must exhibit the following behavior:
 #
 #   accept a log line and extract info as a hash where the domain corresponds to som db column.
 #   return false (or nil) if the line cannot be matched.
 #
+# NOTE: The configuration options are at the end of this file.
+
 module Matchers
 
   # this regexp is used to prefilter log files with egrep|zegrep (which can speed up things quite a bit)
@@ -51,7 +53,7 @@ module Matchers
   end
 
   # default rails completed line. mandatory matcher.
-  # Completed in 1517.781ms (View: 26.129, DB: 26.009) | 200 OK [http://localhost/marketplace/]
+  # Completed in 1517ms (View: 26, DB: 26) | 200 OK [http://localhost/marketplace/]
   COMPLETED_RAILS = lambda do |line|
     line =~ /^Completed in ([\S]+)ms \(View: ([\S]+), DB: ([\S]+)\) \| (\d+) / and
       {
@@ -61,6 +63,20 @@ module Matchers
         :response_code => $4.to_i,
       }
   end
+  
+  # Out-of-the-box time_bandits completed line format.
+  # Completed in 238.974ms (View: 61.361, DB: 41.915(14,1)) | 200 OK [http: ...]
+  COMPLETED_BASIC_TIME_BANDITS = lambda do |line|
+    line =~ /^Completed in ([\S]+)ms \(View: ([\S]+), DB: ([\S]+)\((\d+)(?:,(\d+))?\)\) \| (\d+)? / and
+      {
+        :total_time => $1.to_f,
+        :view_time => $2.to_f,
+        :db_time => $3.to_f,
+        :db_calls => $4.to_i,
+        :db_sql_query_cache_hits => $5.to_i,
+        :response_code => $6.to_i,
+      }
+    end
 
   # completed line regexp: complicated by the fact that the log file
   # format @XING changed over time and we want to be able to parse old logfiles
@@ -95,7 +111,12 @@ module Matchers
 
 end # Matchers
 
+# CONFIGURATION
+# Choose the matchers appropriate for the log files that will be imported.
+# The sample log file included with LogJam is in basic time bandit format.
+
 RequestInfo.register_matcher Matchers::PROCESSING
 #RequestInfo.register_matcher Matchers::SESSION_XING
 #RequestInfo.register_matcher Matchers::COMPLETED_XING
-RequestInfo.register_matcher Matchers::COMPLETED_RAILS
+#RequestInfo.register_matcher Matchers::COMPLETED_RAILS
+RequestInfo.register_matcher Matchers::COMPLETED_BASIC_TIME_BANDITS
