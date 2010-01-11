@@ -1,3 +1,16 @@
+<%- content_for :page_scripts do -%>
+function no_grouping_function_for_requests() {
+  if ($('resource').value == 'requests') {
+    $('grouping-function').hide();
+  } 
+  else {
+    $('grouping-function').show();
+  }
+}
+
+Event.observe(window, 'load', function() {no_grouping_function_for_requests()});
+<%- end -%>
+
 <h1><a href="/">Log Jam on Rails</a></h1>
 <div id='left' class='clear-left'>
   <div id='filter'>
@@ -49,13 +62,14 @@
         </p>
         <p class='filter-widget' id='resource-widget'>
           <%= label :filter, 'resource' %><br />
-          <%= select_tag 'resource', options_for_select(Resource.resource_options, params['resource']) %>
+          <%= select_tag 'resource', options_for_select(Resource.resource_options, params['resource']), 
+              :onChange => "no_grouping_function_for_requests()" %>
         </p>
         <p class='filter-widget'>
           <%= label :filter, 'group by' %><br />
           <%= select_tag 'grouping', options_for_select(Resource.groupings, params['grouping']) %>
         </p>
-        <p class='filter-widget'>
+        <p class='filter-widget' id='grouping-function'>
           <%= label :filter, 'from each group, display' %><br />
           <%= select_tag 'grouping_function', options_for_select(Resource.grouping_functions, params['grouping_function']) %>
         </p>
