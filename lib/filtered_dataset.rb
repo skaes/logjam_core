@@ -2,7 +2,8 @@ class FilteredDataset
   HEAP_SLOT_SIZE = 40
 
   attr_accessor :klazz, :interval_duration, :user_id, :host, :page, :response_code,
-                :plot_kind, :heap_growth_only, :resource, :grouping, :grouping_function
+                :plot_kind, :heap_growth_only, :resource, :grouping, :grouping_function,
+                :start_hour, :end_hour
 
   def initialize(options = {})
     most_recent_date_with_data = ControllerAction.log_data_dates.first
@@ -17,6 +18,8 @@ class FilteredDataset
     @resource = options[:resource] || 'total_time'
     @grouping = options[:grouping]
     @grouping_function = options[:grouping_function] || 'sum'
+    @start_hour = options[:start_hour] || 0
+    @end_hour = options[:end_hour] || 24
   end
 
   def description
@@ -36,7 +39,7 @@ class FilteredDataset
   end
 
   def hash
-    Digest::MD5.hexdigest "#{starts_at} #{interval_duration} #{user_id} #{host} #{page} #{response_code} #{plot_kind}"
+    Digest::MD5.hexdigest "#{@klazz.date} #{interval_duration} #{user_id} #{host} #{page} #{response_code} #{plot_kind} #{start_hour} #{end_hour}"
   end
 
   def svg_file
@@ -55,7 +58,15 @@ class FilteredDataset
     (Resource.resource_type(resource) == :time) && grouping? && grouping_function.to_sym == :sum
   end
 
-  def intervals_per_plot
+  def start_interval
+    start_hour * intervals_per_hour
+  end
+  
+  def end_interval
+    end_hour * intervals_per_hour
+  end
+
+  def intervals_per_day
     24 * 60 / interval_duration
   end
 
@@ -92,6 +103,9 @@ class FilteredDataset
       else
         result << "(page = '#{page}')"
       end
+    end
+    unless start_hour == 0 && end_hour == 24
+      result << "minute5 BETWEEN #{60/5 * start_hour} AND #{(60/5 * end_hour) - 1}"
     end
     result << "(response_code = #{response_code})" if response_code
     result << "(heap_growth > 0)" if heap_growth_only
@@ -174,7 +188,7 @@ class FilteredDataset
         query = "SELECT #{minute}, #{attributes} FROM #{@klazz.table_name} #{sql_conditions} GROUP BY 1"
         from_db = @klazz.connection.select_all query
         zero = Hash.new(0)
-        results = (1..intervals_per_plot).to_a.map{zero}
+        results = (1..intervals_per_day).to_a.map{zero}
         from_db.each {|row| results[row[minute].to_i] = row}
         results
       end

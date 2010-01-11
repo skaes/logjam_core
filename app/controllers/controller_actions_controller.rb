@@ -58,8 +58,8 @@ class ControllerActionsController < ApplicationController
   def prepare_params
     @starts_at = "#{params['year']}-#{params['month']}-#{params['day']}".to_date unless params[:year].blank?
     @starts_at = (@starts_at.blank? ? default_date : @starts_at).beginning_of_day
-    @ends_at = @starts_at.end_of_day
     @klazz =  ControllerAction.class_for_date(@starts_at.to_s(:db))
+    params[:end_hour] ||= '24'
     params[:resource] ||= 'total_time'
     params[:grouping] ||= 'page'
     params[:grouping_function] ||= 'sum'
@@ -92,15 +92,19 @@ class ControllerActionsController < ApplicationController
                         :plot_kind => @plot_kind,
                         :resource => params[:resource] || :total_time,
                         :grouping => params[:grouping],
-                        :grouping_function => (params[:grouping_function] || :avg).to_sym)
+                        :grouping_function => (params[:grouping_function] || :avg).to_sym,
+                        :start_hour => params[:start_hour].to_i,
+                        :end_hour => params[:end_hour].to_i)
   end
 
   def redirect_to_clean_url
     if params[:starts_at] =~ /^(\d\d\d\d)-(\d\d)-(\d\d)$/
       redirect_to({:controller => controller_name, :action => params[:action], :year => $1, :month => $2, :day => $3,
+                    :start_hour => params[:start_hour], :end_hour => params[:end_hour],
                     :server => params[:server], :controller_action => params[:controller_action], :response => params[:response],
                     :heap_growth_only => params[:heap_growth_only], :resource => params[:resource], :grouping => params[:grouping],
-                    :grouping_function => params[:grouping_function], :interval => params[:interval], :user_id => params[:user_id]}.reject{|k,v| v.blank?})
+                    :grouping_function => params[:grouping_function], :interval => params[:interval], 
+                    :user_id => params[:user_id]}.reject{|k,v| v.blank?})
     end
   end
 

@@ -20,7 +20,7 @@ class Plot
 
   def xtic_labels
     (0..24).to_a.map do |n| 
-      (n % 3 == 0 ? %Q{"#{n}"} : %Q{""}) +  ' ' + (n*data.intervals_per_hour).to_s
+      ((n % 3 == 0) || (data.end_hour - data.start_hour <= 12) ? %Q{"#{n}"} : %Q{""}) +  ' ' + (n*data.intervals_per_hour).to_s
     end.join(', ')
   end
 
@@ -58,7 +58,7 @@ class Plot
         plot.output     filename
         plot.ylabel     ylabel
         plot.xlabel     'Time of day'
-        plot.xrange     "[0 : #{data.intervals_per_plot}]"
+        plot.xrange     "[#{data.start_interval} : #{data.end_interval}]"
         plot.style      'fill solid 1.0 noborder'
         plot.style      'data histogram'
         plot.style      'histogram rowstacked'
@@ -73,7 +73,7 @@ class Plot
         plot.data = []
 
         (Resource.resources_for_type(data.plot_kind) - resources_excluded_from_plot).reverse.each do |resource|
-          next unless plot_data = data.plot_data(data.plot_kind, resources_excluded_from_plot).map{|i| i[resource]}
+          next unless plot_data = data.plot_data(data.plot_kind, resources_excluded_from_plot).map{|i| (i||{})[resource]}
           plot.data << Gnuplot::DataSet.new([[resource] + plot_data]) do |ds|
             ds.with = 'steps' if resource == 'gc_time' || resource == 'heap_size'
             ds.using = "1 title 1 lc rgb '#{Resource.colors[resource]}'"

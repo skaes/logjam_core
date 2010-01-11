@@ -9,6 +9,14 @@
           <%= select_tag 'starts_at', options_for_select(ControllerAction.log_data_dates, @starts_at.to_s(:db)[0..9]) %>
         </p>
         <p class='filter-widget'>
+          <%= label :filter, 'start_time' %><br />
+          <%= select_tag 'start_hour', options_for_select((0..23).map{|h| ["#{h}:00", h.to_s]}, params[:start_hour]) %>
+        </p>
+        <p class='filter-widget'>
+          <%= label :filter, 'end_time' %><br />
+          <%= select_tag 'end_hour', options_for_select((1..24).map{|h| ["#{h}:00", h.to_s]}, params[:end_hour]) %>
+        </p>
+        <p class='filter-widget'>
           <%= label :filter, 'server' %><br />
           <%= select_tag 'server', options_for_select([''] + @hosts, params['server']) %>
         </p>
