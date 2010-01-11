@@ -1,4 +1,4 @@
-body { background-color: #fff; color: #333; }
+body { background-color: #ddd; color: #333; }
 
 body, p, ol, ul, td {
   font-family: verdana, arial, helvetica, sans-serif;
@@ -14,7 +14,7 @@ pre {
 
 a { color: #000; }
 a:visited { color: #666; }
-a:hover { color: #fff; background-color:#000; }
+a:hover { color: #000; background-color:#fff; }
 a { text-decoration: none; }
 
 label {
@@ -38,7 +38,7 @@ input, select {
 }
 
 .clear-left {clear:left; float:left;}
-.filter-widget {float:left; margin-left: 20px;}
+.filter-widget {float:left; padding-right: 20px;}
 #resource-widget {margin-left: 80px;}
 
 #filter ul li {font-size: 65%; padding: 0px;}
@@ -53,7 +53,6 @@ img {
 fieldset {
 border: 1px solid #CCA383;
 width: 640px;
-background: ##426899;
 padding: 3px;
 }
 
@@ -85,14 +84,25 @@ p.query {
 }
 
 .full_stats, p.query, div#pagetimes h3 {
-  margin-left: 30px;
+  margin-left: 15px;
 }
 
 .full_stats th {
   margin: 0;
   padding: 2px;
-  border: 1px solid #ccc;
+  background: #CCA383;
 }
+
+tr.full_stats:hover {
+  background: #CCA383;
+}
+
+tr.full_stats a {
+  padding: 0 2px;
+}
+
+td.group-thing a {font-size: 90%;}
+td.group-thing {max-width: 24em; overflow: hidden;}
 
 td {padding: 0 8px;}
 td.number {text-align: right;}

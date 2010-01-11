@@ -11,13 +11,14 @@ function no_grouping_function_for_requests() {
 Event.observe(window, 'load', function() {no_grouping_function_for_requests()});
 <%- end -%>
 
-<h1><a href="/">Log Jam on Rails</a></h1>
+<h1><a href="/">LogJam on Rails</a></h1>
 <div id='left' class='clear-left'>
   <div id='filter'>
     <% form_tag({:action => :index}, :method => :get) do -%>
       <fieldset>
         <legend>Filtering</legend>
-        <p class='clear-left'>
+        <p class='clear-left'></p>
+        <p class='filter-widget'>
           <%= label :filter, 'date' %><br />
           <%= select_tag 'starts_at', options_for_select(ControllerAction.log_data_dates, @starts_at.to_s(:db)[0..9]) %>
         </p>
@@ -34,32 +35,33 @@ Event.observe(window, 'load', function() {no_grouping_function_for_requests()});
           <%= select_tag 'server', options_for_select([''] + @hosts, params['server']) %>
         </p>
         <p class='filter-widget'>
-          <%= label :filter, 'response code' %><br />
+          <%= label :filter, 'response' %><br />
           <%= select_tag 'response', options_for_select([''] + @response_codes, params['response']) %> <br />
         </p>
-        <%- if ControllerAction.column_names.include? 'heap_growth' -%>
+        <p class='filter-widget'>
+          <%= label :filter, 'plot timeslice' %><br />
+          <%= select_tag 'interval', options_for_select(ControllerAction.durations.map{|i| [pluralize(i, 'minute'), i]}, params[:interval]) %>
+        </p>
+        <p class='clear-left'></p>
+        <%- if ControllerAction.column_names.include?('user_id') -%>
           <p class='filter-widget'>
-            <%= label :filter, 'heap growing actions only' %><br />
-            <%= check_box_tag 'heap_growth_only', "1", params['heap_growth_only']=="1" %>
-          </p>
-        <%- end -%>
-        <%- if ControllerAction.column_names.include? 'user_id' -%>
-          <p class='clear-left'>
             <%= label :filter, 'user id' %><br />
             <%= text_field_tag 'user_id', params['user_id'] %>
           </p>
         <%- end -%>
         <p class='filter-widget'>
           <%= label :filter, 'page name' %><br />
-          <%= text_field_with_auto_complete :controller_action, :page, {:value => @page, :size => 60} %>
+          <%= text_field_with_auto_complete :controller_action, :page, {:value => @page, :size => 40} %>
         </p>
+        <%- if ControllerAction.column_names.include?('heap_growth') -%>
+          <p class='filter-widget'>
+            <%= label :filter, 'heap growing actions only' %><br />
+            <%= check_box_tag 'heap_growth_only', "1", params['heap_growth_only']=="1" %>
+          </p>
+        <%- end -%>
       </fieldset>
       <fieldset>
         <legend>Display</legend>
-        <p class='clear-left'>
-          <%= label :filter, 'plot timeslice' %><br />
-          <%= select_tag 'interval', options_for_select(ControllerAction.durations.map{|i| [pluralize(i, 'minute'), i]}, params[:interval]) %>
-        </p>
         <p class='filter-widget' id='resource-widget'>
           <%= label :filter, 'resource' %><br />
           <%= select_tag 'resource', options_for_select(Resource.resource_options, params['resource']), 

@@ -77,16 +77,15 @@ class Resource
       name = resource_name(resource)
       type = resource_type(resource)
       using = {:time => 'consuming', :call => 'making', :memory => 'using'}[type]
-      worst = {:time => 'slowest', :call => 'busiest', :memory => 'piggiest'}[type]
       fewest = {:time => 'fastest', :call => 'fewest', :memory => 'smallest'}[type]
       most = {:time => 'slowest', :call => 'most', :memory => 'largest'}[type]
 
       if grouping?(grouping)
         case grouping_function
         when :sum
-          "#{grouping}s #{using} the most total #{name}"
+          "#{grouping}s #{using} the most #{name}"
         when :avg
-          "#{worst} #{grouping}s by #{name}"
+          "#{grouping}s #{using} the most (on average) #{name}"
         when :min
           "#{grouping}s with the #{fewest} #{name}"
         when :max

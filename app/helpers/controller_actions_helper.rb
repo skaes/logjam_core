@@ -30,7 +30,7 @@ module ControllerActionsHelper
   def sometimes_link_grouping_result(result, grouping)
     value = result[grouping]
     if [:user_id, :page].include? grouping.to_sym
-      link_to(h(value), :params => params.merge(grouping => value))
+      link_to(h(value), {:params => params.merge(grouping => value)}, :title => "filter with #{h(value)}")
     else
       h(value)
     end
@@ -38,7 +38,7 @@ module ControllerActionsHelper
 
   def sometimes_link_number_of_requests(result, grouping, options)
     if :page == grouping.to_sym
-      link_to number_with_delimiter(result[:number_of_requests]), options
+      link_to number_with_delimiter(result[:number_of_requests]), options, :title => "plot request time distribution for #{result[:page]}"
     else
       h(result[:number_of_requests])
     end

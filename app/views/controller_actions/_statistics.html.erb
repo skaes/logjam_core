@@ -1,11 +1,11 @@
 <% @dataset.do_the_query.each do |result| -%>
-  <tr>
+  <tr class='full_stats'>
     <% if @dataset.grouping? -%>
       <% if @dataset.grouping =~ /^minute/ -%>
-        <td><%= (@dataset.starts_at + 60 * result[@dataset.grouping]).strftime('%H:%M') %></td>
+        <td class='group-thing'><%= (@dataset.starts_at + 60 * result[@dataset.grouping]).strftime('%H:%M') %></td>
       <% else -%>
         <% params[:controller_action][:page] = result[:page] if @dataset.grouping.to_sym == :page -%>
-        <td><%= sometimes_link_grouping_result(result, @dataset.grouping) %></td>
+        <td class='group-thing'><%= sometimes_link_grouping_result(result, @dataset.grouping) %></td>
       <% end -%>
       <td class='number'>
         <%= sometimes_link_number_of_requests(result, @dataset.grouping, {:params => params.merge(:action => distribution_kind(@dataset), :page => result[:page])}) %>
