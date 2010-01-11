@@ -57,7 +57,12 @@ class Resource
     end
 
     def groupings
-        ['response_code', 'host', 'session_id', 'page', 'user_id', 'minute1', 'request']
+      result = ['response_code', 'host'] 
+      result += ['session_id'] if ControllerAction.column_names.include? 'session_id'
+      result += ['page']
+      result += ['user_id'] if ControllerAction.column_names.include? 'user_id'
+      result += ['minute1', 'request']
+      result
     end
 
     def grouping_functions
