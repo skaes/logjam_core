@@ -38,7 +38,9 @@ input, select {
 
 .clear-left {clear:left; float:left;}
 .filter-widget {float:left; padding-right: 20px;}
-.filter-right {float:left;}
+.filter-widget-last {float:left;}
+.filter-float-right {float:right; padding-right: 20px;}
+#description.filter-widget {font-style: italic; margin: 0 0 0 5px; font-size: 90%;}
 
 #filter ul li {font-size: 65%; padding: 0px;}
 #filter object {display:block; height:360px; width:540px;}
@@ -51,7 +53,7 @@ img {
 
 fieldset {
 border: 1px solid #CCA383;
-width: 645px;
+width: 610px;
 padding: 3px;
 }
 
@@ -86,7 +88,7 @@ p.query {
 }
 
 .full_stats, p.query, div#pagetimes h3 {
-  margin-left: 15px;
+  margin-left: 10px;
 }
 
 .full_stats th {
@@ -104,7 +106,7 @@ tr.full_stats a {
 }
 
 td.group-thing a {font-size: 90%;}
-td.group-thing {max-width: 24em; overflow: hidden;}
+td.group-thing {max-width: 27em; overflow: hidden;}
 
 td {padding: 0 8px;}
 td.number {text-align: right;}

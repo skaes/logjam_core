@@ -1,31 +1,22 @@
 <%- content_for :page_scripts do -%>
 var descriptions = <%= descriptions %>;
 
-function show_descriptions() {
+function show_description() {
   var grouping = $('grouping').value;
   var resource = $('resource').value;
-  
-  if (grouping == 'request') {
-    $('sum').hide();
-    if (resource == 'requests') {
-      $('avg').hide();
-    }
-    else {
-      $('avg').innerHTML = descriptions[grouping][resource];
-      $('avg').show();
-    }
-    $('min').hide();
-    $('max').hide();
+  var gfunction = $('grouping_function').value;
+
+  if (grouping == 'request' || resource == 'requests') {
+    $('function-widget').hide();
+    $('description').innerHTML = descriptions[grouping][resource];
   }
   else {
-    $('sum').innerHTML = descriptions[grouping][resource]['sum']; $('sum').show();
-    $('avg').innerHTML = descriptions[grouping][resource]['avg']; $('avg').show();
-    $('min').innerHTML = descriptions[grouping][resource]['min']; $('min').show();
-    $('max').innerHTML = descriptions[grouping][resource]['max']; $('max').show();
+    $('description').innerHTML = descriptions[grouping][resource][gfunction];
+    $('function-widget').show();
   }
-}
+};
 
-Event.observe(window, 'load', function() {show_descriptions()});
+Event.observe(window, 'load', function() {show_description()});
 <%- end -%>
 
 <div id='left' class='clear-left'>
@@ -53,7 +44,7 @@ Event.observe(window, 'load', function() {show_descriptions()});
           <%= label :filter, 'response' %><br />
           <%= select_tag 'response', options_for_select([''] + @response_codes, params['response']) %> <br />
         </p>
-        <p class='filter-widget'>
+        <p class='filter-widget-last'>
           <%= label :filter, 'plot timeslice' %><br />
           <%= select_tag 'interval', options_for_select(ControllerAction.durations.map{|i| [pluralize(i, 'minute'), i]}, params[:interval]) %>
         </p>
@@ -70,9 +61,9 @@ Event.observe(window, 'load', function() {show_descriptions()});
           <%= label :filter, 'page name' %><br />
           <%= text_field_with_auto_complete :controller_action, :page, {:value => @page, :size => 40} %>
         </p>
-        <%- if ControllerAction.column_names.include?('heap_growth') -%>
-          <p class='filter-widget'>
-            <%= label :filter, 'heap growing actions only' %><br />
+        <%- if true || ControllerAction.column_names.include?('heap_growth') -%>
+          <p class='filter-widget-last'>
+            <%= label :filter, 'heap growth only' %><br />
             <%= check_box_tag 'heap_growth_only', "1", params['heap_growth_only']=="1" %>
           </p>
         <%- end -%>
@@ -82,20 +73,26 @@ Event.observe(window, 'load', function() {show_descriptions()});
         <p class='filter-widget'>
           <%= label :filter, 'Show' %><br />
           <%= select_tag 'grouping', options_for_select(Resource.grouping_options, params['grouping']),
-              :onChange => "show_descriptions()" %>
+              :onchange => "show_description()" %>
         </p>
         <p class='filter-widget' id='resource-widget'>
-          <%= label :filter, 'Ranked by' %><br />
+          <%= label :filter, 'with' %><br />
           <%= select_tag 'resource', options_for_select(Resource.resource_options, params['resource']), 
-              :onChange => "show_descriptions()" %>
+              :onchange => "show_description()" %>
         </p>
-        <%= hidden_field_tag 'grouping_function', params['grouping_function'] %>
-        <p class='filter-right' id='filter-submit-links'>
-          <button type="button" id="sum" onclick="$('grouping_function').value = 'sum'; $('filter-form').submit();">sum</button><br />
-          <button type="button" id="avg" onclick="$('grouping_function').value = 'avg'; $('filter-form').submit();">avg</button><br />
-          <button type="button" id="min" onclick="$('grouping_function').value = 'min'; $('filter-form').submit();">min</button><br />
-          <button type="button" id="max" onclick="$('grouping_function').value = 'max'; $('filter-form').submit();">max</button><br />
+        <p class='filter-widget' id='function-widget'>
+          <%= label :filter, 'sorted by' %><br />
+          <%= select_tag 'grouping_function', options_for_select(Resource.grouping_functions, params['grouping_function']),
+              :onchange => "show_description()" %>
         </p>
+        <p class='filter-float-right'>
+          <br />
+          <%= submit_tag '&nbsp;&nbsp;&nbsp;GO&nbsp;&nbsp;&nbsp;', :class => 'submit' %>
+        </p>
+        
+        <p class='clear-left'></p>
+
+        <p class='filter-widget' id='description'></p>
       </fieldset>
       <% end -%>
   </div>

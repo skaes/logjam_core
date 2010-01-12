@@ -137,7 +137,7 @@ class FilteredDataset
       end
       direction = 'DESC'
     end
-    %Q|SELECT #{selects.join(', ')} FROM #{@klazz.table_name} #{sql_conditions} #{"GROUP BY #{grouping}" if grouping?} #{"ORDER BY #{order} #{direction}" if order} LIMIT 30|
+    %Q|SELECT #{selects.join(', ')} FROM #{@klazz.table_name} #{sql_conditions} #{"GROUP BY #{grouping}" if grouping?} #{"ORDER BY #{order} #{direction}" if order} LIMIT 25|
   end
 
   def do_the_query
@@ -152,7 +152,7 @@ class FilteredDataset
   def sql_for_call_attributes(attributes, func, prefix = '')
     attributes.uniq.map do |type|
       if type == "requests"
-        "count(1) as requests"
+        "count(1)/#{interval_duration} as requests"
       else
         "#{func}(#{type}) as #{prefix}#{type}"
       end

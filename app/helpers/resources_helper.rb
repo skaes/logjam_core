@@ -7,14 +7,14 @@ module ResourcesHelper
     groupings.each do |grouping|
       r = {}
       resources.each do |resource|
-        if Resource.grouping?(grouping)
+        if grouping.to_sym == :request || resource.to_sym == :requests
+          r[resource] = Resource.description(resource, grouping, :sum) unless grouping.to_sym == :request && resource.to_sym == :requests
+        else
           f = {}
           functions.each do |function|
             f[function] = Resource.description(resource, grouping, function)
           end
           r[resource] = f
-        else
-          r[resource] = Resource.description(resource, grouping, nil) unless resource == 'requests'
         end
         g[grouping] = r
       end

@@ -82,7 +82,7 @@ class Resource
     end
 
     def grouping_functions
-      ['', 'min', 'max', 'avg', 'sum']
+      ['sum', 'avg', 'min', 'max']
     end
     
     def grouping?(grouping)
@@ -94,8 +94,8 @@ class Resource
       type = resource_type(resource)
       human_grouping = humanname_for_grouping[grouping.to_sym]
       worst = {:time => 'slowest', :call => 'busiest', :memory => 'piggiest'}[type]
-      most = {:time => 'slowest', :call => 'most', :memory => 'largest'}[type]
-      fewest = {:time => 'fastest', :call => 'fewest', :memory => 'smallest'}[type]
+      # most = {:time => 'slowest', :call => 'most', :memory => 'largest'}[type]
+      # fewest = {:time => 'fastest', :call => 'fewest', :memory => 'smallest'}[type]
       # using = {:time => 'using', :call => 'making', :memory => 'using'}[type]
       # least = {:time => 'least', :call => 'fewest', :memory => 'least'}[type]
       # best = {:time => 'fastest', :call => 'least busy', :memory => 'skinniest'}[type]
@@ -107,9 +107,9 @@ class Resource
         when :avg
           "#{worst} #{human_grouping} by average #{name}"
         when :min
-          "#{human_grouping} with requests with #{fewest} #{name}"
+          "#{human_grouping} with requests with min #{name}"
         when :max
-          "#{human_grouping} with requests with #{most} #{name}"
+          "#{human_grouping} with requests with max #{name}"
         end
       else
         "#{human_grouping} with the most #{name}"
