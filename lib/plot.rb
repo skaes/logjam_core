@@ -27,7 +27,7 @@ class Plot
   def terminal
     case filetype
     when :png
-      'png size 660, 340 font "/Library/Fonts/Verdana.ttf" 8'
+      'png transparent size 660, 340 font "/Library/Fonts/Verdana.ttf" 8'
     when :svg
       'svg size 1000, 600 fsize 11'
     end
