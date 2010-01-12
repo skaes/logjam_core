@@ -61,7 +61,7 @@ Event.observe(window, 'load', function() {show_description()});
           <%= label :filter, 'page name' %><br />
           <%= text_field_with_auto_complete :controller_action, :page, {:value => @page, :size => 40} %>
         </p>
-        <%- if true || ControllerAction.column_names.include?('heap_growth') -%>
+        <%- if ControllerAction.column_names.include?('heap_growth') -%>
           <p class='filter-widget-last'>
             <%= label :filter, 'heap growth only' %><br />
             <%= check_box_tag 'heap_growth_only', "1", params['heap_growth_only']=="1" %>
@@ -130,7 +130,7 @@ Event.observe(window, 'load', function() {show_description()});
       <% end -%>
       </table>
       <div id='distribution-plot'>
-        <%= button_to "#{@plot_kind} distribution plot and statistics", 
+        <%= button_to "distribution plot and statistics", 
                     {:params => params.merge(:action => distribution_kind(@dataset))} %>
       </div>
     <%- end -%>
