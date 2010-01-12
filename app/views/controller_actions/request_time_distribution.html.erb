@@ -1,5 +1,4 @@
 <div id='request-time-distribution'>
-  <center>
-  <object data="/images/<%= @dataset.svg_file %>" ></object>
-  </center>
+  <object data="/images/<%= @dataset.svg_file %>" style="float:left"></object>
+  <%= render :partial => 'time_quintiles' %>
 </div>

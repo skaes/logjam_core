@@ -31,11 +31,11 @@ class FilteredDataset
   end
 
   def starts_at
-    @klazz.date
+    @klazz.date + start_hour.hours
   end
 
   def ends_at
-    starts_at + 24.hours
+    @klazz.date + end_hour.hours
   end
 
   def hash

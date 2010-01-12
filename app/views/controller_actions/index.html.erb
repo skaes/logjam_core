@@ -129,43 +129,20 @@ Event.observe(window, 'load', function() {show_description()});
         </tr>
       <% end -%>
       </table>
+      <div id='distribution-plot'>
+        <%= button_to "#{@plot_kind} distribution plot and statistics", 
+                    {:params => params.merge(:action => distribution_kind(@dataset))} %>
+      </div>
     <%- end -%>
-
-    <% if [:time, :memory].include? @plot_kind %>
-    <table class='stats' id='quintile-stats'>
-      <% if @plot_kind == :time %>
-        <tr><td>&nbsp;</td></tr>
-        <tr><td>fastest 20%</td><td class='number'><%= time_number(@dataset.average_total_time_by_quintile(1)) %></td></tr>
-        <tr><td>next fastest</td><td class='number'><%= time_number(@dataset.average_total_time_by_quintile(2)) %></td></tr>
-        <tr><td>median</td><td class='number'><%= time_number(@dataset.average_total_time_by_quintile(3)) %></td></tr>
-        <tr><td>next slowest</td><td class='number'><%= time_number(@dataset.average_total_time_by_quintile(4)) %></td></tr>
-        <tr><td>slowest 20%</td><td class='number'><%= time_number(@dataset.average_total_time_by_quintile(5)) %></td></tr>
-        <tr><td>&nbsp;</td></tr>
-        <tr><td>happy (rt &lt; 100)</td><td class='number'><%= '%.1f' % (100.0 * @dataset.happy) %>%</td></tr>
-        <tr><td>satisfied (rt &lt; 500)</td><td class='number'><%= '%.1f' % (100.0 * @dataset.satisfied) %>%</td></tr>
-        <tr><td>tolerating (500 &lt;= rt &lt; 2000)</td><td class='number'><%= '%.1f' % (100.0 * @dataset.tolerating) %>%</td></tr>
-        <tr><td>frustrated (rt &gt; 2000)</td><td class='number'><%= '%.1f' % (100.0 * @dataset.frustrated) %>%</td></tr>
-        <tr><td><%= link_to 'apdex score', 'http://www.apdex.org/overview.html' %></td><td class='number'><%= '%.2f' % @dataset.apdex %></td></tr>
-        <tr><td>&nbsp;</td></tr>
-      <% elsif @plot_kind == :memory -%>
-        <tr><td>&nbsp;</td></tr>
-        <tr><td>&nbsp;</td></tr>
-        <tr><td>leanest 20%</td><td class='number'><%= memory_number(@dataset.average_total_memory_by_quintile(1)) %></td></tr>
-        <tr><td>next leanest</td><td class='number'><%= memory_number(@dataset.average_total_memory_by_quintile(2)) %></td></tr>
-        <tr><td>median</td><td class='number'><%= memory_number(@dataset.average_total_memory_by_quintile(3)) %></td></tr>
-        <tr><td>next fattest</td><td class='number'><%= memory_number(@dataset.average_total_memory_by_quintile(4)) %></td></tr>
-        <tr><td>fattest 20%</td><td class='number'><%= memory_number(@dataset.average_total_memory_by_quintile(5)) %></td></tr>
-        <tr><td>&nbsp;</td></tr>
-      <% else -%>
-      <% end -%>
-    </table>
-    <% end %>
+    
   <% end -%>
+  <div class='clear-left'></div>
 </div>
 
 <% unless @dataset.empty? -%>
   <div id='column-right'>
   <div id='pagetimes'>
+    <br />
     <h3><%= @dataset.description %></h3>
     <table class='full_stats'>
       <tr>

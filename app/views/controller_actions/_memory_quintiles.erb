@@ -1,0 +1,7 @@
+<table id='quintile-stats'>
+  <tr><td>leanest 20%</td><td class='number'><%= memory_number(@dataset.average_total_memory_by_quintile(1)) %></td></tr>
+  <tr><td>next leanest</td><td class='number'><%= memory_number(@dataset.average_total_memory_by_quintile(2)) %></td></tr>
+  <tr><td>median</td><td class='number'><%= memory_number(@dataset.average_total_memory_by_quintile(3)) %></td></tr>
+  <tr><td>next fattest</td><td class='number'><%= memory_number(@dataset.average_total_memory_by_quintile(4)) %></td></tr>
+  <tr><td>fattest 20%</td><td class='number'><%= memory_number(@dataset.average_total_memory_by_quintile(5)) %></td></tr>
+</table>
