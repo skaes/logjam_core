@@ -13,7 +13,6 @@ pre {
 }
 
 a { color: #000; }
-a:visited { color: #666; }
 a:hover { color: #000; background-color:#fff; }
 a { text-decoration: none; }
 
@@ -39,7 +38,7 @@ input, select {
 
 .clear-left {clear:left; float:left;}
 .filter-widget {float:left; padding-right: 20px;}
-#resource-widget {margin-left: 80px;}
+.filter-right {float:left;}
 
 #filter ul li {font-size: 65%; padding: 0px;}
 #filter object {display:block; height:360px; width:540px;}
@@ -52,7 +51,7 @@ img {
 
 fieldset {
 border: 1px solid #CCA383;
-width: 640px;
+width: 645px;
 padding: 3px;
 }
 
@@ -64,19 +63,22 @@ fieldset legend {
 background: #CCA383;
 padding: 3px;
 font-weight: bold;
+font-size: 120%;
 }
 
-div#filter, div#pagetimes {
+div#filter, div#column-right {
   float: left;
 }
 
+div#column-right {width: 700px;}
+
 div#pagetimes {
   margin: -20px 0 0 20px;
-  width: 600px;
 }
 
 p.query {
   font-size: 90%;
+  width: 640px;
 }
 
 .stats {
@@ -170,4 +172,3 @@ td.number {text-align: right;}
   font-size: 12px;
   list-style: square;
 }
-

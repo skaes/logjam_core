@@ -1,23 +1,38 @@
 <%- content_for :page_scripts do -%>
-function no_grouping_function_for_requests() {
-  if ($('resource').value == 'requests') {
-    $('grouping-function').hide();
-  } 
+var descriptions = <%= descriptions %>;
+
+function show_descriptions() {
+  var grouping = $('grouping').value;
+  var resource = $('resource').value;
+  
+  if (grouping == 'request') {
+    $('sum').hide();
+    if (resource == 'requests') {
+      $('avg').hide();
+    }
+    else {
+      $('avg').innerHTML = descriptions[grouping][resource];
+      $('avg').show();
+    }
+    $('min').hide();
+    $('max').hide();
+  }
   else {
-    $('grouping-function').show();
+    $('sum').innerHTML = descriptions[grouping][resource]['sum']; $('sum').show();
+    $('avg').innerHTML = descriptions[grouping][resource]['avg']; $('avg').show();
+    $('min').innerHTML = descriptions[grouping][resource]['min']; $('min').show();
+    $('max').innerHTML = descriptions[grouping][resource]['max']; $('max').show();
   }
 }
 
-Event.observe(window, 'load', function() {no_grouping_function_for_requests()});
+Event.observe(window, 'load', function() {show_descriptions()});
 <%- end -%>
 
-<h1><a href="/">LogJam on Rails</a></h1>
 <div id='left' class='clear-left'>
   <div id='filter'>
-    <% form_tag({:action => :index}, :method => :get) do -%>
+    <% form_tag({:action => :index}, :method => :get, :id => 'filter-form') do -%>
       <fieldset>
-        <legend>Filtering</legend>
-        <p class='clear-left'></p>
+        <legend>LogJam on Rails</legend>
         <p class='filter-widget'>
           <%= label :filter, 'date' %><br />
           <%= select_tag 'starts_at', options_for_select(ControllerAction.log_data_dates, @starts_at.to_s(:db)[0..9]) %>
@@ -42,7 +57,9 @@ Event.observe(window, 'load', function() {no_grouping_function_for_requests()});
           <%= label :filter, 'plot timeslice' %><br />
           <%= select_tag 'interval', options_for_select(ControllerAction.durations.map{|i| [pluralize(i, 'minute'), i]}, params[:interval]) %>
         </p>
+        
         <p class='clear-left'></p>
+
         <%- if ControllerAction.column_names.include?('user_id') -%>
           <p class='filter-widget'>
             <%= label :filter, 'user id' %><br />
@@ -59,24 +76,27 @@ Event.observe(window, 'load', function() {no_grouping_function_for_requests()});
             <%= check_box_tag 'heap_growth_only', "1", params['heap_growth_only']=="1" %>
           </p>
         <%- end -%>
-      </fieldset>
-      <fieldset>
-        <legend>Display</legend>
-        <p class='filter-widget' id='resource-widget'>
-          <%= label :filter, 'resource' %><br />
-          <%= select_tag 'resource', options_for_select(Resource.resource_options, params['resource']), 
-              :onChange => "no_grouping_function_for_requests()" %>
-        </p>
+
+        <p class='clear-left'></p>
+
         <p class='filter-widget'>
-          <%= label :filter, 'group by' %><br />
-          <%= select_tag 'grouping', options_for_select(Resource.groupings, params['grouping']) %>
+          <%= label :filter, 'Show' %><br />
+          <%= select_tag 'grouping', options_for_select(Resource.grouping_options, params['grouping']),
+              :onChange => "show_descriptions()" %>
         </p>
-        <p class='filter-widget' id='grouping-function'>
-          <%= label :filter, 'from each group, display' %><br />
-          <%= select_tag 'grouping_function', options_for_select(Resource.grouping_functions, params['grouping_function']) %>
+        <p class='filter-widget' id='resource-widget'>
+          <%= label :filter, 'Ranked by' %><br />
+          <%= select_tag 'resource', options_for_select(Resource.resource_options, params['resource']), 
+              :onChange => "show_descriptions()" %>
+        </p>
+        <%= hidden_field_tag 'grouping_function', params['grouping_function'] %>
+        <p class='filter-right' id='filter-submit-links'>
+          <button type="button" id="sum" onclick="$('grouping_function').value = 'sum'; $('filter-form').submit();">sum</button><br />
+          <button type="button" id="avg" onclick="$('grouping_function').value = 'avg'; $('filter-form').submit();">avg</button><br />
+          <button type="button" id="min" onclick="$('grouping_function').value = 'min'; $('filter-form').submit();">min</button><br />
+          <button type="button" id="max" onclick="$('grouping_function').value = 'max'; $('filter-form').submit();">max</button><br />
         </p>
       </fieldset>
-      <%= submit_tag 'GO', :class => 'submit' %><br /><br />
       <% end -%>
   </div>
 
@@ -114,9 +134,9 @@ Event.observe(window, 'load', function() {no_grouping_function_for_requests()});
       </table>
     <%- end -%>
 
+    <% if [:time, :memory].include? @plot_kind %>
     <table class='stats' id='quintile-stats'>
       <% if @plot_kind == :time %>
-        <tr><td>&nbsp;</td></tr>
         <tr><td>&nbsp;</td></tr>
         <tr><td>fastest 20%</td><td class='number'><%= time_number(@dataset.average_total_time_by_quintile(1)) %></td></tr>
         <tr><td>next fastest</td><td class='number'><%= time_number(@dataset.average_total_time_by_quintile(2)) %></td></tr>
@@ -129,6 +149,7 @@ Event.observe(window, 'load', function() {no_grouping_function_for_requests()});
         <tr><td>tolerating (500 &lt;= rt &lt; 2000)</td><td class='number'><%= '%.1f' % (100.0 * @dataset.tolerating) %>%</td></tr>
         <tr><td>frustrated (rt &gt; 2000)</td><td class='number'><%= '%.1f' % (100.0 * @dataset.frustrated) %>%</td></tr>
         <tr><td><%= link_to 'apdex score', 'http://www.apdex.org/overview.html' %></td><td class='number'><%= '%.2f' % @dataset.apdex %></td></tr>
+        <tr><td>&nbsp;</td></tr>
       <% elsif @plot_kind == :memory -%>
         <tr><td>&nbsp;</td></tr>
         <tr><td>&nbsp;</td></tr>
@@ -137,14 +158,16 @@ Event.observe(window, 'load', function() {no_grouping_function_for_requests()});
         <tr><td>median</td><td class='number'><%= memory_number(@dataset.average_total_memory_by_quintile(3)) %></td></tr>
         <tr><td>next fattest</td><td class='number'><%= memory_number(@dataset.average_total_memory_by_quintile(4)) %></td></tr>
         <tr><td>fattest 20%</td><td class='number'><%= memory_number(@dataset.average_total_memory_by_quintile(5)) %></td></tr>
+        <tr><td>&nbsp;</td></tr>
       <% else -%>
       <% end -%>
-        <tr><td>&nbsp;</td></tr>
     </table>
+    <% end %>
   <% end -%>
 </div>
 
 <% unless @dataset.empty? -%>
+  <div id='column-right'>
   <div id='pagetimes'>
     <h3><%= @dataset.description %></h3>
     <table class='full_stats'>
@@ -154,12 +177,12 @@ Event.observe(window, 'load', function() {no_grouping_function_for_requests()});
           <th>requests</th>
           <% unless @dataset.resource == 'requests' -%>
             <% unless @dataset.grouping_function == :avg -%>
-              <th>avg (<%= @dataset.resource %>)</th>
+              <th>avg<br/><%= @dataset.resource.gsub('_', ' ') %></th>
             <% end -%>
-            <th>stddev (<%= @dataset.resource %>)</th>
-            <th><%= @dataset.grouping_function %> (<%= @dataset.resource %>)</th>
+            <th>stddev<br/><%= @dataset.resource.gsub('_', ' ') %></th>
+            <th><%= @dataset.grouping_function %><br/><%= @dataset.resource.gsub('_', ' ') %></th>
             <% if @dataset.accumulates_time? -%>
-              <th>% of total <%= @dataset.resource %></th>
+              <th>% of overall<br/><%= @dataset.resource.gsub('_', '&nbsp;') %></th>
               <% unless @dataset.resource.to_sym == :total_time -%>
                 <th>% of total time</th>
               <% end -%>
@@ -174,5 +197,6 @@ Event.observe(window, 'load', function() {no_grouping_function_for_requests()});
       <%= render :partial => 'statistics' %>
     </table>
     <p class='query'><%= @dataset.the_query %></p>
+  </div>
   </div>
 <% end -%>

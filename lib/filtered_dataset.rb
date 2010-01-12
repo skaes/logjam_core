@@ -137,7 +137,7 @@ class FilteredDataset
       end
       direction = 'DESC'
     end
-    %Q|SELECT #{selects.join(', ')} FROM #{@klazz.table_name} #{sql_conditions} #{"GROUP BY #{grouping}" if grouping?} #{"ORDER BY #{order} #{direction}" if order} LIMIT 35|
+    %Q|SELECT #{selects.join(', ')} FROM #{@klazz.table_name} #{sql_conditions} #{"GROUP BY #{grouping}" if grouping?} #{"ORDER BY #{order} #{direction}" if order} LIMIT 30|
   end
 
   def do_the_query

@@ -57,12 +57,28 @@ class Resource
     end
 
     def groupings
-      result = ['response_code', 'host'] 
+      result = ['response_code']
+      result += ['host']
       result += ['session_id'] if ControllerAction.column_names.include? 'session_id'
       result += ['page']
       result += ['user_id'] if ControllerAction.column_names.include? 'user_id'
-      result += ['minute1', 'request']
+      result += ['minute1']
+      result += ['request']
       result
+    end
+
+    def humanname_for_grouping
+      {:response_code => 'response codes', 
+       :host => 'servers',
+       :session_id => 'sessions',
+       :page => 'pages',
+       :user_id => 'users',
+       :minute1 => 'times of day',
+       :request => 'requests'}
+    end
+
+    def grouping_options
+      groupings.map{|grouping| [humanname_for_grouping[grouping.to_sym], grouping]}
     end
 
     def grouping_functions
@@ -70,29 +86,33 @@ class Resource
     end
     
     def grouping?(grouping)
-      grouping != 'request'
+      grouping.to_sym != :request
     end
 
     def description(resource, grouping, grouping_function)
-      name = resource_name(resource)
+      name = resource_name(resource).sub('sql query ', '')
       type = resource_type(resource)
-      using = {:time => 'consuming', :call => 'making', :memory => 'using'}[type]
-      fewest = {:time => 'fastest', :call => 'fewest', :memory => 'smallest'}[type]
+      human_grouping = humanname_for_grouping[grouping.to_sym]
+      worst = {:time => 'slowest', :call => 'busiest', :memory => 'piggiest'}[type]
       most = {:time => 'slowest', :call => 'most', :memory => 'largest'}[type]
+      fewest = {:time => 'fastest', :call => 'fewest', :memory => 'smallest'}[type]
+      # using = {:time => 'using', :call => 'making', :memory => 'using'}[type]
+      # least = {:time => 'least', :call => 'fewest', :memory => 'least'}[type]
+      # best = {:time => 'fastest', :call => 'least busy', :memory => 'skinniest'}[type]
 
       if grouping?(grouping)
-        case grouping_function
+        case grouping_function.to_sym
         when :sum
-          "#{grouping}s #{using} the most #{name}"
+          "#{worst} #{human_grouping} by overall #{name}"
         when :avg
-          "#{grouping}s #{using} the most (on average) #{name}"
+          "#{worst} #{human_grouping} by average #{name}"
         when :min
-          "#{grouping}s with the #{fewest} #{name}"
+          "#{human_grouping} with requests with #{fewest} #{name}"
         when :max
-          "#{grouping}s with the #{most} #{name}"
+          "#{human_grouping} with requests with #{most} #{name}"
         end
       else
-        "#{grouping}s #{using} the most #{name}"
+        "#{human_grouping} with the most #{name}"
       end
     end
 
