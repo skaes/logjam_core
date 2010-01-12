@@ -34,6 +34,7 @@ input, select {
 
 .submit {
   margin-top: 10px;
+  width: 60px;
 }
 
 .clear-left {clear:left; float:left;}
