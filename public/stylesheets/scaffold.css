@@ -89,7 +89,7 @@ p.query {
 }
 
 .full_stats, p.query, div#pagetimes h3 {
-  margin-left: 10px;
+  margin-left: 0px;
 }
 
 .full_stats th {
@@ -107,7 +107,7 @@ tr.full_stats a {
 }
 
 td.group-thing a {font-size: 90%;}
-td.group-thing {max-width: 27em; overflow: hidden;}
+td.group-thing {max-width: 32em; overflow: hidden;}
 
 td {padding: 0 8px;}
 td.number {text-align: right;}
