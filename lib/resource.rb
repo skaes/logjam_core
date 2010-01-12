@@ -73,7 +73,7 @@ class Resource
        :session_id => 'sessions',
        :page => 'pages',
        :user_id => 'users',
-       :minute1 => 'times of day',
+       :minute1 => 'minutes',
        :request => 'requests'}
     end
 
