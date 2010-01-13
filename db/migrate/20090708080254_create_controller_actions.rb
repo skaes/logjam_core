@@ -18,20 +18,20 @@ class CreateControllerActions < ActiveRecord::Migration
 #      t.float :api_time, :null => false
 #      t.float :search_time, :null => false
       t.float :other_time, :null => false
-#      t.float :gc_time, :null => false
-#      t.float :memcache_time, :null => false
+      t.float :gc_time, :null => false
+      t.float :memcache_time, :null => false
       t.integer :db_calls, :null => false
       t.integer :db_sql_query_cache_hits, :null => false
 #      t.integer :api_calls, :null => false
-#      t.integer :memcache_calls, :null => false
-#      t.integer :memcache_misses, :null => false
+      t.integer :memcache_calls, :null => false
+      t.integer :memcache_misses, :null => false
 #      t.integer :search_calls, :null => false
-#      t.integer :gc_calls, :null => false
-#      t.integer :heap_size, :null => false
-#      t.integer :heap_growth, :null => false
-#      t.integer :allocated_objects, :null => false
-#      t.integer :allocated_bytes, :null => false
-#      t.integer :allocated_memory, :null => false
+      t.integer :gc_calls, :null => false
+      t.integer :heap_size, :null => false
+      t.integer :heap_growth, :null => false
+      t.integer :allocated_objects, :null => false
+      t.integer :allocated_bytes, :null => false
+      t.integer :allocated_memory, :null => false
     end
   end
 

@@ -12,7 +12,7 @@ The interface is flexible enough to be able to provide answers to a great many q
 * what pages are causing the ruby heap to be expanded?
 * which pages are making the most DB queries?
 
-Note that some of LogJam's features (eg those involving GC and memory data) depend on using a specially built ruby and some rails plugins, which are available separately.
+Note that some of LogJam's features (eg those involving GC and memory data) depend on using a specially built ruby and some rails plugins, which are available separately. 
 
 ==Authors
 
@@ -51,7 +51,15 @@ and it's a good idea to run the tests, especially if you have modified some of t
 
     rake test
 
+If the tests fail in a way that looks something like this
+
+    ActiveRecord::StatementInvalid: Mysql::Error: Column 'gc_calls' cannot be null
+
+Then you probably have a mis-match between the fields setup by the migrations, and those configured in logjam.yml.
+
 Note that for somewhat complex reasons that I won't get into here, RAILS_ENV=test rake db:migrate does NOT work with LogJam (okay, this has to do with factory_girl loading factories.rb when factory_girl is loaded). But rake db:test:clone does work, if you need it.
+
+An instance of LogJam is intended to be used with the logs from one application; if you want to use LogJam to study more than one application, the most straightforward solution is to use multiple installations of LogJam.
 
 ==What to do in the application being studied
 

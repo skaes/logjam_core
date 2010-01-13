@@ -13,19 +13,19 @@ class AddIndexesToControllerActions < ActiveRecord::Migration
     add_index :controller_actions, :db_time
 #    add_index :controller_actions, :api_time
 #    add_index :controller_actions, :search_time
-#    add_index :controller_actions, :memcache_time
-#    add_index :controller_actions, :db_calls
-#    add_index :controller_actions, :db_sql_query_cache_hits
+    add_index :controller_actions, :memcache_time
+    add_index :controller_actions, :db_calls
+    add_index :controller_actions, :db_sql_query_cache_hits
 #    add_index :controller_actions, :api_calls
-#    add_index :controller_actions, :memcache_calls
-#    add_index :controller_actions, :memcache_misses
+    add_index :controller_actions, :memcache_calls
+    add_index :controller_actions, :memcache_misses
 #    add_index :controller_actions, :search_calls
-#    add_index :controller_actions, :gc_calls
-#    add_index :controller_actions, :heap_size
-#    add_index :controller_actions, :heap_growth
-#    add_index :controller_actions, :allocated_objects
-#    add_index :controller_actions, :allocated_bytes
-#    add_index :controller_actions, :allocated_memory
+    add_index :controller_actions, :gc_calls
+    add_index :controller_actions, :heap_size
+    add_index :controller_actions, :heap_growth
+    add_index :controller_actions, :allocated_objects
+    add_index :controller_actions, :allocated_bytes
+    add_index :controller_actions, :allocated_memory
   end
 
   def self.down

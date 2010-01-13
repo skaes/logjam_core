@@ -4,7 +4,8 @@
 #   accept a log line and extract info as a hash where the domain corresponds to som db column.
 #   return false (or nil) if the line cannot be matched.
 #
-# NOTE: The configuration options are at the end of this file.
+# NOTE: Most of the configuration options are at the end of this file. But you also need
+#       to pay attention to the LOG_LINE_SPLITTER.
 
 module Matchers
 
@@ -32,6 +33,7 @@ module Matchers
     ['localhost', process_id, user_id, line]
   end
 
+  # CONFIGURE ME: Pick one of the splitters above.
   LOG_LINE_SPLITTER = SYSLOG_LINE_SPLITTER
 
   # the proccessing line. mandatory matcher.
@@ -76,6 +78,30 @@ module Matchers
         :db_sql_query_cache_hits => $5.to_i,
         :response_code => $6.to_i,
       }
+  end
+
+  # Full-blown time_bandits, with memcache and memory resources, via gchacks
+  # see http://github.com/skaes/matzruby (branch ruby187pl202patched) or Ruby Enterprise Edition
+  # Jan 13 16:58:38 starbuck-2 rails[86742]: Completed in 174.696ms (View: 59.062, DB: 13.954(14,2), MC: 0.000(0r,0m), GC: 0.000(0), HP: 0(450818,103822,3233093)) | 200 OK
+  COMPLETED_TIME_BANDITS_WITH_MEMCACHE_AND_GCHACKS = lambda do |line|
+    line =~ /^Completed in ([\S]+)ms \(View: ([\S]+), DB: ([\S]+)\((\d+)(?:,(\d+))?\), MC: ([\S]+)\((\d+)r,(\d+)m\)(?:, GC: ([\S]+)\((\d+)\))?(?:, HP: ([\S]+)\((\d+),(\d+),(\d+)\))?\) \| (\d+)? / and
+      {
+        :total_time => $1.to_f,
+        :view_time => $2.to_f,
+        :db_time => $3.to_f,
+        :db_calls => $4.to_i,
+        :db_sql_query_cache_hits => $5.to_i,
+        :memcache_time => $6.to_f,
+        :memcache_calls => $7.to_i,
+        :memcache_misses => $8.to_i,
+        :gc_time => $9.to_f,
+        :gc_calls => $10.to_i,
+        :heap_growth => $11.to_i,
+        :heap_size => $12.to_i,
+        :allocated_objects => $13.to_i,
+        :allocated_bytes => $14.to_i,
+        :response_code => $15.to_i,
+      }
     end
 
   # completed line regexp: complicated by the fact that the log file
@@ -112,6 +138,9 @@ module Matchers
 end # Matchers
 
 # CONFIGURATION
+#
+# Have you checked LOG_LINE_SPLITTER around line 37?
+#
 # Make sure to enable matchers appropriate for the log files that will be imported.
 # The sample log file included with LogJam is in basic time bandit format.
 # It is ok to have multiple COMPLETED matchers enabled; the first to match will be used.
@@ -119,5 +148,6 @@ end # Matchers
 RequestInfo.register_matcher Matchers::PROCESSING
 #RequestInfo.register_matcher Matchers::SESSION_XING
 #RequestInfo.register_matcher Matchers::COMPLETED_XING
+RequestInfo.register_matcher Matchers::COMPLETED_TIME_BANDITS_WITH_MEMCACHE_AND_GCHACKS
 RequestInfo.register_matcher Matchers::COMPLETED_BASIC_TIME_BANDITS
 RequestInfo.register_matcher Matchers::COMPLETED_RAILS
