@@ -8,7 +8,7 @@ module ResourcesHelper
       r = {}
       resources.each do |resource|
         if grouping.to_sym == :request || resource.to_sym == :requests
-          r[resource] = Resource.description(resource, grouping, :sum) unless grouping.to_sym == :request && resource.to_sym == :requests
+          r[resource] = Resource.description(resource, grouping, :sum)
         else
           f = {}
           functions.each do |function|

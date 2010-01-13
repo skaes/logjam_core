@@ -100,6 +100,9 @@ class Resource
       # least = {:time => 'least', :call => 'fewest', :memory => 'least'}[type]
       # best = {:time => 'fastest', :call => 'least busy', :memory => 'skinniest'}[type]
 
+      return 'nonsensical' if grouping.to_sym != :request && resource.to_sym == :heap_size && grouping_function.to_sym == :sum
+      return 'nonsensical' if grouping.to_sym == :request && resource.to_sym == :requests
+
       if grouping?(grouping)
         case grouping_function.to_sym
         when :sum
