@@ -1,27 +1,35 @@
 class FilteredDataset
   HEAP_SLOT_SIZE = 40
 
-  attr_accessor :klazz, :interval_duration, :user_id, :host, :page, :response_code,
+  attr_accessor :klazz, :interval, :user_id, :host, :page, :response_code,
                 :plot_kind, :heap_growth_only, :resource, :grouping, :grouping_function,
                 :start_hour, :end_hour
+
+  DEFAULTS = {:plot_kind => :time, :interval => '5',
+              :grouping => 'page', :resource => 'total_time', :grouping_function => 'sum',
+              :start_hour => '0', :end_hour => '24'}
+
+  def self.is_default?(attribute, value)
+    DEFAULTS.keys.include?(attribute) && DEFAULTS[attribute.to_sym].to_s == value
+  end
 
   def initialize(options = {})
     most_recent_date_with_data = ControllerAction.log_data_dates.first
     @klazz = options[:class] || ControllerAction.class_for_date(most_recent_date_with_data)
-    @interval_duration = options[:interval_duration]
-    @user_id = options[:user_id] if !options[:user_id].blank?
-    @host = options[:host] if !options[:host].blank?
-    @page = options[:page] if !options[:page].blank?
-    @response_code = options[:response_code] if !options[:response_code].blank?
-    @heap_growth_only = !options[:heap_growth_only].blank?
-    @plot_kind = options[:plot_kind] || :response_times
-    @resource = options[:resource] || 'total_time'
+    @interval = (options[:interval] || DEFAULTS[:interval]).to_i
+    @user_id = options[:user_id] if options[:user_id].present?
+    @host = options[:host] if options[:host].present?
+    @page = options[:page] if options[:page].present?
+    @response_code = options[:response_code] if options[:response_code].present?
+    @heap_growth_only = options[:heap_growth_only].present?
+    @plot_kind = options[:plot_kind] || DEFAULTS[:plot_kind]
+    @resource = options[:resource] || DEFAULTS[:resource]
     @grouping = options[:grouping]
-    @grouping_function = options[:grouping_function] || 'sum'
-    @start_hour = options[:start_hour] || 0
-    @end_hour = options[:end_hour] || 24
+    @grouping_function = options[:grouping_function] || DEFAULTS[:grouping_function]
+    @start_hour = (options[:start_hour] || DEFAULTS[:start_hour]).to_i
+    @end_hour = (options[:end_hour] || DEFAULTS[:end_hour]).to_i
   end
-
+  
   def description
     Resource.description(resource, grouping, grouping_function)
   end
@@ -39,7 +47,7 @@ class FilteredDataset
   end
 
   def hash
-    Digest::MD5.hexdigest "#{@klazz.date} #{interval_duration} #{user_id} #{host} #{page} #{response_code} #{plot_kind} #{start_hour} #{end_hour}"
+    Digest::MD5.hexdigest "#{@klazz.date} #{interval} #{user_id} #{host} #{page} #{response_code} #{plot_kind} #{start_hour} #{end_hour}"
   end
 
   def svg_file
@@ -67,11 +75,11 @@ class FilteredDataset
   end
 
   def intervals_per_day
-    24 * 60 / interval_duration
+    24 * 60 / interval
   end
 
   def intervals_per_hour
-    60 / interval_duration
+    60 / interval
   end
 
   def empty?
@@ -152,7 +160,7 @@ class FilteredDataset
   def sql_for_call_attributes(attributes, func, prefix = '')
     attributes.uniq.map do |type|
       if type == "requests"
-        "count(1)/#{interval_duration} as requests"
+        "count(1)/#{interval} as requests"
       else
         "#{func}(#{type}) as #{prefix}#{type}"
       end
@@ -184,7 +192,7 @@ class FilteredDataset
         resources = Resource.resources_for_type(resource_type) - resources_to_skip
         attributes = send("sql_for_#{resource_type}_attributes", resources, func)
         results = []
-        minute = "minute#{interval_duration}"
+        minute = "minute#{interval}"
         query = "SELECT #{minute}, #{attributes} FROM #{@klazz.table_name} #{sql_conditions} GROUP BY 1"
         from_db = @klazz.connection.select_all query
         zero = Hash.new(0)

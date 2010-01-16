@@ -23,7 +23,7 @@ Event.observe(window, 'load', function() {show_description()});
   <div id='filter'>
     <% form_tag({:action => :index}, :method => :get, :id => 'filter-form') do -%>
       <fieldset>
-        <legend>LogJam on Rails</legend>
+        <legend>LogJam for Rails</legend>
         <p class='filter-widget'>
           <%= label :filter, 'date' %><br />
           <%= select_tag 'starts_at', options_for_select(ControllerAction.log_data_dates, @starts_at.to_s(:db)[0..9]) %>

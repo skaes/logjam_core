@@ -59,10 +59,10 @@ class ControllerActionsController < ApplicationController
     @starts_at = "#{params['year']}-#{params['month']}-#{params['day']}".to_date unless params[:year].blank?
     @starts_at = (@starts_at.blank? ? default_date : @starts_at).beginning_of_day
     @klazz =  ControllerAction.class_for_date(@starts_at.to_s(:db))
-    params[:end_hour] ||= '24'
-    params[:resource] ||= 'total_time'
-    params[:grouping] ||= 'page'
-    params[:grouping_function] ||= 'sum'
+    params[:end_hour] ||= FilteredDataset::DEFAULTS[:end_hour]
+    params[:resource] ||= FilteredDataset::DEFAULTS[:resource]
+    params[:grouping] ||= FilteredDataset::DEFAULTS[:grouping]
+    params[:grouping_function] ||= FilteredDataset::DEFAULTS[:grouping_function]
     if params[:resource] == 'requests'
       params[:grouping] = 'page' if params[:grouping] == 'request'
       params[:grouping_function] = 'sum'
@@ -78,12 +78,12 @@ class ControllerActionsController < ApplicationController
     @hosts = @klazz.distinct_hosts
     @response_codes = @klazz.distinct_response_codes
     params[:controller_action] = {:page => @page}
-    params[:interval] ||= '5'
+    params[:interval] ||= FilteredDataset::DEFAULTS[:interval]
 
     FilteredDataset.new(:class => @klazz,
                         :starts_at => @starts_at,
                         :ends_at => @ends_at,
-                        :interval_duration => params[:interval].to_i,
+                        :interval => params[:interval].to_i,
                         :user_id => params[:user_id],
                         :host => params[:server],
                         :page => @page_pattern,
@@ -104,7 +104,7 @@ class ControllerActionsController < ApplicationController
                     :server => params[:server], :controller_action => params[:controller_action], :response => params[:response],
                     :heap_growth_only => params[:heap_growth_only], :resource => params[:resource], :grouping => params[:grouping],
                     :grouping_function => params[:grouping_function], :interval => params[:interval], 
-                    :user_id => params[:user_id]}.reject{|k,v| v.blank?})
+                    :user_id => params[:user_id]}.reject{|k,v| v.blank? || FilteredDataset.is_default?(k, v) || (k == :controller_action && v == {'page' => ''})})
     end
   end
 
