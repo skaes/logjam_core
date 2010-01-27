@@ -27,7 +27,7 @@ This documentation assumes that you are a rails developer, and generally familia
 
 Included with LogJam is a script (in bin/import_local_log) that will parse and import your production rails log files into a database.
 
-You will want to review and modify these files.
+You may want to review and modify these files, but the out-of-the-box behavior should be good enough to get you started.
 
 * config/initializers/matchers.rb
 * db/migrate/20090708080254_create_controller_actions.rb
@@ -63,7 +63,17 @@ An instance of LogJam is intended to be used with the logs from one application;
 
 ==What to do in the application being studied
 
-LogJam can be used with a standard rails application running under any version of ruby. Under these circumstances, only the following performance attributes will be imported:
+LogJam is designed to import rails log files from another rails application. The standard rails log files don't contain as much information as we'd like, so we offer you some choices of what to do in the application you want to study:
+
+===Leave your application as it is
+
+Note that this will not work if you are running more than one server process, unless you have modified your application to produce syslog compatible log files. If you want to use LogJam with standard Rails log files, then modify this section of config/initializers/matchers.rb to enable the RAILS_LOG_LINE_SPLITTER instead of the SYSLOG_LINE_SPLITTER.
+
+    # CONFIGURE ME: Pick one of the splitters above.
+    # LOG_LINE_SPLITTER = RAILS_LOG_LINE_SPLITTER
+    LOG_LINE_SPLITTER = SYSLOG_LINE_SPLITTER
+
+Under these circumstances, only the following performance attributes will be imported:
 
     t.timestamp :started_at
     t.string :page
@@ -73,7 +83,29 @@ LogJam can be used with a standard rails application running under any version o
     t.float :db_time
     t.float :other_time
 
-If you use the {time_bandits}[http://github.com/skaes/time_bandits] plugin in your application, you can easily capture the following additional information:
+===Modify your application to produce syslog-compatible log files
+
+If you are running more than one server process, you must modify the log lines to include the process_id and host. 
+LogJam itself is an example of how to do this. You can copy lib/hodel_3000_compliant_logger.rb into your own app, as well as these lines from environment.rb:
+
+    Rails::Initializer.run do |config|
+      require 'hodel_3000_compliant_logger'
+      config.logger = Hodel3000CompliantLogger.new(config.log_path)
+
+Doing this will lead to logging and importing these attributes:
+
+    t.string :host
+    t.integer :process_id
+
+If your application sets the global variable $user_id then Hodel3000CompliantLogger#format_message will also log this info. One easy way to do this is to add a before_filter to your ApplicationController that looks something like this:
+
+    before_filter { |controller| $user_id = controller.session[:user_id] || 0 }
+
+It is also easy to add additional custom information, such as session_ids, time spent waiting for search servers, no-sql data stores, etc.
+
+===Add the {time_bandits}[http://github.com/skaes/time_bandits] plugin to your application
+
+By doing this you can easily capture the following additional information:
 
     t.integer :db_calls
     t.integer :db_sql_query_cache_hits
@@ -81,7 +113,11 @@ If you use the {time_bandits}[http://github.com/skaes/time_bandits] plugin in yo
     t.integer :memcache_calls
     t.integer :memcache_misses
 
-And if you use {gc_hacks}[http://github.com/skaes/gc_hacks] with time_bandits, you can also get (assuming you use a compatible ruby, such as skaes' {matzruby}[http://github.com/skaes/matzruby]):
+To configure time_bandits to log memcache or GC info, copy config/initializers/time_bandits.rb from LogJam into your application.
+
+===Use a ruby that captures GC stats
+
+If you use a suitable ruby, such as skaes' {matzruby}[http://github.com/skaes/matzruby], you can also get:
 
     t.float :gc_time
     t.integer :gc_calls
@@ -91,22 +127,21 @@ And if you use {gc_hacks}[http://github.com/skaes/gc_hacks] with time_bandits, y
     t.integer :allocated_bytes
     t.integer :allocated_memory
 
-If you are running more than one server process, you must modify the log line to include the process_id and host. We recommend you also include the user_id. See config/initializers/matchers.rb for more info on how to add:
+Also of interest if you are doing GC tuning is {gc_hacks}[http://github.com/skaes/gc_hacks].
 
-    t.string :host
-    t.integer :process_id
-    t.integer :user_id
+==Importing data
 
-It is also easy to add additional custom information, including session_ids, time spent waiting for specific web services, etc.
+Before you use LogJam, you must import some data into its database. LogJam can import data from AMQP or from log files. 
 
-==Log Files
-
-LogJam can import its data from AMQP or from log files. As an example of how to setup an application for LogJam, it uses topfunky's Hodel 3000 Compliant Logger to generate suitable log files. LogJam can therefore be used to study itself (but it's not very interesting as a case study).
+If you want to just play with LogJam to see what it can do, LogJam can be used to study itself (though it's not very interesting as a case study).
 
 To import the sample log file
 
     bin/import_local_file sample.log
 
+To start over with an empty database
+
+    rake db:rebuild
 
 ==License
 

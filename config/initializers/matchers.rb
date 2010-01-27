@@ -34,6 +34,7 @@ module Matchers
   end
 
   # CONFIGURE ME: Pick one of the splitters above.
+  # LOG_LINE_SPLITTER = RAILS_LOG_LINE_SPLITTER
   LOG_LINE_SPLITTER = SYSLOG_LINE_SPLITTER
 
   # the proccessing line. mandatory matcher.
@@ -66,24 +67,12 @@ module Matchers
       }
   end
   
-  # Out-of-the-box time_bandits completed line format.
-  # Completed in 238.974ms (View: 61.361, DB: 41.915(14,1)) | 200 OK [http: ...]
-  COMPLETED_BASIC_TIME_BANDITS = lambda do |line|
-    line =~ /^Completed in ([\S]+)ms \(View: ([\S]+), DB: ([\S]+)\((\d+)(?:,(\d+))?\)\) \| (\d+)? / and
-      {
-        :total_time => $1.to_f,
-        :view_time => $2.to_f,
-        :db_time => $3.to_f,
-        :db_calls => $4.to_i,
-        :db_sql_query_cache_hits => $5.to_i,
-        :response_code => $6.to_i,
-      }
-  end
-
-  # Full-blown time_bandits, with memcache and memory resources, via gchacks
+  # time_bandits, either the simple, out-of-the-box format
+  #   Jan 13 16:58:38 starbuck-2 rails[86742]:  Completed in 238.974ms (View: 61.361, DB: 41.915(14,1)) | 200 OK [http: ...]
+  # or with memcache and memory resources, via gchacks
+  #   Jan 13 16:58:38 starbuck-2 rails[86742]: Completed in 174.696ms (View: 59.062, DB: 13.954(14,2), MC: 0.000(0r,0m), GC: 0.000(0), HP: 0(450818,103822,3233093)) | 200 OK
   # see http://github.com/skaes/matzruby (branch ruby187pl202patched) or Ruby Enterprise Edition
-  # Jan 13 16:58:38 starbuck-2 rails[86742]: Completed in 174.696ms (View: 59.062, DB: 13.954(14,2), MC: 0.000(0r,0m), GC: 0.000(0), HP: 0(450818,103822,3233093)) | 200 OK
-  COMPLETED_TIME_BANDITS_WITH_MEMCACHE_AND_GCHACKS = lambda do |line|
+  COMPLETED_TIME_BANDITS = lambda do |line|
     line =~ /^Completed in ([\S]+)ms \(View: ([\S]+), DB: ([\S]+)\((\d+)(?:,(\d+))?\)(?:, MC: ([\S]+)\((\d+)r,(\d+)m\))?(?:, GC: ([\S]+)\((\d+)\))?(?:, HP: ([\S]+)\((\d+),(\d+),(\d+)\))?\) \| (\d+)? / and
       {
         :total_time => $1.to_f,
@@ -148,6 +137,5 @@ end # Matchers
 RequestInfo.register_matcher Matchers::PROCESSING
 #RequestInfo.register_matcher Matchers::SESSION_XING
 #RequestInfo.register_matcher Matchers::COMPLETED_XING
-RequestInfo.register_matcher Matchers::COMPLETED_TIME_BANDITS_WITH_MEMCACHE_AND_GCHACKS
-RequestInfo.register_matcher Matchers::COMPLETED_BASIC_TIME_BANDITS
+RequestInfo.register_matcher Matchers::COMPLETED_TIME_BANDITS
 RequestInfo.register_matcher Matchers::COMPLETED_RAILS

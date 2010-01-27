@@ -11,8 +11,19 @@ class Hodel3000CompliantLogger < Logger
   ##
   # Note: If you are using FastCGI you may need to hard-code the hostname here instead of using Socket.gethostname
 
+
   def format_message(severity, timestamp, progname, msg)
-    "#{timestamp.strftime("%b %d %H:%M:%S")} #{hostname} rails[#{$PID}]: #{msg2str(msg).gsub(/\n/, '').lstrip}\n"
+    # One approach for logging user_ids is to use a global variable as shown below.
+    # You can use a before_filter in your application_controller to set this global variable.
+    #    before_filter { |controller| $user_id = controller.session[:user_id] || 0 }
+
+    user_id = 
+      if defined?($user_id)
+        " user[#{$user_id}]"
+      else
+        ""
+      end
+    "#{timestamp.strftime("%b %d %H:%M:%S")} #{hostname} rails[#{$PID}]#{user_id}: #{msg2str(msg).gsub(/\n/, '').lstrip}\n"
   end
 
   # original method, pre-patch for Exception handling:
