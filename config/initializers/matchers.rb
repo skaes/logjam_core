@@ -84,7 +84,7 @@ module Matchers
   # see http://github.com/skaes/matzruby (branch ruby187pl202patched) or Ruby Enterprise Edition
   # Jan 13 16:58:38 starbuck-2 rails[86742]: Completed in 174.696ms (View: 59.062, DB: 13.954(14,2), MC: 0.000(0r,0m), GC: 0.000(0), HP: 0(450818,103822,3233093)) | 200 OK
   COMPLETED_TIME_BANDITS_WITH_MEMCACHE_AND_GCHACKS = lambda do |line|
-    line =~ /^Completed in ([\S]+)ms \(View: ([\S]+), DB: ([\S]+)\((\d+)(?:,(\d+))?\), MC: ([\S]+)\((\d+)r,(\d+)m\)(?:, GC: ([\S]+)\((\d+)\))?(?:, HP: ([\S]+)\((\d+),(\d+),(\d+)\))?\) \| (\d+)? / and
+    line =~ /^Completed in ([\S]+)ms \(View: ([\S]+), DB: ([\S]+)\((\d+)(?:,(\d+))?\)(?:, MC: ([\S]+)\((\d+)r,(\d+)m\))?(?:, GC: ([\S]+)\((\d+)\))?(?:, HP: ([\S]+)\((\d+),(\d+),(\d+)\))?\) \| (\d+)? / and
       {
         :total_time => $1.to_f,
         :view_time => $2.to_f,
@@ -102,7 +102,7 @@ module Matchers
         :allocated_bytes => $14.to_i,
         :response_code => $15.to_i,
       }
-    end
+  end
 
   # completed line regexp: complicated by the fact that the log file
   # format @XING changed over time and we want to be able to parse old logfiles
