@@ -7,9 +7,6 @@ RAILS_GEM_VERSION = '2.3.4' unless defined? RAILS_GEM_VERSION
 require File.join(File.dirname(__FILE__), 'boot')
 
 Rails::Initializer.run do |config|
-  require 'hodel_3000_compliant_logger'
-  config.logger = Hodel3000CompliantLogger.new(config.log_path)
-
   config.action_controller.session_store = :nil_session_store
 
   # Settings in config/environments/* take precedence over those specified here.
@@ -35,6 +32,7 @@ Rails::Initializer.run do |config|
   # config.gem "sqlite3-ruby", :lib => "sqlite3"
   # config.gem "aws-s3", :lib => "aws/s3"
   config.gem 'memcached'
+  config.gem 'logjam_logger', :version => '1.0.0'
   config.gem 'gnuplot', :source => 'http://gems.rubyforge.org'
 
   # Only load the plugins named here, in the order given (default is alphabetical).
