@@ -66,9 +66,9 @@ Doing this will lead to logging and importing these attributes:
     t.string :host
     t.integer :process_id
 
-If your application sets the global variable $user_id then logjam_logger will also log this info. One easy way to do this is to add a before_filter to your ApplicationController that looks something like this:
+If your application sets the global hash $user_ids then logjam_logger will also log this info. One easy way to do this is to add a before_filter to your ApplicationController that looks something like this:
 
-    before_filter { |controller| $user_id = controller.session[:user_id] || 0 }
+    before_filter { |controller| ($user_ids ||= {})[Thread.current] = controller.session[:user_id] || 0 }
 
 It is also easy to add additional custom information, such as session_ids, time spent waiting for search servers, no-sql data stores, etc.
 

@@ -31,7 +31,7 @@ Rails::Initializer.run do |config|
   # config.gem "hpricot", :version => '0.6', :source => "http://code.whytheluckystiff.net"
   # config.gem "sqlite3-ruby", :lib => "sqlite3"
   # config.gem "aws-s3", :lib => "aws/s3"
-  config.gem 'logjam_logger', :version => '1.0.0'
+  config.gem 'logjam_logger', :version => '1.1.0'
   config.gem 'gnuplot', :source => 'http://gems.rubyforge.org'
   config.gem 'memcached' unless defined? JRUBY_VERSION
 
