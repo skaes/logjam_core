@@ -75,8 +75,9 @@ class Plot
         (Resource.resources_for_type(data.plot_kind) - resources_excluded_from_plot).reverse.each do |resource|
           next unless plot_data = data.plot_data(data.plot_kind, resources_excluded_from_plot).map{|i| (i||{})[resource]}
           plot.data << Gnuplot::DataSet.new([[resource] + plot_data]) do |ds|
+            ds.title = resource.gsub(/_/,' ')
             ds.with = 'steps' if resource == 'gc_time' || resource == 'heap_size'
-            ds.using = "1 title 1 lc rgb '#{Resource.colors[resource]}'"
+            ds.using = "1 lc rgb '#{Resource.colors[resource]}'"
           end
         end
       end
@@ -110,7 +111,7 @@ class Plot
           x, y = histogram_data("#{title}")
           plot.data << Gnuplot::DataSet.new( [x, y] ) do |ds|
             ds.with = "points lt rgb '#{Resource.colors[title]}'"
-            ds.title = sprintf("%s(%.2f, %.2f)", title, avg, stddev)
+            ds.title = sprintf("%s(%.2f, %.2f)", title.gsub(/_/,' '), avg, stddev)
           end
         end
       end
