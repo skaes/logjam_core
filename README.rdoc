@@ -1,4 +1,4 @@
-=Logjam
+= Logjam
 
 Logjam is a Ruby on Rails application used for finding performance hot spots in Ruby on Rails applications. 
 It can produce various graphs and tables showing how much time and memory are consumed by different parts of your application.
@@ -14,14 +14,14 @@ The interface is flexible enough to be able to provide answers to a great many q
 
 Note that some of Logjam's features (eg those involving GC and memory data) depend on using a specially built ruby and some rails plugins, which are available separately. 
 
-==Authors
+== Authors
 
 {David Anderson}[http://github.com/alpinegizmo] <david@alpinegizmo.com>
 and {Stefan Kaes}[http://github.com/skaes] <skaes@railsexpress.de>
 
 Development on Logjam began while the authors were working at Xing AG.
 
-==Quick overview
+== Quick overview
 
 * almost mandatory: make your log files syslog-compatible by adding the {logjam_logger}[http://gemcutter.org/gems/logjam_logger] gem to your application (not to Logjam)
 * optional, but easy and worthwhile: add the {time_bandits}[http://github.com/skaes/time_bandits] plugin to your application (not to Logjam)
@@ -33,11 +33,11 @@ Development on Logjam began while the authors were working at Xing AG.
 
 See the sections below for more details on these steps.
 
-==Getting your application ready
+== Getting your application ready
 
 Logjam is designed to import rails log files from other rails applications. The standard rails log files don't contain as much information as we'd like, so we offer you some choices of what to do in the application you want to study:
 
-===Leave your application as it is
+=== Leave your application as it is
 
 Note that this will not work if you are running more than one server process, unless you have modified your application to produce syslog compatible log files. If you really do need to use Logjam with standard Rails log files, then modify this section of config/initializers/matchers.rb to enable the RAILS_LOG_LINE_SPLITTER instead of the SYSLOG_LINE_SPLITTER.
 
@@ -55,7 +55,7 @@ Under these circumstances, only the following performance attributes will be imp
     t.float :db_time
     t.float :other_time
 
-===Modify your application to produce syslog-compatible log files
+=== Modify your application to produce syslog-compatible log files
 
 The easiest way to do this is to add the {logjam_logger}[http://gemcutter.org/gems/logjam_logger] gem to your application.
 
@@ -72,7 +72,7 @@ If your application sets the global hash $user_ids then logjam_logger will also 
 
 It is also easy to add additional custom information, such as session_ids, time spent waiting for search servers, no-sql data stores, etc.
 
-===Add the {time_bandits}[http://github.com/skaes/time_bandits] plugin to your application
+=== Add the {time_bandits}[http://github.com/skaes/time_bandits] plugin to your application
 
 By doing this you can easily capture the following additional information:
 
@@ -84,7 +84,7 @@ By doing this you can easily capture the following additional information:
 
 To configure time_bandits to log memcache and/or GC info, copy config/initializers/time_bandits.rb from Logjam into your application.
 
-===Use a ruby that captures GC stats
+=== Use a ruby that captures GC stats
 
 If you use a suitable ruby, such as skaes' {matzruby}[http://github.com/skaes/matzruby], you can also get:
 
@@ -98,7 +98,7 @@ If you use a suitable ruby, such as skaes' {matzruby}[http://github.com/skaes/ma
 
 Also of interest if you are doing GC tuning is {gc_hacks}[http://github.com/skaes/gc_hacks].
 
-==Configuring and installing Logjam
+== Configuring and installing Logjam
 
 This documentation assumes that you are a rails developer, and generally familiar with how to configure, install, and deploy rails applications. 
 
@@ -138,7 +138,7 @@ Note that for somewhat complex reasons that I won't get into here, RAILS_ENV=tes
 
 An instance of Logjam is intended to be used with the logs from one application; if you want to use Logjam to study more than one application, the most straightforward solution is to use multiple installations of Logjam.
 
-==Importing data
+== Importing data
 
 Before you use Logjam, you must import some data into its database. Logjam can import data from AMQP or from log files. 
 
@@ -152,7 +152,7 @@ To start over with an empty database
 
     rake db:rebuild
 
-==License
+== License
 
 Copyright (c) 2009 David Anderson, Stefan Kaes
 
