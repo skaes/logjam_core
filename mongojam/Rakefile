@@ -1,0 +1,16 @@
+desc "clear"
+task :clear do
+  system("ruby mongo_clear.rb")
+end
+
+desc "import"
+task :import => :clear do
+  `ls xa*`.each_line do |l|
+    system("time ruby mongo_import.rb #{l.chomp}&")
+  end
+end
+
+desc "analyze"
+task :analyze do
+  system("ruby mongo_status.rb")
+end
