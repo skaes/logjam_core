@@ -9,6 +9,7 @@ class Totals
     @avg = {}
     @sum_sq = {}
     @stddev = {}
+    @apdex_computation = @resources.include?("happy")
   end
 
   def the_pages
@@ -61,13 +62,36 @@ class Totals
     end
   end
 
+  def happy
+    field = "happy_sum"
+    @happy ||= the_pages.inject(0){|n,p| n += p[field]}
+  end
+
+  def satisfied
+    field = "satisfied_sum"
+    @satisfied ||= the_pages.inject(0){|n,p| n += p[field]}
+  end
+
+  def tolerating
+    field = "tolerating_sum"
+    @tolerating ||= the_pages.inject(0){|n,p| n += p[field]}
+  end
+
+  def frustrated
+    field = "frustrated_sum"
+    @frustrated ||= the_pages.inject(0){|n,p| n += p[field]}
+  end
+
   protected
 
   def compute
     result = []
     n = 0
-    sq_fields = @resources.map{|r| "#{r}_sq"}
-    all_fields = ["page", "count"] + resources + sq_fields
+    all_fields = ["page", "count"] + resources
+    unless @apdex_computation
+      sq_fields = @resources.map{|r| "#{r}_sq"}
+      all_fields.concat(sq_fields)
+    end
     access_time = Benchmark.realtime do
       @collection.find(selector, {:fields => all_fields}).each do |row|
         n += 1
@@ -75,10 +99,11 @@ class Totals
         result_row = {"page" => row["page"], "number_of_requests" => count}
         @resources.each do |r|
           sum = row[r] || 0
+          result_row["#{r}_sum"] = sum
+          next if @apdex_computation
           sum_sq = row["#{r}_sq"] || 0
           avg = sum.to_f/count
           std_dev = (count == 1) ? 0.0 : Math.sqrt((sum_sq - count*avg*avg)/(count-1).to_f)
-          result_row["#{r}_sum"] = sum
           result_row["#{r}_sum_sq"] = sum_sq
           result_row["#{r}_avg"] = avg
           result_row["#{r}_stddev"] = std_dev

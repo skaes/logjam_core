@@ -278,20 +278,24 @@ class FilteredDataset
     @klazz.connection.select_value("SELECT avg(allocated_memory) FROM (SELECT allocated_memory FROM #{@klazz.table_name} #{sql_conditions} ORDER BY allocated_memory LIMIT #{limit} OFFSET #{offset}) AS log") || 0
   end
 
+  def satisfaction
+    @satisfaction ||= Totals.new(%w(happy satisfied tolerating frustrated), stripped_page)
+  end
+
   def happy
-    count_requests('total_time < 100').to_f / count_requests.to_f
+    satisfaction.happy.to_f / satisfaction.count.to_f
   end
 
   def satisfied
-    count_requests('total_time < 500').to_f / count_requests.to_f
+    satisfaction.satisfied.to_f / satisfaction.count.to_f
   end
 
   def tolerating
-    count_requests('total_time >= 500 and total_time < 2000').to_f / count_requests.to_f
+    satisfaction.tolerating.to_f / satisfaction.count.to_f
   end
 
   def frustrated
-    count_requests('(total_time >= 2000) or (response_code = 500)').to_f / count_requests.to_f
+    satisfaction.frustrated.to_f / satisfaction.count.to_f
   end
 
   def apdex
