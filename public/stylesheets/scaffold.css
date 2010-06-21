@@ -129,13 +129,15 @@ td.number {text-align: right;}
   background: transparent;
 }
 
-#quintile-stats {float:left; margin-top: 100px;}
+#quintile-stats {float:left;}
+#quintile-stats td {font-size: 90%;  line-height: 100%;}
+#quintile-stats th {font-size: 90%;  line-height: 100%;}
 #graph-stats td {font-size: 90%; line-height: 100%;}
-#graph-stats th { font-size: 90%; }
+#graph-stats th {font-size: 90%;}
 #graph-counts {font-size: 90%; margin-bottom: 10px;}
 #graph-counts p {font-weight: bold;}
 #distribution-plot {position: relative; top: 20px; left: 40px;}
-#distribution-plot form div input {clear:none;}
+#distribution-plot form div input { margin-left:45px; margin-top:0;}
 
 .warning {
   font-size: 200%;

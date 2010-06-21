@@ -130,7 +130,8 @@ Event.observe(window, 'load', function() {show_description()});
       <% end -%>
       </table>
       <div id='distribution-plot'>
-        <%= button_to "distribution plot and statistics",
+        <%= render(:partial => 'time_quintiles') if @plot_kind == :time %>
+        <%= button_to "distribution plot",
                     {:params => params.merge(:action => distribution_kind(@dataset))} %>
       </div>
     <%- end -%>
