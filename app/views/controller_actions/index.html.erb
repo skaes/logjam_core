@@ -48,7 +48,7 @@ Event.observe(window, 'load', function() {show_description()});
           <%= label :filter, 'plot timeslice' %><br />
           <%= select_tag 'interval', options_for_select(ControllerAction.durations.map{|i| [pluralize(i, 'minute'), i]}, params[:interval]) %>
         </p>
-        
+
         <p class='clear-left'></p>
 
         <%- if ControllerAction.column_names.include?('user_id') -%>
@@ -77,7 +77,7 @@ Event.observe(window, 'load', function() {show_description()});
         </p>
         <p class='filter-widget' id='resource-widget'>
           <%= label :filter, 'with' %><br />
-          <%= select_tag 'resource', options_for_select(Resource.resource_options, params['resource']), 
+          <%= select_tag 'resource', options_for_select(Resource.resource_options, params['resource']),
               :onchange => "show_description()" %>
         </p>
         <p class='filter-widget' id='function-widget'>
@@ -89,7 +89,7 @@ Event.observe(window, 'load', function() {show_description()});
           <br />
           <%= submit_tag 'GO', :class => 'submit' %>
         </p>
-        
+
         <p class='clear-left'></p>
 
         <p class='filter-widget' id='description'></p>
@@ -103,7 +103,7 @@ Event.observe(window, 'load', function() {show_description()});
     <div id='graph-counts' class='clear-left'>
       <p class='stats'>
         <%= @dataset.starts_at.strftime('%d-%b-%Y') %>: showing
-        <%= number_with_delimiter @dataset.count_requests %> of <%= number_with_delimiter @klazz.count %> requests and
+        <%= number_with_delimiter @dataset.count_requests %> of <%= number_with_delimiter @dataset.count %> requests and
         <%= number_with_delimiter @dataset.count_distinct_users %> of <%= number_with_delimiter @klazz.count_distinct_users %> users
       </p>
       <%= link_to image_tag(@dataset.png_file, :alt => 'enlarge plot', :title => 'enlarge plot'), {:params => params.merge(:action => 'enlarged_plot')} %>
@@ -130,11 +130,11 @@ Event.observe(window, 'load', function() {show_description()});
       <% end -%>
       </table>
       <div id='distribution-plot'>
-        <%= button_to "distribution plot and statistics", 
+        <%= button_to "distribution plot and statistics",
                     {:params => params.merge(:action => distribution_kind(@dataset))} %>
       </div>
     <%- end -%>
-    
+
   <% end -%>
   <div class='clear-left'></div>
 </div>

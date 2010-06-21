@@ -29,7 +29,11 @@ class FilteredDataset
     @start_hour = (options[:start_hour] || DEFAULTS[:start_hour]).to_i
     @end_hour = (options[:end_hour] || DEFAULTS[:end_hour]).to_i
   end
-  
+
+  def stripped_page
+    @page.blank? ? "" : @page.gsub(/%/,'')
+  end
+
   def description
     Resource.description(resource, grouping, grouping_function)
   end
@@ -69,7 +73,7 @@ class FilteredDataset
   def start_interval
     start_hour * intervals_per_hour
   end
-  
+
   def end_interval
     end_hour * intervals_per_hour
   end
@@ -83,23 +87,28 @@ class FilteredDataset
   end
 
   def empty?
+    # count_requests == 0
     count_requests == 0
   end
 
   def count_requests(extra_condition = nil)
     @count_requests ||= {}
-    @count_requests[extra_condition] ||= @klazz.connection.select_value("select count(id) from #{@klazz.table_name} #{sql_conditions(extra_condition)}").to_i
+    # @count_requests[extra_condition] ||= @klazz.connection.select_value("select count(id) from #{@klazz.table_name} #{sql_conditions(extra_condition)}").to_i
+    totals(stripped_page).count
   end
 
   def count_distinct_users
     @count_distinct_users ||= @klazz.connection.select_value("select count(distinct user_id) from #{@klazz.table_name} #{sql_conditions}").to_i
   end
 
-  def sum(time_attr = 'total_time')
-    @sum ||= {}
-    @sum[time_attr] ||= @klazz.connection.select_value("select sum(#{time_attr}) from #{@klazz.table_name} #{sql_conditions}").to_f
+  def count
+    totals("all_pages").count
   end
 
+  def sum(time_attr = 'total_time')
+    # @sum[time_attr] ||= @klazz.connection.select_value("select sum(#{time_attr}) from #{@klazz.table_name} #{sql_conditions}").to_f
+    totals(stripped_page).sum(time_attr)
+  end
 
   def sql_conditions(extra_condition = nil)
     result = []
@@ -149,9 +158,20 @@ class FilteredDataset
   end
 
   def do_the_query
-    @klazz.find_by_sql the_query
+    # result = @klazz.find_by_sql the_query
+    # puts result.inspect
+    sort_by = "#{resource}_#{grouping_function}"
+    totals(stripped_page).pages(:order => sort_by, :limit => 35)
   end
 
+  def totals(stripped_page)
+    (@totals||={})[stripped_page] ||=
+      case Resource.resource_type(resource)
+      when :time   then Totals.new(Resource.time_resources, stripped_page)
+      when :call   then Totals.new(Resource.call_resources, stripped_page)
+      when :memory then Totals.new(Resource.memory_resources, stripped_page)
+      end
+  end
 
   def sql_for_time_attributes(attributes, func, prefix = '')
     attributes.map{|type| "#{func}(#{type}) as #{prefix}#{type}"}.join(', ')
@@ -179,25 +199,35 @@ class FilteredDataset
     @statistics ||=
       begin
         resources = Resource.resources_for_type(resource_type)
-        averages = send("sql_for_#{resource_type}_attributes", resources, :avg, 'avg_')
-        stddevs = send("sql_for_#{resource_type}_attributes", resources, :stddev_pop, 'std_')
-        @klazz.connection.select_one("SELECT #{averages}, #{stddevs} FROM #{@klazz.table_name} #{sql_conditions}")
+        # averages = send("sql_for_#{resource_type}_attributes", resources, :avg, 'avg_')
+        # stddevs = send("sql_for_#{resource_type}_attributes", resources, :stddev_pop, 'std_')
+        # @klazz.connection.select_one("SELECT #{averages}, #{stddevs} FROM #{@klazz.table_name} #{sql_conditions}")
+        stats = {}
+        resources.each do |r|
+          stats["avg_#{r}"] = totals(stripped_page).avg(r)
+          stats["std_#{r}"] = totals(stripped_page).stddev(r)
+        end
+        stats
       end
   end
 
   def plot_data(resource_type, resources_to_skip = [], func = :avg)
     @plot_data ||=
       begin
-        func = grouping_function.to_sym if @resource == "requests" && resource_type.to_sym == :call
+        # func = grouping_function.to_sym if @resource == "requests" && resource_type.to_sym == :call
         resources = Resource.resources_for_type(resource_type) - resources_to_skip
-        attributes = send("sql_for_#{resource_type}_attributes", resources, func)
-        results = []
+        # attributes = send("sql_for_#{resource_type}_attributes", resources, func)
+        # results = []
         minute = "minute#{interval}"
-        query = "SELECT #{minute}, #{attributes} FROM #{@klazz.table_name} #{sql_conditions} GROUP BY 1"
-        from_db = @klazz.connection.select_all query
+        # query = "SELECT #{minute}, #{attributes} FROM #{@klazz.table_name} #{sql_conditions} GROUP BY 1"
+        # puts query
+        # from_db = @klazz.connection.select_all query
+        from_db = Minutes.new(resources, stripped_page).minutes
         zero = Hash.new(0)
         results = (1..intervals_per_day).to_a.map{zero}
         from_db.each {|row| results[row[minute].to_i] = row}
+        # puts "RESULTS"
+        # puts results.inspect
         results
       end
   end
@@ -207,19 +237,23 @@ class FilteredDataset
     when :request_time
       attrs = Resource.time_resources
       quants = lambda {|a| "ceil(((#{a}-5)*sign(#{a}-5)/10))*10" }
+      kind = "t"
     when :allocated_objects
       attrs = %w(allocated_objects)
       quants = lambda {|a| "ceil(((#{a}-50)*sign(#{a}-50)/100))*100" }
+      kind = "m"
     when :allocated_bytes
       attrs = %w(allocated_bytes)
       quants = lambda {|a| "ceil(((#{a}-500)*sign(#{a}-500)/1000))*1000" }
+      kind = "m"
     end
+    the_quants = Quants.new(stripped_page, kind, attrs)
     attrs.each do |a|
-      avg_and_std_dev = @klazz.connection.select_all "select avg(#{a}) as avg, stddev_pop(#{a}) as stddev from #{@klazz.table_name} #{sql_conditions}"
-      instance_variable_set "@#{a}_avg", avg_and_std_dev.first["avg"].to_f
-      instance_variable_set "@#{a}_stddev", avg_and_std_dev.first["stddev"].to_f
-      quants_for_attr = @klazz.connection.select_all "select #{quants.call(a)} as quant, count(*) as count from #{@klazz.table_name} #{sql_conditions} group by 1"
-      instance_variable_set "@#{a}_quants", quants_for_attr.inject({}){|h,q| h[q["quant"].to_i] = q["count"].to_i;h}
+      # avg_and_std_dev = @klazz.connection.select_all "select avg(#{a}) as avg, stddev_pop(#{a}) as stddev from #{@klazz.table_name} #{sql_conditions}"
+      instance_variable_set "@#{a}_avg", totals(stripped_page).avg(a)
+      instance_variable_set "@#{a}_stddev", totals(stripped_page).stddev(a)
+      # quants_for_attr = @klazz.connection.select_all "select #{quants.call(a)} as quant, count(*) as count from #{@klazz.table_name} #{sql_conditions} group by 1"
+      instance_variable_set "@#{a}_quants", the_quants.quants(a)
     end
   end
 

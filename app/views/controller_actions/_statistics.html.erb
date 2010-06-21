@@ -12,14 +12,14 @@
       </td>
       <% unless @dataset.resource == "requests" -%>
         <% unless @dataset.grouping_function == :avg -%>
-          <td class='number'><%= number_with_delimiter(result[:avg].to_i) %></td>
+          <td class='number'><%= number_with_delimiter(result["#{@dataset.resource}_avg"].to_i) %></td>
         <% end -%>
-        <td class='number'><%= number_with_delimiter(result[:stddev].to_i) %></td>
+        <td class='number'><%= number_with_delimiter(result["#{@dataset.resource}_stddev"].to_i) %></td>
         <% if @dataset.accumulates_time? -%>
-          <td class='number'><%= seconds_to_human(result[@dataset.grouping_function].to_i / 1000) %></td>
-          <td><%= number_to_percentage(result[@dataset.grouping_function].to_f / @dataset.sum(@dataset.resource) * 100, :precision => 2) %></td>
+          <td class='number'><%= seconds_to_human(result["#{@dataset.resource}_#{@dataset.grouping_function}"].to_i / 1000) %></td>
+          <td><%= number_to_percentage(result["#{@dataset.resource}_#{@dataset.grouping_function}"].to_f / @dataset.sum(@dataset.resource) * 100, :precision => 2) %></td>
           <% unless @dataset.resource.to_sym == :total_time -%>
-            <td><%= number_to_percentage(result[@dataset.grouping_function].to_f / @dataset.sum(:total_time) * 100, :precision => 2) %></td>
+            <td><%= number_to_percentage(result[@dataset.grouping_function].to_f / @dataset.sum("total_time") * 100, :precision => 2) %></td>
           <% end -%>
         <% else -%>
         <td class='number'><%= number_with_delimiter(result[@dataset.grouping_function].to_i) %></td>

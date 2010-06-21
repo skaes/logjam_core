@@ -26,6 +26,8 @@ Rails::Initializer.run do |config|
     require "fastercsv"
   end
 
+  config.gem 'mongo'
+
   # Specify gems that this application depends on and have them installed with rake gems:install
   # config.gem "bj"
   # config.gem "hpricot", :version => '0.6', :source => "http://code.whytheluckystiff.net"
