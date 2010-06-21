@@ -191,7 +191,7 @@ Jan 13 16:49:48 starbuck-2 rails[86563]: [4;36;1mSQL (1.6ms)[0m   [0;1mSELECT
 Jan 13 16:49:48 starbuck-2 rails[86563]: [4;35;1mControllerAction_2010_01_09 Load (24.1ms)[0m   [0mSELECT page, count(id) AS number_of_requests, sum(total_time) AS sum, avg(total_time) AS avg, stddev_pop(total_time) AS stddev FROM log_data_2010_01_09 GROUP BY page ORDER BY sum DESC LIMIT 25[0m
 Jan 13 16:49:48 starbuck-2 rails[86563]: [4;36;1mSQL (0.7ms)[0m   [0;1mselect sum(total_time) from log_data_2010_01_09 [0m
 Jan 13 16:49:48 starbuck-2 rails[86563]: Rendered controller_actions/_statistics (156.7ms)
-Jan 13 16:49:48 starbuck-2 rails[86563]: Completed in 572.048ms (View: 207.035, DB: 104.101(86,24), MC: 0.000(0r,0m), GC: 121.999(2), HP: 0(450818,356298,8959210)) | 200 OK [http://localhost/]
+Jan 13 16:49:48 starbuck-2 rails[86563]: Completed in 572.048ms (View: 207.035, DB: 104.101(86,24), MC: 0.000(0r,0m), GC: 121.999(2), HP: 100000(450818,356298,8959210)) | 200 OK [http://localhost/]
 Jan 13 16:50:02 starbuck-2 rails[86563]: [4;35;1mSQL (0.1ms)[0m   [0mSET SQL_AUTO_IS_NULL=0[0m
 Jan 13 16:50:02 starbuck-2 rails[86563]: Processing ControllerActionsController#index (for 127.0.0.1 at 2010-01-13 16:50:02) [GET]
 Jan 13 16:50:02 starbuck-2 rails[86563]: Parameters: {"response"=>"", "commit"=>"GO", "grouping_function"=>"sum", "starts_at"=>"2010-01-09", "grouping"=>"page", "resource"=>"allocated_memory", "start_hour"=>"0", "server"=>"", "user_id"=>"", "interval"=>"5", "controller_action"=>{"page"=>""}, "end_hour"=>"24"}
@@ -582,7 +582,7 @@ Jan 13 16:51:14 starbuck-2 rails[86563]: [4;36;1mSQL (2.0ms)[0m   [0;1mselect
 Jan 13 16:51:14 starbuck-2 rails[86563]: [4;35;1mSQL (0.6ms)[0m   [0mselect count(distinct user_id) from log_data_2010_01_09[0m
 Jan 13 16:51:14 starbuck-2 rails[86563]: [4;36;1mControllerAction_2010_01_09 Load (2.2ms)[0m   [0;1mSELECT page, count(id) AS number_of_requests FROM log_data_2010_01_09 WHERE (page = 'WorlddeclarationsController#show') GROUP BY page ORDER BY number_of_requests DESC LIMIT 25[0m
 Jan 13 16:51:14 starbuck-2 rails[86563]: Rendered controller_actions/_statistics (6.7ms)
-Jan 13 16:51:14 starbuck-2 rails[86563]: Completed in 196.957ms (View: 60.013, DB: 36.557(36,24), MC: 0.000(0r,0m), GC: 0.000(0), HP: 0(450818,112505,3711236)) | 200 OK [http://localhost/2010/01/09?controller_action%5Bpage%5D=WorlddeclarationsController%23show&end_hour=24&grouping=page&grouping_function=sum&interval=5&page=WorlddeclarationsController%23show&resource=requests&start_hour=0]
+Jan 13 16:51:14 starbuck-2 rails[86563]: Completed in 196.957ms (View: 60.013, DB: 36.557(36,24), MC: 0.000(0r,0m), GC: 0.000(0), HP: 50000(450818,112505,3711236)) | 200 OK [http://localhost/2010/01/09?controller_action%5Bpage%5D=WorlddeclarationsController%23show&end_hour=24&grouping=page&grouping_function=sum&interval=5&page=WorlddeclarationsController%23show&resource=requests&start_hour=0]
 Jan 13 16:51:30 starbuck-2 rails[86563]: [4;35;1mSQL (0.1ms)[0m   [0mSET SQL_AUTO_IS_NULL=0[0m
 Jan 13 16:51:30 starbuck-2 rails[86563]: Processing ControllerActionsController#index (for 127.0.0.1 at 2010-01-13 16:51:30) [GET]
 Jan 13 16:51:30 starbuck-2 rails[86563]: Parameters: {"month"=>"01", "grouping_function"=>"sum", "grouping"=>"page", "resource"=>"requests", "start_hour"=>"0", "day"=>"09", "page"=>"WorlddeclarationsController#show", "year"=>"2010", "controller_action"=>{"page"=>"WorlddeclarationsController#show"}, "interval"=>"5", "end_hour"=>"24"}
