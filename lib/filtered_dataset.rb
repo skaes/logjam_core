@@ -160,7 +160,11 @@ class FilteredDataset
   def do_the_query
     # result = @klazz.find_by_sql the_query
     # puts result.inspect
-    sort_by = "#{resource}_#{grouping_function}"
+    if resource == "requests"
+      sort_by = "number_of_requests"
+    else
+      sort_by = "#{resource}_#{grouping_function}"
+    end
     totals(stripped_page).pages(:order => sort_by, :limit => 35)
   end
 
