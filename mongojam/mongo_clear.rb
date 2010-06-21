@@ -1,10 +1,9 @@
 #!/usr/bin/env ruby
 
 require 'rubygems'
-require 'mongo'
+require File.expand_path('../config/initializers/mongo')
 
-conn = Mongo::Connection.new
-conn.drop_database("logjam")
+MONGODB.drop_database("logjam")
 
 # db = conn.db("logjam")
 

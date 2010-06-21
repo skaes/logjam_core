@@ -1,10 +1,9 @@
 require 'rubygems'
-require 'mongo'
 require 'benchmark'
 require 'set'
+require File.expand_path('../config/initializers/mongo')
 
-conn = Mongo::Connection.new
-db = conn.db("logjam")
+db = MONGODB.db("logjam")
 minutes = db["minutes"]
 totals = db["totals"]
 quants = db["quants"]

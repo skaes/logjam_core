@@ -1,9 +1,15 @@
 #!/usr/bin/env ruby
 
 require 'rubygems'
-require 'mongo'
 require 'benchmark'
-require 'csv'
+require File.expand_path('../config/initializers/mongo')
+
+if RUBY_VERSION > "1.9"
+  require "csv"
+  ::FasterCSV = CSV unless defined? FasterCSV
+else
+  require "fastercsv"
+end
 
 # CREATE TABLE `log_data_2010_06_02` (
 #   `id` int(11) NOT NULL auto_increment,
@@ -66,8 +72,7 @@ FIELDS = TIME_FIELDS + %w(
 
 SQUARED_FIELDS = FIELDS.inject({}) { |h, f| h[f] = "#{f}_sq"; h}
 
-conn = Mongo::Connection.new
-db = conn.db("logjam")
+db = MONGODB.db("logjam")
 $minutes = db["minutes"]
 $minutes.create_index([ ["page", Mongo::ASCENDING], ["minute", Mongo::ASCENDING] ])
 
@@ -131,7 +136,7 @@ end
 puts "importing #{file_path}"
 
 load_time = Benchmark.realtime do
-  csv = CSV.open(file_path)
+  csv = FasterCSV.open(file_path)
   loop do
     begin
       break unless r = csv.shift
@@ -233,7 +238,7 @@ load_time = Benchmark.realtime do
       #  redis.zremrangebyrank("all_pages/#{f}", 100)
       #end if oid
 
-      # break if n >= 100000
+      break if n >= 100000
     rescue CSV::MalformedCSVError
       $stderr.puts "ignored malformed csv line"
     end
