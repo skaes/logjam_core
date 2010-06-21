@@ -19,7 +19,7 @@ class Plot
   end
 
   def xtic_labels
-    (0..24).to_a.map do |n| 
+    (0..24).to_a.map do |n|
       ((n % 3 == 0) || (data.end_hour - data.start_hour <= 12) ? %Q{"#{n}"} : %Q{""}) +  ' ' + (n*data.intervals_per_hour).to_s
     end.join(', ')
   end
@@ -161,7 +161,7 @@ class Plot
   def histogram_data(attr)
     quantized = @data.instance_variable_get("@#{attr}_quants")
     xs, ys = [], []
-    quantized.keys.sort.each{|x| xs << x; ys << quantized[x] }
+    quantized.keys.sort.each{|x| xs << x; ys << quantized[x] } unless quantized.blank?
     [xs, ys]
   end
 end
