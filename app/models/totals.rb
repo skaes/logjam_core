@@ -3,13 +3,14 @@ class Totals
   def initialize(resources, pattern='')
     @database = MONGODB.db("logjam")
     @collection = @database["totals"]
-    @resources = resources
+    @resources = resources.dup
+    @apdex = @resources.delete("apdex")
+    @response = @resources.delete("response")
     @pattern = pattern
     @sum = {}
     @avg = {}
     @sum_sq = {}
     @stddev = {}
-    @apdex_computation = @resources.include?("happy")
   end
 
   def the_pages
@@ -62,24 +63,8 @@ class Totals
     end
   end
 
-  def happy
-    field = "happy_sum"
-    @happy ||= the_pages.inject(0){|n,p| n += p[field]}
-  end
-
-  def satisfied
-    field = "satisfied_sum"
-    @satisfied ||= the_pages.inject(0){|n,p| n += p[field]}
-  end
-
-  def tolerating
-    field = "tolerating_sum"
-    @tolerating ||= the_pages.inject(0){|n,p| n += p[field]}
-  end
-
-  def frustrated
-    field = "frustrated_sum"
-    @frustrated ||= the_pages.inject(0){|n,p| n += p[field]}
+  def apdex
+    @apdex_hash ||= the_pages.inject(Hash.new(0)){|h,p| p["apdex"].each{|k,v| h[k] += v}; h}
   end
 
   protected
@@ -87,20 +72,19 @@ class Totals
   def compute
     result = []
     n = 0
-    all_fields = ["page", "count"] + resources
-    unless @apdex_computation
-      sq_fields = @resources.map{|r| "#{r}_sq"}
-      all_fields.concat(sq_fields)
-    end
+    all_fields = ["page", "count", @apdex, @response].compact + @resources
+    sq_fields = @resources.map{|r| "#{r}_sq"}
+    all_fields.concat(sq_fields)
     access_time = Benchmark.realtime do
       @collection.find(selector, {:fields => all_fields}).each do |row|
         n += 1
         count = row["count"]
         result_row = {"page" => row["page"], "number_of_requests" => count}
+        result_row["apdex"] = row["apdex"] if @apdex
+        result_row["response"] = row["response"] if @response
         @resources.each do |r|
           sum = row[r] || 0
           result_row["#{r}_sum"] = sum
-          next if @apdex_computation
           sum_sq = row["#{r}_sq"] || 0
           avg = sum.to_f/count
           std_dev = (count == 1) ? 0.0 : Math.sqrt((sum_sq - count*avg*avg)/(count-1).to_f)

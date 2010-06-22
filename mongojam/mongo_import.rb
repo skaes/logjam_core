@@ -82,9 +82,6 @@ $quants.create_index([ ["page", Mongo::ASCENDING], ["kind", Mongo::ASCENDING], [
 $totals = db["totals"]
 $totals.create_index("page")
 
-$response_codes = db["response_codes"]
-$response_codes.create_index("date")
-
 requests = db["requests"]
 requests.create_index([ ["page", Mongo::ASCENDING] ])
 requests.create_index([ ["response_code", Mongo::DESCENDING] ])
@@ -103,7 +100,6 @@ file_path = ARGV.shift
 $quants_buffer = {}
 $totals_buffer = {}
 $minutes_buffer = {}
-$response_code_buffer = {}
 
 def flush_quants_buffer
   $quants_buffer.each do |(p,k,q),inc|
@@ -124,13 +120,6 @@ def flush_totals_buffer
     $totals.update({"page" => p}, { '$inc' => inc }, UPSERT_ONE)
   end
   $totals_buffer.clear
-end
-
-def flush_response_code_buffer
-  $response_code_buffer.each do |(d,inc)|
-    $response_codes.update({"date" => d}, { '$inc' => inc }, UPSERT_ONE)
-  end
-  $response_code_buffer.clear
 end
 
 puts "importing #{file_path}"
@@ -182,9 +171,6 @@ load_time = Benchmark.realtime do
 
       flush_minutes_buffer if (n % 250) == 0
 
-      #$minutes.update({"page" => page, "minute" => minute}, increments, UPSERT_ONE)
-      #$minutes.update({"page" => "all_pages", "minute" => minute}, increments, UPSERT_ONE)
-
       user_experience =
         if total_time >= 2000 || response_code == 500 then "frustrated"
         elsif total_time < 100 then "happy"
@@ -193,7 +179,7 @@ load_time = Benchmark.realtime do
         else raise "oops: #{tt.inspect}"
         end
 
-      increments.merge!(user_experience => 1)
+      increments.merge!("apdex.#{user_experience}" => 1, "response.#{response_code_str}" => 1)
 
       [page, "all_pages"].each do |p|
         increments.each do |f,v|
@@ -223,20 +209,8 @@ load_time = Benchmark.realtime do
 
       flush_quants_buffer if (n % 1500) == 0
 
-      ($response_code_buffer[date] ||= Hash.new(0))[response_code_str] += 1
-      flush_response_code_buffer if (n % 1500) == 0
-
       request = {"page" => page, "minute" => minute, "response_code" => response_code, "user_id" => user_id}.merge!(fields)
       requests.insert(request) if interesting?(request)
-
-      #FIELDS.each do |f|
-      #  redis.zadd("#{page}/#{f}", -request[f], oid)
-      #  if (surplus = redis.zcard("#{page}/#{f}") - 100) > 0
-      #    redis.zremrangebyrank("#{page}/#{f}", 0, surplus-1)
-      #  end
-      #  redis.zadd("all_pages/#{f}", -request[f], oid)
-      #  redis.zremrangebyrank("all_pages/#{f}", 100)
-      #end if oid
 
       break if n >= 100000
     rescue CSV::MalformedCSVError

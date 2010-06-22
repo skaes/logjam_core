@@ -283,23 +283,23 @@ class FilteredDataset
   end
 
   def satisfaction
-    @satisfaction ||= Totals.new(%w(happy satisfied tolerating frustrated), stripped_page)
+    @satisfaction ||= Totals.new(%w(apdex), stripped_page)
   end
 
   def happy
-    satisfaction.happy.to_f / satisfaction.count.to_f
+    satisfaction.apdex["happy"].to_f / satisfaction.count.to_f
   end
 
   def satisfied
-    satisfaction.satisfied.to_f / satisfaction.count.to_f
+    satisfaction.apdex["satisfied"].to_f / satisfaction.count.to_f
   end
 
   def tolerating
-    satisfaction.tolerating.to_f / satisfaction.count.to_f
+    satisfaction.apdex["tolerating"].to_f / satisfaction.count.to_f
   end
 
   def frustrated
-    satisfaction.frustrated.to_f / satisfaction.count.to_f
+    satisfaction.apdex["frustrated"].to_f / satisfaction.count.to_f
   end
 
   def apdex
