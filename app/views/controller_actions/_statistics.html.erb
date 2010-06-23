@@ -26,9 +26,9 @@
         <% end -%>
       <% end -%>
     <% else -%>
-      <td><%= h result[:user_id] %></td>
-      <td><%= h result[:page] %></td>
-      <td class='number'><%= number_with_delimiter(result[@dataset.resource]) %></td>
+      <td><%= h result["user_id"] %></td>
+      <td><%= h result["page"] %></td>
+      <td class='number'><%= number_with_delimiter(result[@dataset.resource].to_i) %></td>
     <% end -%>
   </tr>
 <% end -%>
