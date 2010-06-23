@@ -1,0 +1,5 @@
+<table id='response-code-stats'>
+  <% @dataset.response_codes.keys.sort.each do |rc| %>
+  <tr><td><td class='number'><%= rc %></td><td class='number'><%= @dataset.response_codes[rc] %></td></tr>
+  <% end %>
+</table>

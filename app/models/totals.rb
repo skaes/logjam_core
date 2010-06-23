@@ -67,6 +67,10 @@ class Totals
     @apdex_hash ||= the_pages.inject(Hash.new(0)){|h,p| p["apdex"].each{|k,v| h[k] += v}; h}
   end
 
+  def response_codes
+    @response_hash ||= the_pages.inject(Hash.new(0)){|h,p| p["response"].each{|k,v| h[k.to_i] += v}; h}
+  end
+
   protected
 
   def compute

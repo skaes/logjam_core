@@ -306,4 +306,7 @@ class FilteredDataset
     satisfied + tolerating / 2.0
   end
 
+  def response_codes
+    @response_codes ||= Totals.new(%w(response), stripped_page).response_codes
+  end
 end

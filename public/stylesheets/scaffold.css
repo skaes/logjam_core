@@ -132,6 +132,9 @@ td.number {text-align: right;}
 #quintile-stats {float:left;}
 #quintile-stats td {font-size: 90%;  line-height: 100%;}
 #quintile-stats th {font-size: 90%;  line-height: 100%;}
+#response-code-summary {float:right;}
+#response-code-stats td {font-size: 90%;  line-height: 100%;}
+#response-code-stats th {font-size: 90%;  line-height: 100%;}
 #graph-stats td {font-size: 90%; line-height: 100%;}
 #graph-stats th {font-size: 90%;}
 #graph-counts {font-size: 90%; margin-bottom: 10px;}

@@ -134,6 +134,9 @@ Event.observe(window, 'load', function() {show_description()});
         <%= button_to "distribution plot",
                     {:params => params.merge(:action => distribution_kind(@dataset))} %>
       </div>
+      <div id='response-code-summary'>
+        <%= render(:partial => 'response_codes') %>
+      </div>
     <%- end -%>
 
   <% end -%>
