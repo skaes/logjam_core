@@ -59,7 +59,7 @@ module TimeBandits
   end
 end
 
-require 'time_bandits/monkey_patches/activerecord_adapter'
+require 'time_bandits/monkey_patches/activerecord_adapter' if defined?(ActiveRecord)
 
 module ActionController #:nodoc:
   module TimeBanditry #:nodoc:
@@ -79,7 +79,7 @@ module ActionController #:nodoc:
         alias_method :render, :render_with_benchmark
       end
 
-      TimeBandits.add TimeBandits::TimeConsumers::Database.instance
+      TimeBandits.add TimeBandits::TimeConsumers::Database.instance if defined?(ActiveRecord)
     end
 
     def render_with_benchmark(options = nil, extra_options = {}, &block)
