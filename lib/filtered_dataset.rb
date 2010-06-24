@@ -95,7 +95,7 @@ class FilteredDataset
 
   def do_the_query
     if grouping == "request"
-      Requests.new(resource, stripped_page, :heap_growth_only => heap_growth_only).all
+      Requests.new(@date, resource, stripped_page, :heap_growth_only => heap_growth_only).all
     else
       if resource == "requests"
         sort_by = "number_of_requests"
