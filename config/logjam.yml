@@ -1,4 +1,4 @@
-# The three categories of resources (time, call, and memory) are fixed, but within each category you 
+# The three categories of resources (time, call, and memory) are fixed, but within each category you
 # are free to monitor whatever resources you wish. The names must correspond to the database columns
 # defined for the controller_actions table, and the color specifications are used for plotting.
 
@@ -9,8 +9,8 @@ time_resources:
 - gc_time: '#000000'
 - other_time: '#b3d1f9'
 - memcache_time: '#ffa500'
-#- search_time: '#ff00ff'
-#- api_time: '#00aaaa'
+- search_time: '#ff00ff'
+- api_time: '#00aaaa'
 - db_time: '#ff0000'
 - view_time: '#0022ff'
 - total_time: '#000000'
@@ -18,8 +18,8 @@ time_resources:
 call_resources:
 - requests: '#0000ff'
 - gc_calls: '#000000'
-#- search_calls: '#ff00ff'
-#- api_calls: '#00aaaa'
+- search_calls: '#ff00ff'
+- api_calls: '#00aaaa'
 - db_calls: '#ff0000'
 - db_sql_query_cache_hits: '#00ff00'
 - memcache_calls: '#ffa500'
@@ -30,3 +30,6 @@ memory_resources:
 - allocated_objects: '#0022ff'
 - allocated_bytes: '#ff0000'
 - heap_size: '#000000'
+
+heap_resources:
+- growth: '#567757'

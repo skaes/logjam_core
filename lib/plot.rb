@@ -95,7 +95,7 @@ class Plot
       Gnuplot::Plot.new( gp ) do |plot|
         plot.terminal "svg size 800, 600 fsize 11"
         plot.output filename
-        plot.title  %Q{"Request time distribution: #{@data.page}\\n#{@data.count_requests} requests between #{@data.starts_at} and #{@data.ends_at}"}
+        plot.title  %Q{"Request time distribution: #{@data.page}\\n#{@data.count_requests} requests on #{@data.date}"}
         plot.ylabel "Number of requests"
         plot.xlabel "Request time"
         plot.logscale "x"

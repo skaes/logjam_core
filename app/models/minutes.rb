@@ -1,6 +1,6 @@
 class Minutes
-  def initialize(resources, pattern)
-    @database = MONGODB.db("logjam")
+  def initialize(date, resources, pattern)
+    @database = Logjam.db(date)
     @collection = @database["minutes"]
     @resources = resources
     @resources = [] if @resources == ["requests"]

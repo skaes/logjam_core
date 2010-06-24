@@ -1,7 +1,7 @@
 class Totals
   attr_reader :resources, :pattern, :pages
-  def initialize(resources, pattern='')
-    @database = MONGODB.db("logjam")
+  def initialize(date, resources=[], pattern='')
+    @database = Logjam.db(date)
     @collection = @database["totals"]
     @resources = resources.dup
     @apdex = @resources.delete("apdex")

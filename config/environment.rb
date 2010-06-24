@@ -1,7 +1,7 @@
 # Be sure to restart your server when you modify this file
 
 # Specifies gem version of Rails to use when vendor/rails is not present
-RAILS_GEM_VERSION = '2.3.4' unless defined? RAILS_GEM_VERSION
+RAILS_GEM_VERSION = '2.3.5' unless defined? RAILS_GEM_VERSION
 
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')
@@ -18,7 +18,6 @@ Rails::Initializer.run do |config|
 
   # use built-in csv with ruby 1.9, and fastercsv with 1.8
   if RUBY_VERSION > "1.9"
-    config.gem 'mysql'
     require "csv"
     ::FasterCSV = CSV unless defined? FasterCSV
   else
@@ -33,7 +32,7 @@ Rails::Initializer.run do |config|
   # config.gem "hpricot", :version => '0.6', :source => "http://code.whytheluckystiff.net"
   # config.gem "sqlite3-ruby", :lib => "sqlite3"
   # config.gem "aws-s3", :lib => "aws/s3"
-  config.gem 'logjam_logger', :version => '1.1.0'
+  config.gem 'logjam_logger', :version => '1.1.1'
   config.gem 'gnuplot', :source => 'http://gems.rubyforge.org'
   config.gem 'memcached' unless defined? JRUBY_VERSION
 
@@ -43,7 +42,7 @@ Rails::Initializer.run do |config|
 
   # Skip frameworks you're not going to use. To use Rails without a database,
   # you must remove the Active Record framework.
-  # config.frameworks -= [ :active_record, :active_resource, :action_mailer ]
+  config.frameworks -= [ :active_record, :active_resource, :action_mailer ]
 
   # Activate observers that should always be running
   # config.active_record.observers = :cacher, :garbage_collector, :forum_observer

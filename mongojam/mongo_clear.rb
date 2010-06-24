@@ -3,7 +3,7 @@
 require 'rubygems'
 require File.expand_path('../config/initializers/mongo')
 
-MONGODB.drop_database("logjam")
+MONGODB.drop_database("logjam-2010-06-21")
 
 # db = conn.db("logjam")
 

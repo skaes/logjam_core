@@ -8,11 +8,14 @@ function show_description() {
 
   if (grouping == 'request' || resource == 'requests') {
     $('function-widget').hide();
+    if (grouping == 'request')
+      $('heap-growth-widget').show();
     $('description').innerHTML = descriptions[grouping][resource];
   }
   else {
     $('description').innerHTML = descriptions[grouping][resource][gfunction];
     $('function-widget').show();
+    $('heap-growth-widget').hide();
   }
 };
 
@@ -26,47 +29,16 @@ Event.observe(window, 'load', function() {show_description()});
         <legend>LogJam for Rails</legend>
         <p class='filter-widget'>
           <%= label :filter, 'date' %><br />
-          <%= select_tag 'starts_at', options_for_select(ControllerAction.log_data_dates, @starts_at.to_s(:db)[0..9]) %>
+          <%= select_tag 'starts_at', options_for_select(Logjam.database_days, @date.to_s(:db)[0..9]) %>
         </p>
         <p class='filter-widget'>
-          <%= label :filter, 'start_time' %><br />
-          <%= select_tag 'start_hour', options_for_select((0..23).map{|h| ["#{h}:00", h.to_s]}, params[:start_hour]) %>
-        </p>
-        <p class='filter-widget'>
-          <%= label :filter, 'end_time' %><br />
-          <%= select_tag 'end_hour', options_for_select((1..24).map{|h| ["#{h}:00", h.to_s]}, params[:end_hour]) %>
-        </p>
-        <p class='filter-widget'>
-          <%= label :filter, 'server' %><br />
-          <%= select_tag 'server', options_for_select([''] + @hosts, params['server']) %>
-        </p>
-        <p class='filter-widget'>
-          <%= label :filter, 'response' %><br />
-          <%= select_tag 'response', options_for_select([''] + @response_codes, params['response']) %> <br />
+          <%= label :filter, 'plot timeslice' %><br />
+          <%= select_tag 'interval', options_for_select(Logjam.durations.map{|i| [pluralize(i, 'minute'), i]}, params[:interval]) %>
         </p>
         <p class='filter-widget-last'>
-          <%= label :filter, 'plot timeslice' %><br />
-          <%= select_tag 'interval', options_for_select(ControllerAction.durations.map{|i| [pluralize(i, 'minute'), i]}, params[:interval]) %>
-        </p>
-
-        <p class='clear-left'></p>
-
-        <%- if ControllerAction.column_names.include?('user_id') -%>
-          <p class='filter-widget'>
-            <%= label :filter, 'user id' %><br />
-            <%= text_field_tag 'user_id', params['user_id'] %>
-          </p>
-        <%- end -%>
-        <p class='filter-widget'>
           <%= label :filter, 'page name' %><br />
-          <%= text_field_with_auto_complete :controller_action, :page, {:value => @page, :size => 40} %>
+          <%= text_field_with_auto_complete :controller_action, :page, {:value => @page, :size => 50} %>
         </p>
-        <%- if ControllerAction.column_names.include?('heap_growth') -%>
-          <p class='filter-widget-last'>
-            <%= label :filter, 'heap growth only' %><br />
-            <%= check_box_tag 'heap_growth_only', "1", params['heap_growth_only']=="1" %>
-          </p>
-        <%- end -%>
 
         <p class='clear-left'></p>
 
@@ -85,6 +57,13 @@ Event.observe(window, 'load', function() {show_description()});
           <%= select_tag 'grouping_function', options_for_select(Resource.grouping_functions, params['grouping_function']),
               :onchange => "show_description()" %>
         </p>
+        <%- if Resource.heap_resources.include?("growth") -%>
+          <p class='filter-widget-last' id='heap-growth-widget'>
+            <%= label :filter, 'heap growth only' %><br />
+            <%= check_box_tag 'heap_growth_only', "1", params['heap_growth_only']=="1" %>
+          </p>
+        <%- end -%>
+
         <p class='filter-float-right'>
           <br />
           <%= submit_tag 'GO', :class => 'submit' %>
@@ -102,9 +81,8 @@ Event.observe(window, 'load', function() {show_description()});
   <% else -%>
     <div id='graph-counts' class='clear-left'>
       <p class='stats'>
-        <%= @dataset.starts_at.strftime('%d-%b-%Y') %>: showing
-        <%= number_with_delimiter @dataset.count_requests %> of <%= number_with_delimiter @dataset.count %> requests and
-        <%= number_with_delimiter @dataset.count_distinct_users %> of <%= number_with_delimiter @klazz.count_distinct_users %> users
+        <%= @dataset.date.strftime('%d-%b-%Y') %>: showing
+        <%= number_with_delimiter @dataset.count_requests %> of <%= number_with_delimiter @dataset.count %> requests
       </p>
       <%= link_to image_tag(@dataset.png_file, :alt => 'enlarge plot', :title => 'enlarge plot'), {:params => params.merge(:action => 'enlarged_plot')} %>
     </div>
@@ -174,7 +152,6 @@ Event.observe(window, 'load', function() {show_description()});
       </tr>
       <%= render :partial => 'statistics' %>
     </table>
-    <p class='query'><%= @dataset.the_query %></p>
   </div>
   </div>
 <% end -%>

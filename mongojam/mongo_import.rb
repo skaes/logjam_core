@@ -3,6 +3,7 @@
 require 'rubygems'
 require 'benchmark'
 require File.expand_path('../config/initializers/mongo')
+require File.expand_path('../app/models/logjam')
 
 if RUBY_VERSION > "1.9"
   require "csv"
@@ -72,15 +73,15 @@ FIELDS = TIME_FIELDS + %w(
 
 SQUARED_FIELDS = FIELDS.inject({}) { |h, f| h[f] = "#{f}_sq"; h}
 
-db = MONGODB.db("logjam")
+db = MONGODB.db(Logjam.db_name("2010-06-21"))
+$totals = db["totals"]
+$totals.create_index("page")
+
 $minutes = db["minutes"]
 $minutes.create_index([ ["page", Mongo::ASCENDING], ["minute", Mongo::ASCENDING] ])
 
 $quants = db["quants"]
 $quants.create_index([ ["page", Mongo::ASCENDING], ["kind", Mongo::ASCENDING], ["quant", Mongo::ASCENDING] ])
-
-$totals = db["totals"]
-$totals.create_index("page")
 
 requests = db["requests"]
 requests.create_index([ ["page", Mongo::ASCENDING] ])
@@ -90,7 +91,7 @@ FIELDS.each{|f| requests.create_index([ [f, Mongo::DESCENDING] ])}
 def interesting?(request)
   request["heap_growth"].to_i > 0 ||
     request["total_time"].to_i > 750 ||
-    request["response_code"].to_i >= 400
+    request["response_code"].to_i == 500
 end
 
 UPSERT_ONE = {:upsert => true, :multi => false}
@@ -212,7 +213,7 @@ load_time = Benchmark.realtime do
       request = {"page" => page, "minute" => minute, "response_code" => response_code, "user_id" => user_id}.merge!(fields)
       requests.insert(request) if interesting?(request)
 
-      break if n >= 100000
+      break if n >= 1000
     rescue CSV::MalformedCSVError
       $stderr.puts "ignored malformed csv line"
     end

@@ -1,7 +1,7 @@
 class Requests
   attr_reader :resource, :pattern
-  def initialize(resource, pattern='', options={})
-    @database = MONGODB.db("logjam")
+  def initialize(date, resource, pattern='', options={})
+    @database = Logjam.db(date)
     @collection = @database["requests"]
     @resource = resource
     @pattern = pattern

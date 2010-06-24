@@ -31,6 +31,10 @@ class Resource
       resource_map["call_resources"].map{|r| r.keys}.flatten
     end
 
+    def heap_resources
+      resource_map["heap_resources"].map{|r| r.keys}.flatten
+    end
+
     # returns a Hash mapping resources to colors, used for plotting
     def colors
       Hash[*resource_map.values.flatten.map {|h| [h.keys.first, h.values.first]}.flatten]
@@ -57,18 +61,11 @@ class Resource
     end
 
     def groupings
-      result = ['response_code']
-      result += ['host']
-      result += ['session_id'] if ControllerAction.column_names.include? 'session_id'
-      result += ['page']
-      result += ['user_id'] if ControllerAction.column_names.include? 'user_id'
-      result += ['minute1']
-      result += ['request']
-      result
+      ['page', 'request']
     end
 
     def humanname_for_grouping
-      {:response_code => 'response codes', 
+      {:response_code => 'response codes',
        :host => 'servers',
        :session_id => 'sessions',
        :page => 'pages',
@@ -82,9 +79,9 @@ class Resource
     end
 
     def grouping_functions
-      ['sum', 'avg', 'min', 'max']
+      ['sum', 'avg']
     end
-    
+
     def grouping?(grouping)
       grouping.to_sym != :request
     end

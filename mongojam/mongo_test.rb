@@ -3,8 +3,8 @@ require 'mongo'
 require 'benchmark'
 
 conn = Mongo::Connection.new
-db = conn.db("mydb")
-coll = db["test"]
+db = conn.db("logjam")
+coll = db["requests"]
 
 # time = Benchmark.realtime do
 #   1_000_000.times do
@@ -17,7 +17,7 @@ puts coll.count
 
 map_f = <<-MAP
   function() {
-     var t = this.time;
+     var t = this.total_time;
      emit('time', t);
      emit('squares', t*t);
      emit('count', 1);

@@ -1,6 +1,6 @@
 class Quants
-  def initialize(pattern, kind, resources)
-    @database = MONGODB.db("logjam")
+  def initialize(date, pattern, kind, resources)
+    @database = Logjam.db(date)
     @collection = @database["quants"]
     @pattern = pattern
     @pattern = "all_pages" if @pattern.blank?
