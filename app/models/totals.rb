@@ -78,9 +78,9 @@ class Totals
     n = 0
     all_fields = ["page", "count", @apdex, @response].compact + @resources
     sq_fields = @resources.map{|r| "#{r}_sq"}
-    all_fields.concat(sq_fields)
+    fields = {:fields => all_fields.concat(sq_fields)}
     access_time = Benchmark.realtime do
-      @collection.find(selector, {:fields => all_fields}).each do |row|
+      @collection.find(selector, fields.clone).each do |row|
         n += 1
         count = row["count"]
         result_row = {"page" => row["page"], "number_of_requests" => count}
@@ -91,7 +91,7 @@ class Totals
           result_row["#{r}_sum"] = sum
           sum_sq = row["#{r}_sq"] || 0
           avg = sum.to_f/count
-          std_dev = (count == 1) ? 0.0 : Math.sqrt((sum_sq - count*avg*avg)/(count-1).to_f)
+          std_dev = (count == 1 || sum == 0) ? 0.0 : Math.sqrt((sum_sq - count*avg*avg).abs/(count-1).to_f)
           result_row["#{r}_sum_sq"] = sum_sq
           result_row["#{r}_avg"] = avg
           result_row["#{r}_stddev"] = std_dev
@@ -100,7 +100,7 @@ class Totals
       end
     end
     # logger.debug result.inspect
-    logger.debug "MONGO totals #{n} records, size #{result.size}, #{"%.5f" % (access_time)} seconds}"
+    logger.debug "MONGO Totals.find(#{selector.inspect},#{fields.inspect}) ==> #{n} records, #{"%.5f" % (access_time)} seconds}"
     result
   end
 

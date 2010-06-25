@@ -134,7 +134,7 @@ class Plot
       Gnuplot::Plot.new( gp ) do |plot|
         plot.terminal "svg size 800, 600 fsize 11"
         plot.output filename
-        plot.title  %Q{"#{what.to_s.humanize} distribution: #{@data.page}\\n#{@data.count_requests} requests between #{@data.starts_at} and #{@data.ends_at}"}
+        plot.title  %Q{"#{what.to_s.humanize} distribution: #{@data.page}\\n#{@data.count_requests} requests on #{@data.date}"}
         plot.ylabel "Number of requests"
         plot.xlabel what.to_s.humanize
         plot.logscale "x"

@@ -18,8 +18,10 @@ class Minutes
     end
     logger.debug "pattern: #{@pattern}, resources: #{@resources.inspect}"
     n = 0
+    selector = {:page => @pattern}
+    fields = {:fields => ["minute","count"].concat(@resources)}
     access_time = Benchmark.realtime do
-      @collection.find({:page => @pattern}, {:fields => ["minute","count"].concat(@resources)}).each do |row|
+      @collection.find(selector, fields.clone).each do |row|
         n += 1
         count = row["count"]
         minute = row["minute"]
@@ -50,7 +52,7 @@ class Minutes
         result << r.merge!("minute5" => m)
       end
     end
-    logger.debug "MONGO minutes: #{n} records for #{@pattern}, size #{result.size}, #{"%.5f" % (access_time)} seconds}"
+    logger.debug "MONGO Minutes(#{selector.inspect},#{fields.inspect}) ==> #{n} records, size #{result.size}, #{"%.5f" % (access_time)} seconds}"
     result
   end
 
