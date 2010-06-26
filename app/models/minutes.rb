@@ -1,12 +1,18 @@
 class Minutes
   def initialize(date, resources, pattern)
+    @date = date
     @database = Logjam.db(date)
     @collection = @database["minutes"]
     @resources = resources
     @resources = [] if @resources == ["requests"]
     @pattern = pattern
-    @pattern = "all_pages" if @pattern.blank?
+    @pattern = "all_pages" if @pattern.blank? || @pattern == "::"
+    @pattern = "^::#{@pattern}" if page_names.include?("::#{pattern}")
     @pattern = Regexp.new(/#{@pattern}/) unless @pattern == "all_pages"
+  end
+
+  def page_names
+    @page_names ||= Totals.new(@date).page_names
   end
 
   def minutes

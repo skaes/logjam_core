@@ -124,40 +124,11 @@ Event.observe(window, 'load', function() {show_description()});
 </div>
 
 <% unless @dataset.empty? -%>
-  <div id='column-right'>
+<div id='column-right'>
   <div id='pagetimes'>
     <br />
     <h3><%= @dataset.description %></h3>
-    <table class='full_stats'>
-      <tr>
-        <% resource = @dataset.resource
-           resource_name = resource.gsub('_', ' ')
-           options = {:resource => resource} -%>
-        <% if @dataset.grouping? -%>
-          <th><%= @dataset.grouping %></th>
-          <th>requests</th>
-          <% unless resource == 'requests' -%>
-            <th>avg<br/><%= resource_name %></th>
-            <th>stddev<br/><%= resource_name %></th>
-            <th>sum<br/><%= resource_name %></th>
-            <% if @dataset.accumulates_time? -%>
-              <% options.merge!(:resource_total => @dataset.sum(resource))-%>
-              <th>% of overall<br/><%= resource_name.gsub(' ', '&nbsp;') %></th>
-              <% unless resource.to_sym == :total_time -%>
-                <% options.merge!(:total_time => @dataset.sum("total_time")) -%>
-                <th>% of total time</th>
-              <% end -%>
-            <% end -%>
-          <% end -%>
-          <%= render "#{Resource.resource_type(@dataset.resource)}_statistics", options.merge(:pages => @dataset.do_the_query) %>
-        <% else -%>
-          <th>user</th>
-          <th>page</th>
-          <th><%= h resource %></th>
-          <%= render "request_statistics", options.merge(:requests => @dataset.do_the_query) %>
-        <% end -%>
-      </tr>
-    </table>
+    <%= render "page_times" %>
   </div>
-  </div>
+</div>
 <% end -%>

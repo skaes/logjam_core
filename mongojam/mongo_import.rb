@@ -163,8 +163,11 @@ load_time = Benchmark.realtime do
       fields.delete_if{|k,v| v==0}
       fields.keys.each{|k| fields[SQUARED_FIELDS[k]] = (v=fields[k])*v}
 
+      pmodule = "::"
+      pmodule << $1 if page =~ /^(.+?)::/
+
       increments = {"count" => 1}.merge!(fields)
-      [page, "all_pages"].each do |p|
+      [page, "all_pages", pmodule].each do |p|
         increments.each do |f,v|
           ($minutes_buffer[[p,minute]] ||= Hash.new(0))[f] += v
         end
@@ -182,7 +185,7 @@ load_time = Benchmark.realtime do
 
       increments.merge!("apdex.#{user_experience}" => 1, "response.#{response_code_str}" => 1)
 
-      [page, "all_pages"].each do |p|
+      [page, "all_pages", pmodule].each do |p|
         increments.each do |f,v|
           ($totals_buffer[p] ||= Hash.new(0))[f] += v
         end

@@ -18,8 +18,7 @@ class Totals
   end
 
   def page_names
-    @page_names ||=
-      @collection.find({},:fields =>["page"]).map{|p| p["page"]}.delete_if{|p| p == "all_pages"}
+    @page_names ||= @collection.distinct(:page)
   end
 
   def pages(options)
@@ -56,7 +55,7 @@ class Totals
 
   def selector
     case
-    when pattern == '' then {:page => {'$ne' => "all_pages"}}
+    when pattern == '' then {:page => /\#/}
     when page_names.include?(pattern) then {:page => pattern}
     when page_names.grep(/^#{pattern}/).size > 0 then {:page => /^#{pattern}/}
     else {:page => /#{pattern}/}
@@ -83,7 +82,7 @@ class Totals
       @collection.find(selector, fields.clone).each do |row|
         n += 1
         count = row["count"]
-        result_row = {"page" => row["page"], "number_of_requests" => count}
+        result_row = {"page" => row["page"].gsub(/^::/,''), "number_of_requests" => count}
         result_row["apdex"] = row["apdex"] if @apdex
         result_row["response"] = row["response"] if @response
         @resources.each do |r|
