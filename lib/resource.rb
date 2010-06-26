@@ -79,7 +79,7 @@ class Resource
     end
 
     def grouping_functions
-      ['sum', 'avg']
+      ['sum', 'avg', 'stddev']
     end
 
     def grouping?(grouping)
@@ -106,6 +106,8 @@ class Resource
           "#{worst} #{human_grouping} by overall #{name}"
         when :avg
           "#{worst} #{human_grouping} by average #{name}"
+        when :stddev
+          "#{worst} #{human_grouping} by standard deviation of #{name}"
         when :min
           "#{human_grouping} with requests with min #{name}"
         when :max
