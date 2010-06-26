@@ -34,7 +34,7 @@ Rails::Initializer.run do |config|
   # config.gem "aws-s3", :lib => "aws/s3"
   config.gem 'logjam_logger', :version => '1.1.1'
   config.gem 'gnuplot', :source => 'http://gems.rubyforge.org'
-  config.gem 'memcached' unless defined? JRUBY_VERSION
+  # config.gem 'memcached' unless defined? JRUBY_VERSION
 
   # Only load the plugins named here, in the order given (default is alphabetical).
   # :all can be used as a placeholder for all plugins not explicitly named
