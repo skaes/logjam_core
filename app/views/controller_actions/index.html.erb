@@ -130,29 +130,33 @@ Event.observe(window, 'load', function() {show_description()});
     <h3><%= @dataset.description %></h3>
     <table class='full_stats'>
       <tr>
+        <% resource = @dataset.resource
+           resource_name = resource.gsub('_', ' ')
+           options = {:resource => resource} -%>
         <% if @dataset.grouping? -%>
           <th><%= @dataset.grouping %></th>
           <th>requests</th>
-          <% unless @dataset.resource == 'requests' -%>
-            <% unless @dataset.grouping_function == :avg -%>
-              <th>avg<br/><%= @dataset.resource.gsub('_', ' ') %></th>
-            <% end -%>
-            <th>stddev<br/><%= @dataset.resource.gsub('_', ' ') %></th>
-            <th><%= @dataset.grouping_function %><br/><%= @dataset.resource.gsub('_', ' ') %></th>
+          <% unless resource == 'requests' -%>
+            <th>avg<br/><%= resource_name %></th>
+            <th>stddev<br/><%= resource_name %></th>
+            <th>sum<br/><%= resource_name %></th>
             <% if @dataset.accumulates_time? -%>
-              <th>% of overall<br/><%= @dataset.resource.gsub('_', '&nbsp;') %></th>
-              <% unless @dataset.resource.to_sym == :total_time -%>
+              <% options.merge!(:resource_total => @dataset.sum(resource))-%>
+              <th>% of overall<br/><%= resource_name.gsub(' ', '&nbsp;') %></th>
+              <% unless resource.to_sym == :total_time -%>
+                <% options.merge!(:total_time => @dataset.sum("total_time")) -%>
                 <th>% of total time</th>
               <% end -%>
             <% end -%>
           <% end -%>
+          <%= render "#{Resource.resource_type(@dataset.resource)}_statistics", options.merge(:pages => @dataset.do_the_query) %>
         <% else -%>
           <th>user</th>
           <th>page</th>
-          <th><%= h @dataset.resource %></th>
+          <th><%= h resource %></th>
+          <%= render "request_statistics", options.merge(:requests => @dataset.do_the_query) %>
         <% end -%>
       </tr>
-      <%= render :partial => 'statistics' %>
     </table>
   </div>
   </div>

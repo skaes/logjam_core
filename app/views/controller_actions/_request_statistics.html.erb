@@ -1,0 +1,18 @@
+<% resource_type = Resource.resource_type(resource) -%>
+<% requests.each do |request| -%>
+  <tr class='full_stats'>
+      <td><%= h request["user_id"] %></td>
+      <td><%= h request["page"] %></td>
+      <% case resource_type
+         when :time -%>
+      <td class='number'><%= seconds_to_human(request[resource] / 1000.0) %></td>
+      <% when :call -%>
+      <td class='number'><%= number_with_delimiter(request[resource].to_i) %></td>
+      <% when :memory -%>
+      <td class='number'><%= memory_number(request[resource]) %></td>
+      <% else -%>
+      <td class='number'><%= number_with_delimiter(request[resource].to_i) %></td>
+      <% end -%>
+  </tr>
+<% end -%>
+

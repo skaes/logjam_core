@@ -58,7 +58,7 @@ class FilteredDataset
   end
 
   def accumulates_time?
-    (Resource.resource_type(resource) == :time) && grouping? && grouping_function.to_sym == :sum
+    (Resource.resource_type(resource) == :time) && grouping? && [:sum, :avg].include?(grouping_function.to_sym)
   end
 
   def start_interval
