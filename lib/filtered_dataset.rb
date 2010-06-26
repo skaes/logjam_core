@@ -109,9 +109,9 @@ class FilteredDataset
   def totals(stripped_page)
     (@totals||={})[stripped_page] ||=
       case Resource.resource_type(resource)
-      when :time   then Totals.new(@date,Resource.time_resources, stripped_page)
-      when :call   then Totals.new(@date,Resource.call_resources, stripped_page)
-      when :memory then Totals.new(@date,Resource.memory_resources, stripped_page)
+      when :time   then Totals.new(@date, Resource.time_resources+%w(apdex), stripped_page)
+      when :call   then Totals.new(@date, Resource.call_resources, stripped_page)
+      when :memory then Totals.new(@date, Resource.memory_resources, stripped_page)
       end
   end
 

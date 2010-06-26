@@ -176,14 +176,15 @@ load_time = Benchmark.realtime do
       flush_minutes_buffer if (n % 250) == 0
 
       user_experience =
-        if total_time >= 2000 || response_code == 500 then "frustrated"
-        elsif total_time < 100 then "happy"
-        elsif total_time < 500 then "satisfied"
-        elsif total_time < 2000 then "tolerating"
+        if total_time >= 2000 || response_code == 500 then {"apdex.frustrated" => 1}
+        elsif total_time < 100 then {"apdex.happy" => 1, "apdex.satisfied" => 1}
+        elsif total_time < 500 then {"apdex.satisfied" => 1}
+        elsif total_time < 2000 then {"apdex.tolerating" => 1}
         else raise "oops: #{tt.inspect}"
         end
 
-      increments.merge!("apdex.#{user_experience}" => 1, "response.#{response_code_str}" => 1)
+      increments.merge!(user_experience)
+      increments["response.#{response_code_str}"] = 1
 
       [page, "all_pages", pmodule].each do |p|
         increments.each do |f,v|
