@@ -1,7 +1,7 @@
 <% resource_type = Resource.resource_type(resource) -%>
 <% requests.each do |request| -%>
   <tr class='full_stats'>
-      <td><%= h request["page"] %></td>
+      <td><%= link_to(h(request["page"]), {:params => params.merge(:action => "show", :id => request['_id'])}) %></td>
       <td><%= h request["user_id"] %></td>
       <% case resource_type
          when :time -%>

@@ -19,6 +19,10 @@ module ApplicationHelper
     end
   end
 
+  def minute_to_human(minute_of_day)
+    "%02d:%02d" % minute_of_day.divmod(60)
+  end
+
   def distribution_kind(resource)
     case Resource.resource_type(resource)
     when :time

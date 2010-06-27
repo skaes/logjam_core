@@ -1,0 +1,21 @@
+<div id='request'>
+<b>Request details for</b> <em><%= h @request["page"] -%></em> at <b><%= minute_to_human(@request["minute"]) -%></b>
+</div>
+<table id='request-details'>
+  <% @request.each do |name, value| -%>
+    <% next if name =~ /(_sq|_id|minute|page)$/ -%>
+    <tr>
+      <td class='resource_name'><%= h name %></td>
+      <% case Resource.resource_type(name)
+         when :time -%>
+      <td class='number'><%= seconds_to_human(value / 1000.0) %></td>
+      <% when :call -%>
+      <td class='number'><%= number_with_delimiter(value.to_i) %></td>
+      <% when :memory -%>
+      <td class='number'><%= memory_number(value) %></td>
+      <% else -%>
+      <td class='number'><%= h value %></td>
+      <% end -%>
+    </tr>
+  <% end -%>
+</table>

@@ -1,6 +1,6 @@
 class Requests
   attr_reader :resource, :pattern
-  def initialize(date, resource, pattern='', options={})
+  def initialize(date, resource=nil, pattern='', options={})
     @database = Logjam.db(date)
     @collection = @database["requests"]
     @resource = resource
@@ -26,6 +26,11 @@ class Requests
     end
     logger.debug "MONGO requests #{result.size} records, #{"%.5f" % (access_time)} seconds}"
     result
+  end
+
+  def find(id)
+    fields = Resource
+    @collection.find_one({"_id" => BSON::ObjectID.from_string(id)})
   end
 
   def logger

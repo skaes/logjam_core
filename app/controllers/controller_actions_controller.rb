@@ -25,6 +25,11 @@ class ControllerActionsController < ApplicationController
     end
   end
 
+  def show
+    get_date
+    @request = Requests.new(@date).find(params[:id])
+  end
+
   def enlarged_plot
     @dataset = dataset_from_params
     @plot = Plot.new(@dataset, :svg)
@@ -54,9 +59,13 @@ class ControllerActionsController < ApplicationController
     (Logjam.database_days.first || Date.today).to_date
   end
 
-  def prepare_params
+  def get_date
     @date = "#{params['year']}-#{params['month']}-#{params['day']}".to_date unless params[:year].blank?
     @date ||= default_date
+  end
+
+  def prepare_params
+    get_date
     params[:end_hour] ||= FilteredDataset::DEFAULTS[:end_hour]
     params[:resource] ||= FilteredDataset::DEFAULTS[:resource]
     params[:grouping] ||= FilteredDataset::DEFAULTS[:grouping]
