@@ -47,7 +47,7 @@ class Minutes
     result = []
     if @resources.empty?
       counts.each do |m, num_requests|
-        result << { "minute5" => m, "requests" => num_requests}
+        result << { "minute1" => m, "requests" => num_requests}
       end
     else
       sums.each do |m,r|
@@ -55,7 +55,7 @@ class Minutes
         r.each_key do |f|
           r[f] /= cnt[f]
         end
-        result << r.merge!("minute5" => m)
+        result << r.merge!("minute1" => m)
       end
     end
     logger.debug "MONGO Minutes(#{selector.inspect},#{fields.inspect}) ==> #{n} records, size #{result.size}, #{"%.5f" % (access_time)} seconds}"

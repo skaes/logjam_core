@@ -5,7 +5,7 @@ class FilteredDataset
                 :plot_kind, :heap_growth_only, :resource, :grouping, :grouping_function,
                 :start_hour, :end_hour, :date
 
-  DEFAULTS = {:plot_kind => :time, :interval => '5',
+  DEFAULTS = {:plot_kind => :time, :interval => '1',
               :grouping => 'page', :resource => 'total_time', :grouping_function => 'sum',
               :start_hour => '0', :end_hour => '24'}
 
