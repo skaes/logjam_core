@@ -67,7 +67,7 @@ class Totals
   end
 
   def response_codes
-    @response_hash ||= the_pages.inject(Hash.new(0)){|h,p| p["response"].each{|k,v| h[k.to_i] += v}; h}
+    @response_hash ||= the_pages.inject(Hash.new(0)){|h,p| p["response"].each{|k,v| h[k.to_i] += v.to_i}; h}
   end
 
   protected

@@ -190,6 +190,10 @@ class FilteredDataset
     satisfied + tolerating / 2.0
   end
 
+  def error_count
+    response_codes[500] || 0
+  end
+
   def response_codes
     @response_codes ||= Totals.new(@date, %w(response), stripped_page).response_codes
   end

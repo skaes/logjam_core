@@ -3,5 +3,8 @@
   <tr><td>satisfied (rt &lt; 500)</td><td class='number'><%= '%.1f' % (100.0 * @dataset.satisfied) %>%</td></tr>
   <tr><td>tolerating (500 &lt;= rt &lt; 2000)</td><td class='number'><%= '%.1f' % (100.0 * @dataset.tolerating) %>%</td></tr>
   <tr><td>frustrated (rt &gt; 2000)</td><td class='number'><%= '%.1f' % (100.0 * @dataset.frustrated) %>%</td></tr>
+  <tr><td></td><td></td></tr>
   <tr><td><%= link_to 'apdex score', 'http://www.apdex.org/overview.html' %></td><td class='number'><%= '%.2f' % @dataset.apdex %></td></tr>
+  <tr><td></td><td></td></tr>
+  <tr><td class='error'>internal server errors</td><td class='number error'><%= @dataset.error_count %></td></tr>
 </table>

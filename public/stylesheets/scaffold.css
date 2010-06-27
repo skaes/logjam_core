@@ -112,6 +112,8 @@ td.group-thing {max-width: 32em; overflow: hidden;}
 td {padding: 0 8px;}
 td.number {text-align: right;}
 
+.error {color:red;}
+
 .stats th { font-size: 12px; }
 .stats td { font-size: 12px; padding: 0 8px; }
 .table-heading { font-weight: bold; padding-top: 10px; }
