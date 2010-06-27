@@ -1,8 +1,8 @@
 <% resource_type = Resource.resource_type(resource) -%>
 <% requests.each do |request| -%>
   <tr class='full_stats'>
-      <td><%= h request["user_id"] %></td>
       <td><%= h request["page"] %></td>
+      <td><%= h request["user_id"] %></td>
       <% case resource_type
          when :time -%>
       <td class='number'><%= seconds_to_human(request[resource] / 1000.0) %></td>

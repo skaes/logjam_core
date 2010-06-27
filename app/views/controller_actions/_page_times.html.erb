@@ -24,8 +24,8 @@
       <% end -%>
       <%= render "#{resource_type}_statistics", options.merge(:pages => @dataset.do_the_query) %>
     <% else -%>
-      <th>user</th>
       <th>page</th>
+      <th>user</th>
       <th><%= h resource %></th>
       <%= render "request_statistics", options.merge(:requests => @dataset.do_the_query) %>
     <% end -%>
