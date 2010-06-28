@@ -31,15 +31,13 @@ Event.observe(window, 'load', function() {show_description()});
           <%= label :filter, 'date' %><br />
           <%= select_tag 'starts_at', options_for_select(Logjam.database_days, @date.to_s(:db)[0..9]) %>
         </p>
-<!---
         <p class='filter-widget'>
           <%= label :filter, 'plot timeslice' %><br />
           <%= select_tag 'interval', options_for_select(Logjam.durations.map{|i| [pluralize(i, 'minute'), i]}, params[:interval]) %>
         </p>
--->
         <p class='filter-widget-last'>
           <%= label :filter, 'page name' %><br />
-          <%= text_field_with_auto_complete :controller_action, :page, {:value => @page, :size => 50} %>
+          <%= text_field_with_auto_complete :controller_action, :page, {:value => @page, :size => 45} %>
         </p>
 
         <p class='clear-left'></p>

@@ -5,7 +5,7 @@ class FilteredDataset
                 :plot_kind, :heap_growth_only, :resource, :grouping, :grouping_function,
                 :start_hour, :end_hour, :date
 
-  DEFAULTS = {:plot_kind => :time, :interval => '1',
+  DEFAULTS = {:plot_kind => :time, :interval => '5',
               :grouping => 'page', :resource => 'total_time', :grouping_function => 'sum',
               :start_hour => '0', :end_hour => '24'}
 
@@ -138,7 +138,7 @@ class FilteredDataset
       begin
         resources = Resource.resources_for_type(resource_type) - resources_to_skip
         minute = "minute#{interval}"
-        from_db = Minutes.new(@date, resources, stripped_page).minutes
+        from_db = Minutes.new(@date, resources, stripped_page).minutes(interval)
         zero = Hash.new(0)
         results = (1..intervals_per_day).to_a.map{zero}
         from_db.each {|row| results[row[minute].to_i] = row}

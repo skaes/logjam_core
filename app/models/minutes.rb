@@ -15,7 +15,7 @@ class Minutes
     @page_names ||= Totals.new(@date).page_names
   end
 
-  def minutes
+  def minutes(time_slice=5)
     sums = {}
     if @resources.empty?
       counts = Hash.new(0)
@@ -30,7 +30,7 @@ class Minutes
       @collection.find(selector, fields.clone).each do |row|
         n += 1
         count = row["count"]
-        minute = row["minute"]
+        minute = row["minute"] / time_slice
         if @resources.empty?
           counts[minute] += count
         else
@@ -45,9 +45,10 @@ class Minutes
       end
     end
     result = []
+    minute_str = "minute#{time_slice}"
     if @resources.empty?
       counts.each do |m, num_requests|
-        result << { "minute1" => m, "requests" => num_requests}
+        result << { minute_str => m, "requests" => num_requests}
       end
     else
       sums.each do |m,r|
@@ -55,7 +56,7 @@ class Minutes
         r.each_key do |f|
           r[f] /= cnt[f]
         end
-        result << r.merge!("minute1" => m)
+        result << r.merge!(minute_str => m)
       end
     end
     logger.debug "MONGO Minutes(#{selector.inspect},#{fields.inspect}) ==> #{n} records, size #{result.size}, #{"%.5f" % (access_time)} seconds}"
