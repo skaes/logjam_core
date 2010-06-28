@@ -38,6 +38,7 @@ class Minutes
           sum_sofar = sums[minute] ||= Hash.new(0.0)
           @resources.each do |f|
             v = row[f].to_f
+            v /= 40 if f == "allocated_bytes" # HACK!!!
             sum_sofar[f] += v
             count_sofar[f] += count
           end
