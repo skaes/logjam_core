@@ -80,6 +80,9 @@ $totals.create_index("page")
 $minutes = db["minutes"]
 $minutes.create_index([ ["page", Mongo::ASCENDING], ["minute", Mongo::ASCENDING] ])
 
+$hours = db["hours"]
+$hours.create_index([ ["page", Mongo::ASCENDING], ["hour", Mongo::ASCENDING] ])
+
 $quants = db["quants"]
 $quants.create_index([ ["page", Mongo::ASCENDING], ["kind", Mongo::ASCENDING], ["quant", Mongo::ASCENDING] ])
 
@@ -101,6 +104,7 @@ file_path = ARGV.shift
 $quants_buffer = {}
 $totals_buffer = {}
 $minutes_buffer = {}
+$hours_buffer = {}
 
 def flush_quants_buffer
   $quants_buffer.each do |(p,k,q),inc|
@@ -114,6 +118,13 @@ def flush_minutes_buffer
     $minutes.update({"page" => p, "minute" => m}, { '$inc' => inc }, UPSERT_ONE)
   end
   $minutes_buffer.clear
+end
+
+def flush_hours_buffer
+  $hours_buffer.each do |(p,h),inc|
+    $hours.update({"page" => p, "hour" => h}, { '$inc' => inc }, UPSERT_ONE)
+  end
+  $hours_buffer.clear
 end
 
 def flush_totals_buffer
@@ -174,7 +185,7 @@ load_time = Benchmark.realtime do
         end
       end
 
-      flush_minutes_buffer if (n % 250) == 0
+      flush_minutes_buffer if (n % 1000) == 0
 
       user_experience =
         if total_time >= 2000 || response_code == 500 then {"apdex.frustrated" => 1}
@@ -193,7 +204,16 @@ load_time = Benchmark.realtime do
         end
       end
 
-      flush_totals_buffer if (n % 250) == 0
+      flush_totals_buffer if (n % 1000) == 0
+
+      hour = minute / 60
+      [page, "all_pages", pmodule].each do |p|
+        increments.each do |f,v|
+          ($hours_buffer[[p,hour]] ||= Hash.new(0))[f] += v
+        end
+      end
+
+      flush_hours_buffer if (n % 1000) == 0
 
       (TIME_FIELDS+%w(allocated_objects allocated_bytes)).each do |f|
         next unless x=fields[f]
@@ -213,18 +233,19 @@ load_time = Benchmark.realtime do
         end
       end
 
-      flush_quants_buffer if (n % 1500) == 0
+      flush_quants_buffer if (n % 1000) == 0
 
       request = {"page" => page, "minute" => minute, "response_code" => response_code, "user_id" => user_id}.merge!(fields)
       requests.insert(request) if interesting?(request)
 
-      # break if n >= 10000
+      break if n >= 10000
     rescue CSV::MalformedCSVError
       $stderr.puts "ignored malformed csv line"
     end
   end
   flush_totals_buffer
   flush_minutes_buffer
+  flush_hours_buffer
   flush_quants_buffer
   csv.close
 end
