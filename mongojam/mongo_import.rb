@@ -238,7 +238,7 @@ load_time = Benchmark.realtime do
       request = {"page" => page, "minute" => minute, "response_code" => response_code, "user_id" => user_id}.merge!(fields)
       requests.insert(request) if interesting?(request)
 
-      break if n >= 10000
+      # break if n >= 10000
     rescue CSV::MalformedCSVError
       $stderr.puts "ignored malformed csv line"
     end
