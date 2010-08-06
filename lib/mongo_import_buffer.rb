@@ -48,7 +48,7 @@ class MongoImportBuffer
     fields.keys.each{|k| fields[squared_field(k)] = (v=fields[k].to_f)*v}
 
     pmodule = "::"
-    pmodule << $1 if page =~ /^(.+?)::/
+    pmodule << $1 if page =~ /^(.+?)::/ || page =~ /^([^:#]+)#/
 
     increments = {"count" => 1}.merge!(fields)
     [page, "all_pages", pmodule].each do |p|
