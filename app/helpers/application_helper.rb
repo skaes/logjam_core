@@ -50,7 +50,7 @@ module ApplicationHelper
 
   def sometimes_link_number_of_requests(result, grouping, options)
     if :page == grouping.to_sym
-      link_to number_with_delimiter(result[:number_of_requests]), options, :title => "plot request time distribution for #{result[:page]}"
+      link_to number_with_delimiter(result[:number_of_requests].to_i), options, :title => "plot request time distribution for #{result[:page]}"
     else
       h(result[:number_of_requests])
     end
