@@ -56,4 +56,22 @@ module ApplicationHelper
     end
   end
 
+  # try to fix broken string encodings. most of the time the string is latin-1 encoded
+  if RUBY_VERSION >= "1.9"
+    def safe_h(s)
+      h(s)
+    rescue ArgumentError
+      raise unless $!.to_s == "invalid byte sequence in UTF-8"
+      logger.debug "#{$!} during html escaping".upcase
+      begin
+        h(s.force_encoding('ISO-8859-1').encode('UTF-8', :undef => :replace))
+      rescue ArgumentError
+        h(s.force_encoding('ASCII-8BIT').encode('UTF-8', :undef => :replace))
+      end
+    end
+  else
+    def safe_h(s)
+      h(s)
+    end
+  end
 end
