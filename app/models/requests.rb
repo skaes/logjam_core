@@ -10,6 +10,7 @@ class Requests
 
   def selector
     query_opts = @options[:heap_growth_only] ? {"heap_growth" => {'$gt' => 0}} : {}
+    query_opts.merge!(:response_code => @options[:response_code]) if @options[:response_code]
     query_opts.merge!(:page => /#{pattern}/) unless pattern.blank?
     puts query_opts.inspect
     query_opts
@@ -18,14 +19,19 @@ class Requests
   def all
     result = []
     all_fields = ["page", "user_id", "heap_growth", @resource]
+    all_fields << "lines" if @options[:response_code] == 500
     access_time = Benchmark.realtime do
       result = @collection.find(selector,
                                 {:fields => all_fields,
                                   :sort => [@resource, Mongo::DESCENDING],
-                                  :limit => 35}).to_a
+                                  :limit => @options[:limit] || 35}).to_a
     end
     logger.debug "MONGO requests #{result.size} records, #{"%.5f" % (access_time)} seconds}"
     result
+  end
+
+  def count
+    @collection.find(selector).count
   end
 
   def find(id)

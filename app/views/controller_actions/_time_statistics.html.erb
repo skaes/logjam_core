@@ -10,9 +10,10 @@
     <td class='number'><%= number_with_precision(page["#{resource}_avg"], :precision => 0, :delimiter => ',') %></td>
     <td class='number'><%= number_with_precision(page["#{resource}_stddev"], :precision => 0 , :delimiter => ',') %></td>
     <td class='number'><%= seconds_to_human(page["#{resource}_sum"].to_f / 1000) %></td>
-    <td><%= number_to_percentage(page["#{resource}_sum"].to_f / resource_total * 100, :precision => 2) %></td>
+    <td class='number'><%= number_to_percentage(page["#{resource}_sum"].to_f / resource_total * 100, :precision => 2) %></td>
     <% if resource == "total_time" -%>
-      <td><%= number_with_precision((page["apdex"]["satisfied"].to_f+page["apdex"]["tolerating"].to_f/2.0)/page["number_of_requests"].to_f, :precision => 2) %></td>
+      <td class='number'><%= number_with_precision((page["apdex"]["satisfied"].to_f+page["apdex"]["tolerating"].to_f/2.0)/page["number_of_requests"].to_f, :precision => 2) %></td>
+      <td class='number'><%= sometimes_link_errors(page["page"], page["response"]["500"].to_i) %></td>
     <% else -%>
       <td><%= number_to_percentage(page["#{resource}_sum"].to_f / total_time * 100, :precision => 2) %></td>
     <% end -%>

@@ -1,0 +1,12 @@
+<h1>Internal Server Errors <%= h @page %> (<%= @error_count %> total)</h1>
+<div id='requests'>
+<table>
+<% @requests.each do |r| %>
+<tr>
+<td><%= minute_to_human(r["minute"]) %></td>
+<td><%= link_to(h(r["page"]), :params => params.slice(:year,:month,:day).merge(:action =>"show", :id => r["_id"])) %></td>
+<td><%= (r["lines"]||[]).map{|l| safe_h(l)}.detect{|l| l =~ /rb:\d+:in|Error|Exception/}.to_s[0..70] %></td>
+</tr>
+<% end %>
+</table>
+</div>

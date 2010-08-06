@@ -3,7 +3,7 @@
 </div>
 <table id='request-details'>
   <% @request.each do |name, value| -%>
-    <% next if name =~ /(_sq|_id|minute|page)$/ -%>
+    <% next if name =~ /(_sq|_id|minute|page|lines)$/ -%>
     <tr>
       <td class='resource_name'><%= h name %></td>
       <% case Resource.resource_type(name)
@@ -19,3 +19,8 @@
     </tr>
   <% end -%>
 </table>
+<pre id='request-lines'>
+<% (@request["lines"]||[]).each do |line| -%>
+&#10145; <%= safe_h line %>
+<% end -%>
+</pre>

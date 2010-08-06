@@ -30,6 +30,14 @@ class ControllerActionsController < ApplicationController
     @request = Requests.new(@date).find(params[:id])
   end
 
+  def errors
+    get_date
+    determine_page_pattern
+    q = Requests.new(@date, "minute", @page, :response_code => 500, :limit => 500)
+    @error_count = q.count
+    @requests = q.all
+  end
+
   def enlarged_plot
     @dataset = dataset_from_params
     @plot = Plot.new(@dataset, :svg)
@@ -76,7 +84,6 @@ class ControllerActionsController < ApplicationController
     end
     @plot_kind = Resource.resource_type(params[:resource])
     @attributes = Resource.resources_for_type(@plot_kind) - ['requests']
-    @page = params[:controller_action] ? params[:controller_action][:page] : nil
     determine_page_pattern
   end
 
@@ -116,6 +123,7 @@ class ControllerActionsController < ApplicationController
   end
 
   def determine_page_pattern
+    @page = params[:controller_action] ? params[:controller_action][:page] : params[:page]
     @page_pattern = @page
     return if @page_pattern.blank?
     @page_pattern.gsub!(/[*%]/,'')

@@ -56,6 +56,14 @@ module ApplicationHelper
     end
   end
 
+  def sometimes_link_errors(page, n)
+    if n == 0
+      ""
+    else
+      link_to(n, :params => params.slice(:year,:month,:day).merge(:action => "errors", :page => page))
+    end
+  end
+
   # try to fix broken string encodings. most of the time the string is latin-1 encoded
   if RUBY_VERSION >= "1.9"
     def safe_h(s)
