@@ -66,7 +66,7 @@ module Matchers
         :response_code => $4.to_i,
       }
   end
-  
+
   # time_bandits, either the simple, out-of-the-box format
   #   Jan 13 16:58:38 starbuck-2 rails[86742]:  Completed in 238.974ms (View: 61.361, DB: 41.915(14,1)) | 200 OK [http: ...]
   # or with memcache and memory resources, via gchacks
@@ -100,7 +100,7 @@ module Matchers
   # Jul 27 16:25:29 pc-skaes-3 rails[3161] user[5926542]: Completed in 2352.498ms (View: 183.980, DB: 53.292(15), API: 46.657(1), SR: 7.638(3), MC: 6.345(9r,0m), GC: 970.501(10)) | 200 OK [http://localhost/jobs]
   # Jun 28 06:00:49 ext-xeapp52-1 rails[25944] user[Anonymous]: Completed in 176.044ms (View: 0.000, DB: 0.000(0), API: 0.000(0), SR: 0.000(0), MC: 2.218(1r,1m)) |  [http://localhost/jobs/]
   COMPLETED_XING = lambda do |line|
-    line =~ /^Completed in ([\S]+)ms \(View: ([\S]+), DB: ([\S]+)\((\d+)(?:,(\d+))?\), API: ([\S]+)\((\d+)\), SR: ([\S]+)\((\d+)\), MC: ([\S]+)\((\d+)r,(\d+)m\)(?:, GC: ([\S]+)\((\d+)\))?(?:, HP: ([\S]+)\((\d+),(\d+),(\d+)\))?\) \| (\d+)? / and
+    line =~ /^Completed in ([\S]+)ms \(View: ([\S]+), DB: ([\S]+)\((\d+)(?:,(\d+))?\), API: ([\S]+)\((\d+)\), SR: ([\S]+)\((\d+)\), MC: ([\S]+)\((\d+)r,(\d+)m\)(?:, GC: ([\S]+)\((\d+)\))?(?:, HP: ([\S]+)\((\d+),(\d+),(\d+)(?:,(\d+))?\))?\) \| (\d+)? / and
       {
         :total_time => $1.to_f,
         :view_time => $2.to_f,
@@ -120,7 +120,8 @@ module Matchers
         :heap_size => $16.to_i,
         :allocated_objects => $17.to_i,
         :allocated_bytes => $18.to_i,
-        :response_code => $19.to_i,
+        :live_data_set_size => $19.to_i,
+        :response_code => $20.to_i
     }
   end
 
@@ -135,7 +136,6 @@ end # Matchers
 # It is ok to have multiple COMPLETED matchers enabled; the first to match will be used.
 
 RequestInfo.register_matcher Matchers::PROCESSING
-#RequestInfo.register_matcher Matchers::SESSION_XING
-#RequestInfo.register_matcher Matchers::COMPLETED_XING
-RequestInfo.register_matcher Matchers::COMPLETED_TIME_BANDITS
-RequestInfo.register_matcher Matchers::COMPLETED_RAILS
+RequestInfo.register_matcher Matchers::SESSION_XING
+RequestInfo.register_matcher Matchers::COMPLETED_XING
+#RequestInfo.register_matcher Matchers::COMPLETED_RAILS
