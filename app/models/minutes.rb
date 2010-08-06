@@ -8,7 +8,7 @@ class Minutes
     @pattern = pattern
     @pattern = "all_pages" if @pattern.blank? || @pattern == "::"
     @pattern = "^::#{@pattern}" if page_names.include?("::#{pattern}")
-    @pattern = Regexp.new(/#{@pattern}/) unless @pattern == "all_pages"
+    @pattern = Regexp.new(/#{@pattern}/) unless @pattern == "all_pages" || page_names.include?(@pattern)
   end
 
   def page_names
