@@ -57,7 +57,7 @@ Event.observe(window, 'load', function() {show_description()});
           <%= select_tag 'grouping_function', options_for_select(Resource.grouping_functions, params['grouping_function']),
               :onchange => "show_description()" %>
         </p>
-        <%- if Resource.heap_resources.include?("growth") -%>
+        <%- if Resource.heap_resources.include?("heap_growth") -%>
           <p class='filter-widget-last' id='heap-growth-widget'>
             <%= label :filter, 'heap growth only' %><br />
             <%= check_box_tag 'heap_growth_only', "1", params['heap_growth_only']=="1" %>

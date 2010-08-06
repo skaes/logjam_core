@@ -3,17 +3,16 @@ require 'mq'
 require 'date'
 
 class AMQPImporter
-  attr_accessor :last_processed_date
   RAILS_ENV = ENV['RAILS_ENV'] || 'development'
 
   def initialize
-    @importer = MysqlImporter.new("/dev/null")
+    @importer = MongoImporter.new("/dev/null")
   end
 
   def process
     EM.run do
-      EM.add_periodic_timer(60) do
-        import_csv_data
+      EM.add_periodic_timer(5) do
+        @importer.flush_buffers
       end
       queue.subscribe do |msg|
         process_line(msg)
@@ -23,19 +22,14 @@ class AMQPImporter
 
   def stop
     AMQP.stop { EM.stop }
-    import_csv_data
+    @importer.flush_buffers
   end
 
   private
 
-    def import_csv_data
-      @importer.close_csv_files
-      @importer.import_csv_files
-      @importer.remove_csv_files
-    end
-
-    def queue
-      @queue ||= begin
+  def queue
+    @queue ||=
+      begin
         config = load_config('amqp.yml')
 
         channel = MQ.new(AMQP::connect(:host => config[:hostname]))
@@ -47,14 +41,14 @@ class AMQPImporter
       end
     end
 
-    def process_line(msg)
-      Parser.parse_line(msg) do |entry|
-        @importer.add_entry entry.to_hash
-      end
+  def process_line(msg)
+    Parser.parse_line(msg) do |entry|
+      @importer.add_entry entry.to_hash
     end
+  end
 
-    def load_config(config_name)
-      YAML.load_file(File.join(File.dirname(__FILE__), '..', 'config', config_name))[RAILS_ENV].symbolize_keys
-    end
+  def load_config(config_name)
+    YAML.load_file(File.join(File.dirname(__FILE__), '..', 'config', config_name))[RAILS_ENV].symbolize_keys
+  end
 
 end

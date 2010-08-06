@@ -10,7 +10,7 @@ class RequestInfo
   end
 
   def initialize(host, process_id, user_id, lines)
-    @info = {:host => host, :process_id => process_id.to_i, :user_id => user_id.to_i, :page => nil, :ip => nil}
+    @info = {:host => host, :process_id => process_id.to_i, :user_id => user_id.to_i, :page => nil, :ip => nil, :lines => lines}
     @info.merge!(default_values)
     process lines
     unless @info[:page]
@@ -32,9 +32,7 @@ class RequestInfo
       begin
         @info.merge! :other_time => other_time, :allocated_memory => allocated_memory
         minute = extract_minute(@info[:started_at])
-        @info[:minute1] = minute
-        @info[:minute2] = minute / 2
-        @info[:minute5] = minute / 5
+        @info[:minute] = minute
         @info
       end
   end
@@ -60,8 +58,10 @@ class RequestInfo
 
   def process(entry)
     entry.each do |line|
+      # puts "matching line #{line}"
       matchers.each do |matcher|
         if extracted_values = matcher.call(line)
+          # puts "merging #{extracted_values.inspect}"
           @info.merge! extracted_values
           break
         end

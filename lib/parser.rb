@@ -10,27 +10,6 @@
 
 module Parser
   @unprocessed_requests = {}
-  # Parses IO stream +stream+, yielding a RequestInfo object for each recognizable log
-  # entry.
-  #
-  # Log entries are recognised as starting with Processing, continuing with
-  # the same process id through Completed.
-  def self.parse(stream, &block) # :yields: request_info
-    stream.each_line do |line|
-      begin
-        parse_line(line, &block)
-      rescue Exception => e
-        $stderr.puts "Exception occured during log line processing: #{e}"
-        $stderr.puts "Offending log line: #{line}"
-      end
-    end
-
-    # warn user about imcomplete log entries.
-    # this is usually caused by rotating logs
-    # unless unprocessed_requests.empty?
-    #   puts "#{unprocessed_requests.size} actions where incomplete and could not be imported"
-    # end
-  end
 
   def self.parse_line(line)
     if parts = Matchers::LOG_LINE_SPLITTER.call(line)
@@ -49,6 +28,9 @@ module Parser
     else
       $stderr.puts "no match for line: #{line}"
     end
+  rescue Exception => e
+    $stderr.puts "Exception occured during log line processing: #{e}"
+    $stderr.puts "Offending log line: #{line}"
   end
 end
 

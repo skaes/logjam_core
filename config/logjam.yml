@@ -29,7 +29,8 @@ memory_resources:
 - allocated_memory: '#ff00ff'
 - allocated_objects: '#0022ff'
 - allocated_bytes: '#ff0000'
-- heap_size: '#000000'
 
 heap_resources:
-- growth: '#567757'
+- heap_size: '#000000'
+- heap_growth: '#567757'
+- live_data_set_size: '#352378'

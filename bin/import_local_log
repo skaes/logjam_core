@@ -9,15 +9,6 @@ if file_name.nil? then
   exit 1
 end
 
-return_code = 0
-
-trap("INT") do
-  return_code = 1
-  puts "#{$0} received an interrupt and ignored it"
-end
-
-importer = MysqlImporter.new file_name
+importer = MongoImporter.new file_name
 importer.process
-
-exit return_code
 

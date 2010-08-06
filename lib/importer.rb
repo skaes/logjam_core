@@ -34,13 +34,21 @@ class Importer
   end
 
   def parse_logfile
-    cmd = @logfile_name =~ /\.gz$/ ? "zegrep" : "egrep"
-    io = IO.popen("#{cmd} -e '#{Matchers::PRE_MATCH}' #{@logfile_name}", "rb")
-    Parser.parse io do |entry|
+    Parser.parse logfile_io do |entry|
       hash = entry.to_hash
       yield(hash)
     end
     io.close
+  end
+
+  def logfile_io
+    @io ||=
+      begin
+        #cmd = @logfile_name =~ /\.gz$/ ? "zegrep" : "egrep"
+        #IO.popen("#{cmd} -e '#{Matchers::PRE_MATCH}' #{@logfile_name}", "rb")
+        cmd = @logfile_name =~ /\.gz$/ ? "gzcat" : "cat"
+        IO.popen("#{cmd} #{@logfile_name}", "rb")
+      end
   end
 
   def md5hash
