@@ -3,3 +3,6 @@ db/schema.rb
 log/*.log
 tmp
 config/database.yml
+mongojam/xaa
+mongojam/xab
+mongojam/xac
