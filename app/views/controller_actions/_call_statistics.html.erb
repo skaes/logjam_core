@@ -3,7 +3,7 @@
     <% params[:page] = page[:page] -%>
     <td class='group-thing'><%= sometimes_link_grouping_result(page, :page) %></td>
     <td class='number'>
-      <%= sometimes_link_number_of_requests(page, :page, {:params => params.merge(:action => distribution_kind(resource), :page => page[:page])}) %>
+      <%= sometimes_link_number_of_requests(page, :page, {:params => clean_params(params.merge(:action => distribution_kind(resource), :page => page[:page]))}) %>
     </td>
     <% unless resource == "requests" -%>
       <td class='number'><%= number_with_precision(page["#{resource}_avg"], :precision => 1, :delimiter => ',') %></td>

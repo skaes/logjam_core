@@ -10,7 +10,11 @@ class FilteredDataset
               :start_hour => '0', :end_hour => '24'}
 
   def self.is_default?(attribute, value)
-    DEFAULTS.keys.include?(attribute) && DEFAULTS[attribute.to_sym].to_s == value
+    DEFAULTS.keys.include?(attribute.to_sym) && DEFAULTS[attribute.to_sym].to_s == value
+  end
+
+  def self.clean_url_params(params)
+    params.reject{|k,v| v.blank? || is_default?(k, v)}
   end
 
   def initialize(options = {})

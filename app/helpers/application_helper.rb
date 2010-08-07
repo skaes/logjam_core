@@ -39,10 +39,14 @@ module ApplicationHelper
     end
   end
 
+  def clean_params(params)
+    FilteredDataset.clean_url_params params
+  end
+
   def sometimes_link_grouping_result(result, grouping)
     value = result[grouping]
     if [:user_id, :page].include? grouping.to_sym
-      link_to(h(value), {:params => params.merge(grouping => value)}, :title => "filter with #{h(value)}")
+      link_to(h(value), {:params => clean_params(params.merge(grouping => value))}, :title => "filter with #{h(value)}")
     else
       h(value)
     end

@@ -106,12 +106,13 @@ class ControllerActionsController < ApplicationController
 
   def redirect_to_clean_url
     if params[:starts_at] =~ /^(\d\d\d\d)-(\d\d)-(\d\d)$/
-      redirect_to({:controller => controller_name, :action => params[:action], :year => $1, :month => $2, :day => $3,
-                    :start_hour => params[:start_hour], :end_hour => params[:end_hour],
-                    :server => params[:server], :page => params[:page], :response => params[:response],
-                    :heap_growth_only => params[:heap_growth_only], :resource => params[:resource], :grouping => params[:grouping],
-                    :grouping_function => params[:grouping_function], :interval => params[:interval],
-                    :user_id => params[:user_id]}.reject{|k,v| v.blank? || FilteredDataset.is_default?(k, v)})
+      redirect_to(FilteredDataset.clean_url_params(
+                       :controller => controller_name, :action => params[:action], :year => $1, :month => $2, :day => $3,
+                       :start_hour => params[:start_hour], :end_hour => params[:end_hour],
+                       :server => params[:server], :page => params[:page], :response => params[:response],
+                       :heap_growth_only => params[:heap_growth_only], :resource => params[:resource], :grouping => params[:grouping],
+                       :grouping_function => params[:grouping_function], :interval => params[:interval],
+                       :user_id => params[:user_id]))
     end
   end
 
