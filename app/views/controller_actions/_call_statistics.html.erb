@@ -1,6 +1,6 @@
 <% pages.each do |page| -%>
   <tr class='full_stats'>
-    <% params[:controller_action][:page] = page[:page] -%>
+    <% params[:page] = page[:page] -%>
     <td class='group-thing'><%= sometimes_link_grouping_result(page, :page) %></td>
     <td class='number'>
       <%= sometimes_link_number_of_requests(page, :page, {:params => params.merge(:action => distribution_kind(resource), :page => page[:page])}) %>

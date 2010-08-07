@@ -1,17 +1,14 @@
 class ControllerActionsController < ApplicationController
-  # GET /controller_actions
-  # GET /controller_actions.xml
-  before_filter :redirect_to_clean_url
-  if RAILS_ENV=="development"
-    before_filter :print_params
-  end
+  before_filter :redirect_to_clean_url, :except => :auto_complete_for_controller_action_page
+  before_filter :print_params if RAILS_ENV=="development"
 
   def auto_complete_for_controller_action_page
     prepare_params
-    re = /#{params[:controller_action][:page]}/i
+    re = /#{params[:page]}/i
     pages = Totals.new(@date).page_names.select {|name| name =~ re}
     modules = pages.map{|p| p =~ /^(.+?)::/ && $1 }.compact.uniq
     @completions = (pages + modules).sort
+    puts @completions.inspect
     render :inline => "<%= content_tag(:ul, @completions.map { |page| content_tag(:li, page) }) %>"
   end
 
@@ -89,7 +86,7 @@ class ControllerActionsController < ApplicationController
 
   def dataset_from_params
     prepare_params
-    params[:controller_action] = {:page => @page}
+    params[:page] = @page
     params[:interval] ||= FilteredDataset::DEFAULTS[:interval]
 
     FilteredDataset.new(:date => @date,
@@ -111,10 +108,10 @@ class ControllerActionsController < ApplicationController
     if params[:starts_at] =~ /^(\d\d\d\d)-(\d\d)-(\d\d)$/
       redirect_to({:controller => controller_name, :action => params[:action], :year => $1, :month => $2, :day => $3,
                     :start_hour => params[:start_hour], :end_hour => params[:end_hour],
-                    :server => params[:server], :controller_action => params[:controller_action], :response => params[:response],
+                    :server => params[:server], :page => params[:page], :response => params[:response],
                     :heap_growth_only => params[:heap_growth_only], :resource => params[:resource], :grouping => params[:grouping],
                     :grouping_function => params[:grouping_function], :interval => params[:interval],
-                    :user_id => params[:user_id]}.reject{|k,v| v.blank? || FilteredDataset.is_default?(k, v) || (k == :controller_action && v == {'page' => ''})})
+                    :user_id => params[:user_id]}.reject{|k,v| v.blank? || FilteredDataset.is_default?(k, v)})
     end
   end
 
@@ -123,7 +120,7 @@ class ControllerActionsController < ApplicationController
   end
 
   def determine_page_pattern
-    @page = params[:controller_action] ? params[:controller_action][:page] : params[:page]
+    @page = params[:page]
     @page_pattern = @page
     return if @page_pattern.blank?
     @page_pattern.gsub!(/[*%]/,'')
