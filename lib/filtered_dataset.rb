@@ -86,11 +86,11 @@ class FilteredDataset
   end
 
   def count_requests(extra_condition = nil)
-    totals(stripped_page).count
+    totals(stripped_page).count.to_i
   end
 
   def count
-    totals("all_pages").count
+    totals("all_pages").count.to_i
   end
 
   def sum(time_attr = 'total_time')
