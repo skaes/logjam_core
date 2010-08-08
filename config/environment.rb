@@ -16,14 +16,6 @@ Rails::Initializer.run do |config|
   # Add additional load paths for your own custom dirs
   # config.load_paths += %W( #{RAILS_ROOT}/extras )
 
-  # use built-in csv with ruby 1.9, and fastercsv with 1.8
-  if RUBY_VERSION > "1.9"
-    require "csv"
-    ::FasterCSV = CSV unless defined? FasterCSV
-  else
-    config.gem 'fastercsv', :source => 'http://gems.rubyforge.org'
-    require "fastercsv"
-  end
   # Specify gems that this application depends on and have them installed with rake gems:install
   # config.gem "bj"
   # config.gem "hpricot", :version => '0.6', :source => "http://code.whytheluckystiff.net"
