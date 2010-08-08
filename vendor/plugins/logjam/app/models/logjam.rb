@@ -1,8 +1,14 @@
+require 'mongo'
+
 module Logjam
   extend self
 
+  def mongo
+    @mongo_connection ||= Mongo::Connection.new(ENV['MONGOJAM_HOST']||"localhost")
+  end
+
   def db(date)
-    MONGODB.db(db_name(date))
+    mongo.db(db_name(date))
   end
 
   def db_name(date)
@@ -10,7 +16,7 @@ module Logjam
   end
 
   def databases
-    MONGODB.database_names.grep(/logjam-/)
+    mongo.database_names.grep(/logjam-/)
   end
 
   def database_days

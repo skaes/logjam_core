@@ -15,7 +15,7 @@ class MongoImportBuffer
   SQUARED_FIELDS = FIELDS.inject({}) { |h, f| h[f] = "#{f}_sq"; h}
 
   def initialize(date_str)
-    db = MONGODB.db(Logjam.db_name(date_str))
+    db = Logjam.mongo.db(Logjam.db_name(date_str))
     @totals = db["totals"]
     @totals.create_index("page")
 
