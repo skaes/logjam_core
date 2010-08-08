@@ -10,7 +10,7 @@
 module Matchers
 
   # this regexp is used to prefilter log files with egrep|zegrep (which can speed up things quite a bit)
-  PRE_MATCH = 'Completed in|Processing|Session ID'
+  PRE_MATCH = 'Completed|Processing|Session ID'
 
   # log line format @XING
   # Jul 08 07:42:53 ext-xeapp52-5 rails[31023] user[Anonymous]: ... rails log content ...
@@ -37,10 +37,21 @@ module Matchers
   # LOG_LINE_SPLITTER = RAILS_LOG_LINE_SPLITTER
   LOG_LINE_SPLITTER = SYSLOG_LINE_SPLITTER
 
-  # the proccessing line. mandatory matcher.
   PROCESSING = lambda do |line|
     line =~ /^Processing ([\S]+).*\(for (.+) at (.*)\)/ and
       { :page => $1, :ip => $2, :started_at => $3 }
+  end
+
+  # Processing by AppsController#update_state as JS
+  PROCESSING_RAILS3 = lambda do |line|
+    line =~ /^Processing by ([\S]+).*/ and
+      { :page => $1 }
+  end
+  
+  # Started GET "/apps/update_state" for 87.193.61.218 at 2010-06-10 07:54:05
+  STARTED_RAILS3 = lambda do |line|
+    line =~ /^Started .+ for (.+) at (.+)/ and
+      { :ip => $1, :started_at => $2 }
   end
 
   # default rails session log line. optional matcher.
@@ -64,6 +75,18 @@ module Matchers
         :view_time => $2.to_f,
         :db_time => $3.to_f,
         :response_code => $4.to_i,
+      }
+  end
+
+  # default rails completed line. mandatory matcher.
+  # Completed 200 OK in 53ms (Views: 49.4ms | ActiveRecord: 2.6ms)
+  COMPLETED_RAILS3 = lambda do |line|
+    line =~ /^Completed (\d+) .+ in ([\S]+)ms \(Views: ([\S]+)ms \| ActiveRecord: ([\S]+)ms\)/ and
+      {
+        :response_code => $1.to_i,
+        :total_time => $2.to_f,
+        :view_time => $3.to_f,
+        :db_time => $4.to_f
       }
   end
 
