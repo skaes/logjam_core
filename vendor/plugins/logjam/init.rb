@@ -2,8 +2,7 @@ config.gem 'mongo'
 config.gem 'gnuplot', :source => 'http://gems.rubyforge.org'
 
 config.to_prepare do
-  ApplicationController.helper(ApplicationHelper)
-  ApplicationController.helper(ResourcesHelper)
+  ApplicationController.helper(LogjamHelper)
 end
 
 config.after_initialize do
@@ -20,4 +19,3 @@ config.to_prepare do
       end
     _EVA_
 end
-

@@ -1,5 +1,5 @@
 # Methods added to this helper will be available to all templates in the application.
-module ApplicationHelper
+module LogjamHelper
   def time_number(f)
     number_with_precision(f.to_f, :delimiter => ",", :separator => ".", :precision => 2)
   end
@@ -66,6 +66,29 @@ module ApplicationHelper
     else
       link_to(n, :params => params.slice(:year,:month,:day).merge(:action => "errors", :page => page))
     end
+  end
+
+  def resource_descriptions
+    resources = Resource.time_resources + Resource.memory_resources + Resource.call_resources
+    groupings = Resource.groupings
+    functions = Resource.grouping_functions.reject(&:blank?)
+    g = {}
+    groupings.each do |grouping|
+      r = {}
+      resources.each do |resource|
+        if grouping.to_sym == :request || resource.to_sym == :requests
+          r[resource] = Resource.description(resource, grouping, :sum)
+        else
+          f = {}
+          functions.each do |function|
+            f[function] = Resource.description(resource, grouping, function)
+          end
+          r[resource] = f
+        end
+        g[grouping] = r
+      end
+    end
+    g.to_json
   end
 
   # try to fix broken string encodings. most of the time the string is latin-1 encoded
