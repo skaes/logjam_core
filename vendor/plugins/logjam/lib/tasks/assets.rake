@@ -9,7 +9,7 @@ namespace :logjam do
   namespace :assets do
     desc "create symbolic links for logjam assets in the public directory"
     task :link do
-      system("ln -nsf #{logjam_dir}/assets/stylesheets/scaffold.css #{app_dir}/public/stylesheets/scaffold.css")
+      system("ln -nsf #{logjam_dir}/assets/stylesheets/logjam.css #{app_dir}/public/stylesheets/logjam.css")
     end
   end
   namespace :plots do
