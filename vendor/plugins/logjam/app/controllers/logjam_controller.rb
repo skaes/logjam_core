@@ -1,8 +1,8 @@
 class LogjamController < ApplicationController
-  before_filter :redirect_to_clean_url, :except => :auto_complete_for_logjam_page
+  before_filter :redirect_to_clean_url, :except => :auto_complete_for_controller_action_page
   before_filter :print_params if RAILS_ENV=="development"
 
-  def auto_complete_for_logjam_page
+  def auto_complete_for_controller_action_page
     prepare_params
     re = /#{params[:page]}/i
     pages = Totals.new(@date).page_names.select {|name| name =~ re}

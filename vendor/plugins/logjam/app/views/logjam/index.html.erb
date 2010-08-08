@@ -37,7 +37,13 @@ Event.observe(window, 'load', function() {show_description()});
         </p>
         <p class='filter-widget-last'>
           <%= label :filter, 'page name' %><br />
-          <%= text_field_with_auto_complete :controller_action, :page, {:name => 'page', :value => @page, :size => 45} %>
+          <input id="controller_action_page" name="page" size="45" type="text" /><div class="auto_complete" id="controller_action_page_auto_complete"></div>
+          <script type="text/javascript">
+          //<![CDATA[
+          var controller_action_page_auto_completer = new Ajax.Autocompleter('controller_action_page', 'controller_action_page_auto_complete', '/logjam/auto_complete_for_controller_action_page', {parameters: "year=<%= params[:year] %>&month=<%= params[:month]%>&day=<%= params[:day] %>"})
+          //]]>
+          </script>
+
         </p>
 
         <p class='clear-left'></p>
