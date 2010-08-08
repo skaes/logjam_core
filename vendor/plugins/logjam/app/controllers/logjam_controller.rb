@@ -1,8 +1,8 @@
-class ControllerActionsController < ApplicationController
-  before_filter :redirect_to_clean_url, :except => :auto_complete_for_controller_action_page
+class LogjamController < ApplicationController
+  before_filter :redirect_to_clean_url, :except => :auto_complete_for_logjam_page
   before_filter :print_params if RAILS_ENV=="development"
 
-  def auto_complete_for_controller_action_page
+  def auto_complete_for_logjam_page
     prepare_params
     re = /#{params[:page]}/i
     pages = Totals.new(@date).page_names.select {|name| name =~ re}
@@ -16,7 +16,7 @@ class ControllerActionsController < ApplicationController
     @plot = Plot.new(@dataset, :png)
 
     respond_to do |format|
-      format.html { render :template => "/controller_actions/index.html.erb" }
+      format.html { render :template => "/logjam/index.html.erb" }
       format.xml  { render :xml => @controller_actions }
     end
   end

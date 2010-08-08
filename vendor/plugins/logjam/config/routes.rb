@@ -35,12 +35,12 @@ ActionController::Routing::Routes.draw do |map|
   #     admin.resources :products
   #   end
 
-  map.connect ':year/:month/:day/:action', :controller => "controller_actions",
+  map.connect ':year/:month/:day/:action', :controller => "logjam",
      :requirements => {:year => /\d\d\d\d/, :month => /\d\d/, :day => /\d\d/}
 
 
   # You can have the root of your site routed with map.root -- just remember to delete public/index.html.
-  map.root :controller => "controller_actions", :action => "index"
+  map.root :controller => "logjam", :action => "index"
 
   # See how all your routes lay out with "rake routes"
 

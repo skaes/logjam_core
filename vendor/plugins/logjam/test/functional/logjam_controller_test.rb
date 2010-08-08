@@ -2,7 +2,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), '/../test_helper'))
 load File.expand_path(File.join(File.dirname(__FILE__), '/../yesterday.rb'))
 
 class TimingActionsTest < ActionController::TestCase
-  tests ControllerActionsController
+  tests LogjamController
 
   def setup
     Factory.create(:yesterday, :total_time => 10, :view_time => 10)
