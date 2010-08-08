@@ -54,38 +54,5 @@ Rails::Initializer.run do |config|
   # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
   # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}')]
   # config.i18n.default_locale = :de
-
-  config.after_initialize do
-    require 'digest/md5'
-
-    ActiveSupport::Dependencies.load_once_paths.reject! { |p| p =~ %r{/lib/} }
-  end
-
-  # fix a bug in rack (more a brainfuck actually)
-  config.to_prepare do
-    Rack::Utils::HeaderHash.class_eval <<-_EVA_
-      def [](k)
-        super(@names[k] || @names[k.downcase])
-      end
-    _EVA_
-  end
-
-  if GC.respond_to?(:log_file)
-    config.to_prepare do
-      # toggle GC tracing on signal USR1
-      trap('USR1') do
-        file = File.expand_path(File.dirname(__FILE__)+"/../log/gc-#{$$}.log")
-        GC.log_file file unless GC.log_file
-        if GC.enable_stats # were stats already enabled?
-          GC.disable_trace
-          GC.disable_stats
-          RAILS_DEFAULT_LOGGER.info 'GC-tracing: enabled'
-        else
-          GC.enable_trace
-          RAILS_DEFAULT_LOGGER.info 'GC-tracing: disabled'
-        end
-      end
-    end
-  end
 end
 
