@@ -1,10 +1,21 @@
 namespace :logjam do
+  # avoid loading the rails env if it's not necessary
+  def logjam_dir
+    File.expand_path(File.dirname(__FILE__) + '/../../')
+  end
+  def app_dir
+    File.expand_path(logjam_dir + '/../../../')
+  end
   namespace :assets do
     desc "create symbolic links for logjam assets in the public directory"
     task :link do
-      logjam = File.expand_path(File.dirname(__FILE__) + '/../../')
-      root = File.expand_path(logjam + '/../../../')
-      system("ln -nsf #{logjam}/assets/stylesheets/scaffold.css #{root}/public/stylesheets/scaffold.css")
+      system("ln -nsf #{logjam_dir}/assets/stylesheets/scaffold.css #{app_dir}/public/stylesheets/scaffold.css")
+    end
+  end
+  namespace :plots do
+    desc "remove generated plots"
+    task :clear do
+      system("rm -f #{app_dir}/public/images/plot-*")
     end
   end
 end
