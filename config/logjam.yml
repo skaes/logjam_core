@@ -9,6 +9,7 @@ time_resources:
 - gc_time: '#000000'
 - other_time: '#b3d1f9'
 - memcache_time: '#ffa500'
+- gearman_time: '#00aa33'
 - search_time: '#ff00ff'
 - api_time: '#00aaaa'
 - db_time: '#ff0000'
@@ -18,6 +19,7 @@ time_resources:
 call_resources:
 - requests: '#0000ff'
 - gc_calls: '#000000'
+- gearman_calls: '#00aa33'
 - search_calls: '#ff00ff'
 - api_calls: '#00aaaa'
 - db_calls: '#ff0000'
