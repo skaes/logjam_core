@@ -119,11 +119,12 @@ module Matchers
   # completed line regexp: complicated by the fact that the log file
   # format @XING changed over time and we want to be able to parse old logfiles
   #
-  # Aug 26 15:37:29 pc-skaes-3 rails[74535] user[3502094]: Completed in 1517.781ms (View: 26.129, DB: 26.009(17,0), API: 41.166(1), SR: 30.590(3), MC: 6.447(9r,0m), GC: 628.893(6), HP: 0(1616240,591402,35515800)) | 200 OK [http://localhost/marketplace/]
-  # Jul 27 16:25:29 pc-skaes-3 rails[3161] user[5926542]: Completed in 2352.498ms (View: 183.980, DB: 53.292(15), API: 46.657(1), SR: 7.638(3), MC: 6.345(9r,0m), GC: 970.501(10)) | 200 OK [http://localhost/jobs]
-  # Jun 28 06:00:49 ext-xeapp52-1 rails[25944] user[Anonymous]: Completed in 176.044ms (View: 0.000, DB: 0.000(0), API: 0.000(0), SR: 0.000(0), MC: 2.218(1r,1m)) |  [http://localhost/jobs/]
+  # Aug 09 14:33:18 somehost rails[12132] user[Anonymous] engine[jobs]: Completed in 472.898ms (View: 306.690, DB: 12.239(1,0), API: 0.000(0), SR: 112.595(1), MC: 10.867(4r,0m), GM: 0.000(0), GC: 0.000(0), HP: 0(2000001,169014,5889106,1137730)) | 200 OK [...]
+  # Aug 26 15:37:29 pc-skaes-3 rails[74535] user[dddddddd]: Completed in 1517.781ms (View: 26.129, DB: 26.009(17,0), API: 41.166(1), SR: 30.590(3), MC: 6.447(9r,0m), GC: 628.893(6), HP: 0(1616240,591402,35515800)) | 200 OK ...]
+  # Jul 27 16:25:29 pc-skaes-3 rails[3161] user[ddddddd]: Completed in 2352.498ms (View: 183.980, DB: 53.292(15), API: 46.657(1), SR: 7.638(3), MC: 6.345(9r,0m), GC: 970.501(10)) | 200 OK [...]
+  # Jun 28 06:00:49 somehost rails[25944] user[Anonymous]: Completed in 176.044ms (View: 0.000, DB: 0.000(0), API: 0.000(0), SR: 0.000(0), MC: 2.218(1r,1m)) |  [...url...]
   COMPLETED_XING = lambda do |line|
-    line =~ /^Completed in ([\S]+)ms \(View: ([\S]+), DB: ([\S]+)\((\d+)(?:,(\d+))?\), API: ([\S]+)\((\d+)\), SR: ([\S]+)\((\d+)\), MC: ([\S]+)\((\d+)r,(\d+)m\)(?:, GC: ([\S]+)\((\d+)\))?(?:, HP: ([\S]+)\((\d+),(\d+),(\d+)(?:,(\d+))?\))?\) \| (\d+)? / and
+    line =~ /^Completed in ([\S]+)ms \(View: ([\S]+), DB: ([\S]+)\((\d+)(?:,(\d+))?\), API: ([\S]+)\((\d+)\), SR: ([\S]+)\((\d+)\), MC: ([\S]+)\((\d+)r,(\d+)m\)(?:, GM: ([\S]+)\((\d+)\))(?:, GC: ([\S]+)\((\d+)\))?(?:, HP: ([\S]+)\((\d+),(\d+),(\d+)(?:,(\d+))?\))?\) \| (\d+)? / and
       {
         :total_time => $1.to_f,
         :view_time => $2.to_f,
@@ -137,14 +138,16 @@ module Matchers
         :memcache_time => $10.to_f,
         :memcache_calls => $11.to_i,
         :memcache_misses => $12.to_i,
-        :gc_time => $13.to_f,
-        :gc_calls => $14.to_i,
-        :heap_growth => $15.to_i,
-        :heap_size => $16.to_i,
-        :allocated_objects => $17.to_i,
-        :allocated_bytes => $18.to_i,
-        :live_data_set_size => $19.to_i,
-        :response_code => $20.to_i
+        :gearman_time => $13.to_f,
+        :gearman_calls => $14.to_i,
+        :gc_time => $15.to_f,
+        :gc_calls => $16.to_i,
+        :heap_growth => $17.to_i,
+        :heap_size => $18.to_i,
+        :allocated_objects => $19.to_i,
+        :allocated_bytes => $20.to_i,
+        :live_data_set_size => $21.to_i,
+        :response_code => $22.to_i
     }
   end
 
