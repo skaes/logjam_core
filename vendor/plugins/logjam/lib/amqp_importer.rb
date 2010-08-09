@@ -11,7 +11,7 @@ class AMQPImporter
 
   def process
     EM.run do
-      EM.add_periodic_timer(5) do
+      EM.add_periodic_timer(1) do
         @importer.flush_buffers
       end
       queue.subscribe do |msg|
