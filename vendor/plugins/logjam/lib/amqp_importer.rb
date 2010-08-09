@@ -48,7 +48,7 @@ class AMQPImporter
   end
 
   def load_config(config_name)
-    YAML.load_file(File.join(File.dirname(__FILE__), '..', 'config', config_name))[RAILS_ENV].symbolize_keys
+    YAML.load_file(File.expand_path(File.dirname(__FILE__)+"/../../../../config/#{config_name}"))[RAILS_ENV].symbolize_keys
   end
 
 end
