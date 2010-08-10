@@ -137,8 +137,8 @@ td.number {text-align: right;}
 }
 
 #quintile-stats {float:left;}
-#quintile-stats td {font-size: 90%;  line-height: 100%;}
-#quintile-stats th {font-size: 90%;  line-height: 100%;}
+#quintile-stats td {font-size: 90%;  line-height: 100%; white-space: nowrap; }
+#quintile-stats th {font-size: 90%;  line-height: 100%; white-space: nowrap; }
 #response-code-summary {float:right;}
 #response-code-stats td {font-size: 90%;  line-height: 100%;}
 #response-code-stats th {font-size: 90%;  line-height: 100%;}
