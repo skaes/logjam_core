@@ -7,7 +7,8 @@ class LogjamController < ApplicationController
     re = /#{params[:page]}/i
     pages = Totals.new(@date).page_names.select {|name| name =~ re}
     modules = pages.map{|p| p =~ /^(.+?)::/ && $1 }.compact.uniq
-    @completions = (["::"] + pages + modules).sort
+    pages.reject!{|p| p =~ /^::/}
+    @completions = ["::"] + modules.sort + pages.sort
     render :inline => "<%= content_tag(:ul, @completions.map { |page| content_tag(:li, page) }) %>"
   end
 
