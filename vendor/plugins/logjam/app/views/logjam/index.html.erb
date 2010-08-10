@@ -89,6 +89,9 @@ Event.observe(window, 'load', function() {show_description()});
       <p class='stats'>
         <%= @dataset.date.strftime('%d-%b-%Y') %>: showing
         <%= number_with_delimiter @dataset.count_requests %> of <%= number_with_delimiter @dataset.count %> requests
+        <%= link_to(image_tag("scatter_plot.jpg"), {:params =>
+        clean_params(params.merge(:action => distribution_kind(@dataset.resource)))},
+        {:title => "#{distribution_kind(@dataset.resource).to_s.gsub(/_/,' ')} plot"}) %>
       </p>
       <%= link_to image_tag(@dataset.png_file, :alt => 'enlarge plot', :title => 'enlarge plot'), {:params => clean_params(params.merge(:action => 'enlarged_plot'))} %>
     </div>
@@ -115,8 +118,6 @@ Event.observe(window, 'load', function() {show_description()});
       </table>
       <div id='distribution-plot'>
         <%= render(:partial => 'time_quintiles') if @plot_kind == :time %>
-        <%= button_to "distribution plot",
-                    {:params => clean_params(params.merge(:action => distribution_kind(@dataset.resource)))} %>
       </div>
     <%- end -%>
 
