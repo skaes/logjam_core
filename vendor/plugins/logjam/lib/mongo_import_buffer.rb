@@ -31,6 +31,8 @@ class MongoImportBuffer
     @requests = db["requests"]
     @requests.create_index([ ["page", Mongo::ASCENDING] ])
     @requests.create_index([ ["response_code", Mongo::DESCENDING] ])
+    @requests.create_index([ ["minute", Mongo::DESCENDING] ])
+    @requests.create_index([ ["started_at", Mongo::DESCENDING] ])
     FIELDS.each{|f| @requests.create_index([ [f, Mongo::DESCENDING] ])}
 
     setup_buffers
