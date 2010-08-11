@@ -47,7 +47,6 @@ module Logjam
 
   private
   def database_config
-    env = defined?(RAILS_ENV) ? RAILS_ENV : (ENV['RAILS_ENV'] || "development")
-    YAML.load_file(File.expand_path(File.dirname(__FILE__)+'/../../../../config/logjam_database.yml'))[env]
+    YAML.load_file("#{RAILS_ROOT}/config/logjam_database.yml")[RAILS_ENV]
   end
 end
