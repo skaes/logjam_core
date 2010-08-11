@@ -1,7 +1,7 @@
 <table class='full_stats'>
   <tr>
     <% resource = @dataset.resource
-       resource_type = Resource.resource_type(@dataset.resource)
+       resource_type = Logjam::Resource.resource_type(@dataset.resource)
        resource_name = resource.gsub('_', ' ')
        options = {:resource => resource} -%>
     <% if @dataset.grouping? -%>

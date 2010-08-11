@@ -3,6 +3,15 @@ require 'mongo'
 module Logjam
   extend self
 
+  @@base_url = ''
+  def self.base_url=(base_url)
+    @@base_url = base_url.gsub(/\/$/,'')
+  end
+
+  def self.base_url
+    @@base_url
+  end
+
   def mongo
     @mongo_connection ||= Mongo::Connection.new(ENV['MONGOJAM_HOST']||"localhost")
   end

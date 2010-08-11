@@ -6,7 +6,7 @@
     <% next if name =~ /(_sq|_id|minute|page|lines)$/ -%>
     <tr>
       <td class='resource_name'><%= h name %></td>
-      <% case Resource.resource_type(name)
+      <% case Logjam::Resource.resource_type(name)
          when :time -%>
       <td class='number'><%= seconds_to_human(value / 1000.0) %></td>
       <% when :call -%>

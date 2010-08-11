@@ -9,6 +9,6 @@ if file_name.nil? then
   exit 1
 end
 
-importer = MongoImporter.new file_name
+importer = Logjam::MongoImporter.new file_name
 importer.process
 
