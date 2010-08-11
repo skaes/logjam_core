@@ -13,7 +13,7 @@ module Logjam
   end
 
   def mongo
-    @mongo_connection ||= Mongo::Connection.new(ENV['MONGOJAM_HOST']||"localhost")
+    @mongo_connection ||= Mongo::Connection.new(database_config["host"])
   end
 
   def db(date)
@@ -43,5 +43,11 @@ module Logjam
 
   def durations
     ['1', '2', '5']
+  end
+
+  private
+  def database_config
+    env = defined?(RAILS_ENV) ? RAILS_ENV : (ENV['RAILS_ENV'] || "development")
+    YAML.load_file(File.expand_path(File.dirname(__FILE__)+'/../../../../config/logjam_database.yml'))[env]
   end
 end
