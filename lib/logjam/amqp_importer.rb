@@ -32,7 +32,7 @@ module Logjam
     def queue
       @queue ||=
         begin
-          config = load_config('amqp.yml')
+          config = load_config('logjam_amqp.yml')
 
           channel = MQ.new(AMQP::connect(:host => config[:hostname]))
           exchange = channel.topic(config[:exchange])
@@ -50,7 +50,7 @@ module Logjam
     end
 
     def load_config(config_name)
-      YAML.load_file(File.expand_path(File.dirname(__FILE__)+"/../../../../config/#{config_name}"))[RAILS_ENV].symbolize_keys
+      YAML.load_file("#{RAILS_ROOT}/config/#{config_name}")[RAILS_ENV].symbolize_keys
     end
 
   end
