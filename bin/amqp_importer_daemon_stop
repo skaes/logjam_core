@@ -1,3 +1,0 @@
-#!/bin/bash
-source ~/.profile
-amqp_importer_daemon stop
