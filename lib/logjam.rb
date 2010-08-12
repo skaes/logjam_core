@@ -12,6 +12,15 @@ module Logjam
     @@base_url
   end
 
+  @@import_threshold = 0
+  def self.import_threshold=(import_threshold)
+    @@import_threshold = import_threshold.to_i
+  end
+
+  def self.import_threshold
+    @@import_threshold
+  end
+
   def mongo
     @mongo_connection ||= Mongo::Connection.new(database_config["host"])
   end

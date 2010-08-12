@@ -38,6 +38,7 @@ module Logjam
       FIELDS.each{|f| @requests.create_index([ [f, Mongo::DESCENDING] ])}
 
       setup_buffers
+      @import_threshold = Logjam.import_threshold
     end
 
     def add(entry)
@@ -121,8 +122,8 @@ module Logjam
     end
 
     def interesting?(request)
-      request["heap_growth"].to_i > 0 ||
-        request["total_time"].to_i > 750 ||
+      request["total_time"].to_i > @import_threshold ||
+        request["heap_growth"].to_i > 0 ||
         request["response_code"].to_i == 500
     end
 
