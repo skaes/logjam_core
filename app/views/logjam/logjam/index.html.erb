@@ -28,9 +28,20 @@ Event.observe(window, 'load', function() {show_description()});
       <fieldset>
         <legend>LogJam for Rails</legend>
         <p class='filter-widget'>
+          <%= label :filter, 'application' %><br />
+          <%= select_tag 'app', options_for_select(Logjam.database_apps, @app), :onchange => "form.submit()" %>
+        </p>
+        <p class='filter-widget'>
+          <%= label :filter, 'environment' %><br />
+          <%= select_tag 'env', options_for_select(Logjam.database_envs, @env), :onchange => "form.submit()" %>
+        </p>
+        <p class='filter-widget-last'>
           <%= label :filter, 'date' %><br />
           <%= select_tag 'starts_at', options_for_select(Logjam.database_days, @date.to_s(:db)[0..9]), :onchange => "form.submit()" %>
         </p>
+
+        <p class='clear-left'></p>
+
         <p class='filter-widget'>
           <%= label :filter, 'plot timeslice' %><br />
           <%= select_tag 'interval', options_for_select(Logjam.durations.map{|i| [pluralize(i, 'minute'), i]}, params[:interval]), :onchange => "form.submit()" %>

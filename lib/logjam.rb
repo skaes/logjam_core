@@ -26,12 +26,13 @@ module Logjam
     @mongo_connection ||= Mongo::Connection.new(database_config["host"])
   end
 
-  def db(date)
-    mongo.db(db_name(date))
+  def db(date, app, env)
+    raise "hell" if app.nil? || env.nil? || app.blank?
+    mongo.db db_name(date, app, env)
   end
 
-  def db_name(date)
-    "logjam-#{sanitize_date(date)}"
+  def db_name(date, app, env)
+    "logjam-#{app}-#{env}-#{sanitize_date(date)}"
   end
 
   def databases
@@ -39,7 +40,15 @@ module Logjam
   end
 
   def database_days
-    databases.map{|t| t.sub('logjam-', '')}.sort.reverse
+    databases.map{|t| t[/^logjam-(.+?)-(.+?)-((.+?)-(.+?)-(.+?))$/, 3]}.sort.reverse
+  end
+
+  def database_apps
+    databases.map{|t| t[/^logjam-(.+?)-(.+?)-((.+?)-(.+?)-(.+?))$/, 1]}.sort
+  end
+
+  def database_envs
+    databases.map{|t| t[/^logjam-(.+?)-(.+?)-((.+?)-(.+?)-(.+?))$/, 2]}.sort
   end
 
   def sanitize_date(date_str)

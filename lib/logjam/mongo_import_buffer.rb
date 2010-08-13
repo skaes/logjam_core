@@ -16,8 +16,8 @@ module Logjam
 
     SQUARED_FIELDS = FIELDS.inject({}) { |h, f| h[f] = "#{f}_sq"; h}
 
-    def initialize(date_str)
-      db = Logjam.mongo.db(Logjam.db_name(date_str))
+    def initialize(dbname)
+      db = Logjam.mongo.db(dbname)
       @totals = db["totals"]
       @totals.create_index("page")
 
