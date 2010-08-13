@@ -37,7 +37,7 @@ Event.observe(window, 'load', function() {show_description()});
         </p>
         <p class='filter-widget-last'>
           <%= label :filter, 'page name' %><br />
-          <input id="controller_action_page" name="page" size="45" type="text" value="<%= h @page %>" onblur="form.submit()" />
+          <input id="controller_action_page" name="page" size="45" type="text" value="<%= h @page %>" />
           <div class="auto_complete" id="controller_action_page_auto_complete"></div>
           <script type="text/javascript">
           //<![CDATA[
