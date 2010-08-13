@@ -5,7 +5,8 @@ module Logjam
 
   @@base_url = ''
   def self.base_url=(base_url)
-    @@base_url = base_url.gsub(/\/$/,'')
+    # make sure it starts with a slash and does not end with slash and has no adjacent slashes
+    @@base_url = base_url.insert(0,'/').gsub(/\/$/,'').gsub(/\/\//,'/')
   end
 
   def self.base_url
