@@ -1,18 +1,19 @@
 <% resource_type = Logjam::Resource.resource_type(resource) -%>
 <% requests.each do |request| -%>
   <tr class='full_stats'>
-      <td><%= link_to(h(request["page"]), :params => params.slice(:year,:month,:day).merge(:action => "show", :id => request['_id'])) %></td>
-      <td><%= h request["user_id"] %></td>
-      <% case resource_type
-         when :time -%>
-      <td class='number'><%= seconds_to_human((request[resource]||0) / 1000.0) %></td>
-      <% when :call -%>
-      <td class='number'><%= number_with_delimiter(request[resource].to_i) %></td>
-      <% when :memory -%>
-      <td class='number'><%= memory_number(request[resource]) %></td>
-      <% else -%>
-      <td class='number'><%= number_with_delimiter(request[resource].to_i) %></td>
-      <% end -%>
+    <td><%= minute_to_human(request["minute"]) %></td>
+    <td><%= link_to(h(request["page"]), :params => params.slice(:year,:month,:day).merge(:action => "show", :id => request['_id'])) %></td>
+    <td><%= h request["user_id"] %></td>
+    <% case resource_type
+       when :time -%>
+    <td class='number'><%= seconds_to_human((request[resource]||0) / 1000.0) %></td>
+    <% when :call -%>
+    <td class='number'><%= number_with_delimiter(request[resource].to_i) %></td>
+    <% when :memory -%>
+    <td class='number'><%= memory_number(request[resource]) %></td>
+    <% else -%>
+    <td class='number'><%= number_with_delimiter(request[resource].to_i) %></td>
+    <% end -%>
   </tr>
 <% end -%>
 

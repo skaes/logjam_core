@@ -21,6 +21,7 @@ module Logjam
     def all
       result = []
       all_fields = ["page", "user_id", "heap_growth", @resource]
+      all_fields << "minute" unless all_fields.include?("minute")
       all_fields << "lines" if @options[:response_code] == 500
       access_time = Benchmark.realtime do
         result = @collection.find(selector,
