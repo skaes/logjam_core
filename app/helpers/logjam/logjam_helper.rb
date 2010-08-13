@@ -62,6 +62,14 @@ module Logjam
       end
     end
 
+    def link_to_request(text, options, response_code)
+      if response_code == 500
+        link_to(text, options, :title => "show request", :class => "error")
+      else
+        link_to(text, options, :title => "show request")
+      end
+    end
+
     def sometimes_link_errors(page, n)
       if n == 0
         ""
