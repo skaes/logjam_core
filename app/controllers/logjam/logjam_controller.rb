@@ -7,7 +7,7 @@ module Logjam
     def auto_complete_for_controller_action_page
       prepare_params
       re = /#{params[:page]}/i
-      pages = Totals.new(@date).page_names.select {|name| name =~ re}
+      pages = Totals.new(@db).page_names.select {|name| name =~ re}
       modules = pages.map{|p| p =~ /^(.+?)::/ && $1 }.compact.uniq
       pages.reject!{|p| p =~ /^::/}
       @completions = ["::"] + modules.sort + pages.sort
@@ -21,13 +21,13 @@ module Logjam
 
     def show
       get_date
-      @request = Requests.new(@date).find(params[:id])
+      @request = Requests.new(@db).find(params[:id])
     end
 
     def errors
       get_date
       determine_page_pattern
-      q = Requests.new(@date, "minute", @page, :response_code => 500, :limit => 500)
+      q = Requests.new(@db, "minute", @page, :response_code => 500, :limit => 500)
       @error_count = q.count
       @requests = q.all
     end
@@ -64,6 +64,9 @@ module Logjam
     def get_date
       @date = "#{params['year']}-#{params['month']}-#{params['day']}".to_date unless params[:year].blank?
       @date ||= default_date
+      @app = params[:app] || Logjam.database_apps.first
+      @env = params[:env] || Logjam.database_envs.first
+      @db = Logjam.db(@date, @app, @env)
     end
 
     def prepare_params
@@ -88,6 +91,8 @@ module Logjam
 
       FilteredDataset.new(
         :date => @date,
+        :app => @app,
+        :env => @env,
         :interval => params[:interval].to_i,
         :user_id => params[:user_id],
         :host => params[:server],

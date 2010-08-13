@@ -2,8 +2,8 @@ module Logjam
 
   class Requests
     attr_reader :resource, :pattern
-    def initialize(date, resource=nil, pattern='', options={})
-      @database = Logjam.db(date)
+    def initialize(db, resource=nil, pattern='', options={})
+      @database = db
       @collection = @database["requests"]
       @resource = resource
       @pattern = pattern

@@ -16,8 +16,8 @@ module Logjam
         EM.add_periodic_timer(1) do
           @importer.flush_buffers
         end
-        queue.subscribe do |msg|
-          process_line(msg)
+        queue.subscribe do |header, msg|
+          process_line(msg, header.routing_key)
         end
       end
     end
@@ -36,16 +36,25 @@ module Logjam
 
           channel = MQ.new(AMQP::connect(:host => config[:hostname]))
           exchange = channel.topic(config[:exchange])
-          queue = channel.queue("#{config[:queue]}-#{`hostname`.chomp}", :auto_delete => true, :exclusive => true)
+          queue = channel.queue("#{config[:queue]}-#{`hostname`.chomp}-#{$$}", :auto_delete => true, :exclusive => true)
 
-          queue.bind(exchange, :routing_key => "logs.app.#")
+          queue.bind(exchange, :routing_key => "logs.#")
           queue
         end
     end
 
-    def process_line(msg)
+    def routing_key_to_hash(routing_key)
+      if m = routing_key.match(/^logs\.(.+?)\.(.+?)\..+$/)
+        {:app => m[1], :env => m[2]}
+      else
+        {}
+      end
+    end
+
+    def process_line(msg, routing_key)
       Parser.parse_line(msg) do |entry|
-        @importer.add_entry entry.to_hash
+        app_env = routing_key_to_hash(routing_key)
+        @importer.add_entry entry.to_hash.merge(app_env)
       end
     end
 

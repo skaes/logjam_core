@@ -21,6 +21,9 @@ module Logjam
 
     def initialize(options = {})
       @date = options[:date]
+      @app = options[:app]
+      @env = options[:env]
+      @db = Logjam.db(@date, @app, @env)
       @interval = (options[:interval] || DEFAULTS[:interval]).to_i
       @user_id = options[:user_id] if options[:user_id].present?
       @host = options[:host] if options[:host].present?
@@ -101,7 +104,7 @@ module Logjam
 
     def do_the_query
       if grouping == "request"
-        Requests.new(@date, resource, stripped_page, :heap_growth_only => heap_growth_only).all
+        Requests.new(@db, resource, stripped_page, :heap_growth_only => heap_growth_only).all
       else
         if resource == "requests"
           sort_by = "number_of_requests"
@@ -115,9 +118,9 @@ module Logjam
     def totals(stripped_page)
       (@totals||={})[stripped_page] ||=
         case Resource.resource_type(resource)
-        when :time   then Totals.new(@date, Resource.time_resources+%w(apdex response), stripped_page)
-        when :call   then Totals.new(@date, Resource.call_resources, stripped_page)
-        when :memory then Totals.new(@date, Resource.memory_resources, stripped_page)
+        when :time   then Totals.new(@db, Resource.time_resources+%w(apdex response), stripped_page)
+        when :call   then Totals.new(@db, Resource.call_resources, stripped_page)
+        when :memory then Totals.new(@db, Resource.memory_resources, stripped_page)
         end
     end
 
@@ -143,7 +146,7 @@ module Logjam
         begin
           resources = Resource.resources_for_type(resource_type) - resources_to_skip
           minute = "minute#{interval}"
-          from_db = Minutes.new(@date, resources, stripped_page).minutes(interval)
+          from_db = Minutes.new(@db, resources, stripped_page).minutes(interval)
           zero = Hash.new(0)
           results = (1..intervals_per_day).to_a.map{zero}
           from_db.each {|row| results[row[minute].to_i] = row}
@@ -154,16 +157,16 @@ module Logjam
     def get_data_for_distribution_plot(what_to_plot)
       case what_to_plot
       when :request_time
-        attrs = Resource.time_resources
+        resources = Resource.time_resources
         kind = "t"
       when :allocated_objects
-        attrs = %w(allocated_objects)
+        resources = %w(allocated_objects)
         kind = "m"
       when :allocated_bytes
-        attrs = %w(allocated_bytes)
+        resources = %w(allocated_bytes)
         kind = "m"
       end
-      the_quants = Quants.new(@date, stripped_page, kind, attrs)
+      the_quants = Quants.new(@db, resources, stripped_page, kind)
       attrs.each do |a|
         instance_variable_set "@#{a}_avg", totals(stripped_page).avg(a)
         instance_variable_set "@#{a}_stddev", totals(stripped_page).stddev(a)
@@ -172,7 +175,7 @@ module Logjam
     end
 
     def satisfaction
-      @satisfaction ||= Totals.new(@date, %w(apdex), stripped_page)
+      @satisfaction ||= Totals.new(@db, %w(apdex), stripped_page)
     end
 
     def happy
@@ -200,7 +203,7 @@ module Logjam
     end
 
     def response_codes
-      @response_codes ||= Totals.new(@date, %w(response), stripped_page).response_codes
+      @response_codes ||= Totals.new(@db, %w(response), stripped_page).response_codes
     end
   end
 end
