@@ -21,6 +21,6 @@
 </table>
 <pre id='request-lines'>
 <% (@request["lines"]||[]).each do |line| -%>
-&#10145; <%= safe_h line %>
+&#10145; <%= ((l = safe_h line) =~ /rb:\d+:in|Error|Exception/ && (l !~ /^(Rendering|Completed|Processing|Parameters)/)) ? "<span class='error'>#{l}</span>" : l %>
 <% end -%>
 </pre>
