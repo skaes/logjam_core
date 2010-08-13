@@ -193,6 +193,7 @@ td.number {text-align: right;}
 div.auto_complete {
   width: 350px;
   background: #fff;
+  z-index: 1;
 }
 div.auto_complete ul {
   border:1px solid #888;
@@ -209,7 +210,7 @@ div.auto_complete ul li.selected {
   background-color: #ffb;
 }
 div.auto_complete ul strong.highlight {
-  color: #800; 
+  color: #800;
   margin:0;
   padding:0;
 }
