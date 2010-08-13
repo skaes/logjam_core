@@ -27,7 +27,6 @@ module Logjam
   end
 
   def db(date, app, env)
-    raise "hell" if app.nil? || env.nil? || app.blank?
     mongo.db db_name(date, app, env)
   end
 
@@ -39,16 +38,18 @@ module Logjam
     mongo.database_names.grep(/logjam-/)
   end
 
-  def database_days
-    databases.map{|t| t[/^logjam-(.+?)-(.+?)-((.+?)-(.+?)-(.+?))$/, 3]}.sort.reverse
-  end
+  ROUTING_KEY_FORMAT = /^logjam-(.+?)-(.+?)-((.+?)-(.+?)-(.+?))$/
 
   def database_apps
-    databases.map{|t| t[/^logjam-(.+?)-(.+?)-((.+?)-(.+?)-(.+?))$/, 1]}.sort
+    databases.map{|t| t[ROUTING_KEY_FORMAT, 1]}.sort
   end
 
   def database_envs
-    databases.map{|t| t[/^logjam-(.+?)-(.+?)-((.+?)-(.+?)-(.+?))$/, 2]}.sort
+    databases.map{|t| t[ROUTING_KEY_FORMAT, 2]}.sort
+  end
+
+  def database_days
+    databases.map{|t| t[ROUTING_KEY_FORMAT, 3]}.sort.reverse
   end
 
   def sanitize_date(date_str)
