@@ -11,7 +11,7 @@ module Logjam
       modules = pages.map{|p| p =~ /^(.+?)::/ && $1 }.compact.uniq
       pages.reject!{|p| p =~ /^::/}
       @completions = ["::"] + modules.sort + pages.sort
-      render :inline => "<%= content_tag(:ul, @completions.map { |page| content_tag(:li, page) }) %>"
+      render :inline => "<%= content_tag(:ul, @completions.map{ |page| content_tag(:li, page) }.join) %>"
     end
 
     def index
@@ -116,7 +116,6 @@ module Logjam
     end
 
     def print_params
-      p controller_name
       p params
     end
 
