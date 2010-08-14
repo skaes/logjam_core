@@ -14,7 +14,6 @@ module Logjam
       query_opts = @options[:heap_growth_only] ? {"heap_growth" => {'$gt' => 0}} : {}
       query_opts.merge!(:response_code => @options[:response_code]) if @options[:response_code]
       query_opts.merge!(:page => /#{pattern}/) unless pattern.blank?
-      puts query_opts.inspect
       query_opts
     end
 
