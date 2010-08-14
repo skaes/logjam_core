@@ -4,8 +4,7 @@
 <tr><th>Time</th><th>Action</th><th>Exception</th></tr>
 <% @requests.each do |r| %>
 <tr class='full_stats'>
-<% error_link_params = {:params => params.slice(:year,:month,:day).merge(:action =>"show", :id => r["_id"])} %>
-<td><%= link_to(minute_to_human(r["minute"]), error_link_params, :title => "show request") %></td>
+<td><%= link_to(minute_to_human(r["minute"]), {:params => clean_params(params.merge(:action =>"show", :id => r["_id"]))}, :title => "show request") %></td>
 <td><%= link_to(h(r["page"]), {:params => clean_params(params.merge(:action => "index", :grouping => "page", :page => r["page"]))}, :title => "show page stats") %></td>
 <td><%= link_to((r["lines"]||[]).map{|l| safe_h(l)}.detect{|l| l =~ /rb:\d+:in|Error|Exception/}.to_s[0..70], error_link_params, :title => "show request")  %></td>
 </tr>

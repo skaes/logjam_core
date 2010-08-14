@@ -129,7 +129,7 @@ module Logjam
       @page_pattern = @page
       return if @page_pattern.blank?
       @page_pattern.gsub!(/[*%]/,'')
-      page_names = Totals.new(@date).page_names
+      page_names = Totals.new(@db).page_names
       if !page_names.select{|p| p =~ /^#{@page_pattern}$/}.first
         if !page_names.select{|p| p =~ /^#{@page_pattern}/}.first
           @page_pattern = "%#{@page_pattern}%"

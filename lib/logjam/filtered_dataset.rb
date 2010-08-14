@@ -167,7 +167,7 @@ module Logjam
         kind = "m"
       end
       the_quants = Quants.new(@db, resources, stripped_page, kind)
-      attrs.each do |a|
+      resources.each do |a|
         instance_variable_set "@#{a}_avg", totals(stripped_page).avg(a)
         instance_variable_set "@#{a}_stddev", totals(stripped_page).stddev(a)
         instance_variable_set "@#{a}_quants", the_quants.quants(a)
