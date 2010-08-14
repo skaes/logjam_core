@@ -49,7 +49,7 @@ module Logjam
   end
 
   def database_days
-    databases.map{|t| t[ROUTING_KEY_FORMAT, 3]}.sort.reverse
+    databases.map{|t| t[ROUTING_KEY_FORMAT, 3]}.uniq.sort.reverse
   end
 
   def sanitize_date(date_str)
