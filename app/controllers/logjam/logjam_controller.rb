@@ -116,7 +116,7 @@ module Logjam
           :server => params[:server], :page => params[:page], :response => params[:response],
           :heap_growth_only => params[:heap_growth_only], :resource => params[:resource], :grouping => params[:grouping],
           :grouping_function => params[:grouping_function], :interval => params[:interval],
-          :user_id => params[:user_id]))
+          :user_id => params[:user_id], :app => params[:app], :env => params[:env]))
       end
     end
 

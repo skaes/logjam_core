@@ -29,11 +29,11 @@ Event.observe(window, 'load', function() {show_description()});
         <legend>LogJam for Rails</legend>
         <p class='filter-widget'>
           <%= label :filter, 'application' %><br />
-          <%= select_tag 'app', options_for_select(Logjam.database_apps, @app), :onchange => "form.submit()" %>
+          <%= select_tag 'app', options_for_select(Logjam.database_apps, params[:app]), :onchange => "form.submit()" %>
         </p>
         <p class='filter-widget'>
           <%= label :filter, 'environment' %><br />
-          <%= select_tag 'env', options_for_select(Logjam.database_envs, @env), :onchange => "form.submit()" %>
+          <%= select_tag 'env', options_for_select(Logjam.database_envs, params[:env]), :onchange => "form.submit()" %>
         </p>
         <p class='filter-widget-last'>
           <%= label :filter, 'date' %><br />

@@ -41,11 +41,11 @@ module Logjam
   ROUTING_KEY_FORMAT = /^logjam-(.+?)-(.+?)-((.+?)-(.+?)-(.+?))$/
 
   def database_apps
-    databases.map{|t| t[ROUTING_KEY_FORMAT, 1]}.sort
+    databases.map{|t| t[ROUTING_KEY_FORMAT, 1]}.uniq.sort
   end
 
   def database_envs
-    databases.map{|t| t[ROUTING_KEY_FORMAT, 2]}.sort
+    databases.map{|t| t[ROUTING_KEY_FORMAT, 2]}.uniq.sort
   end
 
   def database_days
