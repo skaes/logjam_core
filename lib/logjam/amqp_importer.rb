@@ -13,7 +13,7 @@ module Logjam
 
     def process
       EM.run do
-        EM.add_periodic_timer(1) do
+        @timer = EM.add_periodic_timer(1) do
           @importer.flush_buffers
         end
         queue.subscribe do |header, msg|
@@ -23,7 +23,7 @@ module Logjam
     end
 
     def stop
-      AMQP.stop { EM.stop }
+      EM.stop_event_loop
       @importer.flush_buffers
     end
 
