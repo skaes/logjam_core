@@ -27,20 +27,27 @@ Event.observe(window, 'load', function() {show_description()});
     <% form_tag({:action => :index}, :method => :get, :id => 'filter-form') do -%>
       <fieldset>
         <legend>LogJam for Rails</legend>
+        <% unless Logjam.only_one_app? %>
         <p class='filter-widget'>
           <%= label :filter, 'application' %><br />
           <%= select_tag 'app', options_for_select(Logjam.database_apps, params[:app]), :onchange => "form.submit()" %>
         </p>
+        <% end %>
+        <% unless Logjam.only_one_env? %>
         <p class='filter-widget'>
           <%= label :filter, 'environment' %><br />
           <%= select_tag 'env', options_for_select(Logjam.database_envs, params[:env]), :onchange => "form.submit()" %>
         </p>
-        <p class='filter-widget-last'>
+        <% end %>
+        <% css_class = (Logjam.only_one_env? && Logjam.only_one_app?) ? 'filter-widget' : 'filter-widget-last' %>
+        <p class='<%=css_class%>'>
           <%= label :filter, 'date' %><br />
           <%= select_tag 'starts_at', options_for_select(Logjam.database_days, @date.to_s(:db)[0..9]), :onchange => "form.submit()" %>
         </p>
 
-        <p class='clear-left'></p>
+        <% unless Logjam.only_one_env? && Logjam.only_one_app? %>
+          <p class='clear-left'></p>
+        <% end %>
 
         <p class='filter-widget'>
           <%= label :filter, 'plot timeslice' %><br />
