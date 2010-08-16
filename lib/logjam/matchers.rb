@@ -11,7 +11,7 @@ module Logjam
   module Matchers
 
     # this regexp is used to prefilter log files with egrep|zegrep (which can speed up things quite a bit)
-    PRE_MATCH = 'Completed|Processing|Session ID'
+#    PRE_MATCH = 'Completed|Processing|Session ID'
 
     # log line format @XING
     # Jul 08 07:42:53 ext-xeapp52-5 rails[31023] user[Anonymous]: ... rails log content ...
@@ -22,7 +22,7 @@ module Logjam
     # the following matcher works in both cases
     # unlike the other matchers, this one returns an array of [host, process_id, user_id, engine, remaining_log_line_content]
     SYSLOG_LINE_SPLITTER = lambda do |line|
-      line =~ / ([\S]+) [\S]+\[(\d+)\](?: user\[(.+?)\])?(?: engine\[(.+?)\])?: (.*)/ and
+      line =~ / ([\S]+) [\S]+\[(\d+)\](?:: (\S+))?(?: user\[(.+?)\])?(?: engine\[(.+?)\])?: (.*)/ and
         Regexp.last_match.captures
     end
 
