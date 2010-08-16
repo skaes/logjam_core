@@ -2,8 +2,8 @@ module Logjam
 
   class Totals
     attr_reader :resources, :pattern, :pages
-    def initialize(date, resources=[], pattern='')
-      @database = Logjam.db(date)
+    def initialize(db, resources=[], pattern='')
+      @database = db
       @collection = @database["totals"]
       @resources = resources.dup
       @apdex = @resources.delete("apdex")

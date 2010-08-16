@@ -2,7 +2,7 @@ module Logjam
 
   class MongoImportBuffer
 
-    GENERIC_FIELDS = %w(page host ip user_id started_at process_id minute session_id new_session response_code)
+    GENERIC_FIELDS = %w(page host ip user_id started_at process_id minute session_id new_session response_code app env severity)
 
     TIME_FIELDS = Resource.time_resources
 
@@ -16,8 +16,8 @@ module Logjam
 
     SQUARED_FIELDS = FIELDS.inject({}) { |h, f| h[f] = "#{f}_sq"; h}
 
-    def initialize(date_str)
-      db = Logjam.mongo.db(Logjam.db_name(date_str))
+    def initialize(dbname)
+      db = Logjam.mongo.db(dbname)
       @totals = db["totals"]
       @totals.create_index("page")
 
@@ -42,6 +42,7 @@ module Logjam
     end
 
     def add(entry)
+      severity = entry[:severity]
       page = entry[:page]
       minute = entry[:minute]
       response_code = entry[:response_code]
@@ -104,7 +105,7 @@ module Logjam
         end
       end
 
-      request = {"page" => page, "minute" => minute, "response_code" => response_code, "user_id" => user_id, "lines" => lines}.merge!(fields)
+      request = {"severity" => severity, "page" => page, "minute" => minute, "response_code" => response_code, "user_id" => user_id, "lines" => lines}.merge!(fields)
       @requests.insert(request) if interesting?(request)
     end
 

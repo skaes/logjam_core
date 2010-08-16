@@ -9,8 +9,8 @@ module Logjam
       @@matchers
     end
 
-    def initialize(host, process_id, user_id, lines)
-      @info = {:host => host, :process_id => process_id.to_i, :user_id => user_id.to_i, :page => nil, :ip => nil, :lines => lines}
+    def initialize(host, process_id, user_id, lines, severity)
+      @info = {:host => host, :process_id => process_id.to_i, :user_id => user_id.to_i, :page => nil, :ip => nil, :lines => lines, :severity => severity}
       @info.merge!(default_values)
       process lines
       unless @info[:page]

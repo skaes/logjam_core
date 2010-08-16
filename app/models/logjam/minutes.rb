@@ -1,9 +1,8 @@
 module Logjam
 
   class Minutes
-    def initialize(date, resources, pattern)
-      @date = date
-      @database = Logjam.db(date)
+    def initialize(db, resources, pattern)
+      @database = db
       @collection = @database["minutes"]
       @resources = resources
       @resources = [] if @resources == ["requests"]
@@ -14,7 +13,7 @@ module Logjam
     end
 
     def page_names
-      @page_names ||= Totals.new(@date).page_names
+      @page_names ||= Totals.new(@database).page_names
     end
 
     def minutes(time_slice=5)

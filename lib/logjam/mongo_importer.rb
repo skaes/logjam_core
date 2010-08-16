@@ -12,7 +12,8 @@ module Logjam
 
     def mongo_buffer(hash)
       date_str = hash[:started_at][0..9]
-      @mongo_buffers[date_str] ||= MongoImportBuffer.new(date_str)
+      key = Logjam.db_name(date_str, hash[:app], hash[:env])
+      @mongo_buffers[key] ||= MongoImportBuffer.new(key)
     end
 
     def add_entry(entry)

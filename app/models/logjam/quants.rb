@@ -1,8 +1,8 @@
 module Logjam
 
   class Quants
-    def initialize(date, pattern, kind, resources)
-      @database = Logjam.db(date)
+    def initialize(db, resources, pattern, kind)
+      @database = db
       @collection = @database["quants"]
       @pattern = pattern
       @pattern = "all_pages" if @pattern.blank?

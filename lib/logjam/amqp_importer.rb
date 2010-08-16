@@ -13,17 +13,17 @@ module Logjam
 
     def process
       EM.run do
-        EM.add_periodic_timer(1) do
+        @timer = EM.add_periodic_timer(1) do
           @importer.flush_buffers
         end
-        queue.subscribe do |msg|
-          process_line(msg)
+        queue.subscribe do |header, msg|
+          process_line(msg, header.routing_key)
         end
       end
     end
 
     def stop
-      AMQP.stop { EM.stop }
+      EM.stop_event_loop
       @importer.flush_buffers
     end
 
@@ -38,14 +38,15 @@ module Logjam
           exchange = channel.topic(config[:exchange])
           queue = channel.queue("#{config[:queue]}-#{`hostname`.chomp}", :auto_delete => true, :exclusive => true)
 
-          queue.bind(exchange, :routing_key => "logs.app.#")
+          queue.bind(exchange, :routing_key => "logs.#")
           queue
         end
     end
 
-    def process_line(msg)
+    def process_line(msg, routing_key)
       Parser.parse_line(msg) do |entry|
-        @importer.add_entry entry.to_hash
+        app_env = Logjam.routing_key_matcher.call(routing_key) || {}
+        @importer.add_entry entry.to_hash.merge(app_env)
       end
     end
 
