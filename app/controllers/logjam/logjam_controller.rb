@@ -37,6 +37,13 @@ module Logjam
       @plot = Plot.new(@dataset, :svg)
     end
 
+    def enlarged_plot2
+      @dataset = dataset_from_params
+      @plot = Plot.new(@dataset, :svg)
+      @protovis_data = @dataset.protovis_data
+      @protovis_max = @dataset.protovis_max
+    end
+
     def request_time_distribution
       @dataset = dataset_from_params
       @dataset.plot_kind = :request_time_distribution

@@ -146,9 +146,24 @@ module Logjam
           from_db = Minutes.new(@date, resources, stripped_page).minutes(interval)
           zero = Hash.new(0)
           results = (1..intervals_per_day).to_a.map{zero}
-          from_db.each {|row| results[row[minute].to_i] = row}
+          max_total = 0
+          from_db.each do |row|
+            total_time = row.values_at(*(resources-["gc_time"])).sum
+            max_total = total_time if max_total < total_time
+            results[row[minute].to_i] = row
+          end
+          @protovis_data = data_for_proto_vis(results, resources).reverse
+          @protovis_max = max_total
           results
         end
+    end
+
+    attr_reader :protovis_data, :protovis_max
+
+    def data_for_proto_vis(results,resources)
+      data = (resources-["gc_time"]).map{[]}
+      results.each_with_index{|h,i| (resources-["gc_time"]).each_with_index{|r,j| data[j] << [i,h[r]]  }}
+      data
     end
 
     def get_data_for_distribution_plot(what_to_plot)
