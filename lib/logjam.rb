@@ -51,7 +51,15 @@ module Logjam
   def database_days
     databases.map{|t| t[ROUTING_KEY_FORMAT, 3]}.uniq.sort.reverse
   end
+  
+  def only_one_env?
+    database_envs.size == 1
+  end
 
+  def only_one_app?
+    database_apps.size == 1
+  end
+  
   def sanitize_date(date_str)
     case date_str
     when Time, Date, DateTime
