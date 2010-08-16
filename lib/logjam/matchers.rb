@@ -152,6 +152,16 @@ module Logjam
       }
     end
 
+    # default routing key matcher
+    ROUTING_KEY_MATCHER = lambda do |key|
+       key =~ /^logs\.(.+?)\.(.+?)\..+$/ and {:app => $1, :env => $2}
+    end
+
+    # default routing key matcher
+    XING_ROUTING_KEY_MATCHER = lambda do |key|
+       key =~ /^logs\.(.+?)\..+$/ and { :app => $1, :env => "production" }
+    end
+
   end
 
 end

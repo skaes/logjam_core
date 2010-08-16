@@ -43,17 +43,9 @@ module Logjam
         end
     end
 
-    def routing_key_to_hash(routing_key)
-      if m = routing_key.match(/^logs\.(.+?)\.(.+?)\..+$/)
-        {:app => m[1], :env => m[2]}
-      else
-        {}
-      end
-    end
-
     def process_line(msg, routing_key)
       Parser.parse_line(msg) do |entry|
-        app_env = routing_key_to_hash(routing_key)
+        app_env = Logjam.routing_key_matcher.call(routing_key) || {}
         @importer.add_entry entry.to_hash.merge(app_env)
       end
     end

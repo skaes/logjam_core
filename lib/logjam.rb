@@ -22,6 +22,15 @@ module Logjam
     @@import_threshold
   end
 
+  @@routing_key_matcher = Logjam::Matchers::ROUTING_KEY_MATCHER
+  def self.routing_key_matcher=(matcher)
+    @@routing_key_matcher = matcher
+  end
+
+  def self.routing_key_matcher
+    @@routing_key_matcher
+  end
+
   def mongo
     @mongo_connection ||= Mongo::Connection.new(database_config["host"])
   end
@@ -34,24 +43,24 @@ module Logjam
     "logjam-#{app}-#{env}-#{sanitize_date(date)}"
   end
 
+  DB_NAME_FORMAT = /^logjam-(.+?)-(.+?)-((.+?)-(.+?)-(.+?))$/
+
   def databases
-    mongo.database_names.grep(/logjam-/)
+    mongo.database_names.grep(DB_NAME_FORMAT)
   end
 
-  ROUTING_KEY_FORMAT = /^logjam-(.+?)-(.+?)-((.+?)-(.+?)-(.+?))$/
-
   def database_apps
-    databases.map{|t| t[ROUTING_KEY_FORMAT, 1]}.uniq.sort
+    databases.map{|t| t[DB_NAME_FORMAT, 1]}.uniq.sort
   end
 
   def database_envs
-    databases.map{|t| t[ROUTING_KEY_FORMAT, 2]}.uniq.sort
+    databases.map{|t| t[DB_NAME_FORMAT, 2]}.uniq.sort
   end
 
   def database_days
-    databases.map{|t| t[ROUTING_KEY_FORMAT, 3]}.uniq.sort.reverse
+    databases.map{|t| t[DB_NAME_FORMAT, 3]}.uniq.sort.reverse
   end
-  
+
   def only_one_env?
     database_envs.size == 1
   end
@@ -59,7 +68,7 @@ module Logjam
   def only_one_app?
     database_apps.size == 1
   end
-  
+
   def sanitize_date(date_str)
     case date_str
     when Time, Date, DateTime
