@@ -1,0 +1,35 @@
+<script type="text/javascript+protovis">
+<% data_with_colors = data.map{|d| d||0}.zip(colors) %>
+var data = <%= data_with_colors.map(&:first).to_json %>;
+
+/* Sizing and scales. */
+var w = 60,
+    h = 60,
+    r = w / 2,
+    a = pv.Scale.linear(0, pv.sum(data)).range(0, 2 * Math.PI);
+    c = pv.colors(<%= data_with_colors.map(&:second).to_json %>).range();
+
+/* The root panel. */
+var vis = new pv.Panel()
+    .width(w)
+    .height(h);
+
+/* The wedge, with centered label. */
+vis.add(pv.Wedge)
+    .data(data)
+    .bottom(w / 2)
+    .left(w / 2)
+    .innerRadius(0)
+    .outerRadius(r)
+    .angle(a)
+    .fillStyle(function(d) c[this.index])
+//    .event("mouseover", function() this.innerRadius(0))
+//    .event("mouseout", function() this.innerRadius(r - 20))
+//  .anchor("center").add(pv.Label)
+//    .visible(function(d) d > .15)
+//    .textAngle(0)
+//    .text(function(d) d.toFixed(2))
+;
+
+vis.render();
+</script>
