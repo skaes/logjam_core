@@ -16,7 +16,7 @@
     <% next if value.blank?  -%>
     <tr>
       <td class='resource_name'><%= h name %></td>
-      <td class='number'><%= seconds_to_human(value / 1000.0) %></td>
+      <td class='number' style="color:<%= colors[name] || '#000' %>;"><%= seconds_to_human(value / 1000.0) %></td>
     </tr>
   <% end -%>
 </table>
@@ -31,7 +31,7 @@
     <% next if value.blank?  -%>
     <tr>
       <td class='resource_name'><%= h name %></td>
-      <td class='number'><%= number_with_delimiter(value.to_i) %></td>
+      <td class='number' style="color:<%= colors[name] || '#000' %>;"><%= number_with_delimiter(value.to_i) %></td>
     </tr>
   <% end -%>
 </table>
@@ -46,7 +46,7 @@
     <% next if value.blank?  -%>
     <tr>
       <td class='resource_name'><%= h name %></td>
-      <td class='number'><%= number_with_delimiter(value.to_i) %></td>
+      <td class='number' style="color:<%= colors[name] || '#000' %>;"><%= number_with_delimiter(value.to_i) %></td>
     </tr>
   <% end -%>
 </table>
