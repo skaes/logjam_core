@@ -109,7 +109,7 @@ module Logjam
           titles.each do |title|
             avg = @data.instance_variable_get "@#{title}_avg"
             stddev = @data.instance_variable_get "@#{title}_stddev"
-            x, y = histogram_data("#{title}")
+            x, y = @data.histogram_data("#{title}")
             plot.data << Gnuplot::DataSet.new( [x, y] ) do |ds|
               ds.with = "points lt rgb '#{Resource.colors[title]}'"
               ds.title = sprintf("%s(%.2f, %.2f)", title.gsub(/_/,' '), avg, stddev)
@@ -148,7 +148,7 @@ module Logjam
           titles.each do |title|
             avg = @data.instance_variable_get "@#{title}_avg"
             stddev = @data.instance_variable_get "@#{title}_stddev"
-            x, y = histogram_data(title)
+            x, y = @data.histogram_data(title)
             plot.data << Gnuplot::DataSet.new( [x, y] ) do |ds|
               ds.with = "points lt rgb '#{Resource.colors[title]}'"
               ds.title = sprintf("%s(%.2f, %.2f)", title, avg, stddev)
@@ -159,11 +159,5 @@ module Logjam
       end
     end
 
-    def histogram_data(attr)
-      quantized = @data.instance_variable_get("@#{attr}_quants")
-      xs, ys = [], []
-      quantized.keys.sort.each{|x| xs << x; ys << quantized[x] } unless quantized.blank?
-      [xs, ys]
-    end
   end
 end

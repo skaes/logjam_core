@@ -1,0 +1,51 @@
+<script type="text/javascript" src="/javascripts/protovis-r3.2.js"></script>
+<div id='request-time-distribution' align="center">
+  <script type="text/javascript+protovis">
+
+var
+    w = 700,
+    h  = 500,
+    x = pv.Scale.log(100, 100000).range(0, w),
+    y = pv.Scale.log(1, 1000000).range(0, h);
+
+var vis = new pv.Panel()
+    .width(w)
+    .height(h)
+    .margin(80)
+    .strokeStyle("#999");
+
+vis.add(pv.Rule)
+    .data(x.ticks())
+    .strokeStyle("#999")
+    .left(x)
+    .bottom(function(d) (this.index % 9 == 0) ? -10 : -5)
+    .height(function(d) (this.index % 9 == 0) ? 10 : 5)
+  .anchor("bottom").add(pv.Label)
+    .visible(function(d) this.index % 9 == 0)
+    .text(function(d) d);
+
+vis.add(pv.Rule)
+    .data(y.ticks())
+    .strokeStyle("#999")
+    .bottom(y)
+    .left(function(d) (this.index % 9 == 0) ? -10 : -5)
+    .width(function(d) (this.index % 9 == 0) ? 10 : 5)
+  .anchor("left").add(pv.Label)
+    .visible(function(d) this.index % 9 == 0)
+    .text(function(d) d);
+
+<% Logjam::Resource.time_resources.each do |r| -%>
+vis.add(pv.Dot)
+    .data(<%= @dataset.histogram_data_pv(r).to_json %>)
+    .left(function(d) x(d[0]))
+    .bottom(function(d) y(d[1]))
+    .lineWidth(1)
+    .size(9)
+    .strokeStyle("<%= Logjam::Resource.colors[r] %>")
+    .fillStyle("<%= Logjam::Resource.colors[r] %>");
+<% end %>
+
+vis.render();
+
+  </script>
+</div>

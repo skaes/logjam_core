@@ -50,6 +50,11 @@ module Logjam
       @plot = Plot.new(@dataset, :svg)
     end
 
+    def request_time_distribution2
+      @dataset = dataset_from_params
+      @dataset.get_data_for_distribution_plot(:request_time)
+    end
+
     def allocated_objects_distribution
       @dataset = dataset_from_params
       @dataset.plot_kind = :allocated_objects_distribution
