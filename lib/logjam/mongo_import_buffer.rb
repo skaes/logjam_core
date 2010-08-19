@@ -44,6 +44,7 @@ module Logjam
     def add(entry)
       severity = entry[:severity]
       page = entry[:page]
+      page << "#unknown_method" unless page =~ /#/
       minute = entry[:minute]
       response_code = entry[:response_code]
       user_id = entry[:user_id]
