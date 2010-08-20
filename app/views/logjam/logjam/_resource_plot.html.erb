@@ -4,7 +4,7 @@
 
  var data = <%= @protovis_data.to_json %>;
  var interval = <%= params[:interval].to_i %>;
- var colors = <%= @resources.reverse.map{|r| Logjam::Resource.colors[r]}.to_json %>;
+ var colors = <%= @resources.reverse.map{|r| Logjam::Resource.color(r,0.8)}.to_json %>;
 
 /* Sizing and scales. */
 var w = <%= width %>,

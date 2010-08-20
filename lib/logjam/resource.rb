@@ -14,10 +14,11 @@ module Logjam
       end
 
       def resource_map
-        @resource_map ||= begin
-                            hash = YAML.load_file(RAILS_ROOT + '/config/logjam_resources.yml')
-                            hash.merge(hash){|k, v| v||[]} # convert nils to []
-                          end
+        @resource_map ||=
+          begin
+            hash = YAML.load_file(RAILS_ROOT + '/config/logjam_resources.yml')
+            hash.merge(hash){|k, v| v||[]} # convert nils to []
+          end
       end
 
       def time_resources
@@ -38,7 +39,17 @@ module Logjam
 
       # returns a Hash mapping resources to colors, used for plotting
       def colors
-        Hash[*resource_map.values.flatten.map {|h| [h.keys.first, h.values.first]}.flatten]
+        @colors ||= Hash[*resource_map.values.flatten.map {|h| [h.keys.first, h.values.first]}.flatten]
+      end
+
+      def color(resource, transparency=0)
+        c = colors[resource]
+        if transparency==0
+          c
+        else
+          r,g,b = [c[1..2], c[3..4], c[5..6]].map{|s| s.hex}
+          "rgba(#{r},#{g},#{b},#{transparency})"
+        end
       end
 
       def resource_name(resource)

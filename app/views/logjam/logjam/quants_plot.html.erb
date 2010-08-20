@@ -10,7 +10,7 @@
      rd = @dataset.histogram_data(r)
      next if rd == []
      resources << r
-     colors << Logjam::Resource.colors[r]
+     colors << Logjam::Resource.color(r,0.7)
      data[r] = rd
      max_x = [max_x, rd.map(&:first).max].max
      max_y = [max_y, rd.map(&:second).max].max
@@ -67,7 +67,7 @@ vis.add(pv.Dot)
     .left(function(d) w-100)
     .bottom(function(d) h-20-12*this.index)
     .lineWidth(1)
-    .size(9)
+    .size(16)
     .strokeStyle(colors)
     .fillStyle(colors)
     .add(pv.Label)
