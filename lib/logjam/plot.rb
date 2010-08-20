@@ -44,14 +44,6 @@ module Logjam
       end
     end
 
-    def resources_excluded_from_plot
-      if data.resource == "requests"
-        Resource.resources_for_type(data.plot_kind) - ["requests"]
-      else
-        ['total_time', 'allocated_memory', 'requests']
-      end
-    end
-
     def plot
       Gnuplot.open do |gp|
         Gnuplot::Plot.new( gp ) do |plot|
@@ -73,8 +65,8 @@ module Logjam
 
           plot.data = []
 
-          (Resource.resources_for_type(data.plot_kind) - resources_excluded_from_plot).reverse.each do |resource|
-            next unless plot_data = data.plot_data(data.plot_kind, resources_excluded_from_plot).map{|i| (i||{})[resource]}
+          data.plotted_resources.reverse.each do |resource|
+            next unless plot_data = data.plot_data.map{|i| (i||{})[resource]}
             plot.data << Gnuplot::DataSet.new([[resource] + plot_data]) do |ds|
               ds.title = resource.gsub(/_/,' ')
               ds.with = 'steps' if resource == 'gc_time' || resource == 'heap_size'

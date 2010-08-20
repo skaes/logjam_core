@@ -4,13 +4,13 @@
 
  var data = <%= @protovis_data.to_json %>;
  var interval = <%= params[:interval].to_i %>;
- var colors = <%= (Logjam::Resource.time_resources-["total_time","gc_time"]).reverse.map{|r| Logjam::Resource.colors[r]}.to_json %>;
+ var colors = <%= @resources.reverse.map{|r| Logjam::Resource.colors[r]}.to_json %>;
 
 /* Sizing and scales. */
 var w = 1440,
     h = 800,
     x = pv.Scale.linear(0, 1440/interval - 1).range(0, w),
-    y = pv.Scale.linear(0, <%= @protovis_max+50 %>).range(0, h);
+    y = pv.Scale.linear(0, <%= @protovis_max %>).range(0, h).nice();
     c = pv.colors(colors).range();
 
 /* The root panel. */
@@ -19,8 +19,8 @@ var vis = new pv.Panel()
     .width(w)
     .height(h)
     .bottom(20)
-    .left(30)
-    .right(10)
+    .left(50)
+    .right(20)
     .top(5);
 
 /* X-axis and ticks. */

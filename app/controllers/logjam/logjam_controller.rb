@@ -39,7 +39,8 @@ module Logjam
 
     def enlarged_plot2
       @dataset = dataset_from_params
-      @plot = Plot.new(@dataset, :svg)
+      @dataset.plot_data
+      @resources = @dataset.plotted_resources-["gc_time"]
       @protovis_data = @dataset.protovis_data
       @protovis_max = @dataset.protovis_max
     end

@@ -141,10 +141,22 @@ module Logjam
         end
     end
 
-    def plot_data(resource_type, resources_to_skip = [], func = :avg)
+    def resources_excluded_from_plot
+      if resource == "requests"
+        Resource.resources_for_type(data.plot_kind) - ["requests"]
+      else
+        ['total_time', 'allocated_memory', 'requests']
+      end
+    end
+
+    def plotted_resources
+      Resource.resources_for_type(plot_kind) - resources_excluded_from_plot
+    end
+
+    def plot_data
       @plot_data ||=
         begin
-          resources = Resource.resources_for_type(resource_type) - resources_to_skip
+          resources = plotted_resources
           minute = "minute#{interval}"
           from_db = Minutes.new(@db, resources, stripped_page).minutes(interval)
           zero = Hash.new(0)
