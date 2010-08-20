@@ -100,11 +100,10 @@ Event.observe(window, 'load', function() {show_description()});
       <p class='stats'>
         <%= @dataset.date.strftime('%d-%b-%Y') %>: showing
         <%= number_with_delimiter @dataset.count_requests %> of <%= number_with_delimiter @dataset.count %> requests
-        <%= link_to(image_tag("scatter_plot.jpg"), {:params =>
-        clean_params(params.merge(:action => distribution_kind(@dataset.resource)))},
-        {:title => "#{distribution_kind(@dataset.resource).to_s.gsub(/_/,' ')} plot"}) %>
+        <%= link_to(image_tag("zoom_in.png", :alt => 'enlarge plot', :title => 'enlarge plot'), {:params => clean_params(params.merge(:action => 'enlarged_plot'))}) %>
+        <%= link_to(image_tag("scatter_plot.jpg"), {:params => clean_params(params.merge(:action => distribution_kind(@dataset.resource)))}, {:title => "#{distribution_kind(@dataset.resource).to_s.gsub(/_/,' ')} plot"}) %>
       </p>
-      <%= link_to image_tag(@dataset.png_file, :alt => 'enlarge plot', :title => 'enlarge plot'), {:params => clean_params(params.merge(:action => 'enlarged_plot'))} %>
+      <%= render :partial => "resource_plot", :locals => {:width => 1440/5*2, :height => 300} %>
     </div>
 
     <%- if [:time, :memory].include? @plot_kind -%>

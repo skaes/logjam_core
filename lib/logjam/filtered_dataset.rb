@@ -141,6 +141,16 @@ module Logjam
         end
     end
 
+    YLABELS = {:time => 'Response time (ms)', :call => '# of calls', :memory => 'Allocations (bytes)'}
+
+    def ylabel
+      if plot_kind == :call && resource == "requests"
+        '# requests per minute'
+      else
+        YLABELS[plot_kind]
+      end
+    end
+
     def resources_excluded_from_plot
       if resource == "requests"
         Resource.resources_for_type(data.plot_kind) - ["requests"]

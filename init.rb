@@ -1,15 +1,12 @@
 require 'logjam'
 
 config.gem 'mongo'
-config.gem 'gnuplot', :source => 'http://gems.rubyforge.org'
 
 config.to_prepare do
   ApplicationController.helper(Logjam::LogjamHelper)
 end
 
 config.after_initialize do
-  require 'digest/md5'
-
   ::ActiveSupport::Dependencies.load_once_paths.reject! { |p| p =~ %r{/logjam/} }
 end
 
