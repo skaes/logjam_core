@@ -191,13 +191,6 @@ module Logjam
 
     def histogram_data(resource)
       quantized = instance_variable_get("@#{resource}_quants")
-      xs, ys = [], []
-      quantized.keys.sort.each{|x| xs << x; ys << quantized[x] } unless quantized.blank?
-      [xs, ys]
-    end
-
-    def histogram_data_pv(resource)
-      quantized = instance_variable_get("@#{resource}_quants")
       points = []
       quantized.keys.sort.each{|x| points << [x, quantized[x]] } unless quantized.blank?
       points

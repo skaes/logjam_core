@@ -7,7 +7,7 @@
    max_x = 100
    max_y = 1
    @resources.each do |r|
-     rd = @dataset.histogram_data_pv(r)
+     rd = @dataset.histogram_data(r)
      next if rd == []
      resources << r
      colors << Logjam::Resource.colors[r]
