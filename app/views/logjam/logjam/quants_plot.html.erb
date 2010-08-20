@@ -6,7 +6,7 @@
    resources, colors, data = [], [], {}
    max_x = 100
    max_y = 1
-   Logjam::Resource.time_resources.each do |r|
+   @resources.each do |r|
      rd = @dataset.histogram_data_pv(r)
      next if rd == []
      resources << r
@@ -20,7 +20,7 @@
 var
     w = 700,
     h  = 500,
-    x = pv.Scale.log(100, <%= max_x %>).range(0, w).nice(),
+    x = pv.Scale.log(<%= @xmin %>, <%= max_x %>).range(0, w).nice(),
     y = pv.Scale.log(1, <%= max_y %>).range(0, h).nice(),
     legend = <%= resources.to_json.gsub(/_/,' ') %>,
     colors = pv.colors(<%= colors.to_json %>);

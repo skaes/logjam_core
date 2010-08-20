@@ -87,6 +87,7 @@ module Logjam
 
     alias plot_time plot
     alias plot_call plot
+    alias plot_memory plot
 
   end
 end
