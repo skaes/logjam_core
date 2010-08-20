@@ -153,7 +153,7 @@ module Logjam
 
     def resources_excluded_from_plot
       if resource == "requests"
-        Resource.resources_for_type(data.plot_kind) - ["requests"]
+        Resource.resources_for_type(plot_kind) - ["requests"]
       else
         ['total_time', 'allocated_memory', 'requests']
       end
