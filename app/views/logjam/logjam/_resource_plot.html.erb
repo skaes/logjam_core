@@ -28,6 +28,7 @@ vis.add(pv.Rule)
     .data(pv.range(24).map(function(h) h/interval*60))
     .left(x)
     .bottom(0)
+    .visible(function(d) d)
     .strokeStyle(function(d) d ? "rgba(128,128,128,.2)" : "#999")
   .anchor("bottom").add(pv.Label)
     .text(function(t) t*interval/60);
