@@ -45,26 +45,27 @@ module Logjam
     end
 
     def request_time_distribution
-      @dataset = dataset_from_params
-      @dataset.plot_kind = :request_time_distribution
-      @plot = Plot.new(@dataset, :svg)
-    end
-
-    def request_time_distribution2
+      @resources = Logjam::Resource.time_resources
       @dataset = dataset_from_params
       @dataset.get_data_for_distribution_plot(:request_time)
+      @xmin = 100
+      render 'quants_plot'
     end
 
     def allocated_objects_distribution
+      @resources = Logjam::Resource.memory_resources
       @dataset = dataset_from_params
-      @dataset.plot_kind = :allocated_objects_distribution
-      @plot = Plot.new(@dataset, :svg)
+      @dataset.get_data_for_distribution_plot(:allocated_objects)
+      @xmin = 10000
+      render 'quants_plot'
     end
 
     def allocated_size_distribution
+      @resources = Logjam::Resource.memory_resources
       @dataset = dataset_from_params
-      @dataset.plot_kind = :allocated_size_distribution
-      @plot = Plot.new(@dataset, :svg)
+      @dataset.get_data_for_distribution_plot(:allocated_bytes)
+      @xmin = 100000
+      render 'quants_plot'
     end
 
     private

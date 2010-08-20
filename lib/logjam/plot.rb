@@ -86,78 +86,7 @@ module Logjam
     end
 
     alias plot_time plot
-    alias plot_memory plot
     alias plot_call plot
-
-    def plot_request_time_distribution
-      @data.get_data_for_distribution_plot(:request_time)
-      Gnuplot::Plot::QUOTED.delete "title"
-      Gnuplot.open do |gp|
-        Gnuplot::Plot.new( gp ) do |plot|
-          plot.terminal "svg size 800, 600 fsize 11"
-          plot.output filename
-          plot.title  %Q{"Request time distribution: #{@data.page}\\n#{@data.count_requests} requests on #{@data.date}"}
-          plot.ylabel "Number of requests"
-          plot.xlabel "Request time"
-          plot.logscale "x"
-          plot.logscale "y"
-          plot.mxtics 10
-          plot.rmargin 5
-          plot.pointsize 0.7
-          plot.data = []
-          titles    = Resource.time_resources
-          titles.each do |title|
-            avg = @data.instance_variable_get "@#{title}_avg"
-            stddev = @data.instance_variable_get "@#{title}_stddev"
-            x, y = @data.histogram_data("#{title}")
-            plot.data << Gnuplot::DataSet.new( [x, y] ) do |ds|
-              ds.with = "points lt rgb '#{Resource.colors[title]}'"
-              ds.title = sprintf("%s(%.2f, %.2f)", title.gsub(/_/,' '), avg, stddev)
-            end
-          end
-        end
-        Gnuplot::Plot::QUOTED << "title"
-      end
-    end
-
-    def plot_allocated_objects_distribution
-      plot_allocation_distribution(:allocated_objects)
-    end
-
-    def plot_allocated_size_distribution
-      plot_allocation_distribution(:allocated_bytes)
-    end
-
-    def plot_allocation_distribution(what)
-      @data.get_data_for_distribution_plot(what)
-      Gnuplot::Plot::QUOTED.delete "title"
-      Gnuplot.open do |gp|
-        Gnuplot::Plot.new( gp ) do |plot|
-          plot.terminal "svg size 800, 600 fsize 11"
-          plot.output filename
-          plot.title  %Q{"#{what.to_s.humanize} distribution: #{@data.page}\\n#{@data.count_requests} requests on #{@data.date}"}
-          plot.ylabel "Number of requests"
-          plot.xlabel what.to_s.humanize
-          plot.logscale "x"
-          plot.logscale "y"
-          plot.mxtics 10
-          plot.rmargin 5
-          plot.pointsize 0.7
-          plot.data = []
-          titles    = Array(what.to_s)
-          titles.each do |title|
-            avg = @data.instance_variable_get "@#{title}_avg"
-            stddev = @data.instance_variable_get "@#{title}_stddev"
-            x, y = @data.histogram_data(title)
-            plot.data << Gnuplot::DataSet.new( [x, y] ) do |ds|
-              ds.with = "points lt rgb '#{Resource.colors[title]}'"
-              ds.title = sprintf("%s(%.2f, %.2f)", title, avg, stddev)
-            end
-          end
-        end
-        Gnuplot::Plot::QUOTED << "title"
-      end
-    end
 
   end
 end
