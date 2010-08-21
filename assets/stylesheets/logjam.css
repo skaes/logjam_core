@@ -80,20 +80,21 @@ div#filter, div#column-right {
 div#column-right {width: 700px;}
 
 div#pagetimes {
-  margin: -20px 0 0 20px;
-}
-
-p.query {
-  font-size: 90%;
-  width: 640px;
+  margin: -20px 0 0 10px;
 }
 
 .stats {
   margin: 2px 0 2px 80px;
 }
 
-.full_stats, p.query, div#pagetimes h3 {
+div#pagetimes h3 {
+  margin-top: 20px;
   margin-left: 0px;
+  margin-bottom: 5px;
+}
+
+.full_stats {
+  margin-left: -2px;
 }
 
 .full_stats th {
@@ -122,18 +123,7 @@ td.number {text-align: right;}
 .stats td { font-size: 12px; padding: 0 8px; }
 .table-heading { font-weight: bold; padding-top: 10px; }
 
-.enlarge-plot {
-  position: absolute;
-  top: 340px;
-  left: 20;
-  height: 360px;
-  width: 450px;
-  text-indent: -200em;
-}
-
-.enlarge-plot:hover {
-  background: transparent;
-}
+#resource-plot {float:left;}
 
 #quintile-stats {float:left;}
 #quintile-stats td {font-size: 90%;  line-height: 100%; white-space: nowrap; }
