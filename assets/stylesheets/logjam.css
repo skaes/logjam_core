@@ -49,9 +49,8 @@ input, select {
 #description.filter-widget {font-style: italic; margin: 0 0 0 5px; font-size: 90%;}
 
 #filter ul li {font-size: 65%; padding: 0px;}
-#filter object {display:block; height:360px; width:540px;}
-#request-time-distribution object {display:block; height:600px; width:800px;}
-#enlarged-plot object {display:block; height:600px; width:1000px;}
+#distribution-plot {padding: 0; margin: 0; float: left;}
+#enlarged-plot {}
 
 img {
   border: 0 none;

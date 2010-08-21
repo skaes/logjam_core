@@ -42,6 +42,10 @@ module Logjam
       @page.blank? ? "" : @page.gsub(/%/,'')
     end
 
+    def page_description
+      stripped_page == "::" ? "all pages" : stripped_page
+    end
+
     def description
       Resource.description(resource, grouping, grouping_function)
     end

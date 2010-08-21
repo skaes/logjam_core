@@ -48,6 +48,7 @@ module Logjam
       @dataset = dataset_from_params
       @dataset.get_data_for_distribution_plot(:request_time)
       @xmin = 100
+      @xlabel = "Request time"
       render 'quants_plot'
     end
 
@@ -56,6 +57,7 @@ module Logjam
       @dataset = dataset_from_params
       @dataset.get_data_for_distribution_plot(:allocated_objects)
       @xmin = 10000
+      @xlabel = "Allocated objects"
       render 'quants_plot'
     end
 
@@ -64,6 +66,7 @@ module Logjam
       @dataset = dataset_from_params
       @dataset.get_data_for_distribution_plot(:allocated_bytes)
       @xmin = 100000
+      @xlabel = "Allocated memory (bytes)"
       render 'quants_plot'
     end
 

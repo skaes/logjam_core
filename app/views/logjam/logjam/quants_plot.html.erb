@@ -1,5 +1,5 @@
 <script type="text/javascript" src="/javascripts/protovis-r3.2.js"></script>
-<div id='request-time-distribution' align="center">
+<div id='distribution-plot'>
   <script type="text/javascript+protovis">
 
 <%
@@ -25,12 +25,32 @@ var
     legend = <%= resources.to_json.gsub(/_/,' ') %>,
     colors = pv.colors(<%= colors.to_json %>);
 
+/* The root panel. */
 var vis = new pv.Panel()
     .width(w)
     .height(h)
     .margin(80)
     .strokeStyle("#999");
 
+/* Title */
+vis.add(pv.Label)
+    .left(w/2)
+    .top(-40)
+    .font("16px sans-serif")
+    .textAlign("center")
+    .textBaseline("middle")
+    .text("<%= @xlabel %> distribution on <%= h @dataset.date %> for '<%= h @dataset.page_description %>'");
+
+/* X-label */
+vis.add(pv.Label)
+    .left(w/2)
+    .bottom(-40)
+    .font("12px sans-serif")
+    .textAlign("center")
+    .textBaseline("middle")
+    .text("<%= @xlabel %>");
+
+/* X-axis and ticks. */
 vis.add(pv.Rule)
     .data(x.ticks())
     .strokeStyle("#999")
@@ -41,6 +61,17 @@ vis.add(pv.Rule)
     .visible(function(d) this.index % 9 == 0)
     .text(function(d) d);
 
+/* Y-label */
+vis.add(pv.Label)
+    .left(-50)
+    .bottom(h/2)
+    .font("12px sans-serif")
+    .textAlign("center")
+    .textBaseline("middle")
+    .textAngle(-Math.PI / 2)
+    .text("Number of requests");
+
+/* Y-axis and ticks. */
 vis.add(pv.Rule)
     .data(y.ticks())
     .strokeStyle("#999")
@@ -62,6 +93,7 @@ vis.add(pv.Dot)
     .fillStyle("<%= colors[i] %>");
 <% end %>
 
+/* Legend. */
 vis.add(pv.Dot)
     .data(legend)
     .left(function(d) w-100)
