@@ -96,7 +96,7 @@ var ws = null;
 /* connect to the data stream */
 function connect_chart() {
   if ( ws == null ) {
-    ws = new WebSocket("ws://localhost:8080/");
+    ws = new WebSocket("<%= @socket_url %>");
     ws.onmessage = function(evt) { update_chart(JSON.parse(evt.data)); };
     ws.onclose = function() { connection_status = "disconnected"; vis.render(); };
     ws.onopen = function() { connection_status = "connected"; vis.render(); ws.send('<%= "#{@app}-#{@env}" %>'); };

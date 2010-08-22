@@ -73,6 +73,7 @@ module Logjam
     def live_stream
       get_app_env
       @resources = Logjam::Resource.time_resources-%w(total_time gc_time)
+      @socket_url = "ws://#{request.host}:8080/"
     end
 
     private
