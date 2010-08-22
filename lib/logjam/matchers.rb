@@ -125,7 +125,7 @@ module Logjam
     # Jul 27 16:25:29 pc-skaes-3 rails[3161] user[ddddddd]: Completed in 2352.498ms (View: 183.980, DB: 53.292(15), API: 46.657(1), SR: 7.638(3), MC: 6.345(9r,0m), GC: 970.501(10)) | 200 OK [...]
     # Jun 28 06:00:49 somehost rails[25944] user[Anonymous]: Completed in 176.044ms (View: 0.000, DB: 0.000(0), API: 0.000(0), SR: 0.000(0), MC: 2.218(1r,1m)) |  [...url...]
     COMPLETED_XING = lambda do |line|
-      line =~ /^Completed in ([\S]+)ms \((?:View: ([\S]+), )?DB: ([\S]+)\((\d+)(?:,(\d+))?\), API: ([\S]+)\((\d+)\), SR: ([\S]+)\((\d+)\), MC: ([\S]+)\((\d+)r,(\d+)m\)(?:, GM: ([\S]+)\((\d+)\))(?:, GC: ([\S]+)\((\d+)\))?(?:, HP: ([\S]+)\((\d+),(\d+),(\d+)(?:,(\d+))?\))?\)(?: \| (\d+)? )?/ and
+      line =~ /^Completed in ([\S]+)ms \((?:View: ([\S]+), )?DB: ([\S]+)\((\d+)(?:,(\d+))?\), API: ([\S]+)\((\d+)\), SR: ([\S]+)\((\d+)\), MC: ([\S]+)\((\d+)r,(\d+)m\)(?:, GM: ([\S]+)\((\d+)\))?(?:, GC: ([\S]+)\((\d+)\))?(?:, HP: ([\S]+)\((\d+),(\d+),(\d+)(?:,(\d+))?\))?\)(?: \| (\d+)? )?/ and
         {
           :total_time => $1.to_f,
           :view_time => $2.to_f,
