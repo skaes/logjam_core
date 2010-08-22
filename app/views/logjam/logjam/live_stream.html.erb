@@ -57,7 +57,7 @@ vis.add(pv.Layout.Stack)
   .layer.add(pv.Area)
     .interpolate("basis")
     .fillStyle(function(d) c[this.parent.index])
-    .strokeStyle(function(d) c[this.parent.index].darker())
+    .strokeStyle(function(d) c[this.parent.index].darker(0.1))
 ;
 
 /* recompute the Y-scale. */
