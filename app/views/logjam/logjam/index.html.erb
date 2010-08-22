@@ -103,6 +103,10 @@ Event.observe(window, 'load', function() {show_description()});
         <%= link_to(image_tag("zoom_in.png", :alt => "enlarge plot", :title => "enlarge plot"),
                    {:params => clean_params(params.merge(:action => "enlarged_plot", :interval => 1))}) %>
         <%= link_to(image_tag("scatter_plot.jpg"), {:params => clean_params(params.merge(:action => distribution_kind(@dataset.resource)))}, {:title => "#{distribution_kind(@dataset.resource).to_s.gsub(/_/,' ')} plot"}) %>
+        <% if @dataset.live_stream? -%>
+        <%= link_to(image_tag("stream.gif", :alt => "live stream", :title => "live stream"),
+                   {:params => clean_params(params.merge(:action => "live_stream"))}, {:target => "_blank"}) %>
+        <% end -%>
       </p>
       <%= render :partial => "resource_plot", :locals => {:width => 1440/5*2, :height => 300} %>
     </div>

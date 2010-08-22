@@ -1,7 +1,7 @@
 module Logjam
 
   class LogjamController < ApplicationController
-    before_filter :redirect_to_clean_url, :except => :auto_complete_for_controller_action_page
+    before_filter :redirect_to_clean_url, :except => [:live_stream, :auto_complete_for_controller_action_page]
     before_filter :print_params if RAILS_ENV=="development"
 
     def auto_complete_for_controller_action_page
@@ -70,17 +70,26 @@ module Logjam
       render 'quants_plot'
     end
 
+    def live_stream
+      get_app_env
+      @resources = Logjam::Resource.time_resources-%w(total_time gc_time)
+    end
+
     private
 
     def default_date
       (Logjam.database_days.first || Date.today).to_date
     end
 
+    def get_app_env
+      @app = params[:app] || Logjam.database_apps.first
+      @env = params[:env] || Logjam.database_envs.first
+    end
+
     def get_date
       @date = "#{params['year']}-#{params['month']}-#{params['day']}".to_date unless params[:year].blank?
       @date ||= default_date
-      @app = params[:app] || Logjam.database_apps.first
-      @env = params[:env] || Logjam.database_envs.first
+      get_app_env
       @db = Logjam.db(@date, @app, @env)
     end
 

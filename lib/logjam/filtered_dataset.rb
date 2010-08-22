@@ -90,6 +90,10 @@ module Logjam
       60 / interval
     end
 
+    def live_stream?
+      (@date == Date.today || Rails.env == "development") && ["all_pages", "::", ""].include?(stripped_page)
+    end
+
     def empty?
       count_requests == 0
     end

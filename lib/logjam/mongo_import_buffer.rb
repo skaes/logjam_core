@@ -1,3 +1,7 @@
+require 'amqp'
+require 'mq'
+require 'json'
+
 module Logjam
 
   class MongoImportBuffer
@@ -16,7 +20,9 @@ module Logjam
 
     SQUARED_FIELDS = FIELDS.inject({}) { |h, f| h[f] = "#{f}_sq"; h}
 
-    def initialize(dbname)
+    def initialize(dbname,app,env)
+      @app = app
+      @env = env
       db = Logjam.mongo.db(dbname)
       @totals = db["totals"]
       @totals.create_index("page")
@@ -50,6 +56,10 @@ module Logjam
       user_id = entry[:user_id]
       total_time = entry[:total_time]
       lines = entry.delete(:lines)
+
+      # puts entry.to_yaml
+      raise "no response code" if response_code.blank?
+
       fields = entry.stringify_keys
       fields.delete_if{|k,v| v==0 || GENERIC_FIELDS.include?(k) }
       fields.keys.each{|k| fields[squared_field(k)] = (v=fields[k].to_f)*v}
@@ -162,9 +172,27 @@ module Logjam
     def flush_totals_buffer
       @totals_buffer.each do |(p,inc)|
         @totals.update({"page" => p}, { '$inc' => inc }, UPSERT_ONE)
+        publish(p,inc) if p == "all_pages"
       end
       @totals_buffer.clear
     end
 
+    def self.exchange(app,env)
+      (@exchange||={})["#{app}-#{env}"] ||=
+        begin
+          channel = MQ.new(AMQP::connect(:host => "127.0.0.1"))
+          channel.fanout("logjam-performance-data-#{app}-#{env}")
+        end
+    end
+
+    def exchange
+      @exchange ||= self.class.exchange(@app,@env)
+    end
+
+    def publish(p,inc)
+      exchange.publish({"page" => p}.merge!(inc).to_json)
+    rescue
+      $stderr.puts "could not publish performance data: #{$!}"
+    end
   end
 end

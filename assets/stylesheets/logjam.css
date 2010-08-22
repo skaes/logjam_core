@@ -22,18 +22,16 @@ a:hover { color: #000; background-color:#fff; }
 a { text-decoration: none; }
 
 label {
-font-weight: bold;
-font-size: 80%;
-display: block;
-float: left;
-clear: left;
+    font-weight: bold;
+    font-size: 80%;
+    display: block;
+    float: left;
+    clear: left;
 }
 
 form {margin-bottom: 20px;}
 
 input, select {
-  float: left;
-  clear: left;
   margin-bottom: 5px;
 }
 
@@ -202,4 +200,13 @@ div.auto_complete ul strong.highlight {
   color: #800;
   margin:0;
   padding:0;
+}
+
+#stream-title {
+}
+#stream-control {
+}
+#stream-toggle {
+}
+#live-stream {
 }

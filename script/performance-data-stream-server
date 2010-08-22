@@ -1,0 +1,48 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'em-websocket'
+require 'amqp'
+require 'mq'
+require 'set'
+
+@exchanges = {}
+@buffers = Hash.new{|h,k| h[k] = []}
+@sockets = Hash.new{|h,k| h[k] = Set.new}
+
+def create_exchange_and_subscribe(app_env)
+  exchange_name = "logjam-performance-data-#{app_env}"
+  exchange = @channel.fanout(exchange_name)
+  queue_name = "#{exchange_name}-#{`hostname`.chomp}"
+  queue = @channel.queue(queue_name, :auto_delete => true, :exclusive => true)
+  queue.bind(exchange)
+  subscribe(app_env, queue)
+  exchange
+end
+
+def subscribe(app_env, queue)
+  queue.subscribe do |header, perf_data|
+    (b = @buffers[app_env]) << perf_data
+    b.shift if b.size > 60
+    @sockets[app_env].each {|s| s.send perf_data}
+  end
+end
+
+EventMachine.run do
+  @channel = MQ.new(AMQP::connect(:host => "127.0.0.1"))
+  EventMachine::WebSocket.start(:host => "0.0.0.0", :port => 8080) do |ws|
+    ws.onopen { puts "web socket connection established: #{ws.object_id}" }
+
+    ws.onclose do
+      puts "web socket connection closed: #{ws.object_id}"
+      @sockets.each_value{|sockets| sockets.delete(ws) }
+    end
+
+    ws.onmessage do |app_env|
+      @exchanges[app_env] ||= create_exchange_and_subscribe(app_env)
+      @sockets[app_env] << ws
+      @buffers[app_env].each{|m| ws.send m}
+      puts "web socket subscribed to #{app_env}: #{ws.object_id}"
+    end
+  end
+end

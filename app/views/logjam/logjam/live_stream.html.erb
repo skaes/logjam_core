@@ -1,0 +1,132 @@
+<h2 id="stream-title">Live Performance Data Stream for <%= @app %>-<%= @env %>
+  <input id="stream-toggle" type="button" onclick="toggle_stream(this);" value="pause" />
+</h2>
+<div id="live-stream">
+  <script type="text/javascript" src="/javascripts/protovis-r3.2.js"></script>
+  <script type="text/javascript+protovis">
+
+var resources = <%= @resources.reverse.to_json %>;
+var colors = <%= @resources.reverse.map{|r| Logjam::Resource.color(r,0.7)}.to_json %>;
+var connection_status = "disconnected";
+
+/* Sizing and scales. */
+var w = 600,
+    h = 300,
+    max_val = 100,
+    slice = 10,
+    x = pv.Scale.linear(0, w).range(0, w),
+    y = pv.Scale.linear(0, max_val).range(0, h).nice(),
+    c = pv.colors(colors).range();
+
+/* Data */
+var data = pv.range(resources.length).map(function() (pv.range(w/slice+1).map(function()0)));
+
+/* The root panel. */
+var vis = new pv.Panel()
+    .strokeStyle("#999")
+    .right(30)
+    .left(30)
+    .top(10)
+    .bottom(10)
+    .width(w)
+    .height(h);
+
+/* Connection status. */
+vis.add(pv.Label)
+    .top(2)
+    .left(2)
+    .font("14px sans-serif")
+    .textStyle("rgba(123,128,128,.5)")
+    .textAlign("left")
+    .textBaseline("top")
+    .text(function() connection_status);
+
+/* Y-axis and ticks. */
+vis.add(pv.Rule)
+    .data(function() y.ticks(10))
+    .bottom(function(d) y(d))
+    .strokeStyle(function(d) d ? "rgba(128,128,128,.2)" : "#999")
+  .anchor("left").add(pv.Label)
+    .text(y.tickFormat);
+
+/* The stack layout. */
+vis.add(pv.Layout.Stack)
+    .layers(data)
+    .x(function() this.index*slice)
+    .y(function(d) y(d))
+  .layer.add(pv.Area)
+    .interpolate("basis")
+    .fillStyle(function(d) c[this.parent.index])
+    .strokeStyle(function(d) c[this.parent.index].darker())
+;
+
+/* recompute the Y-scale. */
+function re_scale() {
+  var new_max = max_val;
+  var num_areas = data.length;
+  var num_slots = w/2;
+  for (var i = 0; i < num_slots; ++i) {
+    sum_slot = 0;
+    for (var j = 0; j < num_areas; ++j) sum_slot += data[j][i];
+    if (sum_slot > new_max) new_max = sum_slot;
+  };
+  y = pv.Scale.linear(0, new_max).range(0, h).nice();
+};
+
+/* add stream data to the chart */
+function update_chart(values) {
+  var count = values["count"];
+  if (count == null) count = 1;
+  for (var i = 0, len = resources.length; i < len; ++i) {
+    var val = values[resources[i]];
+    if (count == 0 || val == null)
+      val = 0;
+    else
+      val /= count;
+    data[i].push(val);
+    data[i].shift();
+  };
+  re_scale();
+  vis.render();
+};
+
+/* The web socket */
+var ws = null;
+
+/* connect to the data stream */
+function connect_chart() {
+  if ( ws == null ) {
+    ws = new WebSocket("ws://localhost:8080/");
+    ws.onmessage = function(evt) { update_chart(JSON.parse(evt.data)); };
+    ws.onclose = function() { connection_status = "disconnected"; vis.render(); };
+    ws.onopen = function() { connection_status = "connected"; vis.render(); ws.send('<%= "#{@app}-#{@env}" %>'); };
+    ws.onerror = function() { alert("websocket error"); }
+  }
+};
+
+/* disconnect from the data stream */
+function disconnect_chart() {
+  ws.close();
+  ws = null;
+}
+
+/* toggle stream conection */
+function toggle_stream(button) {
+  if (button.value == "resume") {
+    connect_chart();
+    button.value = "pause";
+  } else {
+    disconnect_chart();
+    button.value = "resume";
+  }
+}
+
+/* intial draw */
+re_scale();
+vis.render();
+
+/* automatically connect to the data stream when the ducoment is ready */
+$(document).ready(connect_chart);
+
+  </script>
+</div>
