@@ -31,7 +31,7 @@ module Logjam
         @collection.find(selector, fields.clone).each do |row|
           n += 1
           count = row["count"]
-          minute = row["minute"] / time_slice
+          minute = row["minute"] / time_slice.to_f
           if @resources.empty?
             counts[minute] += count
           else
@@ -50,7 +50,7 @@ module Logjam
       minute_str = "minute#{time_slice}"
       if @resources.empty?
         counts.each do |m, num_requests|
-          result << { minute_str => m, "requests" => num_requests/time_slice}
+          result << { minute_str => m, "requests" => num_requests/time_slice.to_f}
         end
       else
         sums.each do |m,r|
