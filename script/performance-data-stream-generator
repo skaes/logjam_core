@@ -18,7 +18,7 @@ EM.run do
   trap("INT"){ EM.stop_event_loop}
 
   EM.add_periodic_timer(1) do
-    count = rand(100)
+    count = 50+50*rand()
     data = FIELDS.inject({"count" => count}){|h,k| h[k] = 100*rand*count; h}
     encoded_data = data.to_json
     # publish performance data
