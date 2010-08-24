@@ -32,7 +32,13 @@ module Logjam
   end
 
   def mongo
-    @mongo_connection ||= Mongo::Connection.new(database_config["host"])
+    @mongo_connection ||= begin
+      conn = Mongo::Connection.new(database_config['host'])
+      if database_config['user'] && database_config['pass']
+        conn.db('admin').authenticate(database_config['user'], database_config['pass'])
+      end
+      conn
+    end
   end
 
   def db(date, app, env)
