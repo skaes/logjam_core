@@ -12,14 +12,16 @@ var connection_status = "disconnected";
 /* Sizing and scales. */
 var w = 600,
     h = 300,
-    max_val = 100,
     slice = 10,
     x = pv.Scale.linear(0, w).range(0, w),
-    y = pv.Scale.linear(0, max_val).range(0, h).nice(),
+    y = pv.Scale.linear(0, 0).range(0, h).nice(),
+    y2 = pv.Scale.linear(0, 0).range(0, 50).nice(),
     c = pv.colors(colors).range();
 
 /* Data */
-var data = pv.range(resources.length).map(function() (pv.range(w/slice+1).map(function()0)));
+function zeros(){ return pv.range(w/slice+1).map(function()0); }
+var data = pv.range(resources.length).map(zeros);
+var request_counts = zeros();
 
 /* The root panel. */
 var vis = new pv.Panel()
@@ -60,23 +62,36 @@ vis.add(pv.Layout.Stack)
     .strokeStyle(function(d) c[this.parent.index].darker(0.1))
 ;
 
+/* Request counts. */
+vis.add(pv.Area)
+    .data(request_counts)
+    .left(function() this.index*slice)
+    .bottom(h-50)
+    .height(function(d) y2(d))
+    .interpolate("basis")
+    .fillStyle("rgba(128,128,128,0.3)")
+    .strokeStyle("rgba(128,128,128,0.3)");
+
 /* recompute the Y-scale. */
 function re_scale() {
-  var new_max = max_val;
+  var max_y = 0;
   var num_areas = data.length;
-  var num_slots = w/2;
+  var num_slots = data[0].length;
   for (var i = 0; i < num_slots; ++i) {
     sum_slot = 0;
     for (var j = 0; j < num_areas; ++j) sum_slot += data[j][i];
-    if (sum_slot > new_max) new_max = sum_slot;
+    if (sum_slot > max_y) max_y = sum_slot;
   };
-  y = pv.Scale.linear(0, new_max).range(0, h).nice();
+  y = pv.Scale.linear(0, max_y).range(0, h).nice();
+  y2 = pv.Scale.linear(0, pv.max(request_counts)).range(0, 50);
 };
 
 /* add stream data to the chart */
 function update_chart(values) {
   var count = values["count"];
-  if (count == null) count = 1;
+  request_counts.push(count);
+  request_counts.shift();
+  // if (count == null) count = 1;
   for (var i = 0, len = resources.length; i < len; ++i) {
     var val = values[resources[i]];
     if (count == 0 || val == null)
