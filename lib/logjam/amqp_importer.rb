@@ -34,7 +34,7 @@ module Logjam
         begin
           config = load_config('logjam_amqp.yml')
 
-          channel = MQ.new(AMQP::connect(:host => config[:hostname]))
+          channel = MQ.new(AMQP::connect(config))
           exchange = channel.topic(config[:exchange])
           queue = channel.queue("#{config[:queue]}-#{`hostname`.chomp}", :auto_delete => true, :exclusive => true)
 

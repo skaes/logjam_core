@@ -177,7 +177,7 @@ module Logjam
       @totals_buffer.clear
     end
 
-    def self.exchange(app,env)
+    def self.exchange(app, env)
       (@exchange||={})["#{app}-#{env}"] ||=
         begin
           channel = MQ.new(AMQP::connect(:host => "127.0.0.1"))
