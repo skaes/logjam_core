@@ -50,7 +50,7 @@ module Logjam
       minute_str = "minute#{time_slice}"
       if @resources.empty?
         counts.each do |m, num_requests|
-          result << { minute_str => m, "requests" => num_requests}
+          result << { minute_str => m, "requests" => num_requests/time_slice}
         end
       else
         sums.each do |m,r|
