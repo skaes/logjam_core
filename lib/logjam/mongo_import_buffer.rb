@@ -121,6 +121,7 @@ module Logjam
     end
 
     def flush
+      publish_totals
       flush_totals_buffer
       flush_minutes_buffer
       # flush_hours_buffer
@@ -172,7 +173,6 @@ module Logjam
     def flush_totals_buffer
       @totals_buffer.each do |(p,inc)|
         @totals.update({"page" => p}, { '$inc' => inc }, UPSERT_ONE)
-        publish(p,inc) if p == "all_pages"
       end
       @totals_buffer.clear
     end
@@ -189,7 +189,14 @@ module Logjam
       @exchange ||= self.class.exchange(@app,@env)
     end
 
-    def publish(p,inc)
+    def publish_totals
+      # always publish something every second to the perf data exchange
+      p = "all_pages"
+      inc = @totals_buffer[p] || {"count" => 0}
+      publish(p,inc)
+    end
+
+    def publish(p, inc)
       exchange.publish({"page" => p}.merge!(inc).to_json)
     rescue
       $stderr.puts "could not publish performance data: #{$!}"

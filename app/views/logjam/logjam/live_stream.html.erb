@@ -91,7 +91,6 @@ function update_chart(values) {
   var count = values["count"];
   request_counts.push(count);
   request_counts.shift();
-  // if (count == null) count = 1;
   for (var i = 0, len = resources.length; i < len; ++i) {
     var val = values[resources[i]];
     if (count == 0 || val == null)
