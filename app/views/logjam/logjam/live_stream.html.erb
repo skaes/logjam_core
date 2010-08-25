@@ -46,6 +46,16 @@ vis.add(pv.Label)
     .textBaseline("top")
     .text(function() connection_status);
 
+/* X-axis and ticks. */
+vis.add(pv.Rule)
+    .data(x.ticks(w/slice))
+    .left(x)
+    .bottom(0)
+    .strokeStyle(function(d) d ? "rgba(128,128,128,.2)" : "#999")
+  .anchor("bottom").add(pv.Label)
+    .visible(function(d) d && ((d/slice)%10==0))
+    .text(function(d) d/slice-60);
+
 /* Y-axis and ticks. */
 vis.add(pv.Rule)
     .data(function() y.ticks(10))
@@ -88,7 +98,7 @@ vis.add(pv.Label)
 vis.add(pv.Dot)
     .data(legend)
     .left(function() 10+(100*(Math.floor(this.index/2))))
-    .bottom(function() -14-14*(this.index%2))
+    .bottom(function() -20-14*(this.index%2))
     .lineWidth(1)
     .size(16)
     .strokeStyle(color_map)
