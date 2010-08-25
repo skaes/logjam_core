@@ -57,7 +57,7 @@ vis.add(pv.Layout.Stack)
     .x(function() this.index*slice)
     .y(function(d) y(d))
   .layer.add(pv.Area)
-    .interpolate("basis")
+    .interpolate("cardinal")
     .fillStyle(function(d) c[this.parent.index])
     .strokeStyle(function(d) c[this.parent.index].darker(0.1))
 ;
@@ -68,7 +68,7 @@ vis.add(pv.Area)
     .left(function() this.index*slice)
     .bottom(h-50)
     .height(function(d) y2(d))
-    .interpolate("basis")
+    .interpolate("cardinal")
     .fillStyle("rgba(128,128,128,0.3)")
     .strokeStyle("rgba(128,128,128,0.3)");
 
