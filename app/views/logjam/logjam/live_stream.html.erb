@@ -72,6 +72,15 @@ vis.add(pv.Area)
     .fillStyle("rgba(128,128,128,0.3)")
     .strokeStyle("rgba(128,128,128,0.3)");
 
+vis.add(pv.Label)
+    .data(function() [0,25,50].map(function(d)y2(d)))
+    .bottom(function() h-50+this.index*25)
+    .right(0)
+    .text(y2.tickFormat)
+    .textAlign("left")
+    .textBaseline("middle")
+;
+
 /* recompute the Y-scale. */
 function re_scale() {
   var max_y = 0;
@@ -83,7 +92,7 @@ function re_scale() {
     if (sum_slot > max_y) max_y = sum_slot;
   };
   y = pv.Scale.linear(0, max_y).range(0, h).nice();
-  y2 = pv.Scale.linear(0, pv.max(request_counts)).range(0, 50);
+  y2 = pv.Scale.linear(0, pv.max(request_counts)).range(0, 50).nice();
 };
 
 /* add stream data to the chart */
