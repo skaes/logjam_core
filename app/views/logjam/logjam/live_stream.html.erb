@@ -5,9 +5,11 @@
   <script type="text/javascript" src="/javascripts/protovis-r3.2.js"></script>
   <script type="text/javascript+protovis">
 
+<% color_list = @resources.reverse.map{|r| Logjam::Resource.color(r,0.7)}+["rgba(128,128,128,0.3)"] %>
 var resources = <%= @resources.reverse.to_json %>;
-var colors = <%= @resources.reverse.map{|r| Logjam::Resource.color(r,0.7)}.to_json %>;
+var colors = <%= color_list.to_json %>;
 var connection_status = "disconnected";
+var legend = <%= (@resources.reverse+%w(requests/second)).to_json.gsub(/_/,' ') %>,
 
 /* Sizing and scales. */
 var w = 600,
@@ -16,7 +18,8 @@ var w = 600,
     x = pv.Scale.linear(0, w).range(0, w),
     y = pv.Scale.linear(0, 0).range(0, h).nice(),
     y2 = pv.Scale.linear(0, 0).range(0, 50).nice(),
-    c = pv.colors(colors).range();
+    color_map = pv.colors(colors);
+    c = color_map.range();
 
 /* Data */
 function zeros(){ return pv.range(w/slice+1).map(function()0); }
@@ -29,7 +32,7 @@ var vis = new pv.Panel()
     .right(30)
     .left(30)
     .top(10)
-    .bottom(10)
+    .bottom(50)
     .width(w)
     .height(h);
 
@@ -80,6 +83,20 @@ vis.add(pv.Label)
     .textAlign("left")
     .textBaseline("middle")
 ;
+
+/* Legend. */
+vis.add(pv.Dot)
+    .data(legend)
+    .left(function() 10+(100*(Math.floor(this.index/2))))
+    .bottom(function() -14-14*(this.index%2))
+    .lineWidth(1)
+    .size(16)
+    .strokeStyle(color_map)
+    .fillStyle(color_map)
+    .add(pv.Label)
+       .textBaseline("middle")
+       .textMargin(7)
+       .text(function() legend[this.index]);
 
 /* recompute the Y-scale. */
 function re_scale() {
