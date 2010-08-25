@@ -31,7 +31,7 @@ var vis = new pv.Panel()
     .strokeStyle("#999")
     .right(30)
     .left(30)
-    .top(10)
+    .top(100)
     .bottom(50)
     .width(w)
     .height(h);
@@ -54,7 +54,7 @@ vis.add(pv.Rule)
     .strokeStyle(function(d) d ? "rgba(128,128,128,.2)" : "#999")
   .anchor("bottom").add(pv.Label)
     .visible(function(d) d && ((d/slice)%10==0))
-    .text(function(d) d/slice-60);
+    .text(function(d) "t-"+ x.tickFormat(d/slice-60));
 
 /* Y-axis and ticks. */
 vis.add(pv.Rule)
@@ -86,10 +86,10 @@ vis.add(pv.Area)
     .strokeStyle("rgba(128,128,128,0.3)");
 
 vis.add(pv.Label)
-    .data(function() [0,25,50].map(function(d)y2(d)))
+    .data([0,25,50])
     .bottom(function() h-50+this.index*25)
     .right(0)
-    .text(y2.tickFormat)
+    .text(function(d) y2.invert(d))
     .textAlign("left")
     .textBaseline("middle")
 ;
