@@ -14,6 +14,8 @@ module Logjam
 
     def process
       EM.run do
+        trap("INT") { EM.stop_event_loop }
+        trap("TERM") { EM.stop_event_loop }
         @timer = EM.add_periodic_timer(1) do
           @importer.flush_buffers
         end
