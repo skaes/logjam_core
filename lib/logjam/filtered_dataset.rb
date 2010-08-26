@@ -175,27 +175,38 @@ module Logjam
       @plot_data ||=
         begin
           resources = plotted_resources
-          minute = "minute#{interval}"
-          from_db = Minutes.new(@db, resources, stripped_page).minutes(interval)
-          zero = Hash.new(0)
-          results = (1..intervals_per_day).to_a.map{zero}
-          max_total = 0
-          from_db.each do |row|
-            total_time = row.values_at(*(resources-["gc_time"])).sum
-            max_total = total_time if max_total < total_time
-            results[row[minute].to_i] = row
+          mins = Minutes.new(@db, resources, stripped_page, interval)
+          if resources == ["requests"]
+            from_db = mins.counts
+          else
+            from_db = mins.minutes
           end
-          @protovis_data = data_for_proto_vis(results, resources).reverse
-          @protovis_max = max_total
-          results
+          max_total = 0
+          plot_resources = resources-["gc_time"]
+          zero = Hash.new(0.0)
+          results = plot_resources.inject({}){|h,r| h[r] = {}; h}
+          intervals_per_day.times do |i|
+            row = from_db[i] || zero
+            total = 0
+            plot_resources.each do |r|
+              v = row[r]
+              total += v
+              results[r][i] = v
+            end
+            max_total = total if max_total < total
+          end
+          plot_data = data_for_proto_vis(results, plot_resources).reverse
+          [plot_data, max_total]
         end
     end
 
-    attr_reader :protovis_data, :protovis_max
-
     def data_for_proto_vis(results,resources)
-      data = (resources-["gc_time"]).map{[]}
-      results.each_with_index{|h,i| (resources-["gc_time"]).each_with_index{|r,j| data[j] << [i,h[r]]  }}
+      data = resources.map{[]}
+      resources.each_with_index do |r,j|
+        resource_data = data[j]
+        resource_hash = results[r]
+        intervals_per_day.times{|i| resource_data << [i, resource_hash[i]] }
+      end
       data
     end
 
