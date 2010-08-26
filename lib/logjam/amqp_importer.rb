@@ -7,8 +7,9 @@ module Logjam
   class AMQPImporter
     RAILS_ENV = ENV['RAILS_ENV'] || 'development'
 
-    def initialize
+    def initialize(application)
       @importer = MongoImporter.new("/dev/null")
+      @application = application.blank? ? nil : application
     end
 
     def process
@@ -32,15 +33,21 @@ module Logjam
     def queue
       @queue ||=
         begin
-          config = load_config('logjam_amqp.yml')
-
           channel = MQ.new(AMQP::connect(config))
           exchange = channel.topic(config[:exchange])
-          queue = channel.queue("#{config[:queue]}-#{`hostname`.chomp}", :auto_delete => true, :exclusive => true)
+          queue = channel.queue(queue_name, :auto_delete => true, :exclusive => true)
 
-          queue.bind(exchange, :routing_key => "logs.#")
+          queue.bind(exchange, :routing_key => routing_key)
           queue
         end
+    end
+
+    def routing_key
+      ["logs", @application, "#"].compact.join('.')
+    end
+
+    def queue_name
+      [config[:queue], @application, `hostname`.chomp].compact.join('-')
     end
 
     def process_line(msg, routing_key)
@@ -50,8 +57,8 @@ module Logjam
       end
     end
 
-    def load_config(config_name)
-      YAML.load_file("#{RAILS_ROOT}/config/#{config_name}")[RAILS_ENV].symbolize_keys
+    def config
+      @config ||= YAML.load_file("#{RAILS_ROOT}/config/logjam_amqp.yml")[RAILS_ENV].symbolize_keys
     end
 
   end
