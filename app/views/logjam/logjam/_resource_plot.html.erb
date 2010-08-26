@@ -5,20 +5,22 @@
  var data = <%= @protovis_data.to_json %>;
  var interval = <%= params[:interval].to_i %>;
  var colors = <%= @resources.reverse.map{|r| Logjam::Resource.color(r,0.8)}.to_json %>;
+ var legend = <%= @resources.reverse.to_json.gsub(/_/,' ') %>;
 
 /* Sizing and scales. */
 var w = <%= width %>,
     h = <%= height %>,
     x = pv.Scale.linear(0, 1440/interval-1).range(0, w),
-    y = pv.Scale.linear(0, <%= @protovis_max %>).range(0, h).nice();
-    c = pv.colors(colors).range();
+    y = pv.Scale.linear(0, <%= @protovis_max %>).range(0, h).nice(),
+    color_map = pv.colors(colors),
+    c = color_map.range();
 
 /* The root panel. */
 var vis = new pv.Panel()
     .strokeStyle("#999")
     .width(w)
     .height(h)
-    .bottom(40)
+    .bottom(65)
     .left(40)
     .right(0)
     .top(7);
@@ -61,6 +63,20 @@ vis.add(pv.Rule)
     .strokeStyle(function(d) d ? "rgba(128,128,128,.2)" : "#999")
   .anchor("left").add(pv.Label)
     .text(y.tickFormat);
+
+/* Legend. */
+vis.add(pv.Dot)
+    .data(legend)
+    .left(function() 10+(150*(Math.floor(this.index/2))))
+    .bottom(function() -40-14*(this.index%2))
+    .lineWidth(1)
+    .size(16)
+    .strokeStyle(color_map)
+    .fillStyle(color_map)
+    .add(pv.Label)
+       .textBaseline("middle")
+       .textMargin(7)
+       .text(function() legend[this.index]);
 
 /* The stack layout. */
 vis.add(pv.Layout.Stack)
