@@ -2,16 +2,18 @@
   <script type="text/javascript" src="/javascripts/protovis-r3.2.js"></script>
   <script type="text/javascript+protovis">
 
- var data = <%= @protovis_data.to_json %>;
- var interval = <%= params[:interval].to_i %>;
- var colors = <%= @resources.reverse.map{|r| Logjam::Resource.color(r,0.8)}.to_json %>;
- var legend = <%= @resources.reverse.to_json.gsub(/_/,' ') %>;
+var data = <%= @protovis_data.to_json %>;
+var interval = <%= params[:interval].to_i %>;
+var colors = <%= (@resources.reverse.map{|r| Logjam::Resource.color(r,0.8)}+["rgba(128,128,128,0.2)"]).to_json %>;
+var legend = <%= (@resources.reverse+%w(requests/second)).to_json.gsub(/_/,' ') %>;
+var request_counts = <%= @request_counts.to_json %>;
 
 /* Sizing and scales. */
 var w = <%= width %>,
     h = <%= height %>,
     x = pv.Scale.linear(0, 1440/interval-1).range(0, w),
     y = pv.Scale.linear(0, <%= @protovis_max %>).range(0, h).nice(),
+    y2 = pv.Scale.linear(0, pv.max(request_counts)).range(0, 50).nice(),
     color_map = pv.colors(colors),
     c = color_map.range();
 
@@ -22,7 +24,7 @@ var vis = new pv.Panel()
     .height(h)
     .bottom(65)
     .left(40)
-    .right(0)
+    .right(40)
     .top(7);
 
 /* X-label. */
@@ -77,6 +79,26 @@ vis.add(pv.Dot)
        .textBaseline("middle")
        .textMargin(7)
        .text(function() legend[this.index]);
+
+/* Request counts. */
+vis.add(pv.Area)
+    .data(request_counts)
+    .left(function() x(this.index))
+    .bottom(h-50)
+    .height(function(d) y2(d))
+    .interpolate("cardinal")
+    .fillStyle("rgba(128,128,128,0.2)")
+    .strokeStyle("rgba(128,128,128,0.2)");
+
+vis.add(pv.Label)
+    .data([0,25,50])
+    .bottom(function() h-50+this.index*25)
+    .right(0)
+    .text(function(d) y2.invert(d))
+    .textAlign("left")
+    .textBaseline("middle")
+;
+
 
 /* The stack layout. */
 vis.add(pv.Layout.Stack)

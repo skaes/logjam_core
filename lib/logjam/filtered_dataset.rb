@@ -176,17 +176,14 @@ module Logjam
         begin
           resources = plotted_resources
           mins = Minutes.new(@db, resources, stripped_page, interval)
-          if resources == ["requests"]
-            from_db = mins.counts
-          else
-            from_db = mins.minutes
-          end
+          minutes = mins.minutes
+          counts = mins.counts
           max_total = 0
           plot_resources = resources-["gc_time"]
           zero = Hash.new(0.0)
           results = plot_resources.inject({}){|h,r| h[r] = {}; h}
           intervals_per_day.times do |i|
-            row = from_db[i] || zero
+            row = minutes[i] || zero
             total = 0
             plot_resources.each do |r|
               v = row[r]
@@ -196,7 +193,9 @@ module Logjam
             max_total = total if max_total < total
           end
           plot_data = data_for_proto_vis(results, plot_resources).reverse
-          [plot_data, max_total]
+          request_counts = []
+          intervals_per_day.times{|i| request_counts << (counts[i] || 0) / 60.0}
+          [plot_data, max_total, request_counts]
         end
     end
 
