@@ -58,18 +58,6 @@ module Logjam
       Digest::MD5.hexdigest "#{date} #{interval} #{user_id} #{host} #{page} #{response_code} #{plot_kind} #{start_hour} #{end_hour}"
     end
 
-    def svg_file
-      "plot-#{hash}.svg"
-    end
-
-    def png_file
-      "plot-#{hash}.png"
-    end
-
-    def path(file)
-      "public/images/#{file}"
-    end
-
     def accumulates_time?
       (Resource.resource_type(resource) == :time) && grouping? && [:sum, :avg, :stddev].include?(grouping_function.to_sym)
     end

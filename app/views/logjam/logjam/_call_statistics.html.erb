@@ -6,11 +6,9 @@
       <%= sometimes_link_number_of_requests(page, :page, {:params =>
           clean_params(params.merge(:grouping => "request", :action => distribution_kind(resource), :page => page[:page]))}) %>
     </td>
-    <% unless resource == "requests" -%>
-      <td class='number'><%= number_with_precision(page["#{resource}_avg"], :precision => 1, :delimiter => ',') %></td>
-      <td class='number'><%= number_with_precision(page["#{resource}_stddev"], :precision => 1 , :delimiter => ',') %></td>
-      <td class='number'><%= number_with_delimiter(page["#{resource}_sum"].to_i) %></td>
-    <% end -%>
+    <td class='number'><%= number_with_precision(page["#{resource}_avg"], :precision => 1, :delimiter => ',') %></td>
+    <td class='number'><%= number_with_precision(page["#{resource}_stddev"], :precision => 1 , :delimiter => ',') %></td>
+    <td class='number'><%= number_with_delimiter(page["#{resource}_sum"].to_i) %></td>
   </tr>
 <% end -%>
 

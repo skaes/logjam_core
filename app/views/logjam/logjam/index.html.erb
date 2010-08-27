@@ -6,10 +6,9 @@ function show_description() {
   var resource = $('resource').value;
   var gfunction = $('grouping_function').value;
 
-  if (grouping == 'request' || resource == 'requests') {
+  if (grouping == 'request') {
     $('function-widget').hide();
-    if (grouping == 'request')
-      $('heap-growth-widget').show();
+    $('heap-growth-widget').show();
     $('description').innerHTML = descriptions[grouping][resource];
   }
   else {

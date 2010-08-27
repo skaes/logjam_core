@@ -7,20 +7,18 @@
     <% if @dataset.grouping? -%>
       <th><%= @dataset.grouping %></th>
       <th>requests</th>
-      <% unless resource == 'requests' -%>
-        <th>avg<br/><%= resource_name %></th>
-        <th>stddev<br/><%= resource_name %></th>
-        <th>sum<br/><%= resource_name %></th>
-        <% if @dataset.accumulates_time? -%>
-          <% options.merge!(:resource_total => @dataset.sum(resource))-%>
-          <th>% of overall<br/><%= resource_name.gsub(' ', '&nbsp;') %></th>
-          <% if resource.to_sym != :total_time -%>
-            <% options.merge!(:total_time => @dataset.sum("total_time")) -%>
-            <th>% of total time</th>
-          <% else %>
-            <th>apdex</th>
-            <th>errors</th>
-          <% end -%>
+      <th>avg<br/><%= resource_name %></th>
+      <th>stddev<br/><%= resource_name %></th>
+      <th>sum<br/><%= resource_name %></th>
+      <% if @dataset.accumulates_time? -%>
+        <% options.merge!(:resource_total => @dataset.sum(resource))-%>
+        <th>% of overall<br/><%= resource_name.gsub(' ', '&nbsp;') %></th>
+        <% if resource.to_sym != :total_time -%>
+          <% options.merge!(:total_time => @dataset.sum("total_time")) -%>
+          <th>% of total time</th>
+        <% else %>
+          <th>apdex</th>
+          <th>errors</th>
         <% end -%>
       <% end -%>
       <%= render "#{resource_type}_statistics", options.merge(:pages => @dataset.do_the_query) %>
