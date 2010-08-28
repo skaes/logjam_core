@@ -120,6 +120,8 @@ module Logjam
             "#{worst} #{human_grouping} by average #{name}"
           when :stddev
             "#{worst} #{human_grouping} by standard deviation of #{name}"
+          when :count
+            "#{worst} #{human_grouping} by number of requests"
           when :min
             "#{human_grouping} with requests with min #{name}"
           when :max
