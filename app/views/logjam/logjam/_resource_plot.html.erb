@@ -25,8 +25,8 @@ var vis = new pv.Panel()
     .height(h)
     .bottom(65)
     .left(40)
-    .right(30)
-    .top(7);
+    .right(0)
+    .top(10);
 
 /* X-label. */
 vis.add(pv.Label)
@@ -95,11 +95,12 @@ var request_count_formatter = pv.Format.number().fractionDigits(0,1);
 
 vis.add(pv.Label)
     .data([0,25,50])
-    .bottom(function() h-50+this.index*25)
+    .bottom(function() 1+h-50+this.index*25)
     .right(0)
     .text(function(d) request_count_formatter.format(y2.invert(d)))
-    .textAlign("left")
-    .textBaseline("middle")
+    .textMargin(0)
+    .textAlign("right")
+    .textBaseline("bottom")
 ;
 
 /* The stack layout. */
