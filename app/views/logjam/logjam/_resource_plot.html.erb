@@ -4,8 +4,8 @@
 
 var data = <%= @protovis_data.to_json %>;
 var interval = <%= params[:interval].to_i %>;
-var colors = <%= (@resources.reverse.map{|r| Logjam::Resource.color(r,0.8)}+["rgba(128,128,128,0.2)"]).to_json %>;
-var legend = <%= (@resources.reverse+%w(requests/second)).to_json.gsub(/_/,' ') %>;
+var colors = <%= ((@resources.reverse+[@gc_time&&"gc_time"]).compact.map{|r| Logjam::Resource.color(r,0.8)}+["rgba(128,128,128,0.2)"]).to_json %>;
+var legend = <%= ((@resources.reverse+[@gc_time&&"gc_time"]+%w(requests/second)).compact).to_json.gsub(/_/,' ') %>;
 var request_counts = <%= @request_counts.to_json %>;
 var gc_time = <%= @gc_time ? @gc_time.to_json : "null" %>;
 
@@ -25,7 +25,7 @@ var vis = new pv.Panel()
     .height(h)
     .bottom(65)
     .left(40)
-    .right(40)
+    .right(30)
     .top(7);
 
 /* X-label. */
@@ -70,7 +70,7 @@ vis.add(pv.Rule)
 /* Legend. */
 vis.add(pv.Dot)
     .data(legend)
-    .left(function() 10+(150*(Math.floor(this.index/2))))
+    .left(function() 10+(120*(Math.floor(this.index/2))))
     .bottom(function() -40-14*(this.index%2))
     .lineWidth(1)
     .size(16)
@@ -91,11 +91,13 @@ vis.add(pv.Area)
     .fillStyle("rgba(128,128,128,0.2)")
     .strokeStyle("rgba(128,128,128,0.2)");
 
+var request_count_formatter = pv.Format.number().fractionDigits(0,1);
+
 vis.add(pv.Label)
     .data([0,25,50])
     .bottom(function() h-50+this.index*25)
     .right(0)
-    .text(function(d) y2.invert(d))
+    .text(function(d) request_count_formatter.format(y2.invert(d)))
     .textAlign("left")
     .textBaseline("middle")
 ;
