@@ -9,7 +9,7 @@
 var resources = <%= @resources.reverse.to_json %>;
 var colors = <%= color_list.to_json %>;
 var connection_status = "disconnected";
-var legend = <%= (@resources.reverse+%w(requests/second)).to_json.gsub(/_/,' ') %>,
+var legend = <%= (@resources.reverse+%w(requests/second)).to_json.gsub(/_/,' ') %>;
 
 /* Sizing and scales. */
 var w = 600,
