@@ -7,7 +7,6 @@ module Logjam
       @database = db
       @collection = @database["minutes"]
       @resources = resources
-      @resources = [] if @resources == ["requests"]
       @pattern = pattern
       @pattern = "all_pages" if @pattern.blank? || @pattern == "::"
       @pattern = "^::#{@pattern}" if page_names.include?("::#{pattern}")

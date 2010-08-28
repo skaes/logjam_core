@@ -102,11 +102,7 @@ module Logjam
       if grouping == "request"
         Requests.new(@db, resource, stripped_page, :heap_growth_only => heap_growth_only).all
       else
-        if resource == "requests"
-          sort_by = "number_of_requests"
-        else
-          sort_by = "#{resource}_#{grouping_function}"
-        end
+        sort_by = "#{resource}_#{grouping_function}"
         totals(stripped_page).pages(:order => sort_by, :limit => 35)
       end
     end
@@ -140,19 +136,11 @@ module Logjam
     YLABELS = {:time => 'Response time (ms)', :call => '# of calls', :memory => 'Allocations (bytes)'}
 
     def ylabel
-      if plot_kind == :call && resource == "requests"
-        '# requests per minute'
-      else
-        YLABELS[plot_kind]
-      end
+      YLABELS[plot_kind] || ""
     end
 
     def resources_excluded_from_plot
-      if resource == "requests"
-        Resource.resources_for_type(plot_kind) - ["requests"]
-      else
-        ['total_time', 'allocated_memory', 'requests']
-      end
+      ['total_time', 'allocated_memory', 'requests']
     end
 
     def plotted_resources
@@ -167,7 +155,8 @@ module Logjam
           minutes = mins.minutes
           counts = mins.counts
           max_total = 0
-          plot_resources = resources-["gc_time"]
+          plot_resources = resources.clone
+          plot_resources += ["gc_time"] if plot_resources.delete("gc_time")
           zero = Hash.new(0.0)
           results = plot_resources.inject({}){|h,r| h[r] = {}; h}
           intervals_per_day.times do |i|
@@ -175,19 +164,20 @@ module Logjam
             total = 0
             plot_resources.each do |r|
               v = row[r]
-              total += v
+              total += v unless r == "gc_time"
               results[r][i] = v
             end
             max_total = total if max_total < total
           end
           plot_data = data_for_proto_vis(results, plot_resources).reverse
+          gc_time = plot_data.shift if resources.include?("gc_time")
           request_counts = []
           intervals_per_day.times{|i| request_counts << (counts[i] || 0) / 60.0}
-          [plot_data, max_total, request_counts]
+          [plot_data, max_total, request_counts, gc_time]
         end
     end
 
-    def data_for_proto_vis(results,resources)
+    def data_for_proto_vis(results, resources)
       data = resources.map{[]}
       resources.each_with_index do |r,j|
         resource_data = data[j]

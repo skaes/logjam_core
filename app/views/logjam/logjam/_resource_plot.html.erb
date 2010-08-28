@@ -7,6 +7,7 @@ var interval = <%= params[:interval].to_i %>;
 var colors = <%= (@resources.reverse.map{|r| Logjam::Resource.color(r,0.8)}+["rgba(128,128,128,0.2)"]).to_json %>;
 var legend = <%= (@resources.reverse+%w(requests/second)).to_json.gsub(/_/,' ') %>;
 var request_counts = <%= @request_counts.to_json %>;
+var gc_time = <%= @gc_time ? @gc_time.to_json : "null" %>;
 
 /* Sizing and scales. */
 var w = <%= width %>,
@@ -99,7 +100,6 @@ vis.add(pv.Label)
     .textBaseline("middle")
 ;
 
-
 /* The stack layout. */
 vis.add(pv.Layout.Stack)
     .layers(data)
@@ -108,6 +108,16 @@ vis.add(pv.Layout.Stack)
   .layer.add(pv.Area)
     .interpolate("step-after")
     .fillStyle(function(d) c[this.parent.index]);
+
+/* GC time */
+if (gc_time != null) {
+  vis.add(pv.Line)
+    .data(gc_time)
+    .left(function(d) x(d[0]))
+    .bottom(function(d) y(d[1]))
+    .interpolate("cardinal")
+    .strokeStyle("rgba(0,0,0,.9)");
+}
 
 vis.render();
 </script>
