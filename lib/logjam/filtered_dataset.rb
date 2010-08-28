@@ -59,7 +59,7 @@ module Logjam
     end
 
     def accumulates_time?
-      (Resource.resource_type(resource) == :time) && grouping? && [:sum, :avg, :stddev].include?(grouping_function.to_sym)
+      (Resource.resource_type(resource) == :time) && grouping? && [:sum, :avg, :stddev, :count].include?(grouping_function.to_sym)
     end
 
     def start_interval
@@ -102,7 +102,11 @@ module Logjam
       if grouping == "request"
         Requests.new(@db, resource, stripped_page, :heap_growth_only => heap_growth_only).all
       else
-        sort_by = "#{resource}_#{grouping_function}"
+        if grouping_function.to_sym == :count
+          sort_by = "number_of_requests"
+        else
+          sort_by = "#{resource}_#{grouping_function}"
+        end
         totals(stripped_page).pages(:order => sort_by, :limit => 35)
       end
     end

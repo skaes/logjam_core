@@ -91,7 +91,7 @@ module Logjam
       end
 
       def grouping_functions
-        ['sum', 'avg', 'stddev']
+        ['sum', 'avg', 'stddev', 'count']
       end
 
       def grouping?(grouping)
