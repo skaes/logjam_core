@@ -75,33 +75,34 @@ module Logjam
     protected
 
     def compute
-      result = []
-      n = 0
       all_fields = ["page", "count", @apdex, @response].compact + @resources
       sq_fields = @resources.map{|r| "#{r}_sq"}
       fields = {:fields => all_fields.concat(sq_fields)}
-      access_time = Benchmark.realtime do
-        @collection.find(selector, fields.clone).each do |row|
-          n += 1
-          count = row["count"]
-          result_row = {"page" => row["page"].gsub(/^::/,''), "number_of_requests" => count}
-          result_row["apdex"] = row["apdex"] if @apdex
-          result_row["response"] = row["response"] if @response
-          @resources.each do |r|
-            sum = row[r] || 0
-            result_row["#{r}_sum"] = sum
-            sum_sq = row["#{r}_sq"] || 0
-            avg = sum.to_f/count
-            std_dev = (count == 1 || sum == 0) ? 0.0 : Math.sqrt((sum_sq - count*avg*avg).abs/(count-1).to_f)
-            result_row["#{r}_sum_sq"] = sum_sq
-            result_row["#{r}_avg"] = avg
-            result_row["#{r}_stddev"] = std_dev
-          end
-          result << result_row.with_indifferent_access
+
+      rows = nil
+      access_time = Benchmark.ms { rows = @collection.find(selector, fields.clone).to_a }
+      logger.debug "MONGO Totals.find(#{selector.inspect},#{fields.inspect}) ==> #{rows.size} records, #{"%.1f" % (access_time)} ms"
+
+      result = []
+      while row = rows.shift
+        count = row["count"]
+        result_row = {"page" => row["page"].gsub(/^::/,''), "number_of_requests" => count}
+        result_row["apdex"] = row["apdex"] if @apdex
+        result_row["response"] = row["response"] if @response
+        @resources.each do |r|
+          sum = row[r] || 0
+          result_row["#{r}_sum"] = sum
+          sum_sq = row["#{r}_sq"] || 0
+          avg = sum.to_f/count
+          std_dev = (count == 1 || sum == 0) ? 0.0 : Math.sqrt((sum_sq - count*avg*avg).abs/(count-1).to_f)
+          result_row["#{r}_sum_sq"] = sum_sq
+          result_row["#{r}_avg"] = avg
+          result_row["#{r}_stddev"] = std_dev
         end
+        result << result_row.with_indifferent_access
       end
+
       # logger.debug result.inspect
-      logger.debug "MONGO Totals.find(#{selector.inspect},#{fields.inspect}) ==> #{n} records, #{"%.5f" % (access_time)} seconds}"
       result
     end
 

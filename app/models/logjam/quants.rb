@@ -17,20 +17,21 @@ module Logjam
     end
 
     def compute
-      @quants = {}
-      n = 0
-      access_time = Benchmark.realtime do
-        @collection.find({:page => @pattern, :kind => @kind}, {:fields => ["quant"].concat(@resources)}).each do |row|
-          n += 1
-          quant = row["quant"]
-          @resources.each do |f|
-            if (v = row[f].to_i) > 0
-              (@quants[f] ||= Hash.new(0))[quant] += v
-            end
+      rows = nil
+      access_time = Benchmark.ms do
+        rows = @collection.find({:page => @pattern, :kind => @kind}, {:fields => ["quant"].concat(@resources)}).to_a
+      end
+      logger.debug "MONGO quants: #{@pattern}, #{rows.size} records, #{"%.1f" % (access_time)} ms}"
+
+      quants = @quants = {}
+      while row = rows.shift
+        quant = row["quant"]
+        @resources.each do |f|
+          if (v = row[f].to_i) > 0
+            (quants[f] ||= Hash.new(0))[quant] += v
           end
         end
       end
-      logger.debug "MONGO quants: #{@pattern}, #{n} records, #{"%.5f" % (access_time)} seconds}"
     end
 
     def logger

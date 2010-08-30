@@ -22,26 +22,25 @@ module Logjam
 
     def compute(interval)
       logger.debug "pattern: #{@pattern}, resources: #{@resources.inspect}"
-      minute_str = "minute#{interval}"
-      sums = {}
-      counts = Hash.new(0.0)
-      max_sum = 0
-      n = 0
       selector = {:page => @pattern}
       fields = {:fields => ["minute","count"].concat(@resources)}
 
-      access_time = Benchmark.realtime do
-        @collection.find(selector, fields.clone).each do |row|
-          n += 1
-          count = row["count"]
-          slot = row["minute"] / interval
-          counts[slot] += count
-          sum_sofar = (sums[slot] ||= Hash.new(0.0))
-          @resources.each do |f|
-            v = row[f].to_f
-            v /= 40 if f == "allocated_bytes" # HACK!!!
-            sum_sofar[f] += v
-          end
+      rows = nil
+      access_time = Benchmark.ms { rows = @collection.find(selector, fields.clone).to_a }
+      n = rows.size
+
+      sums = {}
+      counts = Hash.new(0.0)
+      max_sum = 0
+      while row = rows.shift
+        count = row["count"]
+        slot = row["minute"] / interval
+        counts[slot] += count
+        sum_sofar = (sums[slot] ||= Hash.new(0.0))
+        @resources.each do |f|
+          v = row[f].to_f
+          v /= 40 if f == "allocated_bytes" # HACK!!!
+          sum_sofar[f] += v
         end
       end
 
@@ -54,7 +53,7 @@ module Logjam
       @counts = counts
       counts.each_key { |m| counts[m] /= interval.to_f }
 
-      logger.debug "MONGO Minutes(#{selector.inspect},#{fields.inspect}) ==> #{n} records, size #{@minutes.size}, #{"%.5f" % (access_time)} seconds}"
+      logger.debug "MONGO Minutes(#{selector.inspect},#{fields.inspect}) ==> #{n} records, size #{@minutes.size}, #{"%.1f" % (access_time)} ms}"
     end
 
     def logger

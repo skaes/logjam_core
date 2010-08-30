@@ -18,17 +18,18 @@ module Logjam
     end
 
     def all
-      result = []
       all_fields = ["page", "user_id", "heap_growth", "response_code", @resource]
       all_fields << "minute" unless all_fields.include?("minute")
       all_fields << "lines" if @options[:response_code] == 500
-      access_time = Benchmark.realtime do
+
+      result = nil
+      access_time = Benchmark.ms do
         result = @collection.find(selector,
                                   {:fields => all_fields,
                                     :sort => [@resource, Mongo::DESCENDING],
                                     :limit => @options[:limit] || 35}).to_a
       end
-      logger.debug "MONGO requests #{result.size} records, #{"%.5f" % (access_time)} seconds}"
+      logger.debug "MONGO requests #{result.size} records, #{"%.1f" % (access_time)} ms}"
       result
     end
 
