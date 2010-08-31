@@ -7,7 +7,7 @@
    chart_size = 80
 -%>
 
-<h4>Time Resources</h4>
+<h4>Time Resources (avg)</h4>
 <table id='request-details-time' style="vertical-align:middle;display:inline-block;width:250px;">
   <% time_resources.each do |name| -%>
     <% next if (value = s.avg(name)).zero?  -%>
@@ -23,7 +23,7 @@
     :colors => colors.values_at(*resources), :size => chart_size } %>
 </div>
 
-<h4>Call Resources</h4>
+<h4>Call Resources (avg)</h4>
 <table id='request-details-calls' style="vertical-align:middle;display:inline-block;width:250px;">
   <% call_resources.each do |name| -%>
     <% next if (value = s.avg(name)).zero?  -%>
@@ -38,7 +38,7 @@
 <%= render :partial => "simple_pie", :locals => {:data =>  resources.map{|r| s.avg(r)},
     :colors => colors.values_at(*resources), :size => chart_size } %>
 </div>
-<h4>Memory Resources</h4>
+<h4>Memory Resources (avg)</h4>
 <table id='request-details-memory' style="vertical-align:middle;display:inline-block;width:250px;">
   <% (memory_resources+heap_resources).each do |name| -%>
     <% next if (value = s.avg(name)).zero?  -%>
