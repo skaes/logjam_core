@@ -1,0 +1,59 @@
+<% time_resources = Logjam::Resource.time_resources
+   call_resources = Logjam::Resource.call_resources
+   memory_resources = Logjam::Resource.memory_resources
+   heap_resources = Logjam::Resource.heap_resources
+   colors = Logjam::Resource.colors
+   s = @dataset.summary
+   chart_size = 80
+-%>
+
+<h4>Time Resources</h4>
+<table id='request-details-time' style="vertical-align:middle;display:inline-block;width:250px;">
+  <% time_resources.each do |name| -%>
+    <% next if (value = s.avg(name)).zero?  -%>
+    <tr>
+      <td class='resource_name'><%= h name %></td>
+      <td class='number' style="color:<%= colors[name] || '#000' %>;"><%= number_with_precision(value, :precision => 2) %>ms</td>
+    </tr>
+  <% end -%>
+</table>
+<div style="vertical-align:middle;display:inline-block;">
+<% resources = time_resources-["total_time", "gc_time"] -%>
+<%= render :partial => "simple_pie", :locals => { :data => resources.map{|r| s.avg(r)},
+    :colors => colors.values_at(*resources), :size => chart_size } %>
+</div>
+
+<h4>Call Resources</h4>
+<table id='request-details-calls' style="vertical-align:middle;display:inline-block;width:250px;">
+  <% call_resources.each do |name| -%>
+    <% next if (value = s.avg(name)).zero?  -%>
+    <tr>
+      <td class='resource_name'><%= h name %></td>
+      <td class='number' style="color:<%= colors[name] || '#000' %>;"><%= number_with_precision(value, :precision => 2) %></td>
+    </tr>
+  <% end -%>
+</table>
+<div style="vertical-align:middle;display:inline-block;">
+<% resources = *call_resources.select{|r| r =~ /_calls$/}-["gc_calls"] -%>
+<%= render :partial => "simple_pie", :locals => {:data =>  resources.map{|r| s.avg(r)},
+    :colors => colors.values_at(*resources), :size => chart_size } %>
+</div>
+<h4>Memory Resources</h4>
+<table id='request-details-memory' style="vertical-align:middle;display:inline-block;width:250px;">
+  <% (memory_resources+heap_resources).each do |name| -%>
+    <% next if (value = s.avg(name)).zero?  -%>
+    <tr>
+      <td class='resource_name'><%= h name %></td>
+      <td class='number' style="color:<%= colors[name] || '#000' %>;"><%= memory_number(value) %></td>
+    </tr>
+  <% end -%>
+</table>
+<div style="vertical-align:middle;display:inline-block;">
+<% resources = *memory_resources-["allocated_memory"]
+   h = resources.inject({}){|h,r| h[r] = s.avg(r); h }
+   h["allocated_objects"] *= 40 if h.include?("allocated_objects")
+-%>
+<%= render :partial => "simple_pie", :locals => {:data => h.values_at(*resources),
+    :colors => colors.values_at(*resources), :size => chart_size } %>
+</div>
+<p class="clear-left"></p>

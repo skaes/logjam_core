@@ -98,6 +98,10 @@ module Logjam
       totals(stripped_page).sum(time_attr)
     end
 
+    def single_page?
+      totals(stripped_page).the_pages.size == 1
+    end
+
     def do_the_query
       if grouping == "request"
         Requests.new(@db, resource, stripped_page, :heap_growth_only => heap_growth_only).all
@@ -118,6 +122,10 @@ module Logjam
         when :call   then Totals.new(@db, Resource.call_resources, stripped_page)
         when :memory then Totals.new(@db, Resource.memory_resources, stripped_page)
         end
+    end
+
+    def summary
+      @summary ||= Totals.new(@db, Resource.time_resources+Resource.memory_resources+Resource.call_resources+%w(apdex response), stripped_page)
     end
 
     def measures_bytes?(attr)
