@@ -145,7 +145,7 @@ Event.observe(window, 'load', function() {show_description()});
   <div id='pagetimes'>
     <h3><%= @dataset.description %></h3>
     <%= render "page_times" %>
-    <% if params[:grouping] == 'page' -%>
+    <% if params[:grouping] == 'page' && @dataset.single_page? -%>
     <div id='performance-break-down>'>
       <h3>Performance breakdown</h3>
       <%= render "breakdown" %>
