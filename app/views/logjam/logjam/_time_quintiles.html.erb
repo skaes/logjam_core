@@ -8,5 +8,5 @@
   <tr><td></td><td></td></tr>
   <tr><td class='error'>internal server errors</td><td class='number
   error'><%= link_to(@dataset.error_count, :params =>
-  params.slice(:year,:month,:day).merge(:action => "errors", :page => @page)) %></td></tr>
+  clean_params(params.slice(:year,:month,:day).merge(:action => "errors", :page => (@page||'').gsub(/^::/,'')))) %></td></tr>
 </table>

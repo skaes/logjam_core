@@ -45,10 +45,12 @@ module Logjam
       FilteredDataset.clean_url_params params
     end
 
-    def sometimes_link_grouping_result(result, grouping)
+    def sometimes_link_grouping_result(result, grouping, params)
       value = result[grouping]
       if [:user_id, :page].include? grouping.to_sym
-        link_to(h(value), {:params => clean_params(params.merge(grouping => value))}, :title => "filter with #{h(value)}")
+        params = params.merge(grouping => value)
+        params[:page] = without_module(params[:page]) unless @page == "::"
+        link_to(h(value), {:params => clean_params(params)}, :title => "filter with #{h(value)}")
       else
         h(value)
       end
@@ -74,8 +76,12 @@ module Logjam
       if n == 0
         ""
       else
-        link_to(n, :params => params.slice(:year,:month,:day).merge(:action => "errors", :page => page))
+        link_to(n, :params => params.slice(:year,:month,:day).merge(:action => "errors", :page => without_module(page)))
       end
+    end
+
+    def without_module(page)
+      page.blank? ? page : page.sub(/^::(.)/){$1}
     end
 
     def resource_descriptions
