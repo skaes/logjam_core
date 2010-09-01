@@ -153,6 +153,12 @@ Event.observe(window, 'load', function() {show_description()});
       <%= render "breakdown" %>
     </div>
     <% end %>
+    <% if params[:grouping] == 'page' && !@dataset.single_page? && @dataset.do_the_query.size <= 20 -%>
+    <h3>Performance breakdown (percentages)</h3>
+    <div id='performance-pie'>
+      <%= render "page_pie" %>
+    </div>
+    <% end %>
   </div>
 </div>
 <% end -%>

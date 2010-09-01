@@ -91,6 +91,16 @@ div#pagetimes h3 {
   margin-bottom: 5px;
 }
 
+div#pagetimes h4 {
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+#performance-pie {
+  margin-top: 20px;
+  margin-left: 40px;
+}
+
 .full_stats {
   margin-left: -2px;
 }

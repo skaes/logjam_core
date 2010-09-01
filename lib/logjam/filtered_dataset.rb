@@ -103,16 +103,17 @@ module Logjam
     end
 
     def do_the_query
-      if grouping == "request"
-        Requests.new(@db, resource, stripped_page, :heap_growth_only => heap_growth_only).all
-      else
-        if grouping_function.to_sym == :count
-          sort_by = "number_of_requests"
+      @query_result ||=
+        if grouping == "request"
+          Requests.new(@db, resource, stripped_page, :heap_growth_only => heap_growth_only).all
         else
-          sort_by = "#{resource}_#{grouping_function}"
+          if grouping_function.to_sym == :count
+            sort_by = "number_of_requests"
+          else
+            sort_by = "#{resource}_#{grouping_function}"
+          end
+          totals(stripped_page).pages(:order => sort_by, :limit => 35)
         end
-        totals(stripped_page).pages(:order => sort_by, :limit => 35)
-      end
     end
 
     def totals(stripped_page)

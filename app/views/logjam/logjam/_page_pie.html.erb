@@ -1,0 +1,46 @@
+<% resource = @dataset.resource
+   resource_type = Logjam::Resource.resource_type(@dataset.resource)
+   gf = @dataset.grouping_function.to_sym
+   resource_name = gf == :count ? "number_of_requests" : "#{resource}_#{gf}"
+   pages = @dataset.do_the_query
+   data = pages.map{|p| p[resource_name]}
+   legend = pages.map{|p| p[:page]}
+-%>
+
+<script type="text/javascript+protovis">
+var data = <%= data.to_json %>,
+    legend = <%= legend.to_json %>;
+
+/* Sizing and scales. */
+var w = <%= size rescue 180 %>,
+    h = <%= size rescue 180 %>,
+    r = w / 2,
+    a = pv.Scale.linear(0, pv.sum(data)).range(0, 2 * Math.PI);
+
+/* The root panel. */
+var vis = new pv.Panel()
+    .width(w)
+    .height(h);
+
+/* The wedge, with centered label. */
+vis.add(pv.Wedge)
+    .data(data)
+    .bottom(w / 2)
+    .left(w / 2)
+    .angle(a)
+    .innerRadius(0)
+    .outerRadius(r)
+//    .outerRadius(r-10)
+//    .def("o", -1)
+//    .left(function() 100
+//        + Math.cos(this.startAngle() + this.angle() / 2)
+//        * ((this.o() == this.index) ? 10 : 0))
+//    .bottom(function() 100
+//        - Math.sin(this.startAngle() + this.angle() / 2)
+//        * ((this.o() == this.index) ? 10 : 0))
+//    .event("mouseover", function() this.o(this.index))
+//    .event("mouseout", function() this.o(-1))
+;
+
+vis.render();
+</script>
