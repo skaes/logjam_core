@@ -173,6 +173,7 @@ module Logjam
           zero = Hash.new(0.0)
           results = plot_resources.inject({}){|h,r| h[r] = {}; h}
           sum = 0
+          nonzero = 0
           intervals_per_day.times do |i|
             row = minutes[i] || zero
             total = 0
@@ -183,12 +184,13 @@ module Logjam
               results[r][i] = v
             end
             max_total = total if max_total < total
+            nonzero += 1 if total > 0
           end
           plot_data = data_for_proto_vis(results, plot_resources).reverse
           gc_time = plot_data.shift if resources.include?("gc_time")
           request_counts = []
           intervals_per_day.times{|i| request_counts << (counts[i] || 0) / 60.0}
-          [plot_data, max_total, request_counts, gc_time, sum/intervals_per_day.to_f]
+          [plot_data, max_total, request_counts, gc_time, sum/nonzero.to_f]
         end
     end
 
