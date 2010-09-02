@@ -89,7 +89,8 @@ vis.add(pv.Area)
     .height(function(d) y2(d))
     .interpolate("cardinal")
     .fillStyle("rgba(128,128,128,0.2)")
-    .strokeStyle("rgba(128,128,128,0.2)");
+    .strokeStyle("rgba(128,128,128,0.2)")
+    .title("requests/second");
 
 var request_count_formatter = pv.Format.number().fractionDigits(0,1);
 
@@ -110,7 +111,8 @@ vis.add(pv.Layout.Stack)
     .y(function(d) y(d[1]))
   .layer.add(pv.Area)
     .interpolate("step-after")
-    .fillStyle(function(d) c[this.parent.index]);
+    .fillStyle(function(d) c[this.parent.index])
+    .title(function() legend[this.parent.index]);
 
 /* GC time */
 if (gc_time != null) {
