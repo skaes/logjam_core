@@ -1,6 +1,7 @@
 <script type="text/javascript+protovis">
 <% data_with_colors = data.map{|d| d||0}.zip(colors) %>
 var data = <%= data_with_colors.map(&:first).to_json %>;
+var legend = <%= legend.to_json %>;
 
 /* Sizing and scales. */
 var w = <%= size rescue 60 %>,
@@ -23,6 +24,7 @@ vis.add(pv.Wedge)
     .outerRadius(r)
     .angle(a)
     .fillStyle(function(d) c[this.index])
+    .title(function() legend[this.index])
 //    .event("mouseover", function() this.innerRadius(0))
 //    .event("mouseout", function() this.innerRadius(r - 20))
 //  .anchor("center").add(pv.Label)
