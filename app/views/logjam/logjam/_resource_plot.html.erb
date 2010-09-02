@@ -1,6 +1,7 @@
 <div id='resource-plot'>
   <script type="text/javascript" src="/javascripts/protovis-r3.2.js"></script>
   <script type="text/javascript+protovis">
+(function() {
 
 var data = <%= @protovis_data.to_json %>;
 var interval = <%= params[:interval].to_i %>;
@@ -8,12 +9,14 @@ var colors = <%= ((@resources.reverse+[@gc_time&&"gc_time"]).compact.map{|r| Log
 var legend = <%= ((@resources.reverse+[@gc_time&&"gc_time"]+%w(requests/second)).compact).to_json.gsub(/_/,' ') %>;
 var request_counts = <%= @request_counts.to_json %>;
 var gc_time = <%= @gc_time ? @gc_time.to_json : "null" %>;
+var max_y = <%= @protovis_max %>;
+var zoomed_max_y = <%= @protovis_avg * 1.5 %>;
 
 /* Sizing and scales. */
 var w = <%= width %>,
     h = <%= height %>,
     x = pv.Scale.linear(0, 1440/interval-1).range(0, w),
-    y = pv.Scale.linear(0, <%= @protovis_max %>).range(0, h).nice(),
+    y = pv.Scale.linear(0, max_y).range(0, h).nice(),
     y2 = pv.Scale.linear(0, pv.max(request_counts)).range(0, 50).nice(),
     color_map = pv.colors(colors),
     c = color_map.range();
@@ -26,7 +29,9 @@ var vis = new pv.Panel()
     .bottom(65)
     .left(40)
     .right(0)
-    .top(10);
+    .top(10)
+    .events("all")
+    .event("click", update_y_scale);
 
 /* X-label. */
 vis.add(pv.Label)
@@ -61,8 +66,8 @@ vis.add(pv.Label)
 
 /* Y-axis and ticks. */
 vis.add(pv.Rule)
-    .data(y.ticks(10))
-    .bottom(y)
+    .data(function() y.ticks(10))
+    .bottom(function(d) y(d))
     .strokeStyle(function(d) d ? "rgba(128,128,128,.2)" : "#999")
   .anchor("left").add(pv.Label)
     .text(y.tickFormat);
@@ -124,6 +129,17 @@ if (gc_time != null) {
     .strokeStyle("rgba(0,0,0,.9)");
 }
 
+var zoomed = false;
+function update_y_scale() {
+  var new_max_y = zoomed ? max_y : zoomed_max_y;
+  zoomed = !zoomed;
+  y.domain(0, new_max_y);
+  y.nice();
+  vis.render();
+}
+
 vis.render();
+
+})();
 </script>
   </div>
