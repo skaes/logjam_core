@@ -3,7 +3,7 @@ module Logjam
   class FilteredDataset
     HEAP_SLOT_SIZE = 40
 
-    attr_accessor :interval, :user_id, :host, :page, :response_code,
+    attr_accessor :interval, :page, :response_code,
     :plot_kind, :heap_growth_only, :resource, :grouping, :grouping_function,
     :start_hour, :end_hour, :date
 
@@ -25,9 +25,7 @@ module Logjam
       @env = options[:env]
       @db = Logjam.db(@date, @app, @env)
       @interval = (options[:interval] || DEFAULTS[:interval]).to_i
-      @user_id = options[:user_id] if options[:user_id].present?
-      @host = options[:host] if options[:host].present?
-      @page = options[:page] if options[:page].present?
+      @page = options[:page].to_s
       @response_code = options[:response_code] if options[:response_code].present?
       @heap_growth_only = options[:heap_growth_only].present?
       @plot_kind = options[:plot_kind] || DEFAULTS[:plot_kind]
@@ -38,12 +36,8 @@ module Logjam
       @end_hour = (options[:end_hour] || DEFAULTS[:end_hour]).to_i
     end
 
-    def stripped_page
-      @page.blank? ? "" : @page.gsub(/%/,'')
-    end
-
     def page_description
-      stripped_page == "::" ? "all pages" : stripped_page
+      page == "::" ? "all pages" : page
     end
 
     def description
@@ -79,7 +73,7 @@ module Logjam
     end
 
     def live_stream?
-      (@date == Date.today || Rails.env == "development") && ["all_pages", "::", ""].include?(stripped_page)
+      (@date == Date.today || Rails.env == "development") && ["all_pages", "::", ""].include?(page)
     end
 
     def empty?
@@ -87,7 +81,7 @@ module Logjam
     end
 
     def count_requests(extra_condition = nil)
-      totals(stripped_page).count.to_i
+      totals(page).count.to_i
     end
 
     def count
@@ -95,38 +89,38 @@ module Logjam
     end
 
     def sum(time_attr = 'total_time')
-      totals(stripped_page).sum(time_attr)
+      totals(page).sum(time_attr)
     end
 
     def single_page?
-      totals(stripped_page).the_pages.size == 1
+      totals(page).the_pages.size == 1
     end
 
     def do_the_query
       @query_result ||=
         if grouping == "request"
-          Requests.new(@db, resource, stripped_page, :heap_growth_only => heap_growth_only).all
+          Requests.new(@db, resource, page, :heap_growth_only => heap_growth_only).all
         else
           if grouping_function.to_sym == :count
             sort_by = "number_of_requests"
           else
             sort_by = "#{resource}_#{grouping_function}"
           end
-          totals(stripped_page).pages(:order => sort_by, :limit => 35)
+          totals(page).pages(:order => sort_by, :limit => 35)
         end
     end
 
-    def totals(stripped_page)
-      (@totals||={})[stripped_page] ||=
+    def totals(page)
+      (@totals||={})[page] ||=
         case Resource.resource_type(resource)
-        when :time   then Totals.new(@db, Resource.time_resources+%w(apdex response), stripped_page)
-        when :call   then Totals.new(@db, Resource.call_resources, stripped_page)
-        when :memory then Totals.new(@db, Resource.memory_resources, stripped_page)
+        when :time   then Totals.new(@db, Resource.time_resources+%w(apdex response), page)
+        when :call   then Totals.new(@db, Resource.call_resources, page)
+        when :memory then Totals.new(@db, Resource.memory_resources, page)
         end
     end
 
     def summary
-      @summary ||= Totals.new(@db, Resource.time_resources+Resource.memory_resources+Resource.call_resources+%w(apdex response), stripped_page)
+      @summary ||= Totals.new(@db, Resource.time_resources+Resource.memory_resources+Resource.call_resources+%w(apdex response), page)
     end
 
     def measures_bytes?(attr)
@@ -139,9 +133,9 @@ module Logjam
           resources = Resource.resources_for_type(resource_type)
           stats = {}
           resources.each do |r|
-          stats["avg_#{r}"] = totals(stripped_page).avg(r)
-          stats["std_#{r}"] = totals(stripped_page).stddev(r)
-        end
+            stats["avg_#{r}"] = totals(page).avg(r)
+            stats["std_#{r}"] = totals(page).stddev(r)
+          end
           stats
         end
     end
@@ -164,7 +158,7 @@ module Logjam
       @plot_data ||=
         begin
           resources = plotted_resources
-          mins = Minutes.new(@db, resources, stripped_page, interval)
+          mins = Minutes.new(@db, resources, page, interval)
           minutes = mins.minutes
           counts = mins.counts
           max_total = 0
@@ -216,23 +210,18 @@ module Logjam
         resources = %w(allocated_bytes)
         kind = "m"
       end
-      the_quants = Quants.new(@db, resources, stripped_page, kind)
-      resources.each do |a|
-        instance_variable_set "@#{a}_avg", totals(stripped_page).avg(a)
-        instance_variable_set "@#{a}_stddev", totals(stripped_page).stddev(a)
-        instance_variable_set "@#{a}_quants", the_quants.quants(a)
-      end
+      @the_quants = Quants.new(@db, resources, page, kind)
     end
 
     def histogram_data(resource)
-      quantized = instance_variable_get("@#{resource}_quants")
+      quantized = @the_quants.quants(resource)
       points = []
       quantized.keys.sort.each{|x| points << [x, quantized[x]] } unless quantized.blank?
       points
     end
 
     def satisfaction
-      @satisfaction ||= Totals.new(@db, %w(apdex), stripped_page)
+      @satisfaction ||= Totals.new(@db, %w(apdex), page)
     end
 
     def happy
@@ -260,7 +249,7 @@ module Logjam
     end
 
     def response_codes
-      @response_codes ||= Totals.new(@db, %w(response), stripped_page).response_codes
+      @response_codes ||= Totals.new(@db, %w(response), page).response_codes
     end
   end
 end

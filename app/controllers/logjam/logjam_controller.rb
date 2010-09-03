@@ -27,7 +27,7 @@ module Logjam
 
     def errors
       get_date
-      determine_page_pattern
+      @page = params[:page]
       q = Requests.new(@db, "minute", @page, :response_code => 500, :limit => 500)
       @error_count = q.count
       @requests = q.all
@@ -102,7 +102,7 @@ module Logjam
       end
       @plot_kind = Resource.resource_type(params[:resource])
       @attributes = Resource.resources_for_type(@plot_kind) - ['requests']
-      determine_page_pattern
+      @page = params[:page]
     end
 
     def dataset_from_params
@@ -117,7 +117,7 @@ module Logjam
         :interval => params[:interval].to_i,
         :user_id => params[:user_id],
         :host => params[:server],
-        :page => @page_pattern,
+        :page => @page,
         :response_code => params[:response],
         :heap_growth_only => params[:heap_growth_only],
         :plot_kind => @plot_kind,
@@ -145,19 +145,5 @@ module Logjam
       p params
     end
 
-    def determine_page_pattern
-      @page = params[:page]
-      @page_pattern = @page
-      return if @page_pattern.blank?
-      @page_pattern.gsub!(/[*%]/,'')
-      page_names = Totals.new(@db).page_names
-      if !page_names.select{|p| p =~ /^#{@page_pattern}$/}.first
-        if !page_names.select{|p| p =~ /^#{@page_pattern}/}.first
-          @page_pattern = "%#{@page_pattern}%"
-        else
-          @page_pattern = "#{@page_pattern}%"
-        end
-      end
-    end
   end
 end
