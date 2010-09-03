@@ -124,11 +124,11 @@ Event.observe(window, 'load', function() {show_description()});
         <tr>
           <td><%= h(attr.to_s.sub(/_time$/, '')) %></td>
           <% if attr =~ /_time/ %>
-            <td class='number'><%= time_number(@dataset.statistics(@plot_kind)["avg_#{attr}"].to_f) %></td>
-            <td class='number'><%= time_number(@dataset.statistics(@plot_kind)["std_#{attr}"].to_f) %></td>
+            <td class='number'><%= time_number(@dataset.statistics.avg(attr).to_f) %></td>
+            <td class='number'><%= time_number(@dataset.statistics.stddev(attr).to_f) %></td>
           <% else %>
-            <td class='number'><%= memory_number(@dataset.statistics(@plot_kind)["avg_#{attr}"].to_f) %></td>
-            <td class='number'><%= memory_number(@dataset.statistics(@plot_kind)["std_#{attr}"].to_f) %></td>
+            <td class='number'><%= memory_number(@dataset.statistics.avg(attr).to_f) %></td>
+            <td class='number'><%= memory_number(@dataset.statistics.stddev(attr).to_f) %></td>
           <% end %>
         </tr>
       <% end -%>

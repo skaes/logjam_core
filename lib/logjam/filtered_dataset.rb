@@ -80,20 +80,20 @@ module Logjam
       count_requests == 0
     end
 
-    def count_requests(extra_condition = nil)
-      totals(page).count.to_i
+    def count_requests
+      totals.count.to_i
     end
 
     def count
-      totals("all_pages").count.to_i
+      @count ||= Totals.new(@db, [], "all_pages").count.to_i
     end
 
     def sum(time_attr = 'total_time')
-      totals(page).sum(time_attr)
+      totals.sum(time_attr)
     end
 
     def single_page?
-      totals(page).the_pages.size == 1
+      totals.the_pages.size == 1
     end
 
     def do_the_query
@@ -106,12 +106,12 @@ module Logjam
           else
             sort_by = "#{resource}_#{grouping_function}"
           end
-          totals(page).pages(:order => sort_by, :limit => 35)
+          totals.pages(:order => sort_by, :limit => 35)
         end
     end
 
-    def totals(page)
-      (@totals||={})[page] ||=
+    def totals
+      @totals ||=
         case Resource.resource_type(resource)
         when :time   then Totals.new(@db, Resource.time_resources+%w(apdex response), page)
         when :call   then Totals.new(@db, Resource.call_resources, page)
@@ -127,17 +127,8 @@ module Logjam
       [:allocated_memory, :allocated_bytes].include? attr.to_sym
     end
 
-    def statistics(resource_type)
-      @statistics ||=
-        begin
-          resources = Resource.resources_for_type(resource_type)
-          stats = {}
-          resources.each do |r|
-            stats["avg_#{r}"] = totals(page).avg(r)
-            stats["std_#{r}"] = totals(page).stddev(r)
-          end
-          stats
-        end
+    def statistics
+      @statistics ||= totals
     end
 
     YLABELS = {:time => 'Response time (ms)', :call => '# of calls', :memory => 'Allocations (bytes)'}
