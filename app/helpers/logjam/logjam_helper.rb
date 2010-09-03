@@ -58,9 +58,9 @@ module Logjam
 
     def sometimes_link_number_of_requests(result, grouping, options)
       if :page == grouping.to_sym
-        link_to number_with_delimiter(result[:number_of_requests].to_i), options, :title => "show requests"
+        link_to number_with_delimiter(result[:count].to_i), options, :title => "show requests"
       else
-        h(result[:number_of_requests])
+        h(result[:count])
       end
     end
 

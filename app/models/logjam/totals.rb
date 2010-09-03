@@ -34,7 +34,7 @@ module Logjam
     end
 
     def count
-      @count ||= the_pages.inject(0){|n,p| n += p[:number_of_requests]}
+      @count ||= the_pages.inject(0){|n,p| n += p[:count]}
     end
 
     def sum(resource)
@@ -86,7 +86,7 @@ module Logjam
       result = []
       while row = rows.shift
         count = row["count"]
-        result_row = {"page" => row["page"], "number_of_requests" => count}
+        result_row = {"page" => row["page"], "count" => count}
         result_row["apdex"] = row["apdex"] if @apdex
         result_row["response"] = row["response"] if @response
         @resources.each do |r|

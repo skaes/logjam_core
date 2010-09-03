@@ -102,7 +102,7 @@ module Logjam
           Requests.new(@db, resource, page, :heap_growth_only => heap_growth_only).all
         else
           if grouping_function.to_sym == :count
-            sort_by = "number_of_requests"
+            sort_by = "count"
           else
             sort_by = "#{resource}_#{grouping_function}"
           end

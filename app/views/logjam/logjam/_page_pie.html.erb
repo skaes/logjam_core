@@ -1,7 +1,7 @@
 <% resource = @dataset.resource
    resource_type = Logjam::Resource.resource_type(@dataset.resource)
    gf = @dataset.grouping_function.to_sym
-   resource_name = gf == :count ? "number_of_requests" : "#{resource}_#{gf}"
+   resource_name = gf == :count ? "count" : "#{resource}_#{gf}"
    pages = @dataset.do_the_query
    data = pages.map{|p| p[resource_name]}
    legend = pages.map{|p| p[:page]}
