@@ -1,31 +1,8 @@
-<%- content_for :page_scripts do -%>
-var descriptions = <%= resource_descriptions %>;
-
-function show_description() {
-  var grouping = $('grouping').value;
-  var resource = $('resource').value;
-  var gfunction = $('grouping_function').value;
-
-  if (grouping == 'request') {
-    $('function-widget').hide();
-    $('heap-growth-widget').show();
-    $('description').innerHTML = descriptions[grouping][resource];
-  }
-  else {
-    $('description').innerHTML = descriptions[grouping][resource][gfunction];
-    $('function-widget').show();
-    $('heap-growth-widget').hide();
-  }
-};
-
-Event.observe(window, 'load', function() {show_description()});
-<%- end -%>
-
 <div id='left' class='clear-left'>
   <div id='filter'>
     <% form_tag({:action => :index}, :method => :get, :id => 'filter-form') do -%>
       <fieldset>
-        <legend>LogJam for Rails</legend>
+        <legend>LogJam</legend>
         <% unless Logjam.only_one_app? %>
         <p class='filter-widget'>
           <%= label :filter, 'application' %><br />
@@ -75,19 +52,20 @@ Event.observe(window, 'load', function() {show_description()});
           <%= select_tag 'resource', options_for_select(Logjam::Resource.resource_options, params['resource']),
               :onchange => "form.submit()" %>
         </p>
+        <%- if params[:grouping] == "page" -%>
         <p class='filter-widget' id='function-widget'>
           <%= label :filter, 'sorted by' %><br />
           <%= select_tag 'grouping_function', options_for_select(Logjam::Resource.grouping_functions, params['grouping_function']),
               :onchange => "form.submit()" %>
         </p>
-        <%- if Logjam::Resource.heap_resources.include?("heap_growth") -%>
+        <%- end -%>
+        <%- if params[:grouping] == "request" && Logjam::Resource.heap_resources.include?("heap_growth") -%>
           <p class='filter-widget-last' id='heap-growth-widget'>
             <%= label :filter, 'heap growth only' %><br />
             <%= check_box_tag 'heap_growth_only', "1", params['heap_growth_only']=="1", :onchange => "form.submit()" %>
           </p>
         <%- end -%>
 
-        <p class='filter-widget clear-left' id='description'></p>
       </fieldset>
       <% end -%>
   </div>
