@@ -15,7 +15,8 @@ var data = <%= data.to_json %>,
 var w = <%= size rescue 180 %>,
     h = <%= size rescue 180 %>,
     r = w / 2,
-    a = pv.Scale.linear(0, pv.sum(data)).range(0, 2 * Math.PI);
+    s = pv.sum(data),
+    a = pv.Scale.linear(0, s).range(0, 2 * Math.PI);
 
 /* The root panel. */
 var vis = new pv.Panel()
@@ -41,6 +42,10 @@ vis.add(pv.Wedge)
 //        * ((this.o() == this.index) ? 10 : 0))
 //    .event("mouseover", function() this.o(this.index))
 //    .event("mouseout", function() this.o(-1))
+  .anchor("center").add(pv.Label)
+    .visible(function(d) d/s > .05)
+    .textAngle(0)
+    .text(function(d) (100*d/s).toFixed()+"%");
 ;
 
 vis.render();
