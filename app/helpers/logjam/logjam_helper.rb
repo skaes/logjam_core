@@ -57,10 +57,11 @@ module Logjam
     end
 
     def sometimes_link_number_of_requests(result, grouping, options)
-      if :page == grouping.to_sym
-        link_to number_with_delimiter(result[:count].to_i), options, :title => "show requests"
+      n = number_with_delimiter(result[:count].to_i)
+      if :page == grouping.to_sym && result[:page] != "Others..."
+        link_to n, options, :title => "show requests"
       else
-        h(result[:count])
+        n
       end
     end
 
@@ -75,6 +76,8 @@ module Logjam
     def sometimes_link_errors(page, n)
       if n == 0
         ""
+      elsif page == "Others..."
+        n
       else
         link_to(n, :params => params.slice(:year,:month,:day).merge(:action => "errors", :page => without_module(page)))
       end

@@ -106,7 +106,7 @@ module Logjam
           else
             sort_by = "#{resource}_#{grouping_function}"
           end
-          totals.pages(:order => sort_by, :limit => 35)
+          totals.pages(:order => sort_by, :limit => 20)
         end
     end
 

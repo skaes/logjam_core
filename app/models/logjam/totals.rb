@@ -25,12 +25,11 @@ module Logjam
 
     def pages(options)
       order = options[:order] || :sum
-      limit = options[:limit]
-      if limit
-        the_pages.sort_by{|r| -r[order]}[0..limit-1]
-      else
-        the_pages.sort_by{|r| -r[order]}
-      end
+      limit = options[:limit] || 1000
+      pages = the_pages.sort_by{|r| -r[order]}
+      return pages if pages.size <= limit
+      proper, rest = pages[0..limit-2], pages[limit-1..-1]
+      proper << combine_pages(rest)
     end
 
     def count
@@ -104,6 +103,34 @@ module Logjam
 
       # logger.debug result.inspect
       result
+    end
+
+    def combine_pages(pages)
+      combined = pages.shift
+      combined["page"] = "Others..."
+      pages.each do |page|
+        page.each do |k,v|
+          case k.to_sym
+          when :page
+          when :apdex
+            v.each {|x,y| combined[:apdex][x] ||= 0; combined[:apdex][x] += y}
+          when :response
+            v.each {|x,y| combined[:response][x] ||= 0; combined[:response][x] += y}
+          else
+            combined[k] += v
+          end
+        end
+      end
+      count = combined["count"]
+      @resources.each do |r|
+        sum = combined["#{r}_sum"]
+        sum_sq = combined["#{r}_sum_sq"]
+        avg = sum.to_f/count
+        std_dev = (count == 1 || sum == 0) ? 0.0 : Math.sqrt((sum_sq - count*avg*avg).abs/(count-1).to_f)
+        combined["#{r}_avg"] = avg
+        combined["#{r}_stddev"] = std_dev
+      end
+      combined
     end
 
     def logger
