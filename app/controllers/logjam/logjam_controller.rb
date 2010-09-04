@@ -96,12 +96,8 @@ module Logjam
       params[:resource] ||= FilteredDataset::DEFAULTS[:resource]
       params[:grouping] ||= FilteredDataset::DEFAULTS[:grouping]
       params[:grouping_function] ||= FilteredDataset::DEFAULTS[:grouping_function]
-      if params[:resource] == 'requests'
-        params[:grouping] = 'page' if params[:grouping] == 'request'
-        params[:grouping_function] = 'sum'
-      end
       @plot_kind = Resource.resource_type(params[:resource])
-      @attributes = Resource.resources_for_type(@plot_kind) - ['requests']
+      @attributes = Resource.resources_for_type(@plot_kind)
       @page = params[:page]
     end
 
