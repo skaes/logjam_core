@@ -1,7 +1,6 @@
 <div id='request' style="margin-bottom:5px;">
 <b>Request details for</b> <em><%= h @request["page"] -%></em> at <b><%= minute_to_human(@request["minute"]) -%></b>
 </div>
-<script type="text/javascript" src="/javascripts/protovis-r3.2.js"></script>
 <% time_resources = Logjam::Resource.time_resources
    call_resources = Logjam::Resource.call_resources
    memory_resources = Logjam::Resource.memory_resources
