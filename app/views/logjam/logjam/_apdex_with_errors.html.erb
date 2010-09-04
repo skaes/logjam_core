@@ -1,4 +1,5 @@
-<table id='quintile-stats'>
+<table class='stats' id='apdex-table'>
+  <tr><th>apdex/errors</th></tr>
   <tr><td>happy (rt &lt; 100)</td><td class='number'><%= '%.1f' % (100.0 * @dataset.happy) %>%</td></tr>
   <tr><td>satisfied (rt &lt; 500)</td><td class='number'><%= '%.1f' % (100.0 * @dataset.satisfied) %>%</td></tr>
   <tr><td>tolerating (500 &lt;= rt &lt; 2000)</td><td class='number'><%= '%.1f' % (100.0 * @dataset.tolerating) %>%</td></tr>

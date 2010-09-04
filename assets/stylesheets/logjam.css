@@ -133,18 +133,18 @@ td.number {text-align: right;}
 
 #resource-plot {float:left;}
 
-#quintile-stats {float:left;}
-#quintile-stats td {font-size: 90%;  line-height: 100%; white-space: nowrap; }
-#quintile-stats th {font-size: 90%;  line-height: 100%; white-space: nowrap; }
+#apdex-table {float:left;}
+#apdex-table td {font-size: 90%;  line-height: 100%; white-space: nowrap; }
+#apdex-table th {font-size: 90%;  white-space: nowrap; }
+
 #response-code-summary {float:right;}
 #response-code-stats td {font-size: 90%;  line-height: 100%;}
 #response-code-stats th {font-size: 90%;  line-height: 100%;}
-#graph-stats td {font-size: 90%; line-height: 100%;}
-#graph-stats th {font-size: 90%;}
-#graph-counts {font-size: 90%; margin-bottom: 10px;}
-#graph-counts p {font-weight: bold;}
-#distribution-plot {position: relative; top: 20px; left: 40px;}
-#distribution-plot form div input { margin-left:45px; margin-top:0;}
+
+#graph-stats td {font-size: 90%; line-height: 100%; white-space: nowrap;}
+#graph-stats th {font-size: 90%; white-space: nowrap;}
+#graph-counts {font-size: 90%; margin-bottom: 10px; white-space: nowrap;}
+#graph-counts p {font-weight: bold; white-space: nowrap;}
 
 .warning {
   font-size: 200%;

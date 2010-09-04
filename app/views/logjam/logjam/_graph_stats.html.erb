@@ -1,0 +1,19 @@
+<table class='stats clear-left' id='graph-stats'>
+  <tr>
+    <th>resource</th>
+    <th>avg</th>
+    <th>stddev</th>
+  </tr>
+<% @attributes.each do |attr| -%>
+  <tr>
+    <td><%= h(attr.to_s.gsub(/_/, ' ')) %></td>
+    <% if attr =~ /_time/ || attr !~ /allocated/ %>
+      <td class='number'><%= time_number(@dataset.statistics.avg(attr).to_f) %></td>
+      <td class='number'><%= time_number(@dataset.statistics.stddev(attr).to_f) %></td>
+    <% else %>
+      <td class='number'><%= memory_number(@dataset.statistics.avg(attr).to_f) %></td>
+      <td class='number'><%= memory_number(@dataset.statistics.stddev(attr).to_f) %></td>
+    <% end %>
+  </tr>
+<% end -%>
+</table>
