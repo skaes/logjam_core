@@ -52,6 +52,10 @@ module Logjam
         end
       end
 
+      def colors_with_transparency(transparency)
+        colors.inject({}){|h,(r,c)| h[r] = color(r,transparency); h}
+      end
+
       def resource_name(resource)
         resource.to_s.gsub('_', ' ')
       end

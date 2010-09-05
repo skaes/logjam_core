@@ -1,7 +1,7 @@
 <% pages.each do |page| -%>
   <tr class='full_stats'>
     <td class='group-thing'>
-      <%= sometimes_link_grouping_result(page, :page, params) %>
+      <%= sometimes_link_grouping_result(page, :page, params.merge(:page => page[:page])) %>
     </td>
     <td class='number'>
       <%= sometimes_link_number_of_requests(page, :page, {:params => clean_params(params.merge(:grouping => "request", :page => without_module(page[:page])))}) %>

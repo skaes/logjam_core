@@ -47,7 +47,7 @@ module Logjam
 
     def sometimes_link_grouping_result(result, grouping, params)
       value = result[grouping]
-      if [:user_id, :page].include? grouping.to_sym
+      if grouping.to_sym == :page && params[:page] !~ /Others/
         params = params.merge(grouping => value)
         params[:page] = without_module(params[:page]) unless @page == "::"
         link_to(h(value), {:params => clean_params(params)}, :title => "filter with #{h(value)}")
