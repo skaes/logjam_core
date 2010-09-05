@@ -3,8 +3,9 @@
    memory_resources = Logjam::Resource.memory_resources
    heap_resources = Logjam::Resource.heap_resources
    colors = Logjam::Resource.colors
+   pie_colors = Logjam::Resource.colors_with_transparency(0.7)
    s = @dataset.summary
-   chart_size = 80
+   chart_size = 100
 -%>
 
 <h4>Time Resources (avg)</h4>
@@ -21,7 +22,7 @@
 <% resources = time_resources-["total_time", "gc_time"] -%>
 <%= render :partial => "simple_pie", :locals => { :data => resources.map{|r| s.avg(r)},
     :legend => resources,
-    :colors => colors.values_at(*resources), :size => chart_size } %>
+    :colors => pie_colors.values_at(*resources), :size => chart_size } %>
 </div>
 
 <h4>Call Resources (avg)</h4>
@@ -38,7 +39,7 @@
 <% resources = *call_resources.select{|r| r =~ /_calls$/}-["gc_calls"] -%>
 <%= render :partial => "simple_pie", :locals => {:data =>  resources.map{|r| s.avg(r)},
     :legend => resources,
-    :colors => colors.values_at(*resources), :size => chart_size } %>
+    :colors => pie_colors.values_at(*resources), :size => chart_size } %>
 </div>
 <h4>Memory Resources (avg)</h4>
 <table id='request-details-memory' style="vertical-align:middle;display:inline-block;width:250px;">
@@ -57,6 +58,6 @@
 -%>
 <%= render :partial => "simple_pie", :locals => {:data => h.values_at(*resources),
     :legend => resources,
-    :colors => colors.values_at(*resources), :size => chart_size } %>
+    :colors => pie_colors.values_at(*resources), :size => chart_size } %>
 </div>
 <p class="clear-left"></p>

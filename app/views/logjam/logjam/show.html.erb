@@ -6,6 +6,7 @@
    memory_resources = Logjam::Resource.memory_resources
    heap_resources = Logjam::Resource.heap_resources
    colors = Logjam::Resource.colors
+   pie_colors = Logjam::Resource.colors_with_transparency(0.7)
    other_keys = @request.keys - time_resources - call_resources - memory_resources - heap_resources
    other_keys.reject!{|k| k =~ /(^_id|lines|minute|page|_sq)$/}
 -%>
@@ -23,7 +24,7 @@
 <% resources = time_resources-["total_time", "gc_time"] -%>
 <%= render :partial => "simple_pie", :locals => { :data => @request.values_at(*resources),
     :legend => resources,
-    :colors => colors.values_at(*resources) } %>
+    :colors => pie_colors.values_at(*resources) } %>
 </div>
 
 <table id='request-details-calls' class="filter-widget">
@@ -39,7 +40,7 @@
 <% resources = *call_resources.select{|r| r =~ /_calls$/}-["gc_calls"] -%>
 <%= render :partial => "simple_pie", :locals => {:data => @request.values_at(*resources),
     :legend => resources,
-    :colors => colors.values_at(*resources) } %>
+    :colors => pie_colors.values_at(*resources) } %>
 </div>
 
 <table id='request-details-memory' class="filter-widget">
@@ -58,7 +59,7 @@
 -%>
 <%= render :partial => "simple_pie", :locals => {:data => h.values_at(*resources),
     :legend => resources,
-    :colors => colors.values_at(*resources) } %>
+    :colors => pie_colors.values_at(*resources) } %>
 </div>
 
 <table id='request-details' class="filter-widget">
