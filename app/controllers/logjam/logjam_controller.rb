@@ -92,7 +92,8 @@ module Logjam
 
     def prepare_params
       get_date
-      params[:end_hour] ||= FilteredDataset::DEFAULTS[:end_hour]
+      params[:start_minute] ||= FilteredDataset::DEFAULTS[:start_minute]
+      params[:end_minute] ||= FilteredDataset::DEFAULTS[:end_minute]
       params[:resource] ||= FilteredDataset::DEFAULTS[:resource]
       params[:grouping] ||= FilteredDataset::DEFAULTS[:grouping]
       params[:grouping_function] ||= FilteredDataset::DEFAULTS[:grouping_function]
@@ -111,29 +112,27 @@ module Logjam
         :app => @app,
         :env => @env,
         :interval => params[:interval].to_i,
-        :user_id => params[:user_id],
-        :host => params[:server],
         :page => @page,
-        :response_code => params[:response],
         :heap_growth_only => params[:heap_growth_only],
         :plot_kind => @plot_kind,
         :resource => params[:resource] || :total_time,
         :grouping => params[:grouping],
         :grouping_function => (params[:grouping_function] || :avg).to_sym,
-        :start_hour => params[:start_hour].to_i,
-        :end_hour => params[:end_hour].to_i)
+        :start_minute => params[:start_minute].to_i,
+        :end_minute => params[:end_minute].to_i)
     end
 
     def redirect_to_clean_url
       params[:starts_at] ||= default_date.to_s(:db) unless (params[:year] && params[:month] && params[:day])
       if params[:starts_at] =~ /^(\d\d\d\d)-(\d\d)-(\d\d)$/
         redirect_to(FilteredDataset.clean_url_params(
-          :controller => params[:controller], :action => params[:action], :year => $1, :month => $2, :day => $3,
-          :start_hour => params[:start_hour], :end_hour => params[:end_hour],
-          :server => params[:server], :page => params[:page], :response => params[:response],
-          :heap_growth_only => params[:heap_growth_only], :resource => params[:resource], :grouping => params[:grouping],
-          :grouping_function => params[:grouping_function], :interval => params[:interval],
-          :user_id => params[:user_id], :app => params[:app], :env => params[:env]))
+          :controller => params[:controller], :action => params[:action],
+          :year => $1, :month => $2, :day => $3, :interval => params[:interval],
+          :start_minute => params[:start_minute], :end_minute => params[:end_minute],
+          :app => params[:app], :env => params[:env],
+          :page => params[:page], :response => params[:response],
+          :heap_growth_only => params[:heap_growth_only], :resource => params[:resource],
+          :grouping => params[:grouping], :grouping_function => params[:grouping_function]))
       end
     end
 

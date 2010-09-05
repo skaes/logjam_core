@@ -5,11 +5,11 @@ module Logjam
 
     attr_accessor :interval, :page, :response_code,
     :plot_kind, :heap_growth_only, :resource, :grouping, :grouping_function,
-    :start_hour, :end_hour, :date
+    :start_minute, :end_minute, :date
 
     DEFAULTS = {:plot_kind => :time, :interval => '5',
       :grouping => 'page', :resource => 'total_time', :grouping_function => 'sum',
-      :start_hour => '0', :end_hour => '24'}
+      :start_minute => '0', :end_minute => '1440'}
 
     def self.is_default?(attribute, value)
       DEFAULTS.keys.include?(attribute.to_sym) && DEFAULTS[attribute.to_sym].to_s == value
@@ -32,8 +32,8 @@ module Logjam
       @resource = options[:resource] || DEFAULTS[:resource]
       @grouping = options[:grouping]
       @grouping_function = options[:grouping_function] || DEFAULTS[:grouping_function]
-      @start_hour = (options[:start_hour] || DEFAULTS[:start_hour]).to_i
-      @end_hour = (options[:end_hour] || DEFAULTS[:end_hour]).to_i
+      @start_minute = (options[:start_minute] || DEFAULTS[:start_minute]).to_i
+      @end_minute = (options[:end_minute] || DEFAULTS[:end_minute]).to_i
     end
 
     def page_description
@@ -49,19 +49,11 @@ module Logjam
     end
 
     def hash
-      Digest::MD5.hexdigest "#{date} #{interval} #{user_id} #{host} #{page} #{response_code} #{plot_kind} #{start_hour} #{end_hour}"
+      Digest::MD5.hexdigest "#{date} #{interval} #{user_id} #{host} #{page} #{response_code} #{plot_kind} #{start_minute} #{end_minute}"
     end
 
     def accumulates_time?
       (Resource.resource_type(resource) == :time) && grouping? && [:sum, :avg, :stddev, :count].include?(grouping_function.to_sym)
-    end
-
-    def start_interval
-      start_hour * intervals_per_hour
-    end
-
-    def end_interval
-      end_hour * intervals_per_hour
     end
 
     def intervals_per_day
@@ -99,7 +91,8 @@ module Logjam
     def do_the_query
       @query_result ||=
         if grouping == "request"
-          Requests.new(@db, resource, page, :heap_growth_only => heap_growth_only).all
+          query_opts = {:heap_growth_only => heap_growth_only, :start_minute => @start_minute, :end_minute => @end_minute}
+          Requests.new(@db, resource, page, query_opts).all
         else
           if grouping_function.to_sym == :count
             sort_by = "count"

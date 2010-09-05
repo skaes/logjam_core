@@ -65,7 +65,8 @@
             <%= check_box_tag 'heap_growth_only', "1", params['heap_growth_only']=="1", :onchange => "form.submit()" %>
           </p>
         <%- end -%>
-
+        <input id="start-minute" name="start_minute" type="hidden" value="<%= h(params[:start_minute]) %>" />
+        <input id="end-minute" name="end_minute" type="hidden" value="<%= h(params[:end_minute]) %>" />
       </fieldset>
       <% end -%>
   </div>
@@ -101,7 +102,12 @@
 <% unless @dataset.empty? -%>
 <div id='column-right'>
   <div id='pagetimes'>
-    <h3><%= @dataset.description %></h3>
+    <h3><%= @dataset.description %>
+    <%- if params[:grouping] == "request" -%>
+    between <%= h(minute_to_human(@dataset.start_minute)) %>
+    and <%= h(minute_to_human(@dataset.end_minute)) %>
+    <%- end -%>
+    </h3>
     <%= render "page_times" %>
     <% if params[:grouping] == 'page' && @dataset.single_page? -%>
     <div id='performance-break-down>'>

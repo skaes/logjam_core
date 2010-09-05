@@ -10,6 +10,8 @@ var request_counts = <%= @request_counts.to_json %>;
 var gc_time = <%= @gc_time ? @gc_time.to_json : "null" %>;
 var max_y = <%= @protovis_max %>;
 var zoomed_max_y = <%= @protovis_avg * 1.5 %>;
+var selected_slice = <%= params[:start_minute].to_i %>;
+var selected_slice_width = <%= params[:end_minute].to_i - params[:start_minute].to_i + 1 %>
 
 /* Sizing and scales. */
 var w = <%= width %>,
@@ -29,6 +31,7 @@ var vis = new pv.Panel()
     .left(40)
     .right(0)
     .top(10)
+    .title("click to toggle zoom mode")
     .events("all")
     .event("click", update_y_scale);
 
@@ -85,16 +88,47 @@ vis.add(pv.Dot)
        .textMargin(7)
        .text(function() legend[this.index]);
 
+function submit_minutes(start, end) {
+   jQuery('#start-minute').val(""+start);
+   jQuery('#end-minute').val(""+end);
+   jQuery('#grouping option:selected').val("request");
+   jQuery('#filter-form').submit();
+}
+
+function restrict_minutes(p){
+   start = Math.floor(x.invert(p.x))*interval-3;
+   end = start+interval;
+   submit_minutes(start, end);
+}
+
+function reset_minutes(){
+   submit_minutes(0,1440);
+}
+
 /* Request counts. */
-vis.add(pv.Area)
-    .data(request_counts)
-    .left(function() x(this.index))
+vis.add(pv.Panel)
+    .events("all")
+    .event("click", reset_minutes)
+    .title("click to reset time interval")
     .bottom(h-50)
-    .height(function(d) y2(d))
-    .interpolate("cardinal")
-    .fillStyle("rgba(128,128,128,0.2)")
-    .strokeStyle("rgba(128,128,128,0.2)")
-    .title("requests/second");
+    .add(pv.Area)
+      .event("click", function() restrict_minutes(this.mouse()))
+      .data(request_counts)
+      .left(function() x(this.index))
+      .bottom(0)
+      .height(function(d) y2(d))
+      .interpolate("cardinal")
+      .fillStyle("rgba(128,128,128,0.2)")
+      .strokeStyle("rgba(128,128,128,0.2)")
+      .title("requests/second (click to select time interval)")
+    .parent.add(pv.Bar)
+      .bottom(0)
+      .left(x(selected_slice/interval))
+      .width(selected_slice_width)
+      .visible(selected_slice>0)
+      .title("selected time interval")
+      .fillStyle("rgba(255,0,0,0.3)")
+;
 
 var request_count_formatter = pv.Format.number().fractionDigits(0,1);
 
@@ -114,9 +148,10 @@ vis.add(pv.Layout.Stack)
     .x(function(d) x(d[0]))
     .y(function(d) y(d[1]))
   .layer.add(pv.Area)
+    .event("click", function() restrict_minutes(this.mouse()))
     .interpolate("step-after")
     .fillStyle(function(d) c[this.parent.index])
-    .title(function() legend[this.parent.index]);
+    .title(function(d) legend[this.parent.index] + " (click to select time interval)");
 
 /* GC time */
 if (gc_time != null) {
