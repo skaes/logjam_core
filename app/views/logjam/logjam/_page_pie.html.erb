@@ -21,7 +21,7 @@ var w = <%= size rescue 180 %>,
 
 /* The root panel. */
 var vis = new pv.Panel()
-    .width(w)
+    .width(w+400)
     .height(h);
 
 function goto_page(page) {
@@ -55,6 +55,24 @@ vis.add(pv.Wedge)
     .textAngle(0)
     .text(function(d) (100*d/s).toFixed()+"%");
 ;
+
+/* Legend. */
+vis.add(pv.Dot)
+    .data(legend)
+    .left(w+30)
+    .bottom(function(d) h-30-14*this.index)
+    .lineWidth(1)
+    .size(16)
+    .visible(function() data[this.index]/s>.02)
+    .strokeStyle(function() pv.Colors.category20().range()[this.index])
+    .fillStyle(function() pv.Colors.category20().range()[this.index])
+    .events("all")
+    .cursor("pointer")
+    .add(pv.Label)
+       .event("click", function() goto_page(legend[this.index]))
+       .textBaseline("middle")
+       .textMargin(7)
+       .text(function() legend[this.index]);
 
 vis.render();
 })();
