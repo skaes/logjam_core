@@ -88,21 +88,22 @@ vis.add(pv.Dot)
        .textMargin(7)
        .text(function() legend[this.index]);
 
-function submit_minutes(start, end) {
+function submit_minutes(start, end, resource) {
    jQuery('#start-minute').val(""+start);
    jQuery('#end-minute').val(""+end);
    jQuery('#grouping option:selected').val("request");
+   jQuery('#resource option:selected').val(resource.replace(/ /,'_'));
    jQuery('#filter-form').submit();
 }
 
-function restrict_minutes(p){
+function restrict_minutes(p, resource){
    start = Math.floor(x.invert(p.x))*interval-3;
    end = start+interval;
-   submit_minutes(start, end);
+   submit_minutes(start, end, resource);
 }
 
 function reset_minutes(){
-   submit_minutes(0,1440);
+   submit_minutes(0,1440, "total_time");
 }
 
 /* Request counts. */
@@ -114,7 +115,7 @@ vis.add(pv.Panel)
     .bottom(h-50)
     .add(pv.Area)
       .cursor("pointer")
-      .event("click", function() restrict_minutes(this.mouse()))
+      .event("click", function() restrict_minutes(this.mouse(), "total_time"))
       .data(request_counts)
       .left(function() x(this.index))
       .bottom(0)
@@ -151,7 +152,7 @@ vis.add(pv.Layout.Stack)
     .y(function(d) y(d[1]))
   .layer.add(pv.Area)
     .cursor("pointer")
-    .event("click", function() restrict_minutes(this.mouse()))
+    .event("click", function() restrict_minutes(this.mouse(), legend[this.parent.index]))
     .interpolate("step-after")
     .fillStyle(function(d) c[this.parent.index])
     .title(function(d) legend[this.parent.index] + " (click to select time interval)");
