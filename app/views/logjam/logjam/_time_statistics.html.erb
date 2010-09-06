@@ -14,7 +14,7 @@
       <td class='number'><%= number_with_precision((page["apdex"]["satisfied"].to_f+page["apdex"]["tolerating"].to_f/2.0)/page["count"].to_f, :precision => 2) %></td>
       <td class='number'><%= sometimes_link_errors(page["page"], page["response"]["500"].to_i) %></td>
     <% else -%>
-      <td><%= number_to_percentage(page["#{resource}_sum"].to_f / total_time * 100, :precision => 2) %></td>
+      <td class='number'><%= number_to_percentage(page["#{resource}_sum"].to_f / total_time * 100, :precision => 2) %></td>
     <% end -%>
   </tr>
 <% end -%>

@@ -15,7 +15,7 @@
         <th>% of overall<br/><%= resource_name.gsub(' ', '&nbsp;') %></th>
         <% if resource.to_sym != :total_time -%>
           <% options.merge!(:total_time => @dataset.sum("total_time")) -%>
-          <th>% of total time</th>
+          <th>% of<br/>total time</th>
         <% else %>
           <th>apdex</th>
           <th>errors</th>
