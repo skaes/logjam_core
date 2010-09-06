@@ -8,6 +8,7 @@
 -%>
 
 <script type="text/javascript+protovis">
+(function(){
 var data = <%= data.to_json %>,
     legend = <%= legend.to_json %>;
 
@@ -23,6 +24,11 @@ var vis = new pv.Panel()
     .width(w)
     .height(h);
 
+function goto_page(page) {
+   jQuery('#controller_action_page').val(page);
+   jQuery('#filter-form').submit();
+}
+
 /* The wedge, with centered label. */
 vis.add(pv.Wedge)
     .data(data)
@@ -32,6 +38,8 @@ vis.add(pv.Wedge)
     .innerRadius(0)
     .outerRadius(r)
     .title(function() legend[this.index])
+//    .events("all")
+    .event("click", function() goto_page(legend[this.index]))
 //    .outerRadius(r-10)
 //    .def("o", -1)
 //    .left(function() 100
@@ -49,4 +57,5 @@ vis.add(pv.Wedge)
 ;
 
 vis.render();
+})();
 </script>
