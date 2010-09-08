@@ -36,7 +36,7 @@ module Logjam
       @queue ||=
         begin
           channel = MQ.new(AMQP::connect(config))
-          exchange = channel.topic(config[:exchange])
+          exchange = channel.topic(config[:exchange], :durable => true, :auto_delete => false)
           queue = channel.queue(queue_name, :auto_delete => true, :exclusive => true)
 
           queue.bind(exchange, :routing_key => routing_key)
