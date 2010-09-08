@@ -32,7 +32,7 @@ var request_counts = zeros();
 var vis = new pv.Panel()
     .strokeStyle("#999")
     .right(30)
-    .left(30)
+    .left(40)
     .top(5)
     .bottom(50)
     .width(w)
@@ -57,6 +57,17 @@ vis.add(pv.Rule)
   .anchor("bottom").add(pv.Label)
     .visible(function(d) d && ((d/slice)%10==0))
     .text(function(d) "t-"+ x.tickFormat(d/slice-60));
+
+/* Y-label */
+vis.add(pv.Label)
+    .left(-30)
+    .bottom(h/2)
+    .font("12px sans-serif")
+    .textStyle("#999")
+    .textAlign("center")
+    .textBaseline("middle")
+    .textAngle(-Math.PI / 2)
+    .text("Response time (ms)");
 
 /* Y-axis and ticks. */
 vis.add(pv.Rule)
