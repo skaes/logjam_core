@@ -52,7 +52,7 @@ module Logjam
         params[:page] = without_module(params[:page]) unless @page == "::"
         link_to(h(value), {:params => clean_params(params)}, :title => "filter with #{h(value)}")
       else
-        h(value)
+        "<span class='dead-link'>#{h(value)}</span>"
       end
     end
 

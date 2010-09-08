@@ -115,12 +115,11 @@ tr.full_stats:hover {
   background: #CCA383;
 }
 
-tr.full_stats a {
+tr.full_stats a, tr.full_stats .dead-link {
   padding: 0 2px;
 }
 
-td.group-thing a {font-size: 90%;}
-td.group-thing {max-width: 32em; overflow: hidden;}
+td.group-thing {max-width: 32em; overflow: hidden; font-size: 90%;}
 
 td {padding: 0 8px;}
 td.number {text-align: right;}
