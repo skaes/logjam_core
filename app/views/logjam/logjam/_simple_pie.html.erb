@@ -1,4 +1,5 @@
 <script type="text/javascript+protovis">
+(function(){
 <% data_with_colors = data.map{|d| d||0}.zip(colors) %>
 var data = <%= data_with_colors.map(&:first).to_json %>;
 var legend = <%= legend.to_json %>;
@@ -39,4 +40,5 @@ vis.add(pv.Wedge)
 ;
 
 vis.render();
+})();
 </script>
