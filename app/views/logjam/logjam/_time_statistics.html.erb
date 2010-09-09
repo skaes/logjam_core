@@ -1,21 +1,20 @@
 <% pages.each do |page| -%>
   <tr class='full_stats'>
     <td class='group-thing'>
-      <%= sometimes_link_grouping_result(page, :page, params.merge(:page => page[:page])) %>
+      <%= sometimes_link_grouping_result(page, :page, params.merge(:page => page.page)) %>
     </td>
     <td class='number'>
-      <%= sometimes_link_number_of_requests(page, :page, {:params => clean_params(params.merge(:grouping => "request", :page => without_module(page[:page])))}) %>
+      <%= sometimes_link_number_of_requests(page, :page, {:params => clean_params(params.merge(:grouping => "request", :page => without_module(page.page)))}) %>
     </td>
-    <td class='number'><%= number_with_precision(page["#{resource}_avg"], :precision => 0, :delimiter => ',') %></td>
-    <td class='number'><%= number_with_precision(page["#{resource}_stddev"], :precision => 0 , :delimiter => ',') %></td>
-    <td class='number'><%= seconds_to_human(page["#{resource}_sum"].to_f / 1000) %></td>
-    <td class='number'><%= number_to_percentage(page["#{resource}_sum"].to_f / resource_total * 100, :precision => 2) %></td>
+    <td class='number'><%= number_with_precision(page.avg(resource), :precision => 0, :delimiter => ',') %></td>
+    <td class='number'><%= number_with_precision(page.stddev(resource), :precision => 0 , :delimiter => ',') %></td>
+    <td class='number'><%= seconds_to_human(page.sum(resource).to_f / 1000) %></td>
+    <td class='number'><%= number_to_percentage(page.sum(resource).to_f / resource_total * 100, :precision => 2) %></td>
     <% if resource == "total_time" -%>
-      <td class='number'><%= number_with_precision((page["apdex"]["satisfied"].to_f+page["apdex"]["tolerating"].to_f/2.0)/page["count"].to_f, :precision => 2) %></td>
-      <td class='number'><%= sometimes_link_errors(page["page"], page["response"]["500"].to_i) %></td>
+      <td class='number'><%= number_with_precision((page.apdex["satisfied"].to_f+page.apdex["tolerating"].to_f/2.0)/page.count.to_f, :precision => 2) %></td>
+      <td class='number'><%= sometimes_link_errors(page.page, page.response["500"].to_i) %></td>
     <% else -%>
-      <td class='number'><%= number_to_percentage(page["#{resource}_sum"].to_f / total_time * 100, :precision => 2) %></td>
+      <td class='number'><%= number_to_percentage(page.sum(resource).to_f / total_time * 100, :precision => 2) %></td>
     <% end -%>
   </tr>
 <% end -%>
-

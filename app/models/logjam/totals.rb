@@ -1,5 +1,82 @@
 module Logjam
 
+  class Total
+    attr_writer :page_info
+    attr_reader :resources
+
+    def initialize(page_info, resources)
+      @page_info = page_info
+      @resources = resources
+    end
+
+    def page
+      @page_info["page"]
+    end
+
+    def page=(page)
+      @page_info["page"] = page
+    end
+
+    def count(resource=nil)
+      @page_info["count"]
+    end
+
+    def sum(resource)
+      @page_info[resource] || 0
+    end
+
+    def sum_sq(resource)
+      @page_info["#{resource}_sq"] || 0.0
+    end
+
+    def avg(resource)
+      sum(resource) / count.to_f
+    end
+
+    def stddev(resource)
+      @page_info["#{resource}_stddev"] ||=
+        begin
+          n, s, sq = count, sum(resource), sum_sq(resource)
+          a = avg(resource)
+          (n == 1 || s == 0) ? 0.0 : Math.sqrt((sq - n*a*a).abs/(n-1).to_f)
+        end
+    end
+
+    def apdex
+      @page_info["apdex"]
+    end
+
+    def response
+      @page_info["response"]
+    end
+
+    def add(other)
+      @page_info["count"] += other.count
+      @resources.each do |r|
+        @page_info[r] = sum(r) + other.sum(r)
+        @page_info["#{r}_sq"] = sum_sq(r) + other.sum_sq(r)
+      end
+      if apdex
+        other.apdex.each {|x,y| apdex[x] = (apdex[x]||0) + y}
+      end
+      if response
+        other.response.each {|x,y| response[x] = (response[x]||0) + y}
+      end
+    end
+
+    def clone
+      res = super
+      res.page_info = pi = @page_info.clone
+      pi["apdex"] = pi["apdex"].clone if pi["apdex"]
+      pi["response"] = pi["response"].clone if pi["response"]
+      @resources.each do |r|
+        pi.delete("#{r}_avg")
+        pi.delete("#{r}_stddev")
+      end
+      res
+    end
+  end
+
   class Totals
     attr_reader :resources, :pattern, :pages
     def initialize(db, resources=[], pattern='')
@@ -26,24 +103,28 @@ module Logjam
     def pages(options)
       order = options[:order] || :sum
       limit = options[:limit] || 1000
-      pages = the_pages.sort_by{|r| -r[order]}
+      if order.to_sym == :count
+        pages = the_pages.sort_by{|r| -r.count}
+      else
+        raise "unknown sort method" unless order =~ /^(.+)_(sum|avg|stddev)$/
+        resource, function = $1, $2
+        pages = the_pages.sort_by{|r| -r.send(function, resource)}
+      end
       return pages if pages.size <= limit
       proper, rest = pages[0..limit-2], pages[limit-1..-1]
       proper << combine_pages(rest)
     end
 
     def count
-      @count ||= the_pages.inject(0){|n,p| n += p[:count]}
+      @count ||= the_pages.inject(0){|n,p| n += p.count}
     end
 
     def sum(resource)
-      field = "#{resource}_sum"
-      @sum[resource] ||= the_pages.inject(0.0){|n,p| n += p[field]}
+      @sum[resource] ||= the_pages.inject(0.0){|n,p| n += p.sum(resource)}
     end
 
     def sum_sq(resource)
-      field = "#{resource}_sum_sq"
-      @sum_sq[resource] ||= the_pages.inject(0.0){|n,p| n += p[field]}
+      @sum_sq[resource] ||= the_pages.inject(0.0){|n,p| n += p.sum_sq(resource)}
     end
 
     def avg(resource)
@@ -51,8 +132,23 @@ module Logjam
     end
 
     def stddev(resource)
-      (count == 1) ? 0.0 : Math.sqrt((sum_sq(resource) - count*avg(resource)*avg(resource))/(count-1).to_f)
+      @stddev[resource] ||=
+        begin
+          n, s, sq = count, sum(resource), sum_sq(resource)
+          a = avg(resource)
+          (n == 1 || s == 0) ? 0.0 : Math.sqrt((sq - n*a*a).abs/(n-1).to_f)
+        end
     end
+
+    def apdex
+      @apdex_hash ||= the_pages.inject(Hash.new(0)){|h,p| p.apdex.each{|k,v| h[k] += v}; h}
+    end
+
+    def response_codes
+      @response_hash ||= the_pages.inject(Hash.new(0)){|h,p| p.response.each{|k,v| h[k.to_i] += v.to_i}; h}
+    end
+
+    protected
 
     def selector
       case
@@ -62,16 +158,6 @@ module Logjam
       else {:page => /#{pattern}/}
       end
     end
-
-    def apdex
-      @apdex_hash ||= the_pages.inject(Hash.new(0)){|h,p| p["apdex"].each{|k,v| h[k] += v}; h}
-    end
-
-    def response_codes
-      @response_hash ||= the_pages.inject(Hash.new(0)){|h,p| p["response"].each{|k,v| h[k.to_i] += v.to_i}; h}
-    end
-
-    protected
 
     def compute
       all_fields = ["page", "count", @apdex, @response].compact + @resources
@@ -84,52 +170,16 @@ module Logjam
 
       result = []
       while row = rows.shift
-        count = row["count"]
-        result_row = {"page" => row["page"], "count" => count}
-        result_row["apdex"] = row["apdex"] if @apdex
-        result_row["response"] = row["response"] if @response
-        @resources.each do |r|
-          sum = row[r] || 0
-          result_row["#{r}_sum"] = sum
-          sum_sq = row["#{r}_sq"] || 0
-          avg = sum.to_f/count
-          std_dev = (count == 1 || sum == 0) ? 0.0 : Math.sqrt((sum_sq - count*avg*avg).abs/(count-1).to_f)
-          result_row["#{r}_sum_sq"] = sum_sq
-          result_row["#{r}_avg"] = avg
-          result_row["#{r}_stddev"] = std_dev
-        end
-        result << result_row.with_indifferent_access
+        result << Total.new(row, @resources)
       end
-
       # logger.debug result.inspect
       result
     end
 
     def combine_pages(pages)
-      combined = pages.shift
-      combined["page"] = "Others..."
-      pages.each do |page|
-        page.each do |k,v|
-          case k.to_sym
-          when :page
-          when :apdex
-            v.each {|x,y| combined[:apdex][x] ||= 0; combined[:apdex][x] += y}
-          when :response
-            v.each {|x,y| combined[:response][x] ||= 0; combined[:response][x] += y}
-          else
-            combined[k] += v
-          end
-        end
-      end
-      count = combined["count"]
-      @resources.each do |r|
-        sum = combined["#{r}_sum"]
-        sum_sq = combined["#{r}_sum_sq"]
-        avg = sum.to_f/count
-        std_dev = (count == 1 || sum == 0) ? 0.0 : Math.sqrt((sum_sq - count*avg*avg).abs/(count-1).to_f)
-        combined["#{r}_avg"] = avg
-        combined["#{r}_stddev"] = std_dev
-      end
+      combined = pages.shift.clone
+      combined.page = "Others..."
+      pages.each {|page| combined.add(page)}
       combined
     end
 

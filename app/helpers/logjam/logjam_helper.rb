@@ -46,7 +46,7 @@ module Logjam
     end
 
     def sometimes_link_grouping_result(result, grouping, params)
-      value = result[grouping]
+      value = result.send(grouping)
       if grouping.to_sym == :page && params[:page] !~ /Others/
         params = params.merge(grouping => value)
         params[:page] = without_module(params[:page]) unless @page == "::"
@@ -57,8 +57,8 @@ module Logjam
     end
 
     def sometimes_link_number_of_requests(result, grouping, options)
-      n = number_with_delimiter(result[:count].to_i)
-      if :page == grouping.to_sym && result[:page] != "Others..."
+      n = number_with_delimiter(result.count.to_i)
+      if :page == grouping.to_sym && result.page != "Others..."
         link_to n, options, :title => "show requests"
       else
         n
