@@ -46,8 +46,16 @@ module Logjam
       @page_info["apdex"]
     end
 
+    def apdex_score
+      (apdex["satisfied"].to_f + apdex["tolerating"].to_f / 2.0) / count.to_f
+    end
+
     def response
       @page_info["response"]
+    end
+
+    def error_count
+      response["500"].to_i
     end
 
     def add(other)
