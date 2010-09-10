@@ -8,20 +8,23 @@ require 'active_support'
 
 app = ARGV[0] || "app"
 env = ARGV[1] || "production"
+keys = (ARGV[2] || "all_pages,jobs,xws").split(/,/)
 
 FIELDS = %w(gc_time other_time memcache_time gearman_time search_time api_time db_time view_time total_time)
 
 EM.run do
   channel = MQ.new(AMQP::connect(:host => "127.0.0.1"))
-  exchange = channel.fanout("logjam-performance-data-#{app}-#{env}")
+  exchange = channel.topic("logjam-performance-data-#{app}-#{env}")
 
   trap("INT"){ EM.stop_event_loop}
 
   EM.add_periodic_timer(1) do
-    count = 50+450*rand()
-    data = FIELDS.inject({"count" => count}){|h,k| h[k] = 100*rand*count; h}
-    encoded_data = data.to_json
-    # publish performance data
-    exchange.publish(encoded_data)
+    keys.each do |key|
+      count = 50+450*rand()
+      data = FIELDS.inject({"count" => count}){|h,k| h[k] = 100*rand*count; h}
+      encoded_data = data.to_json
+      # publish performance data
+      exchange.publish(encoded_data, :key => key)
+    end
   end
 end

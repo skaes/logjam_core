@@ -7,24 +7,24 @@ require 'mq'
 require 'set'
 
 @exchanges = {}
+@queues = {}
 @buffers = Hash.new{|h,k| h[k] = []}
 @sockets = Hash.new{|h,k| h[k] = Set.new}
 
-def create_exchange_and_subscribe(app_env)
-  exchange_name = "logjam-performance-data-#{app_env}"
-  exchange = @channel.fanout(exchange_name)
-  queue_name = "#{exchange_name}-#{`hostname`.chomp}"
+def create_queue_and_subscribe(app_env, key)
+  exchange = @exchanges[app_env]
+  queue_name = "#{app_env}-#{key}-#{`hostname`.chomp}"
   queue = @channel.queue(queue_name, :auto_delete => true, :exclusive => true)
-  queue.bind(exchange)
-  subscribe(app_env, queue)
-  exchange
+  queue.bind(exchange, :key => key)
+  subscribe("#{app_env},#{key}", queue)
+  queue
 end
 
-def subscribe(app_env, queue)
+def subscribe(app_env_key, queue)
   queue.subscribe do |header, perf_data|
-    (b = @buffers[app_env]) << perf_data
+    (b = @buffers[app_env_key]) << perf_data
     b.shift if b.size > 60
-    @sockets[app_env].each {|s| s.send perf_data}
+    @sockets[app_env_key].each {|s| s.send perf_data}
   end
 end
 
@@ -38,11 +38,13 @@ EventMachine.run do
       @sockets.each_value{|sockets| sockets.delete(ws) }
     end
 
-    ws.onmessage do |app_env|
-      @exchanges[app_env] ||= create_exchange_and_subscribe(app_env)
-      @sockets[app_env] << ws
-      @buffers[app_env].each{|m| ws.send m}
-      puts "web socket subscribed to #{app_env}: #{ws.object_id}"
+    ws.onmessage do |app_env_key|
+      app_env, key = app_env_key.split(/,/)
+      @exchanges[app_env] ||= @channel.topic("logjam-performance-data-#{app_env}")
+      @queues[app_env_key] ||= create_queue_and_subscribe(app_env, key)
+      @sockets[app_env_key] << ws
+      @buffers[app_env_key].each{|m| ws.send m}
+      puts "web socket subscribed to #{app_env_key}: #{ws.object_id}"
     end
   end
 end

@@ -162,7 +162,7 @@ function connect_chart() {
     ws = new WebSocket("<%= @socket_url %>");
     ws.onmessage = function(evt) { update_chart(JSON.parse(evt.data)); };
     ws.onclose = function() { connection_status = "disconnected"; vis.render(); };
-    ws.onopen = function() { connection_status = "connected"; vis.render(); ws.send('<%= "#{@app}-#{@env}" %>'); };
+    ws.onopen = function() { connection_status = "connected"; vis.render(); ws.send('<%= "#{@app}-#{@env},#{@key}" %>'); };
     ws.onerror = function() { alert("websocket error"); }
   }
 };

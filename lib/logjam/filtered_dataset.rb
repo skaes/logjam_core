@@ -65,7 +65,7 @@ module Logjam
     end
 
     def live_stream?
-      (@date == Date.today || Rails.env == "development") && ["all_pages", "::", ""].include?(page)
+      (@date == Date.today || Rails.env == "development") && (page == "all_pages" || page =~ /^::/)
     end
 
     def empty?

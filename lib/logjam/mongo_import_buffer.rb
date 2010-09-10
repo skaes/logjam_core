@@ -1,6 +1,7 @@
 require 'amqp'
 require 'mq'
 require 'json'
+require 'set'
 
 module Logjam
 
@@ -65,7 +66,10 @@ module Logjam
       fields.keys.each{|k| fields[squared_field(k)] = (v=fields[k].to_f)*v}
 
       pmodule = "::"
-      pmodule << $1 if page =~ /^(.+?)::/ || page =~ /^([^:#]+)#/
+      if page =~ /^(.+?)::/ || page =~ /^([^:#]+)#/
+        pmodule << $1
+        @modules << pmodule
+      end
 
       increments = {"count" => 1}.merge!(fields)
       [page, "all_pages", pmodule].each do |p|
@@ -145,6 +149,7 @@ module Logjam
       @totals_buffer = {}
       @minutes_buffer = {}
       # @hours_buffer = {}
+      @modules = Set.new(%w(all_pages))
     end
 
     UPSERT_ONE = {:upsert => true, :multi => false}
@@ -181,23 +186,23 @@ module Logjam
       (@exchange||={})["#{app}-#{env}"] ||=
         begin
           channel = MQ.new(AMQP::connect(:host => "127.0.0.1"))
-          channel.fanout("logjam-performance-data-#{app}-#{env}")
+          channel.topic("logjam-performance-data-#{app}-#{env}")
         end
     end
 
     def exchange
-      @exchange ||= self.class.exchange(@app,@env)
+      @exchange ||= self.class.exchange(@app, @env)
     end
+
+    NO_REQUEST = {"count" => 0}
 
     def publish_totals
       # always publish something every second to the perf data exchange
-      p = "all_pages"
-      inc = @totals_buffer[p] || {"count" => 0}
-      publish(p,inc)
+      @modules.each { |p| publish(p, @totals_buffer[p] || NO_REQUEST) }
     end
 
     def publish(p, inc)
-      exchange.publish({"page" => p}.merge!(inc).to_json)
+      exchange.publish(inc.to_json, :key => p.sub(/^::/,'').downcase)
     rescue
       $stderr.puts "could not publish performance data: #{$!}"
     end

@@ -85,7 +85,7 @@
                    {:params => clean_params(params.merge(:page => without_module(@page), :action => distribution_kind(@dataset.resource)))}) %>
         <% if @dataset.live_stream? -%>
         <%= link_to(image_tag("stream.gif", :alt => "live stream", :title => "live stream"),
-                    {:params =>clean_params(params.slice(:app,:env).merge(:action => "live_stream"))},
+                    {:params =>clean_params(params.slice(:app,:env,:page).merge(:action => "live_stream"))},
                     {:target => "_blank"}) %>
         <% end -%>
       </p>
