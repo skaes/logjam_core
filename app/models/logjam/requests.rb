@@ -6,7 +6,7 @@ module Logjam
       @database = db
       @collection = @database["requests"]
       @resource = resource
-      @pattern = pattern.sub(/^::/,'')
+      @pattern = pattern.to_s.sub(/^::/,'')
       @options = options
       @start_minute = @options[:start_minute] if @options[:start_minute].present? && (@options[:start_minute] != 0)
       @end_minute = @options[:end_minute] if @options[:end_minute].present? && (@options[:end_minute] != 1440)
