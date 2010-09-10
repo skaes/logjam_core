@@ -6,7 +6,7 @@ module Logjam
       @database = db
       @collection = @database["requests"]
       @resource = resource
-      @pattern = pattern
+      @pattern = pattern.sub(/^::/,'')
       @options = options
       @start_minute = @options[:start_minute] if @options[:start_minute].present? && (@options[:start_minute] != 0)
       @end_minute = @options[:end_minute] if @options[:end_minute].present? && (@options[:end_minute] != 1440)
@@ -15,7 +15,7 @@ module Logjam
     def selector
       query_opts = @options[:heap_growth_only] ? {"heap_growth" => {'$gt' => 0}} : {}
       query_opts.merge!(:response_code => @options[:response_code]) if @options[:response_code]
-      query_opts.merge!(:page => /#{pattern}/) unless pattern.blank? || pattern == "::" || pattern == "all_pages"
+      query_opts.merge!(:page => /#{pattern}/) unless pattern.blank? || pattern == "all_pages"
       query_opts.merge!(:minute => {'$gte' => @start_minute}) if @start_minute
       (query_opts[:minute] ||= {}).merge!('$lte' => @end_minute) if @end_minute
       query_opts
