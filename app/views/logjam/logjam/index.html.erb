@@ -1,6 +1,6 @@
 <div id='left' class='clear-left'>
   <div id='filter'>
-    <% form_tag({:action => :index}, :method => :get, :id => 'filter-form') do -%>
+    <% form_tag({:action => :index}, :method => :get, :id => 'filter-form', :autocomplete => "off") do -%>
       <fieldset>
         <legend>LogJam</legend>
         <% unless Logjam.only_one_app? %>
