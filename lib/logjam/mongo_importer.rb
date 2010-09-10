@@ -8,6 +8,7 @@ module Logjam
       super
       @mongo_buffers = {}
       @request_count = 0
+      @creation_date = Date.today
     end
 
     def mongo_buffer(hash)
@@ -26,8 +27,16 @@ module Logjam
     def flush_buffers
       puts "flushing #{@request_count} requests"
       @mongo_buffers.each_value{|b| b.flush}
-      @mongo_buffers = {}
+      reset_buffers_if_they_were_not_created_today
       @request_count = 0
+    end
+
+    def reset_buffers_if_they_were_not_created_today
+      today = Date.today
+      if today > @creation_date
+        @mongo_buffers = {}
+        @creation_date = today
+      end
     end
 
     private
