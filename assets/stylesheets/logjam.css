@@ -1,9 +1,13 @@
-body { background-color: #fff; color: #333; }
+body { background-color: #fff; color: #333; margin: 0px; padding: 0px; }
 
 body, p, ol, ul, td {
   font-family: verdana, arial, helvetica, sans-serif;
   font-size:   12px;
   line-height: 18px;
+}
+
+filter form p {
+  margin: 0px;
 }
 
 pre {
@@ -29,19 +33,65 @@ label {
     clear: left;
 }
 
-form {margin-bottom: 20px;}
+form { }
 
 input, select {
   margin-bottom: 5px;
 }
 
-.submit {
-  margin-top: 10px;
-  width: 60px;
+#header {
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 50px;
+  background: #CCA383;
+}
+
+.webkit #header {
+  margin-top: -12px;
+}
+
+#filter {
+  vertical-align: middle;
+  padding-left: 5px;
+  padding-right: 5px;
+  width: 1400px;
+  margin-left: 10px;
+}
+
+#content {
+  position: relative;
+  left: 0px;
+  right: 0px;
+  width: 1440px;
+  margin: 0px;
+  margin-top: 5px;
+}
+
+#home-button {
+    background: #CCA383;
+    border: 0;
+    cursor: pointer;
+    margin-top: 7px;
+    margin-right: 10px;
+    margin-left: -10px;
+    line-height: 45px;
+    font-weight: bold;
+    font-size: 200%;
+    display: block;
+    float: left;
+    clear: left;
+}
+
+.webkit #home-button {
+    margin-top: 0px;
 }
 
 .clear-left {clear:left; float:left;}
-.filter-widget {float:left; padding-right: 20px;}
+.filter-widget-inline { display:inline-block; }
+.filter-widget {float:left; padding-right: 20px; margin: 0px;}
 .filter-widget-last, .float-left {float:left;}
 .filter-float-right {float:right; padding-right: 20px;}
 #description.filter-widget {font-style: italic; margin: 0 0 0 5px; font-size: 90%;}
@@ -54,28 +104,11 @@ img {
   border: 0 none;
 }
 
-fieldset {
-border: 1px solid #CCA383;
-width: 610px;
-padding: 3px;
-}
-
-fieldset p {
-  margin-bottom: 0;
-}
-
-fieldset legend {
-background: #CCA383;
-padding: 3px;
-font-weight: bold;
-font-size: 120%;
-}
-
-div#filter, div#column-right {
+#column-right {
   float: left;
 }
 
-div#column-right {width: 700px;}
+#column-right { min-width: 500px; max-width: 800px; }
 
 div#pagetimes {
   margin: -20px 0 0 10px;
@@ -86,33 +119,57 @@ div#pagetimes {
 }
 
 div#pagetimes h3 {
-  margin-top: 20px;
+  font-size: 12px;
   margin-left: 0px;
+  margin-top: 24px;
   margin-bottom: 5px;
 }
 
 div#pagetimes h4 {
-  margin-top: 10px;
-  margin-bottom: 5px;
+  font-size: 12px;
+  margin-top: 7px;
+  margin-bottom: 3px;
 }
 
 #performance-pie {
-  margin-top: 20px;
-  margin-left: 40px;
+  margin-top: 15px;
+  margin-left: 30px;
 }
 
 .full_stats {
-  margin-left: -2px;
+  margin-left: 0px;
+  margin-top: 3px;
+  border-collapse: collapse;
+}
+
+.webkit .full_stats {
+  margin-top: 10px;
 }
 
 .full_stats th {
   margin: 0;
-  padding: 2px;
-  background: #CCA383;
+  border: 0;
+  padding: 4px;
+  background: #ddd;
+  font-style: italic;
+  font-weight: normal;
+  font-size:   12px;
+  line-height: 13px;
+  border: 1px solid #999;
+}
+
+.full_stats td {
+  font-size: 12px;
+  line-height: 13px;
+  padding: 3px 5px;
+}
+
+.sortable {
+  cursor: pointer;
 }
 
 tr.full_stats:hover {
-  background: #CCA383;
+  background: #ccc;
 }
 
 tr.full_stats a, tr.full_stats .dead-link {
@@ -130,7 +187,7 @@ td.number {text-align: right;}
 .stats td { font-size: 12px; padding: 0 8px; }
 .table-heading { font-weight: bold; padding-top: 10px; }
 
-#resource-plot {float:left;}
+#resource-plot { float:left; margin-top:-3px; }
 
 #apdex-table {float:left;}
 #apdex-table td {font-size: 90%;  line-height: 100%; white-space: nowrap; }

@@ -16,6 +16,9 @@
   </script>
 </head>
 <body>
+  <script type="text/javascript">
+  if (jQuery.browser.webkit) { jQuery('body').addClass('webkit'); }
+  </script>
 
 <%= yield %>
 

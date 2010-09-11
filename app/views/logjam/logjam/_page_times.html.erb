@@ -1,3 +1,9 @@
+<script type="text/javascript">
+function sort_by(order){
+  jQuery('#grouping_function option:selected').val(order);
+  jQuery('#filter-form').submit();
+}
+</script>
 <table class='full_stats'>
   <tr>
     <% resource = @dataset.resource
@@ -6,10 +12,10 @@
        options = {:resource => resource} -%>
     <% if @dataset.grouping? -%>
       <th><%= @dataset.grouping %></th>
-      <th>requests</th>
-      <th>avg<br/><%= resource_name %></th>
-      <th>stddev<br/><%= resource_name %></th>
-      <th>sum<br/><%= resource_name %></th>
+      <th class="sortable" onclick="sort_by('count')" title="sort by number of requests">requests</th>
+      <th class="sortable" onclick="sort_by('avg')" title="sort by average">avg<br/><%= resource_name %></th>
+      <th class="sortable" onclick="sort_by('stddev')" title="sort by standard deviation">stddev<br/><%= resource_name %></th>
+      <th class="sortable" onclick="sort_by('sum')" title="sort by sum">sum<br/><%= resource_name %></th>
       <% if @dataset.accumulates_time? -%>
         <% options.merge!(:resource_total => @dataset.sum(resource))-%>
         <th>% of overall<br/><%= resource_name.gsub(' ', '&nbsp;') %></th>
@@ -21,13 +27,14 @@
           <th>errors</th>
         <% end -%>
       <% end -%>
+  </tr>
       <%= render "#{resource_type}_statistics", options.merge(:pages => @dataset.do_the_query) %>
     <% else -%>
       <th>minute</th>
       <th>page</th>
       <th>user</th>
       <th><%= h resource %></th>
+  </tr>
       <%= render "request_statistics", options.merge(:requests => @dataset.do_the_query) %>
     <% end -%>
-  </tr>
 </table>

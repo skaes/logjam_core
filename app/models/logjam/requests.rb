@@ -31,7 +31,7 @@ module Logjam
         result = @collection.find(selector,
                                   {:fields => all_fields,
                                     :sort => [@resource, Mongo::DESCENDING],
-                                    :limit => @options[:limit] || 35}).to_a
+                                    :limit => @options[:limit] || 32}).to_a
       end
       logger.debug "MONGO Requests(#{selector.inspect},#{all_fields.inspect}) #{result.size} records, #{"%.1f" % (access_time)} ms}"
       result
