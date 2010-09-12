@@ -306,8 +306,10 @@ div.auto_complete ul {
   list-style-type:none;
 }
 div.auto_complete ul li {
-  margin:0;
-  padding:3px;
+  font-size: 70%;
+  margin:0px;
+  padding:0px;
+  overflow: hidden;
 }
 div.auto_complete ul li.selected {
   background-color: #ffb;
