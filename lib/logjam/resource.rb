@@ -76,6 +76,14 @@ module Logjam
         end
       end
 
+      def default_resource(resource_type)
+        case resource_type.to_sym
+        when :time   then 'total_time'
+        when :call   then 'db_calls'
+        when :memory then 'allocated_objects'
+        end
+      end
+
       def groupings
         ['page', 'request']
       end

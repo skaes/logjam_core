@@ -9,6 +9,10 @@ function view_grouping(grouping){
   jQuery('#grouping option:selected').val(grouping);
   jQuery('#filter-form').submit();
 }
+function view_resource(resource){
+  jQuery('#resource option:selected').val(resource);
+  jQuery('#filter-form').submit();
+}
 </script>
 <% form_tag({:action => :index}, :method => :get, :id => 'filter-form', :autocomplete => "off") do -%>
 <div id='header'>
@@ -49,7 +53,17 @@ function view_grouping(grouping){
       <%= select_tag 'grouping', options_for_select(Logjam::Resource.grouping_options, params['grouping']),
           :onchange => "form.submit()" %>
     </p>
-    <p class='filter-widget' id='resource-widget'>
+    <table class='filter-widget' id='resource-type-widget'>
+      <tr>
+        <td <%= html_attributes_for_resource_type("time") %>>time</td>
+        <td <%= html_attributes_for_resource_type("call") %>>calls</td>
+      </tr>
+      <tr>
+        <td <%= html_attributes_for_resource_type("memory") %>>memory</td>
+        <!-- <td <%= html_attributes_for_resource_type("heap") %>>heap</td> -->
+      </tr>
+    </table>
+    <p class='filter-widget' id='resource-widget' style="visibility:hidden;display:none;">
       <%= label :filter, 'with resource' %><br />
       <%= select_tag 'resource', options_for_select(Logjam::Resource.resource_options, params['resource']),
           :onchange => "form.submit()" %>

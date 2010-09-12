@@ -95,6 +95,15 @@ module Logjam
       end
     end
 
+    def html_attributes_for_resource_type(resource_type)
+      if Resource.resource_type(params[:resource]) == resource_type.to_sym
+        "class='active' title='analyzing #{resource_type} resources'"
+      else
+        resource = Resource.default_resource(resource_type)
+        "class='inactive' title='analyze #{resource_type} resources' onclick=\"view_resource('#{resource}')\""
+      end
+    end
+
     def resource_descriptions
       resources = Resource.time_resources + Resource.memory_resources + Resource.call_resources
       groupings = Resource.groupings
