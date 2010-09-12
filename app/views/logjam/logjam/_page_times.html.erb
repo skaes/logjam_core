@@ -33,7 +33,7 @@ function sort_by(order){
       <th>minute</th>
       <th>page</th>
       <th>user</th>
-      <th><%= h resource %></th>
+      <th><%= h resource_name %></th>
   </tr>
       <%= render "request_statistics", options.merge(:requests => @dataset.do_the_query) %>
     <% end -%>
