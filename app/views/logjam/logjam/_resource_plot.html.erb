@@ -99,8 +99,10 @@ function submit_minutes(start, end, resource) {
 }
 
 function submit_resource(resource) {
-   jQuery('#resource option:selected').val(resource.replace(/ /,'_'));
-   jQuery('#filter-form').submit();
+   if (resource != "requests/second") {
+     jQuery('#resource option:selected').val(resource.replace(/ /,'_'));
+     jQuery('#filter-form').submit();
+   }
 }
 
 function restrict_minutes(p, resource){
