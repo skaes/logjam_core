@@ -1,5 +1,11 @@
-<table id='response-code-stats'>
+<table class='stats' id='response-code-stats'>
+  <tr>
+    <th colspan="2">response code summary</th>
+  </tr>
   <% @dataset.response_codes.keys.sort.each do |rc| %>
-  <tr><td><td class='number'><%= rc %></td><td class='number'><%= @dataset.response_codes[rc] %></td></tr>
+  <tr>
+    <td class='number'><%= rc %></td>
+    <td class='number'><%= memory_number(@dataset.response_codes[rc]) %></td>
+  </tr>
   <% end %>
 </table>
