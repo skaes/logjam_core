@@ -56,10 +56,12 @@ function view_resource(resource){
     <table class='filter-widget' id='resource-type-widget'>
       <tr>
         <td <%= html_attributes_for_resource_type("time") %>>time</td>
-        <td <%= html_attributes_for_resource_type("call") %>>calls</td>
+        <% unless Logjam::Resource.memory_resources.empty? %>
+        <td <%= html_attributes_for_resource_type("memory") %>>memory</td>
+        <% end %>
       </tr>
       <tr>
-        <td <%= html_attributes_for_resource_type("memory") %>>memory</td>
+        <td <%= html_attributes_for_resource_type("call") %>>calls</td>
         <!-- <td <%= html_attributes_for_resource_type("heap") %>>heap</td> -->
       </tr>
     </table>
