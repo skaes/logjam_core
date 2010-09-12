@@ -117,12 +117,16 @@ input, select {
   padding: 2px 10px 2px 10px;
 }
 
+#resource-type-widget {
+  border-collpase: collapse;
+}
+
 #resource-type-widget td {
   -moz-border-radius: 5px;
   border-radius: 5px;
   text-align: center;
   font-weight: bold;
-  padding: 2px;
+  padding: 2px 4px 2px 4px;
 }
 
 .active {
