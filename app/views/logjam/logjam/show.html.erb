@@ -1,3 +1,5 @@
+<div id='single-request'>
+
 <div id='request' style="margin-bottom:5px;">
 <b>Request details for</b> <em><%= h @request["page"] -%></em> at <b><%= minute_to_human(@request["minute"]) -%></b>
 </div>
@@ -78,3 +80,5 @@
 &#10145; <%= ((l = safe_h line) =~ /rb:\d+:in|Error|Exception/ && (l !~ /^(Rendering|Completed|Processing|Parameters)/)) ? "<span class='error'>#{l}</span>" : l %>
 <% end -%>
 </pre>
+
+</div>

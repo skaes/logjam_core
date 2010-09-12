@@ -244,6 +244,14 @@ td.number {text-align: right;}
 #graph-counts {font-size: 90%; margin-bottom: 10px; white-space: nowrap;}
 #graph-counts p {font-weight: bold; white-space: nowrap;}
 
+#requests, #single-request {
+  margin: 8px;
+}
+
+#request-lines {
+  margin-top:15px;
+}
+
 .warning {
   font-size: 200%;
   color: blue;
@@ -317,4 +325,5 @@ div.auto_complete ul strong.highlight {
 #stream-toggle {
 }
 #live-stream {
+  margin: 8px;
 }
