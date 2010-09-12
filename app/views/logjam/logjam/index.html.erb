@@ -32,7 +32,7 @@ function go_home() {
       <div class="auto_complete" id="controller_action_page_auto_complete"></div>
       <script type="text/javascript">
       //<![CDATA[
-      var controller_action_page_auto_completer = new Ajax.Autocompleter('controller_action_page', 'controller_action_page_auto_complete', '<%= h Logjam.base_url %>/logjam/auto_complete_for_controller_action_page', {method:'get', parameters: "year=<%= params[:year] %>&month=<%= params[:month]%>&day=<%= params[:day] %>"});
+      var controller_action_page_auto_completer = new Ajax.Autocompleter('controller_action_page', 'controller_action_page_auto_complete', '<%= h Logjam.base_url %>/logjam/auto_complete_for_controller_action_page', {method:'get', parameters: "year=<%=params[:year]%>&month=<%=params[:month]%>&day=<%=params[:day]%>&app=<%=@app%>&env=<%=@env%>"});
       //]]>
       </script>
     </p>

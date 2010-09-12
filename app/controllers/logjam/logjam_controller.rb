@@ -6,11 +6,11 @@ module Logjam
 
     def auto_complete_for_controller_action_page
       prepare_params
-      re = /#{params[:page]}/i
+      show_modules = [":", "::"].include?(@page)
+      re = show_modules ? /^::/ : /#{@page}/i
       pages = Totals.new(@db).page_names.select {|name| name =~ re}
-      modules = pages.map{|p| p =~ /^(.+?)::/ && $1 }.compact.uniq
-      pages.reject!{|p| p =~ /^::/}
-      @completions = ["::"] + modules.sort + pages.sort
+      pages.collect!{|p| p.gsub(/^::/,'')} unless show_modules
+      @completions = pages.sort[0..34]
       render :inline => "<%= content_tag(:ul, @completions.map{ |page| content_tag(:li, page) }.join) %>"
     end
 
