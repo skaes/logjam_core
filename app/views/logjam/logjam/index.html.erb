@@ -5,6 +5,10 @@ function go_home() {
   jQuery('#resource option:selected').val("total_time");
   jQuery('#filter-form').submit();
 }
+function view_grouping(grouping){
+  jQuery('#grouping option:selected').val(grouping);
+  jQuery('#filter-form').submit();
+}
 </script>
 <% form_tag({:action => :index}, :method => :get, :id => 'filter-form', :autocomplete => "off") do -%>
 <div id='header'>
@@ -36,7 +40,11 @@ function go_home() {
       //]]>
       </script>
     </p>
-    <p class='filter-widget'>
+    <ul class='filter-widget' id='grouping-widget'>
+      <li <%= html_attributes_for_grouping("page") %>>Pages</li>
+      <li <%= html_attributes_for_grouping("request") %>>Requests</li>
+    </ul>
+    <p class='filter-widget' style="visibility:hidden;display:none;">
       <%= label :filter, 'Show' %><br />
       <%= select_tag 'grouping', options_for_select(Logjam::Resource.grouping_options, params['grouping']),
           :onchange => "form.submit()" %>

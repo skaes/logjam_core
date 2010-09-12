@@ -96,7 +96,35 @@ input, select {
 .filter-float-right {float:right; padding-right: 20px;}
 #description.filter-widget {font-style: italic; margin: 0 0 0 5px; font-size: 90%;}
 
-#filter ul li {font-size: 65%; padding: 0px;}
+#grouping-widget {
+  display: inline-block;
+  font-weight: bold;
+  font-size: 13px;
+  list-style-type: none;
+  height: 50px;
+  margin: 0px;
+  margin-left: 10px;
+  margin-right: 30px;
+  padding: 0px;
+}
+
+#grouping-widget li {
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  text-align: center;
+  height: 18px;
+  margin: 2px;
+  padding: 2px 10px 2px 10px;
+}
+
+.active {
+  background: #ccc;
+}
+
+.inactive {
+  cursor: pointer;
+}
+
 #distribution-plot {padding: 0; margin: 0; float: left;}
 #enlarged-plot {}
 

@@ -87,6 +87,14 @@ module Logjam
       page.blank? ? page : page.sub(/^::(.)/){$1}
     end
 
+    def html_attributes_for_grouping(grouping)
+      if params[:grouping] == grouping
+        "class='active'"
+      else
+        "class='inactive' onclick=\"view_grouping('#{grouping}')\""
+      end
+    end
+
     def resource_descriptions
       resources = Resource.time_resources + Resource.memory_resources + Resource.call_resources
       groupings = Resource.groupings
