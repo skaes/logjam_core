@@ -76,6 +76,8 @@ vis.add(pv.Rule)
 
 /* Legend. */
 vis.add(pv.Dot)
+    .events("all")
+    .event("click", function() submit_resource(legend[this.index]))
     .data(legend)
     .left(function() 10+(120*(Math.floor(this.index/2))))
     .bottom(function() -40-14*(this.index%2))
@@ -84,6 +86,7 @@ vis.add(pv.Dot)
     .strokeStyle(color_map)
     .fillStyle(color_map)
     .add(pv.Label)
+       .event("click", function() submit_resource(legend[this.index]))
        .textBaseline("middle")
        .textMargin(7)
        .text(function() legend[this.index]);
@@ -92,6 +95,10 @@ function submit_minutes(start, end, resource) {
    jQuery('#start-minute').val(""+start);
    jQuery('#end-minute').val(""+end);
    jQuery('#grouping option:selected').val("request");
+   submit_resource(resource);
+}
+
+function submit_resource(resource) {
    jQuery('#resource option:selected').val(resource.replace(/ /,'_'));
    jQuery('#filter-form').submit();
 }
