@@ -202,7 +202,7 @@ div#pagetimes h4 {
   padding: 3px 5px;
 }
 
-.sortable {
+.sortable, .clickable {
   cursor: pointer;
 }
 

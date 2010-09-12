@@ -76,7 +76,7 @@ function view_resource(resource){
     </p>
     <%- end -%>
     <%- if params[:grouping] == "request" && Logjam::Resource.heap_resources.include?("heap_growth") -%>
-    <p class='filter-widget' id='heap-growth-widget'>
+    <p class='filter-widget' id='heap-growth-widget' style="visibility:hidden;display:none;">
       <%= label :filter, 'heap growth only' %><br />
       <%= check_box_tag 'heap_growth_only', "1", params['heap_growth_only']=="1", :onchange => "form.submit()" %>
     </p>

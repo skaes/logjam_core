@@ -11,6 +11,7 @@
     <td class='number'><%= number_with_delimiter(request[resource].to_i) %></td>
     <% when :memory -%>
     <td class='number'><%= memory_number(request[resource]) %></td>
+    <td class='number'><%= memory_number(request["heap_growth"].to_i) %></td>
     <% else -%>
     <td class='number'><%= number_with_delimiter(request[resource].to_i) %></td>
     <% end -%>
