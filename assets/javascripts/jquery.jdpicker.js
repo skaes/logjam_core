@@ -47,6 +47,7 @@ jdPicker.DEFAULT_OPTS = {
   short_day_names: ["S", "M", "T", "W", "T", "F", "S"],
   error_out_of_range: "Selected date is out of range",
   selectable_days: [0, 1, 2, 3, 4, 5, 6],
+  selectable: [],
   non_selectable: [],
   rec_non_selectable: [],
   start_of_week: 1,
@@ -100,11 +101,16 @@ jdPicker.prototype = {
 			this.date_encode_s = 'this.strpad(date.getDate()) + " " + this.month_names[date.getMonth()];'; 
 		break;
 		case "YYYY/mm/dd": 
-		default: 
 			this.reg = new RegExp(/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/); 
 			this.date_decode = "new Date(matches[1], parseInt(matches[2]-1), matches[3]);"; 
 			this.date_encode = 'date.getFullYear() + "/" + this.strpad(date.getMonth()+1) + "/" + this.strpad(date.getDate());'; 
 			this.date_encode_s = 'this.strpad(date.getMonth()+1) + "/" + this.strpad(date.getDate());'; 
+		case "YYYY-mm-dd": 
+		default: 
+			this.reg = new RegExp(/^(\d{4})-(\d{1,2})-(\d{1,2})$/); 
+			this.date_decode = "new Date(matches[1], parseInt(matches[2]-1), matches[3]);"; 
+			this.date_encode = 'date.getFullYear() + "-" + this.strpad(date.getMonth()+1) + "-" + this.strpad(date.getDate());'; 
+			this.date_encode_s = 'this.strpad(date.getMonth()+1) + "-" + this.strpad(date.getDate());'; 
 		break;
 	}
 	
@@ -297,7 +303,7 @@ jdPicker.prototype = {
   },
 
   isHoliday: function(date){
-	return ((this.indexFor(this.selectable_days, date.getDay())===false || this.indexFor(this.non_selectable, this.dateToString(date))!==false) || this.indexFor(this.rec_non_selectable, this.dateToShortString(date))!==false);
+	return ((this.indexFor(this.selectable_days, date.getDay())===false || this.indexFor(this.selectable, this.dateToString(date))===false || this.indexFor(this.non_selectable, this.dateToString(date))!==false) || this.indexFor(this.rec_non_selectable, this.dateToShortString(date))!==false);
   },
   
   changeInput: function(dateString) {
