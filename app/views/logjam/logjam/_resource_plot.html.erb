@@ -114,7 +114,7 @@ function restrict_minutes(p, resource){
 }
 
 function reset_minutes(){
-   submit_minutes(0,1440, "total_time");
+   submit_minutes(0, 1440, jQuery('#resource option:selected').val());
 }
 
 /* Request counts. */
@@ -126,7 +126,7 @@ vis.add(pv.Panel)
     .bottom(h-50)
     .add(pv.Area)
       .cursor("pointer")
-      .event("click", function() restrict_minutes(this.mouse(), "total_time"))
+      .event("click", function() restrict_minutes(this.mouse(), jQuery('#resource option:selected').val()))
       .data(request_counts)
       .left(function() x(this.index))
       .bottom(0)
