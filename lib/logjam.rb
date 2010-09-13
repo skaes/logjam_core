@@ -49,28 +49,29 @@ module Logjam
     "logjam-#{app}-#{env}-#{sanitize_date(date)}"
   end
 
-  def db_name_format(env='(.+?)')
-    /^logjam-(.+?)-(#{env})-((.+?)-(.+?)-(.+?))$/
+  def db_name_format(options={})
+    opts = options.merge(:app => '.+?', :env => '.+?')
+    /^logjam-(#{opts[:app]})-(#{opts[:env]})-((.+?)-(.+?)-(.+?))$/
   end
 
-  def databases(env='(.+?)')
-    mongo.database_names.grep(db_name_format(env))
+  def databases(options={})
+    mongo.database_names.grep(db_name_format(options.merge(:app => '.+?', :env => '.+?')))
   end
 
   def database_apps
     databases.map{|t| t[db_name_format, 1]}.uniq.sort
   end
 
-  def database_envs
-    databases.map{|t| t[db_name_format, 2]}.uniq.sort
+  def database_envs(app)
+    databases(:app => app).map{|t| t[db_name_format, 2]}.uniq.sort
   end
 
-  def database_days(env='(.+?)')
-    databases(env).map{|t| t[db_name_format(env), 3]}.uniq.sort.reverse
+  def database_days(app, env)
+    databases(:app => app, :env => env).map{|t| t[db_name_format, 3]}.uniq.sort.reverse
   end
 
-  def only_one_env?
-    database_envs.size == 1
+  def only_one_env?(app)
+    database_envs(app).size == 1
   end
 
   def only_one_app?

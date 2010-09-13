@@ -166,15 +166,15 @@
 }
 .jdpicker_w .date_selector td.selectable_day, .jdpicker_w .date_selector tr.selectable_week td {
 	cursor: pointer;
-	background:url('images/bg_selectable.png');
+	background:url('/images/bg_selectable.png');
 	border:1px solid #aaa;
 	color:#333
 }
 .jdpicker_w .date_selector td.selected, .jdpicker_w .date_selector tr.selected  td{
-	background: url('images/bg_selected.png');
+	background: url('/images/bg_selected.png');
 	font-weight: bold;
 }
 .jdpicker_w .date_selector tr.selectable_week.hover td, .jdpicker_w .date_selector td.selectable_day.hover {
-	background: url('images/bg_hover.png');
+	background: url('/images/bg_hover.png');
 	color: white;
 }

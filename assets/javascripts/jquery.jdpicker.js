@@ -314,7 +314,7 @@ jdPicker.prototype = {
   
   show: function() {
 	$('.error_msg', this.rootLayers).css('display', 'none');
-    this.rootLayers.slideDown();
+    this.rootLayers.slideDown(50);
     $([window, document.body]).click(this.hideIfClickOutside);
     this.input.unbind("focus", this.show);
 	this.input.attr('readonly', true);
@@ -325,7 +325,7 @@ jdPicker.prototype = {
   hide: function() {
 	if(this.input.context.type!="hidden"){
 		this.input.removeAttr('readonly');
-		this.rootLayers.slideUp();
+		this.rootLayers.slideUp(50);
 		$([window, document.body]).unbind("click", this.hideIfClickOutside);
 		this.input.focus(this.show);
 		$(document.body).unbind("keydown", this.keydownHandler);

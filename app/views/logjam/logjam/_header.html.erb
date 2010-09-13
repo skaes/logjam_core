@@ -14,7 +14,7 @@ function view_resource(resource){
   jQuery('#filter-form').submit();
 }
 jQuery(document).ready(function(){
-  jQuery('#datepicker').jdPicker({date_format:"YYYY-mm-dd", selectable:[<%= Logjam.database_days(params[:env]).map{|d| %Q|"#{d}"|}.join(', ') %>], error_out_of_range:"No data for that date."});
+  jQuery('#datepicker').jdPicker({date_format:"YYYY-mm-dd", selectable:[<%= Logjam.database_days(params[:app], params[:env]).map{|d| %Q|"#{d}"|}.join(', ') %>], error_out_of_range:"No data for that date."});
 });
 </script>
 <div id='header'>
@@ -27,10 +27,10 @@ jQuery(document).ready(function(){
       <%= select_tag 'app', options_for_select(Logjam.database_apps, params[:app]), :onchange => "form.submit()" %>
     </p>
     <% end %>
-    <% unless Logjam.only_one_env? %>
+    <% unless Logjam.only_one_env?(params[:app]) %>
     <p class='filter-widget'>
       <%= label :filter, 'environment' %><br />
-      <%= select_tag 'env', options_for_select(Logjam.database_envs, params[:env]), :onchange => "form.submit()" %>
+      <%= select_tag 'env', options_for_select(Logjam.database_envs(params[:app]), params[:env]), :onchange => "form.submit()" %>
     </p>
     <% end %>
     <p class='filter-widget'>
