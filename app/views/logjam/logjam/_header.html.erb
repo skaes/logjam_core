@@ -1,0 +1,88 @@
+<script type="text/javascript">
+function go_home() {
+  jQuery('#controller_action_page').val("::");
+  jQuery('#grouping option:selected').val("page");
+  jQuery('#resource option:selected').val("total_time");
+  jQuery('#filter-form').submit();
+}
+function view_grouping(grouping){
+  jQuery('#grouping option:selected').val(grouping);
+  jQuery('#filter-form').submit();
+}
+function view_resource(resource){
+  jQuery('#resource option:selected').val(resource);
+  jQuery('#filter-form').submit();
+}
+</script>
+<div id='header'>
+  <% form_tag({:action => :index}, :method => :get, :id => 'filter-form', :autocomplete => "off") do -%>
+  <div id='filter'>
+    <input type="button" id='home-button' value="Logjam" onclick="go_home()"/>
+    <% unless Logjam.only_one_app? %>
+    <p class='filter-widget'>
+      <%= label :filter, 'application' %><br />
+      <%= select_tag 'app', options_for_select(Logjam.database_apps, params[:app]), :onchange => "form.submit()" %>
+    </p>
+    <% end %>
+    <% unless Logjam.only_one_env? %>
+    <p class='filter-widget'>
+      <%= label :filter, 'environment' %><br />
+      <%= select_tag 'env', options_for_select(Logjam.database_envs, params[:env]), :onchange => "form.submit()" %>
+    </p>
+    <% end %>
+    <p class='filter-widget'>
+      <%= label :filter, 'date' %><br />
+      <%= select_tag 'starts_at', options_for_select(Logjam.database_days, @date.to_s(:db)[0..9]), :onchange => "form.submit()" %>
+    </p>
+    <p class='filter-widget'>
+      <%= label :filter, 'page selector' %><br />
+      <input id="controller_action_page" name="page" size="45" type="text" value="<%= h @page %>" />
+      <div class="auto_complete" id="controller_action_page_auto_complete"></div>
+      <script type="text/javascript">
+      //<![CDATA[
+      var controller_action_page_auto_completer = new Ajax.Autocompleter('controller_action_page', 'controller_action_page_auto_complete', '<%= h Logjam.base_url %>/logjam/auto_complete_for_controller_action_page', {method:'get', parameters: "year=<%=params[:year]%>&month=<%=params[:month]%>&day=<%=params[:day]%>&app=<%=@app%>&env=<%=@env%>"});
+      //]]>
+      </script>
+    </p>
+    <ul class='filter-widget' id='grouping-widget'>
+      <li <%= html_attributes_for_grouping("page") %>>Pages</li>
+      <li <%= html_attributes_for_grouping("request") %>>Requests</li>
+    </ul>
+    <p class='filter-widget' style="visibility:hidden;display:none;">
+      <%= label :filter, 'Show' %><br />
+      <%= select_tag 'grouping', options_for_select(Logjam::Resource.grouping_options, params['grouping']),
+          :onchange => "form.submit()" %>
+    </p>
+    <table class='filter-widget' id='resource-type-widget'>
+      <tr>
+        <td <%= html_attributes_for_resource_type("time") %>>time</td>
+        <td <%= html_attributes_for_resource_type("call") %>>calls</td>
+      </tr>
+      <tr>
+        <td <%= html_attributes_for_resource_type("memory") %>>memory</td>
+        <!-- <td <%= html_attributes_for_resource_type("heap") %>>heap</td> -->
+      </tr>
+    </table>
+    <p class='filter-widget' id='resource-widget' style="visibility:hidden;display:none;">
+      <%= label :filter, 'with resource' %><br />
+      <%= select_tag 'resource', options_for_select(Logjam::Resource.resource_options, params['resource']),
+          :onchange => "form.submit()" %>
+    </p>
+    <%- if params[:grouping] == "page" -%>
+    <p class='filter-widget' id='function-widget' style="visibility:hidden;display:none;">
+      <%= label :filter, 'sorted by' %><br />
+      <%= select_tag 'grouping_function', options_for_select(Logjam::Resource.grouping_functions, params['grouping_function']),
+          :onchange => "form.submit()" %>
+    </p>
+    <%- end -%>
+    <%- if params[:grouping] == "request" && Logjam::Resource.heap_resources.include?("heap_growth") -%>
+    <p class='filter-widget' id='heap-growth-widget' style="visibility:hidden;display:none;">
+      <%= label :filter, 'heap growth only' %><br />
+      <%= check_box_tag 'heap_growth_only', "1", params['heap_growth_only']=="1", :onchange => "form.submit()" %>
+    </p>
+    <%- end -%>
+    <input id="start-minute" name="start_minute" type="hidden" value="<%= h(params[:start_minute]) %>" />
+    <input id="end-minute" name="end_minute" type="hidden" value="<%= h(params[:end_minute]) %>" />
+  </div>
+  <% end -%>
+</div>
