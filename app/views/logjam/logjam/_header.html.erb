@@ -39,7 +39,7 @@ jQuery(document).ready(function(){
     </p>
     <p class='filter-widget'>
       <%= label :filter, 'page selector' %><br />
-      <input id="controller_action_page" name="page" size="45" type="text" value="<%= h @page %>" />
+      <input id="controller_action_page" name="page" size="45" type="text" value="<%= h @page %>" onchange="form.submit()" />
       <div class="auto_complete" id="controller_action_page_auto_complete"></div>
       <script type="text/javascript">
       //<![CDATA[
