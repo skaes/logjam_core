@@ -32,7 +32,7 @@ function view_resource(resource){
     <% end %>
     <p class='filter-widget'>
       <%= label :filter, 'date' %><br />
-      <%= select_tag 'starts_at', options_for_select(Logjam.database_days, @date.to_s(:db)[0..9]), :onchange => "form.submit()" %>
+      <input size="11" type="text" name="starts_at" value="<%= @date %>" id="datepicker" onchange="form.submit()" />
     </p>
     <p class='filter-widget'>
       <%= label :filter, 'page selector' %><br />
@@ -153,3 +153,9 @@ function view_resource(resource){
   </div>
   <% end -%>
 </div>
+
+<script type="text/javascript"> 
+  jQuery(document).ready(function(){
+    jQuery('#datepicker').jdPicker({date_format:"YYYY-mm-dd", selectable:[<%= Logjam.database_days.map{|d| %Q|"#{d}"|}.join(', ') %>], error_out_of_range:"No data for that date."});
+  });
+</script> 
