@@ -14,7 +14,7 @@ function view_resource(resource){
   jQuery('#filter-form').submit();
 }
 jQuery(document).ready(function(){
-  jQuery('#datepicker').jdPicker({date_format:"YYYY-mm-dd", selectable:[<%= Logjam.database_days.map{|d| %Q|"#{d}"|}.join(', ') %>], error_out_of_range:"No data for that date."});
+  jQuery('#datepicker').jdPicker({date_format:"YYYY-mm-dd", selectable:[<%= Logjam.database_days(params[:env]).map{|d| %Q|"#{d}"|}.join(', ') %>], error_out_of_range:"No data for that date."});
 });
 </script>
 <div id='header'>

@@ -49,22 +49,24 @@ module Logjam
     "logjam-#{app}-#{env}-#{sanitize_date(date)}"
   end
 
-  DB_NAME_FORMAT = /^logjam-(.+?)-(.+?)-((.+?)-(.+?)-(.+?))$/
+  def db_name_format(env='(.+?)')
+    /^logjam-(.+?)-(#{env})-((.+?)-(.+?)-(.+?))$/
+  end
 
-  def databases
-    mongo.database_names.grep(DB_NAME_FORMAT)
+  def databases(env='(.+?)')
+    mongo.database_names.grep(db_name_format(env))
   end
 
   def database_apps
-    databases.map{|t| t[DB_NAME_FORMAT, 1]}.uniq.sort
+    databases.map{|t| t[db_name_format, 1]}.uniq.sort
   end
 
   def database_envs
-    databases.map{|t| t[DB_NAME_FORMAT, 2]}.uniq.sort
+    databases.map{|t| t[db_name_format, 2]}.uniq.sort
   end
 
-  def database_days
-    databases.map{|t| t[DB_NAME_FORMAT, 3]}.uniq.sort.reverse
+  def database_days(env='(.+?)')
+    databases(env).map{|t| t[db_name_format(env), 3]}.uniq.sort.reverse
   end
 
   def only_one_env?

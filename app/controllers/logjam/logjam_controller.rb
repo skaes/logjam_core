@@ -78,7 +78,7 @@ module Logjam
     private
 
     def default_date
-      (Logjam.database_days.first || Date.today).to_date
+      (Logjam.database_days(params[:env]).first || Date.today).to_date
     end
 
     def get_app_env
