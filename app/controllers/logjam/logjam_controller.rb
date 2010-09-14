@@ -83,7 +83,7 @@ module Logjam
 
     def get_app_env
       @app = params[:app] || Logjam.database_apps.first
-      @env = params[:env] || Logjam.database_envs.first
+      @env = params[:env] || Logjam.database_envs(@app).first
     end
 
     def get_date
