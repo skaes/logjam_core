@@ -4,7 +4,7 @@
   </tr>
   <% @dataset.response_codes.keys.sort.each do |rc| %>
   <tr>
-    <td class='number'><%= rc %></td>
+    <td><%= rc %></td>
     <td class='number'><%= memory_number(@dataset.response_codes[rc]) %></td>
   </tr>
   <% end %>
