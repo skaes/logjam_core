@@ -133,14 +133,14 @@ input, select {
   background: #ccc;
 }
 
-.inactive:hover {
+.inactive:hover, .active:hover {
   color: #000;
   background-color:#fff;
   cursor: pointer;
 }
 
 #distribution-plot {padding: 0; margin: 0; float: left;}
-#enlarged-plot {}
+#enlarged-plot { margin-top: 10px; }
 
 img {
   border: 0 none;

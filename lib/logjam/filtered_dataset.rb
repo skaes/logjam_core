@@ -44,6 +44,10 @@ module Logjam
       Resource.description(resource, grouping, grouping_function)
     end
 
+    def short_description
+      Resource.short_description(resource, grouping, grouping_function)
+    end
+
     def grouping?
       Resource.grouping?(grouping)
     end

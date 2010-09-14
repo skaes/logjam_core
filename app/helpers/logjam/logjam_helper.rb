@@ -65,6 +65,17 @@ module Logjam
       end
     end
 
+    def sometimes_link_stddev(page, resource)
+      stddev = page.stddev(resource)
+      n = number_with_precision(stddev, :precision => 0 , :delimiter => ',')
+      if stddev > 0 && page.page != "Others..."
+        options = {:params => clean_params(params.merge(:page => without_module(page.page), :action => distribution_kind(resource)))}
+        link_to(n, options, :title => distribution_kind(resource).to_s.gsub(/_/,''))
+      else
+        n
+      end
+    end
+
     def link_to_request(text, options, response_code)
       if response_code == 500
         link_to(text, options, :title => "show request", :class => "error")
@@ -96,10 +107,10 @@ module Logjam
     end
 
     def html_attributes_for_resource_type(resource_type)
+      resource = Resource.default_resource(resource_type)
       if Resource.resource_type(params[:resource]) == resource_type.to_sym
-        "class='active' title='analyzing #{resource_type} resources'"
+        "class='active' title='analyzing #{resource_type} resources' onclick=\"view_resource('#{resource}')\""
       else
-        resource = Resource.default_resource(resource_type)
         "class='inactive' title='analyze #{resource_type} resources' onclick=\"view_resource('#{resource}')\""
       end
     end
