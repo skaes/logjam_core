@@ -102,7 +102,7 @@ function submit_minutes(start, end, resource) {
 
 function submit_resource(resource) {
    if (resource != "requests/second") {
-     jQuery('#resource option:selected').val(resource.replace(/ /,'_'));
+     jQuery('#resource option:selected').val(resource.replace(/ /g,'_'));
      jQuery('#filter-form').submit();
    }
 }
