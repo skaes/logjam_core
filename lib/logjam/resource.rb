@@ -144,6 +144,10 @@ module Logjam
         end
       end
 
+      def short_description(resource, grouping, grouping_function)
+        description = description(resource, grouping, grouping_function)
+        description =~ /by (.*)$/ && $1
+      end
     end
   end
 end
