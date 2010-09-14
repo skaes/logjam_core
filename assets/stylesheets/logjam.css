@@ -133,7 +133,7 @@ input, select {
   background: #ccc;
 }
 
-.inactive:hover {
+.inactive:hover, .active:hover {
   color: #000;
   background-color:#fff;
   cursor: pointer;
