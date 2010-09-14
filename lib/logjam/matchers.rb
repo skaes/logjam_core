@@ -49,10 +49,10 @@ module Logjam
         { :page => $1 }
     end
 
-    # Started GET "/apps/update_state" for 87.193.61.218 at 2010-06-10 07:54:05
+    # Started GET "/apps/update_state" for 87.193.61.218 at Tue Sep 14 22:07:18 +0200 2010
     STARTED_RAILS3 = lambda do |line|
       line =~ /^Started .+ for (.+) at (.+)/ and
-        { :ip => $1, :started_at => $2 }
+        { :ip => $1, :started_at => Date.parse($2).to_s }
     end
 
     # default rails session log line. optional matcher.
