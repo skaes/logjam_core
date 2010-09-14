@@ -140,7 +140,7 @@ input, select {
 }
 
 #distribution-plot {padding: 0; margin: 0; float: left;}
-#enlarged-plot {}
+#enlarged-plot { margin-top: 10px; }
 
 img {
   border: 0 none;
