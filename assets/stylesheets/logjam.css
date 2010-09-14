@@ -231,14 +231,13 @@ td.number {text-align: right;}
 
 #resource-plot { float:left; margin-top:-3px; }
 
-#apdex-table {float:left; clear:left;}
+#apdex-table {float:left;}
 #apdex-table td {font-size: 90%;  line-height: 100%; white-space: nowrap; }
 #apdex-table th {font-size: 90%;  white-space: nowrap; }
 
 #response-code-summary {float:right;}
-#response-code-stats {float:left;}
-#response-code-stats td {font-size: 90%; line-height: 100%; }
-#response-code-stats th {font-size: 90%; white-space: nowrap;}
+#response-code-stats td {font-size: 90%;  line-height: 100%;}
+#response-code-stats th {font-size: 90%;  line-height: 100%;}
 
 #graph-stats td {font-size: 90%; line-height: 100%; white-space: nowrap;}
 #graph-stats th {font-size: 90%; white-space: nowrap;}
