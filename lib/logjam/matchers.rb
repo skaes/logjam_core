@@ -14,15 +14,15 @@ module Logjam
 #    PRE_MATCH = 'Completed|Processing|Session ID'
 
     # log line format @XING
-    # Jul 08 07:42:53 ext-xeapp52-5 rails[31023] user[Anonymous]: ... rails log content ...
-    # Jul 08 07:42:53 ext-xeapp52-5 rails[31023] user[243242356]: ... rails log content ...
+    # WARN  Jul 08 07:42:53 ext-xeapp52-5 rails[31023] user[Anonymous]: ... rails log content ...
+    # INFO  Jul 08 07:42:53 ext-xeapp52-5 rails[31023] user[243242356]: ... rails log content ...
     #
     # standard syslog format would be
     # Jul 08 07:42:53 ext-xeapp52-5 rails[31023]: ... rails log content ...
     # the following matcher works in both cases
-    # unlike the other matchers, this one returns an array of [host, process_id, user_id, engine, remaining_log_line_content]
+    # unlike the other matchers, this one returns an array of [severity1, host, process_id, severity2, user_id, engine, payload]
     SYSLOG_LINE_SPLITTER = lambda do |line|
-      line =~ / ([\S]+) [\S]+\[(\d+)\](?:: (\S+))?(?: user\[(.+?)\])?(?: engine\[(.+?)\])?: (.*)/ and
+      line =~ /^(?:([A-Z]+)\s+)?(?:\S+) (?:\S+) (?:\S+) ([\S]+) [\S]+\[(\d+)\](?:: (\S+))?(?: user\[(.+?)\])?(?: engine\[(.+?)\])?: (.*)/ and
         Regexp.last_match.captures
     end
 
