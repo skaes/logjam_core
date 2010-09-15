@@ -150,7 +150,7 @@ module Logjam
     end
 
     def extract_lines(log_lines)
-      log_lines.first.is_a?(Array) ? (log_lines.map{|s,l| l}) : l
+      log_lines.first.is_a?(Array) ? (log_lines.map{|s,l| l}) : log_lines
     end
 
     def extract_exception(log_lines)
