@@ -71,7 +71,11 @@
     <% next if value.blank?  -%>
     <tr>
       <td class='resource_name'><%= h name %></td>
+      <% if name == "severity" -%>
+      <td class='number'><%= format_severity(value) %></td>
+      <% else -%>
       <td class='number'><%= h value %></td>
+      <% end -%>
     </tr>
   <% end -%>
 </table>
@@ -79,7 +83,7 @@
 
 <pre id='request-lines' class="filter-widget">
 <% (@request["lines"]||[]).each do |line| -%>
-&#10145; <%= ((l = safe_h line) =~ /rb:\d+:in|Error|Exception/ && (l !~ /^(Rendering|Completed|Processing|Parameters)/)) ? "<span class='error'>#{l}</span>" : l %>
+<%= format_log_line(line) %>
 <% end -%>
 </pre>
 

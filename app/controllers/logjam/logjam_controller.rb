@@ -28,7 +28,11 @@ module Logjam
     def errors
       get_date
       @page = params[:page]
-      q = Requests.new(@db, "minute", @page, :response_code => 500, :limit => 500)
+      if params[:error_type] == "internal"
+        q = Requests.new(@db, "minute", @page, :response_code => 500, :limit => 500)
+      else
+        q = Requests.new(@db, "minute", @page, :severity => 2, :limit => 500)
+      end
       @error_count = q.count
       @requests = q.all
     end

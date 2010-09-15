@@ -236,6 +236,10 @@ module Logjam
       response_codes[500] || 0
     end
 
+    def logged_error_count(level)
+      @logged_error_count ||= Requests.new(@db, "minute", @page, :severity => level).count
+    end
+
     def response_codes
       @response_codes ||= Totals.new(@db, %w(response), page).response_codes
     end

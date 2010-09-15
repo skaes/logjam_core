@@ -40,6 +40,7 @@ module Logjam
       @requests = db["requests"]
       @requests.create_index([ ["page", Mongo::ASCENDING] ])
       @requests.create_index([ ["response_code", Mongo::DESCENDING] ])
+      @requests.create_index([ ["severity", Mongo::DESCENDING] ])
       @requests.create_index([ ["minute", Mongo::DESCENDING] ])
       @requests.create_index([ ["started_at", Mongo::DESCENDING] ])
       FIELDS.each{|f| @requests.create_index([ [f, Mongo::DESCENDING] ])}
@@ -49,6 +50,7 @@ module Logjam
     end
 
     def add(entry)
+      host = entry[:host]
       severity = entry[:severity]
       page = entry[:page]
       page << "#unknown_method" unless page =~ /#/
@@ -120,7 +122,11 @@ module Logjam
         end
       end
 
-      request = {"severity" => severity, "page" => page, "minute" => minute, "response_code" => response_code, "user_id" => user_id, "lines" => lines}.merge!(fields)
+      request = {
+        "severity" => severity, "page" => page, "minute" => minute, "response_code" => response_code,
+        "host" => host, "user_id" => user_id, "lines" => lines
+      }.merge!(fields)
+
       @requests.insert(request) if interesting?(request)
     end
 
@@ -141,7 +147,8 @@ module Logjam
     def interesting?(request)
       request["total_time"].to_i > @import_threshold ||
         request["heap_growth"].to_i > 0 ||
-        request["response_code"].to_i == 500
+        request["response_code"].to_i == 500 ||
+        request["severity"] > 1
     end
 
     def setup_buffers

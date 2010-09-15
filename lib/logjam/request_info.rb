@@ -9,8 +9,9 @@ module Logjam
       @@matchers
     end
 
-    def initialize(host, process_id, user_id, lines, severity)
-      @info = {:host => host, :process_id => process_id.to_i, :user_id => user_id.to_i, :page => nil, :ip => nil, :lines => lines, :severity => severity || "INFO"}
+    def initialize(host, process_id, user_id, lines)
+      severity = lines.map{|s,l| s}.max
+      @info = {:host => host, :process_id => process_id.to_i, :user_id => user_id.to_i, :page => nil, :ip => nil, :lines => lines, :severity => severity}
       @info.merge!(default_values)
       process lines
       unless @info[:page]
@@ -57,7 +58,7 @@ module Logjam
     end
 
     def process(entry)
-      entry.each do |line|
+      entry.each do |severity, line|
         # puts "matching line #{line}"
         matchers.each do |matcher|
           if extracted_values = matcher.call(line)

@@ -138,6 +138,42 @@ module Logjam
       g.to_json
     end
 
+    SEVERITY_LABELS = %w(DEBUG INFO WARN ERROR FATAL)
+
+    def format_severity(severity)
+      severity.is_a?(String) ? severity : (severity && SEVERITY_LABELS[severity]) || "UNKNOWN"
+    end
+
+    def severity_icon(severity)
+      img = format_severity(severity).downcase
+      image_tag("#{img}.png", :alt => "severity #{img}", :title => "severity #{img}")
+    end
+
+    def extract_lines(log_lines)
+      log_lines.is_a?(Array) ? (log_lines.map{|s,l| l}) : l
+    end
+
+    def extract_exception(log_lines)
+      extract_lines(log_lines).map{|l| safe_h(l)}.detect{|l| l =~ /rb:\d+:in|Error|Exception/}.to_s[0..70]
+    end
+
+    def format_log_level(l)
+#      "&#10145;"
+      severity_icon(l)
+    end
+
+    def format_log_line(line)
+      if line.is_a?(String)
+        level = 1
+      else
+        level, line = line
+      end
+      l = safe_h line
+      level = 2 if level == 1 && (l =~ /rb:\d+:in|Error|Exception/) && (l !~ /^(Rendering|Completed|Processing|Parameters)/)
+      colored_line = level > 1 ? "<span class='error'>#{l}</span>" : l
+      "#{format_log_level(level)} #{colored_line}"
+    end
+
     # try to fix broken string encodings. most of the time the string is latin-1 encoded
     if RUBY_VERSION >= "1.9"
       def safe_h(s)
