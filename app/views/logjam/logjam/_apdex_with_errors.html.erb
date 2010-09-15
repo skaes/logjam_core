@@ -14,8 +14,8 @@
       :error_type => "internal", :page => (@page||'').gsub(/^::/,'')))) %></td>
   </tr>
   <tr>
-    <td class='error'>logged errors/warnings</td>
-    <td class='number error'><%= link_to(@dataset.logged_error_count(2), :params =>
+    <td class='error'>logged errors</td>
+    <td class='number error'><%= link_to(@dataset.logged_error_count(3), :params =>
       clean_params(params.slice(:year,:month,:day).merge(:action => "errors",
       :error_type => "logged", :page =>  (@page||'').gsub(/^::/,'')))) %></td>
   </tr>

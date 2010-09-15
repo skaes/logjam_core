@@ -25,7 +25,7 @@ module Logjam
     def all
       all_fields = ["page", "user_id", "heap_growth", "response_code", "severity", @resource]
       all_fields << "minute" unless all_fields.include?("minute")
-      all_fields << "lines" if @options[:response_code] == 500
+      all_fields << "lines" if @options[:response_code] == 500 ||  @options[:severity]
 
       result = nil
       access_time = Benchmark.ms do

@@ -1,16 +1,16 @@
 <%= render "header" %>
 
 <div id='requests'>
-  <h1>Internal Server Errors <%= h @page %> (<%= @error_count %> total)</h1>
+  <h1><%= h @title %> <%= h @page %> (<%= @error_count %> total)</h1>
   <table class='full_stats'>
-    <tr><th>Time</th><th>Action</th><th>Severity</th><th>Exception</th></tr>
+    <tr><th>Severity</th><th>Time</th><th>Action</th><th>Exception</th></tr>
     <% @requests.each do |r| %>
     <tr class='full_stats'>
+      <td style="text-align:center"><%= severity_icon(r["severity"]) %></td>
       <% error_link_params = {:params => clean_params(params.merge(:action =>"show", :id => r["_id"]))} %>
       <td><%= link_to(minute_to_human(r["minute"]), error_link_params, :title => "show request") %></td>
       <td><%= link_to(h(r["page"]), {:params => clean_params(params.merge(:action => "index", :grouping => "page", :page => r["page"]))}, :title => "show page stats") %></td>
-      <td><%= h format_severity(r["severity"]) %></td>
-      <td><%= link_to(extract_exception(r["lines"]||[]), error_link_params, :title => "show request")  %></td>
+      <td><%= link_to(extract_error(r["lines"]||[]), error_link_params, :title => "show request")  %></td>
     </tr>
     <% end %>
   </table>

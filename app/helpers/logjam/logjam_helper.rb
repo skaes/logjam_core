@@ -146,7 +146,7 @@ module Logjam
 
     def severity_icon(severity)
       img = format_severity(severity).downcase
-      image_tag("#{img}.png", :alt => "severity #{img}", :title => "severity #{img}")
+      image_tag("#{img}.png", :alt => "severity: #{img}", :title => "severity: #{img}")
     end
 
     def extract_lines(log_lines)
@@ -155,6 +155,11 @@ module Logjam
 
     def extract_exception(log_lines)
       extract_lines(log_lines).map{|l| safe_h(l)}.detect{|l| l =~ /rb:\d+:in|Error|Exception/}.to_s[0..70]
+    end
+
+    def extract_error(log_lines)
+      return extract_exception(log_lines) if log_lines.is_a?(String)
+      safe_h(log_lines.detect{|(s,l)| s >= 3}[1])[0..70]
     end
 
     def format_log_level(l)
