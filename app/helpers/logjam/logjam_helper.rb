@@ -150,7 +150,7 @@ module Logjam
     end
 
     def extract_lines(log_lines)
-      log_lines.is_a?(Array) ? (log_lines.map{|s,l| l}) : l
+      log_lines.first.is_a?(Array) ? (log_lines.map{|s,l| l}) : l
     end
 
     def extract_exception(log_lines)
@@ -158,7 +158,7 @@ module Logjam
     end
 
     def extract_error(log_lines)
-      return extract_exception(log_lines) if log_lines.is_a?(String)
+      return extract_exception(log_lines) if log_lines.first.is_a?(String)
       safe_h(log_lines.detect{|(s,l)| s >= 3}[1])[0..70]
     end
 
