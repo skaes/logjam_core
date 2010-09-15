@@ -10,13 +10,13 @@
   <tr>
     <td class='error'>internal server errors</td>
     <td class='number error'><%= link_to(@dataset.error_count, :params =>
-      clean_params(params.slice(:year,:month,:day).merge(:action => "errors",
+      clean_params(params.slice(:year,:month,:day, :app, :env).merge(:action => "errors",
       :error_type => "internal", :page => (@page||'').gsub(/^::/,'')))) %></td>
   </tr>
   <tr>
     <td class='error'>logged errors</td>
     <td class='number error'><%= link_to(@dataset.logged_error_count(3), :params =>
-      clean_params(params.slice(:year,:month,:day).merge(:action => "errors",
+      clean_params(params.slice(:year,:month,:day, :app, :env).merge(:action => "errors",
       :error_type => "logged", :page =>  (@page||'').gsub(/^::/,'')))) %></td>
   </tr>
 </table>
