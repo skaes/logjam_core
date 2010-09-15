@@ -23,21 +23,28 @@ module Logjam
         severity1, host, process_id, severity2, user_id, engine, payload = *parts
         severity = SEVERITIES[severity1 || severity2]
 
-        # extract generic parameters and stash away the line
         key = "#{host}-#{process_id}"
-        (@unprocessed_requests[key] ||= []) << [severity, payload]
-
-        # if this line is a completion line and also has a request header, then we
-        # create a request info object and yield it
-        if payload =~ /^Completed/
-          request = @unprocessed_requests.delete key
-          yield RequestInfo.new(host, process_id, user_id, request) if request.any? {|s,l| l =~ /^Processing/}
+        if payload =~/^Processing/
+          # puts "processing"
+          if request = @unprocessed_requests.delete(key)
+            puts "incomplete"
+            yield RequestInfo.new(host, process_id, user_id, request)
+          end
+          @unprocessed_requests[key] = [[severity, payload]]
+        elsif payload =~ /^Completed/
+          # puts "completed"
+          if request = @unprocessed_requests.delete(key)
+            yield RequestInfo.new(host, process_id, user_id, request << [severity, payload])
+          end
+        elsif request = @unprocessed_requests[key]
+          # puts "other"
+          request << [severity, payload]
         end
       else
         $stderr.puts "no match for line: #{line}"
       end
     rescue Exception => e
-      $stderr.puts "Exception occured during log line processing: #{e}"
+      $stderr.puts "Exception occured during log line processing: #{e}: #{e.backtrace.join("\n")}"
       $stderr.puts "Offending log line: #{line}"
     end
   end

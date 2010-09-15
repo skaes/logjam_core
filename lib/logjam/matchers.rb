@@ -152,6 +152,11 @@ module Logjam
       }
     end
 
+    # /!\ FAILSAFE /!\  Wed Sep 15 16:49:43 +0200 2010  Status: 500
+    FAILSAFE = lambda do |line|
+      line =~ %r{/!\\ FAILSAFE /!\\.*(?:Status: (\d+))} and {:response_code => ($1||500).to_i}
+    end
+
     # default routing key matcher
     ROUTING_KEY_MATCHER = lambda do |key|
        key =~ /^logs\.(.+?)\.(.+?)\..+$/ and {:app => $1, :env => $2}
