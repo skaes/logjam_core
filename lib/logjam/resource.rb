@@ -6,10 +6,9 @@ module Logjam
 
       def resources_for_type(type)
         case type
-        when :time then Resource.time_resources
+        when :time   then Resource.time_resources
         when :memory then Resource.memory_resources
-        else
-          Resource.call_resources
+        when :call   then Resource.call_resources
         end
       end
 
@@ -19,6 +18,10 @@ module Logjam
             hash = YAML.load_file(RAILS_ROOT + '/config/logjam_resources.yml')
             hash.merge(hash){|k, v| v||[]} # convert nils to []
           end
+      end
+
+      def all_resources
+        @all_resources ||= resource_map.values.flatten.map(&:keys).flatten
       end
 
       def time_resources
@@ -76,10 +79,14 @@ module Logjam
         end
       end
 
+      def resource_exists?(resource)
+        all_resources.include?(resource)
+      end
+
       def default_resource(resource_type)
         case resource_type.to_sym
         when :time   then 'total_time'
-        when :call   then (call_resources-['requests']).first
+        when :call   then resource_exists?('db_calls') ? 'db_calls' : (call_resources-['requests']).first
         when :memory then 'allocated_objects'
         end
       end
