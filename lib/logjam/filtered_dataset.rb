@@ -154,17 +154,17 @@ module Logjam
           plot_resources += ["gc_time"] if plot_resources.delete("gc_time")
           zero = Hash.new(0.0)
           results = plot_resources.inject({}){|h,r| h[r] = {}; h}
-          sum = 0
+          totals = []
           nonzero = 0
           intervals_per_day.times do |i|
             row = minutes[i] || zero
             total = 0
             plot_resources.each do |r|
               v = row[r]
-              sum += v
               total += v unless r == "gc_time"
               results[r][i] = v
             end
+            totals << total if total > 0
             max_total = total if max_total < total
             nonzero += 1 if total > 0
           end
@@ -172,7 +172,8 @@ module Logjam
           gc_time = plot_data.shift if resources.include?("gc_time")
           request_counts = []
           intervals_per_day.times{|i| request_counts << (counts[i] || 0) / 60.0}
-          [plot_data, max_total, request_counts, gc_time, sum/nonzero.to_f]
+          y_zoom = totals.sort[(totals.size*0.9).to_i]
+          [plot_data, max_total, request_counts, gc_time, y_zoom]
         end
     end
 

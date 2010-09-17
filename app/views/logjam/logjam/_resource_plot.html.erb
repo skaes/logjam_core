@@ -9,7 +9,7 @@ var legend = <%= ((@resources.reverse+[@gc_time&&"gc_time"]+%w(requests/second))
 var request_counts = <%= @request_counts.to_json %>;
 var gc_time = <%= @gc_time ? @gc_time.to_json : "null" %>;
 var max_y = <%= @protovis_max %>;
-var zoomed_max_y = <%= @protovis_avg * 1.5 %>;
+var zoomed_max_y = <%= @protovis_zoom * 1.5 %>;
 var selected_slice = <%= params[:start_minute].to_i %>;
 var selected_slice_width = <%= params[:end_minute].to_i - params[:start_minute].to_i + 1 %>
 

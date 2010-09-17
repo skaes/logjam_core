@@ -16,7 +16,7 @@ module Logjam
 
     def index
       @dataset = dataset_from_params
-      @protovis_data, @protovis_max, @request_counts, @gc_time, @protovis_avg = @dataset.plot_data
+      @protovis_data, @protovis_max, @request_counts, @gc_time, @protovis_zoom = @dataset.plot_data
       @resources = @dataset.plotted_resources-["gc_time"]
     end
 
@@ -41,7 +41,7 @@ module Logjam
 
     def enlarged_plot
       @dataset = dataset_from_params
-      @protovis_data, @protovis_max, @request_counts, @gc_time, @protovis_avg = @dataset.plot_data
+      @protovis_data, @protovis_max, @request_counts, @gc_time, @protovis_zoom = @dataset.plot_data
       @resources = @dataset.plotted_resources-["gc_time"]
     end
 
