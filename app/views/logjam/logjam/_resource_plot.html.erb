@@ -17,7 +17,7 @@ var selected_slice_width = <%= params[:end_minute].to_i - params[:start_minute].
 var w = <%= width %>,
     h = <%= height %>,
     x = pv.Scale.linear(0, 1440/interval-1).range(0, w),
-    y = pv.Scale.linear(0, max_y).range(0, h).nice(),
+    y = pv.Scale.linear(0, zoomed_max_y).range(0, h).nice(),
     y2 = pv.Scale.linear(0, pv.max(request_counts)).range(0, 50).nice(),
     color_map = pv.colors(colors),
     c = color_map.range();
@@ -178,7 +178,7 @@ if (gc_time != null) {
     .strokeStyle("rgba(0,0,0,.9)");
 }
 
-var zoomed = false;
+var zoomed = true;
 function update_y_scale() {
   var new_max_y = zoomed ? max_y : zoomed_max_y;
   zoomed = !zoomed;
