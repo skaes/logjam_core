@@ -86,7 +86,7 @@ module Logjam
       def default_resource(resource_type)
         case resource_type.to_sym
         when :time   then 'total_time'
-        when :call   then resource_exists?('db_calls') ? 'db_calls' : (call_resources-['requests']).first
+        when :call   then resource_exists?('db_calls') ? 'db_calls' : call_resources.first
         when :memory then 'allocated_objects'
         end
       end
