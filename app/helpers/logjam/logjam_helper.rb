@@ -47,9 +47,10 @@ module Logjam
 
     def sometimes_link_grouping_result(result, grouping, params)
       value = result.send(grouping)
-      if grouping.to_sym == :page && params[:page] !~ /Others/
+      ppage = params[:page]
+      if grouping.to_sym == :page && ppage !~ /Others/ && (ppage != @page || ppage =~ /^::/)
         params = params.merge(grouping => value)
-        params[:page] = without_module(params[:page]) unless @page == "::"
+        params[:page] = without_module(ppage) unless @page == "::"
         link_to(h(value), {:params => clean_params(params)}, :title => "filter with #{h(value)}")
       else
         "<span class='dead-link'>#{h(value)}</span>"
