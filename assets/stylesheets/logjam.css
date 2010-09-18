@@ -46,7 +46,7 @@ input, select {
   right: 0;
   width: 100%;
   height: 50px;
-  background: #CCA383;
+  background: #cca383;
 }
 
 .webkit #header {
@@ -118,15 +118,7 @@ input, select {
 }
 
 #resource-type-widget {
-  border-collpase: collapse;
-}
-
-#resource-type-widget td {
-  -moz-border-radius: 5px;
-  border-radius: 5px;
-  text-align: center;
-  font-weight: bold;
-  padding: 2px 4px 2px 4px;
+  margin-top:3px;
 }
 
 .active {
@@ -328,4 +320,98 @@ div.auto_complete ul strong.highlight {
 }
 #live-stream {
   margin: 8px;
+}
+
+.menu{
+    display: inline-block;
+    border:none;
+    border:0px;
+    margin:0px;
+    padding:0px;
+    font-weight:bold;
+    position:relative;
+    z-index: 100;
+}
+.menu ul{
+    height:25px;
+    list-style:none;
+    margin:0;
+    padding:0;
+}
+.menu li{
+    float:left;
+    padding:0px;
+}
+
+.menu li a.active {
+    background-color:#ccc;
+    color: black;
+}
+.menu li a.inactive {
+    background-color:#cca383;
+    color: black;
+}
+.menu li li a{
+    -moz-border-radius: 0px;
+    border-radius: 0px;
+    line-height: 20px;
+    font-weight: normal;
+    font-size: 12px;
+}
+.menu li a{
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    display:block;
+    font-weight:bold;
+    font-size: 13px;
+    line-height:20px;
+    margin:0px;
+    padding:0px 7px;
+    text-align:center;
+    text-decoration:none;
+}
+.menu li a:hover, .menu ul li:hover a{
+    background: white;
+    text-decoration:none;
+}
+.menu li ul{
+    position: absolute;
+    background:#fff;
+    display:none;
+    height:auto;
+    padding:0px;
+    margin:0px;
+    border:1px solid #ccc;
+}
+.menu li:hover ul{
+    display:block;
+}
+.menu li li {
+    position: relative;
+    display:block;
+    float:none;
+    margin:0px;
+    padding:0px;
+    z-index: 110;
+}
+.menu li:hover li a{
+    background:none;
+
+}
+.menu li ul a{
+    white-space: nowrap;
+    display:block;
+    height:20px;
+    font-style:normal;
+    margin:0px;
+    padding:0px 10px 0px 10px;
+    text-align:left;
+}
+.menu li ul a:hover, .menu li ul li:hover a{
+    background:#ccc;
+    border:0px;
+    text-decoration:none;
+}
+.menu p{
+    clear:left;
 }

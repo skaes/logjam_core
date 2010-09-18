@@ -56,18 +56,35 @@ jQuery(document).ready(function(){
       <%= select_tag 'grouping', options_for_select(Logjam::Resource.grouping_options, params['grouping']),
           :onchange => "form.submit()" %>
     </p>
-    <table class='filter-widget' id='resource-type-widget'>
-      <tr>
-        <td <%= html_attributes_for_resource_type("time") %>>time</td>
+    <div class='menu'>
+      <label style="color:black;">Resource selector</label><br />
+      <ul id='resource-type-widget'>
+        <li><a href='#' <%= html_attributes_for_resource_type(:time) %>>Time</a>
+          <ul>
+            <% Logjam::Resource.time_resources.reverse.each do |r| %>
+            <li><a href='#' onclick="view_resource('<%=r%>')"><%= h r.gsub(/_/,' ') %></a></li>
+            <% end %>
+          </ul>
+        </li>
         <% unless Logjam::Resource.memory_resources.empty? %>
-        <td <%= html_attributes_for_resource_type("memory") %>>memory</td>
+        <li><a href='#' <%= html_attributes_for_resource_type(:memory) %>>Memory</a>
+          <ul>
+            <% Logjam::Resource.memory_resources.reverse.each do |r| %>
+            <li><a href='#' onclick="view_resource('<%=r%>')"><%= h r.gsub(/_/,' ') %></a></li>
+            <% end %>
+          </ul>
+        </li>
         <% end %>
-      </tr>
-      <tr>
-        <td <%= html_attributes_for_resource_type("call") %>>calls</td>
+        <li><a href='#' <%= html_attributes_for_resource_type(:call) %>>Calls</a>
+          <ul>
+            <% Logjam::Resource.call_resources.reverse.each do |r| %>
+            <li><a href='#' onclick="view_resource('<%=r%>')"><%= h r.gsub(/_/,' ') %></a></li>
+            <% end %>
+          </ul>
+        </li>
         <!-- <td <%= html_attributes_for_resource_type("heap") %>>heap</td> -->
-      </tr>
-    </table>
+      </ul>
+    </div>
     <p class='filter-widget' id='resource-widget' style="visibility:hidden;display:none;">
       <%= label :filter, 'with resource' %><br />
       <%= select_tag 'resource', options_for_select(Logjam::Resource.resource_options, params['resource']),
