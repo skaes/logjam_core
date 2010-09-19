@@ -21,6 +21,8 @@ namespace :logjam do
       system("ln -nsf #{logjam_dir}/assets/images/bg_hover.png #{app_dir}/public/images/bg_hover.png")
       system("ln -nsf #{logjam_dir}/assets/images/bg_selectable.png #{app_dir}/public/images/bg_selectable.png")
       system("ln -nsf #{logjam_dir}/assets/images/bg_selected.png #{app_dir}/public/images/bg_selected.png")
+      system("ln -nsf #{logjam_dir}/assets/images/table_sort_desc.png #{app_dir}/public/images/table_sort_desc.png")
+      system("ln -nsf #{logjam_dir}/assets/images/table_sorted_desc.png #{app_dir}/public/images/table_sorted_desc.png")
 
       system("ln -nsf #{logjam_dir}/assets/images/unknown.png #{app_dir}/public/images/unknown.png")
       system("ln -nsf #{logjam_dir}/assets/images/fatal.png #{app_dir}/public/images/fatal.png")

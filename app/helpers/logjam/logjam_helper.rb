@@ -99,6 +99,15 @@ module Logjam
       page.blank? ? page : page.sub(/^::(.)/){$1}
     end
 
+
+    def html_attributes_for_grouping_function(gf, title)
+      if gf.to_sym == @dataset.grouping_function
+        %{class="sorted" title="sorted by #{title}"}
+      else
+        %{class="sortable" onclick="sort_by('#{gf}')" title="sort by #{title}"}
+      end
+    end
+
     def html_attributes_for_grouping(grouping)
       if params[:grouping] == grouping
         "class='active'"
