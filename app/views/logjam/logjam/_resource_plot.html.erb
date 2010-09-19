@@ -66,13 +66,21 @@ vis.add(pv.Label)
     .textAngle(-Math.PI / 2)
     .text("<%= h @dataset.ylabel %>");
 
+<% if @dataset.plot_kind == :memory %>
+function y_ticks_formatter(d){
+  return y.tickFormat(d/1000) + "k";
+}
+<% else %>
+var y_ticks_formatter = y.tickFormat;
+<% end %>
+
 /* Y-axis and ticks. */
 vis.add(pv.Rule)
     .data(function() y.ticks(10))
     .bottom(function(d) y(d))
     .strokeStyle(function(d) d ? "rgba(128,128,128,.2)" : "#999")
   .anchor("left").add(pv.Label)
-    .text(y.tickFormat);
+    .text(y_ticks_formatter);
 
 /* Legend. */
 vis.add(pv.Dot)
