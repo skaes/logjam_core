@@ -2,6 +2,7 @@ module Logjam
 
   class LogjamController < ApplicationController
     before_filter :redirect_to_clean_url, :except => [:live_stream, :auto_complete_for_controller_action_page]
+    before_filter :verify_app_env
     before_filter :print_params if RAILS_ENV=="development"
 
     def auto_complete_for_controller_action_page
@@ -88,14 +89,14 @@ module Logjam
     end
 
     def get_app_env
-      @app = params[:app] || Logjam.database_apps.first
-      @env = params[:env] || Logjam.database_envs(@app).first
+      @app ||= params[:app] || Logjam.database_apps.first
+      @env ||= params[:env] || Logjam.database_envs(@app).first
     end
 
     def get_date
+      get_app_env
       @date = "#{params['year']}-#{params['month']}-#{params['day']}".to_date unless params[:year].blank?
       @date ||= default_date
-      get_app_env
       @db = Logjam.db(@date, @app, @env)
     end
 
@@ -149,5 +150,16 @@ module Logjam
       p params
     end
 
+    def verify_app_env
+      get_app_env
+      unless Logjam.database_apps.include?(@app)
+        render :text => "Application '#{@app}' doesn't exist."
+        return
+      end
+      unless Logjam.database_envs(@app).include?(@env)
+        render :text => "Environment '#{@env}' doesn't exist for Application '#{@app}'."
+        return
+      end
+    end
   end
 end
