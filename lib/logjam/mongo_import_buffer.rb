@@ -37,10 +37,12 @@ module Logjam
       response_code = entry[:response_code]
       user_id = entry[:user_id]
       total_time = entry[:total_time]
+      if response_code.blank?
+        $stderr.puts "no response code!"
+        $stderr.puts entry.to_yaml
+        raise "no response code!"
+      end
       lines = entry.delete(:lines)
-
-      # puts entry.to_yaml
-      raise "no response code" if response_code.blank?
 
       fields = entry.stringify_keys
       fields.delete_if{|k,v| v==0 || @generic_fields.include?(k) }

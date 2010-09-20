@@ -42,7 +42,7 @@ module Logjam
     def default_values
       @@default_values ||=
         begin
-          d = {}
+          d = {:response_code => 500}
           Resource.time_resources.map(&:to_sym).each  { |r| d[r] = 0.0 }
           Resource.memory_resources.map(&:to_sym).each { |r| d[r] = 0 }
           (Resource.call_resources-['requests']).map(&:to_sym).each { |r| d[r] = 0 }
