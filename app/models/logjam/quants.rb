@@ -1,6 +1,15 @@
 module Logjam
 
   class Quants
+
+    def self.ensure_indexes(collection)
+      ms = Benchmark.ms do
+        collection.create_index([ ["page", Mongo::ASCENDING], ["kind", Mongo::ASCENDING], ["quant", Mongo::ASCENDING] ])
+      end
+      logger.debug "MONGO Quants Indexes Creation: #{"%.1f" % (ms)} ms"
+      collection
+    end
+
     def initialize(db, resources, pattern, kind)
       @database = db
       @collection = @database["quants"]

@@ -86,7 +86,17 @@ module Logjam
   end
 
   class Totals
+
+    def self.ensure_indexes(collection)
+      ms = Benchmark.ms do
+        collection.create_index("page")
+      end
+      logger.debug "MONGO Totals Indexes Creation: #{"%.1f" % (ms)} ms"
+      collection
+    end
+
     attr_reader :resources, :pattern, :pages
+
     def initialize(db, resources=[], pattern='')
       @database = db
       @collection = @database["totals"]

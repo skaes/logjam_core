@@ -1,6 +1,15 @@
 module Logjam
 
   class Minutes
+
+    def self.ensure_indexes(collection)
+      ms = Benchmark.ms do
+        collection.create_index([ ["page", Mongo::ASCENDING], ["minute", Mongo::ASCENDING] ])
+      end
+      logger.debug "MONGO Minutes Indexes Creation: #{"%.1f" % (ms)} ms"
+      collection
+    end
+
     attr_reader :counts, :minutes
 
     def initialize(db, resources, pattern, interval=5)

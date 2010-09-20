@@ -7,46 +7,25 @@ module Logjam
 
   class MongoImportBuffer
 
-    GENERIC_FIELDS = %w(page host ip user_id started_at process_id minute session_id new_session response_code app env severity)
-
-    TIME_FIELDS = Resource.time_resources
-
-    CALL_FIELDS = Resource.call_resources - ["requests"]
-
-    MEMORY_FIELDS = Resource.memory_resources + Resource.heap_resources - ["growth"]
-
-    FIELDS = TIME_FIELDS + CALL_FIELDS + MEMORY_FIELDS
-
-    QUANTIFIED_FIELDS = TIME_FIELDS + %w(allocated_objects allocated_bytes)
-
-    SQUARED_FIELDS = FIELDS.inject({}) { |h, f| h[f] = "#{f}_sq"; h}
-
-    def initialize(dbname,app,env)
+    def initialize(dbname, app, env)
       @app = app
       @env = env
-      db = Logjam.mongo.db(dbname)
-      @totals = db["totals"]
-      @totals.create_index("page")
 
-      @minutes = db["minutes"]
-      @minutes.create_index([ ["page", Mongo::ASCENDING], ["minute", Mongo::ASCENDING] ])
+      database  = Logjam.mongo.db(dbname)
+      @totals   = Totals.ensure_indexes(database["totals"])
+      @minutes  = Minutes.ensure_indexes(database["minutes"])
+      @quants   = Quants.ensure_indexes(database["quants"])
+      @requests = Requests.ensure_indexes(database["requests"])
 
       #     @hours = db["hours"]
       #     @hours.create_index([ ["page", Mongo::ASCENDING], ["hour", Mongo::ASCENDING] ])
 
-      @quants = db["quants"]
-      @quants.create_index([ ["page", Mongo::ASCENDING], ["kind", Mongo::ASCENDING], ["quant", Mongo::ASCENDING] ])
-
-      @requests = db["requests"]
-      @requests.create_index([ ["page", Mongo::ASCENDING] ])
-      @requests.create_index([ ["response_code", Mongo::DESCENDING] ])
-      @requests.create_index([ ["severity", Mongo::DESCENDING] ])
-      @requests.create_index([ ["minute", Mongo::DESCENDING] ])
-      @requests.create_index([ ["started_at", Mongo::DESCENDING] ])
-      FIELDS.each{|f| @requests.create_index([ [f, Mongo::DESCENDING] ])}
+      @import_threshold  = Logjam.import_threshold
+      @generic_fields    = Requests::GENERIC_FIELDS
+      @quantified_fields = Requests::QUANTIFIED_FIELDS
+      @squared_fields    = Requests::SQUARED_FIELDS
 
       setup_buffers
-      @import_threshold = Logjam.import_threshold
     end
 
     def add(entry)
@@ -64,7 +43,7 @@ module Logjam
       raise "no response code" if response_code.blank?
 
       fields = entry.stringify_keys
-      fields.delete_if{|k,v| v==0 || GENERIC_FIELDS.include?(k) }
+      fields.delete_if{|k,v| v==0 || @generic_fields.include?(k) }
       fields.keys.each{|k| fields[squared_field(k)] = (v=fields[k].to_f)*v}
 
       pmodule = "::"
@@ -104,7 +83,7 @@ module Logjam
       #       end
       #     end
 
-      QUANTIFIED_FIELDS.each do |f|
+      @quantified_fields.each do |f|
         next unless x=fields[f]
         if f == "allocated_objects"
           kind = "m"
@@ -141,7 +120,7 @@ module Logjam
     private
 
     def squared_field(f)
-      SQUARED_FIELDS[f] || raise("unknown field #{f}")
+      @squared_fields[f] || raise("unknown field #{f}")
     end
 
     def interesting?(request)
