@@ -27,7 +27,8 @@ module Logjam
         if payload =~/^Processing/
           # puts "processing"
           if request = @unprocessed_requests.delete(key)
-            puts "incomplete"
+            puts "incomplete request:"
+            puts request.to_yaml
             yield RequestInfo.new(host, process_id, user_id, request)
           end
           @unprocessed_requests[key] = [[severity, payload]]
