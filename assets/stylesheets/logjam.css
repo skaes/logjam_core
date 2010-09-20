@@ -413,11 +413,11 @@ div.auto_complete ul strong.highlight {
     height:20px;
     font-style:normal;
     margin:0px;
-    padding:0px 10px 0px 10px;
+    padding:0px 10px 0px 20px;
     text-align:left;
 }
 .menu li ul a:hover, .menu li ul li:hover a{
-    background:#ccc;
+    background:#ccc url('/images/checkmark.png') center left no-repeat;
     border:0px;
     text-decoration:none;
 }
