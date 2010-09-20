@@ -11,7 +11,7 @@ module Logjam
   module Parser
     @unprocessed_requests = {}
 
-    SEVERITIES = Hash.new(5).merge!("DEBUG" => 0,
+    SEVERITIES = Hash.new(1).merge!("DEBUG" => 0,
                                     "INFO"  => 1,
                                     "WARN"  => 2,
                                     "ERROR" => 3,
