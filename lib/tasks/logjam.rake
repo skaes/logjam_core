@@ -37,10 +37,18 @@ namespace :logjam do
       system("ln -nsf #{logjam_dir}/assets/javascripts/jquery.jdpicker.js #{app_dir}/public/javascripts/jquery.jdpicker.js")
     end
   end
+
   namespace :plots do
     desc "remove generated plots"
     task :clear do
       system("rm -f #{app_dir}/public/images/plot-*")
+    end
+  end
+
+  namespace :db do
+    desc "ensure indexes"
+    task :reindex => :environment do
+      Logjam.ensure_indexes
     end
   end
 end

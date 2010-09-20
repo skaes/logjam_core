@@ -58,6 +58,16 @@ module Logjam
     mongo.database_names.grep(db_name_format(options.merge(:app => '.+?', :env => '.+?')))
   end
 
+  def ensure_indexes
+    databases.each do |db_name|
+      db = mongo.db(db_name)
+      Totals.ensure_indexes(db["totals"])
+      Requests.ensure_indexes(db["requests"])
+      Minutes.ensure_indexes(db["minutes"])
+      Quants.ensure_indexes(db["quants"])
+    end
+  end
+
   def database_apps
     databases.map{|t| t[db_name_format, 1]}.uniq.sort
   end

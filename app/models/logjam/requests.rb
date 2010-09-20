@@ -18,12 +18,10 @@ module Logjam
 
     def self.ensure_indexes(collection)
       ms = Benchmark.ms do
-        collection.create_index([ ["page", Mongo::ASCENDING] ])
-        collection.create_index([ ["response_code", Mongo::DESCENDING] ])
-        collection.create_index([ ["severity", Mongo::DESCENDING] ])
-        collection.create_index([ ["minute", Mongo::DESCENDING] ])
-        collection.create_index([ ["started_at", Mongo::DESCENDING] ])
-        FIELDS.each{|f| collection.create_index([ [f, Mongo::DESCENDING] ])}
+        (FIELDS + %w[response_code severity minute started_at]).each do |f|
+          collection.create_index([ [f, Mongo::DESCENDING] ])
+          collection.create_index([ ["page", Mongo::ASCENDING], [f, Mongo::DESCENDING] ])
+        end
       end
       logger.debug "MONGO Requests Indexes Creation: #{"%.1f" % (ms)} ms"
       collection
@@ -70,6 +68,11 @@ module Logjam
 
       result = nil
       access_time = Benchmark.ms do
+#         explain = @collection.find(selector,
+#                                   {:fields => all_fields,
+#                                     :sort => [@resource, Mongo::DESCENDING],
+#                                     :limit => @options[:limit] || 32}).explain
+#         logger.debug explain.inspect
         result = @collection.find(selector,
                                   {:fields => all_fields,
                                     :sort => [@resource, Mongo::DESCENDING],
