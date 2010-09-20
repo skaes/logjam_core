@@ -16,7 +16,12 @@ module Logjam
       app = hash[:app] || "app"
       env = hash[:env] || "production"
       key = Logjam.db_name(date_str, app, env)
-      @mongo_buffers[key] ||= MongoImportBuffer.new(key, app, env)
+      @mongo_buffers[key] ||=
+        begin
+          puts "creating import buffer #{key}"
+          # puts hash.to_yaml
+          MongoImportBuffer.new(key, app, env)
+        end
     end
 
     def add_entry(entry)
