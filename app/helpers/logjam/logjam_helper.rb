@@ -169,7 +169,7 @@ module Logjam
 
     def extract_error(log_lines)
       return extract_exception(log_lines) if log_lines.first.is_a?(String) || log_lines.blank?
-      safe_h(log_lines.detect{|(s,l)| s >= 3}[1])[0..70]
+      safe_h((log_lines.detect{|(s,l)| s >= 3}||[])[1].to_s)[0..70]
     end
 
     def format_log_level(l)

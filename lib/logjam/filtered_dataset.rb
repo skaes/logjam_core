@@ -172,7 +172,7 @@ module Logjam
           gc_time = plot_data.shift if resources.include?("gc_time")
           request_counts = []
           intervals_per_day.times{|i| request_counts << (counts[i] || 0) / 60.0}
-          y_zoom = totals.sort[(totals.size*0.9).to_i]
+          y_zoom = totals.sort[(totals.size*0.9).to_i].to_f
           [plot_data, max_total, request_counts, gc_time, y_zoom]
         end
     end
