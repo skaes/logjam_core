@@ -89,7 +89,7 @@ module Logjam
 
     def self.ensure_indexes(collection)
       ms = Benchmark.ms do
-        collection.create_index("page")
+        collection.create_index("page", :background => true)
       end
       logger.debug "MONGO Totals Indexes Creation: #{"%.1f" % (ms)} ms"
       collection

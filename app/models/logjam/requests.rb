@@ -19,8 +19,8 @@ module Logjam
     def self.ensure_indexes(collection)
       ms = Benchmark.ms do
         (FIELDS + %w[response_code severity minute started_at]).each do |f|
-          collection.create_index([ [f, Mongo::DESCENDING] ])
-          collection.create_index([ ["page", Mongo::ASCENDING], [f, Mongo::DESCENDING] ])
+          collection.create_index([ [f, Mongo::DESCENDING] ], :background => true)
+          collection.create_index([ ["page", Mongo::ASCENDING], [f, Mongo::DESCENDING] ], :background => true)
         end
       end
       logger.debug "MONGO Requests Indexes Creation: #{"%.1f" % (ms)} ms"

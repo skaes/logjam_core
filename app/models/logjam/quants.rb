@@ -4,7 +4,8 @@ module Logjam
 
     def self.ensure_indexes(collection)
       ms = Benchmark.ms do
-        collection.create_index([ ["page", Mongo::ASCENDING], ["kind", Mongo::ASCENDING], ["quant", Mongo::ASCENDING] ])
+        fields = [ ["page", Mongo::ASCENDING], ["kind", Mongo::ASCENDING], ["quant", Mongo::ASCENDING] ]
+        collection.create_index(fields, :background => true)
       end
       logger.debug "MONGO Quants Indexes Creation: #{"%.1f" % (ms)} ms"
       collection

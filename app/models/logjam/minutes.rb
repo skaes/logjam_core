@@ -4,7 +4,7 @@ module Logjam
 
     def self.ensure_indexes(collection)
       ms = Benchmark.ms do
-        collection.create_index([ ["page", Mongo::ASCENDING], ["minute", Mongo::ASCENDING] ])
+        collection.create_index([ ["page", Mongo::ASCENDING], ["minute", Mongo::ASCENDING] ], :background => true)
       end
       logger.debug "MONGO Minutes Indexes Creation: #{"%.1f" % (ms)} ms"
       collection
