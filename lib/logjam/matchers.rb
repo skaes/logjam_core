@@ -39,7 +39,7 @@ module Logjam
     LOG_LINE_SPLITTER = SYSLOG_LINE_SPLITTER
 
     PROCESSING = lambda do |line|
-      line =~ /^Processing ([\S]+).*(:?\(for (.+) at (.*)\))?/ and
+      line =~ /^Processing ([\S]+)(?: .*\(for (.+) at (.+)\))?/ and
         { :page => $1, :ip => $2, :started_at => ($3 || Time.now.to_s(:db)) }
     end
 
