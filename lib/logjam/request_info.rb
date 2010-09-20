@@ -12,7 +12,7 @@ module Logjam
     def initialize(host, process_id, user_id, lines)
       # $stderr.puts lines.inspect
       severity = lines.map{|s,l| s}.max
-      @info = {:host => host, :process_id => process_id.to_i, :user_id => user_id.to_i, :page => nil, :ip => nil, :lines => lines, :severity => severity}
+      @info = {:host => host, :process_id => process_id.to_i, :user_id => user_id.to_i, :lines => lines, :severity => severity}
       @info.merge!(default_values)
       process lines
       unless @info[:page]
