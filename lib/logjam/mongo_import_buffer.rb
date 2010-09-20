@@ -64,7 +64,7 @@ module Logjam
         elsif total_time < 100 then {"apdex.happy" => 1, "apdex.satisfied" => 1}
         elsif total_time < 500 then {"apdex.satisfied" => 1}
         elsif total_time < 2000 then {"apdex.tolerating" => 1}
-        else raise "oops: #{tt.inspect}"
+        else raise "oops: #{total_time.inspect}"
         end
 
       increments.merge!(user_experience)
