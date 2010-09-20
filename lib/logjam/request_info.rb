@@ -16,7 +16,7 @@ module Logjam
       @info.merge!(default_values)
       process lines
       unless @info[:page]
-        $stderr.puts "controller action could not be parsed"
+        $stderr.puts "action could not be recognized"
         $stderr.puts "log lines: #{lines.inspect}"
       end
     end
