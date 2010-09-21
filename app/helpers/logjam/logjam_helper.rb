@@ -91,7 +91,7 @@ module Logjam
       elsif page == "Others..."
         n
       else
-        link_to(n, :params => params.slice(:year,:month,:day).merge(:action => "errors", :page => without_module(page)))
+        link_to(n, :params => params.slice(:year,:month,:day).merge(:action => "errors", :error_type => "internal", :page => without_module(page)))
       end
     end
 
