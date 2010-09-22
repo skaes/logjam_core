@@ -11,7 +11,7 @@ module Logjam
 
     def initialize(host, process_id, user_id, lines)
       # $stderr.puts lines.inspect
-      severity = lines.map{|s,l| s}.max
+      severity = lines.map{|s,t,l| s}.max
       @info = {:host => host, :process_id => process_id.to_i, :user_id => user_id.to_i, :lines => lines, :severity => severity}
       @info.merge!(default_values)
       process lines
@@ -59,7 +59,7 @@ module Logjam
     end
 
     def process(entry)
-      entry.each do |severity, line|
+      entry.each do |severity, timestamp, line|
         # puts "matching line #{line}"
         matchers.each do |matcher|
           if extracted_values = matcher.call(line)

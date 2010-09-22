@@ -1,6 +1,7 @@
 require 'amqp'
 require 'mq'
 require 'date'
+require 'json'
 
 module Logjam
 
@@ -8,7 +9,7 @@ module Logjam
     RAILS_ENV = ENV['RAILS_ENV'] || 'development'
 
     def initialize(application)
-      @importer = MongoImporter.new("/dev/null")
+      @importer = MongoImporter.new
       @application = application.blank? ? nil : application
     end
 
@@ -20,7 +21,7 @@ module Logjam
           @importer.flush_buffers
         end
         queue.subscribe do |header, msg|
-          process_line(msg, header.routing_key)
+          process_request(msg, header.routing_key)
         end
       end
     end
@@ -52,11 +53,10 @@ module Logjam
       [config[:queue], @application, `hostname`.chomp].compact.join('-')
     end
 
-    def process_line(msg, routing_key)
-      Parser.parse_line(msg) do |entry|
-        app_env = Logjam.routing_key_matcher.call(routing_key) || {}
-        @importer.add_entry entry.to_hash.merge(app_env)
-      end
+    def process_request(msg, routing_key)
+      entry = JSON.parse(msg)
+      app_env = Logjam.routing_key_matcher.call(routing_key) || {}
+      @importer.add_entry entry.merge!(app_env)
     end
 
     def config

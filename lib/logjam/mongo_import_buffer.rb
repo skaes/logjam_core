@@ -29,22 +29,22 @@ module Logjam
     end
 
     def add(entry)
-      host = entry[:host]
-      severity = entry[:severity]
-      page = entry[:page]
+      host = entry["host"]
+      severity = entry["severity"]
+      page = entry["page"]
       page << "#unknown_method" unless page =~ /#/
-      minute = entry[:minute]
-      response_code = entry[:response_code]
-      user_id = entry[:user_id]
-      total_time = entry[:total_time]
+      minute = entry["minute"]
+      response_code = entry["response_code"]
+      user_id = entry["user_id"]
+      total_time = entry["total_time"]
       if response_code.blank?
         $stderr.puts "no response code!"
         $stderr.puts entry.to_yaml
         raise "no response code!"
       end
-      lines = entry.delete(:lines)
+      lines = entry.delete("lines")
 
-      fields = entry.stringify_keys
+      fields = entry
       fields.delete_if{|k,v| v==0 || @generic_fields.include?(k) }
       fields.keys.each{|k| fields[squared_field(k)] = (v=fields[k].to_f)*v}
 

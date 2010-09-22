@@ -20,7 +20,7 @@ module Logjam
 
     def self.parse_line(line)
       if parts = Matchers::LOG_LINE_SPLITTER.call(line)
-        severity1, host, process_id, severity2, user_id, engine, payload = *parts
+        severity1, timestamp, host, process_id, severity2, user_id, engine, payload = *parts
         severity = SEVERITIES[severity1 || severity2]
 
         key = "#{host}-#{process_id}"
@@ -31,15 +31,15 @@ module Logjam
             puts request.to_yaml
             yield RequestInfo.new(host, process_id, user_id, request)
           end
-          @unprocessed_requests[key] = [[severity, payload]]
+          @unprocessed_requests[key] = [[severity, timestamp, payload]]
         elsif payload =~ /^Completed/
           # puts "completed"
           if request = @unprocessed_requests.delete(key)
-            yield RequestInfo.new(host, process_id, user_id, request << [severity, payload])
+            yield RequestInfo.new(host, process_id, user_id, request << [severity, timestamp, payload])
           end
         elsif request = @unprocessed_requests[key]
           # puts "other"
-          request << [severity, payload]
+          request << [severity, timestamp, payload]
         end
       else
         $stderr.puts "no match for line: #{line}"
