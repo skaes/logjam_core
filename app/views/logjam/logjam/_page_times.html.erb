@@ -12,7 +12,7 @@ function toggle_heap_growth_only(){
   <tr>
     <% resource = @dataset.resource
        resource_type = Logjam::Resource.resource_type(@dataset.resource)
-       resource_name = resource.gsub('_', ' ')
+       resource_name = hrn(resource)
        options = {:resource => resource} -%>
     <% if @dataset.grouping? -%>
       <th><%= @dataset.grouping %></th>
@@ -37,7 +37,7 @@ function toggle_heap_growth_only(){
       <th>minute</th>
       <th>page</th>
       <th>user</th>
-      <th class="sorted"><%= h resource_name %></th>
+      <th class="sorted"><%= resource_name %></th>
       <% if resource_type == :memory %>
       <th class="clickable" onclick="toggle_heap_growth_only()">heap growth</th>
       <% end %>

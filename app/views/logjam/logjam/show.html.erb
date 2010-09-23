@@ -19,7 +19,7 @@
   <% @request.slice(*time_resources).each do |name, value| -%>
     <% next if value.blank?  -%>
     <tr>
-      <td class='resource_name'><%= h name %></td>
+      <td class='resource_name'><%= hrn name %></td>
       <td class='number' style="color:<%= colors[name] || '#000' %>;"><%= seconds_to_human(value / 1000.0) %></td>
     </tr>
   <% end -%>
@@ -35,7 +35,7 @@
   <% @request.slice(*call_resources).each do |name, value| -%>
     <% next if value.blank?  -%>
     <tr>
-      <td class='resource_name'><%= h name %></td>
+      <td class='resource_name'><%= hrn name %></td>
       <td class='number' style="color:<%= colors[name] || '#000' %>;"><%= number_with_delimiter(value.to_i) %></td>
     </tr>
   <% end -%>
@@ -51,7 +51,7 @@
   <% @request.slice(*memory_resources+heap_resources).each do |name, value| -%>
     <% next if value.blank?  -%>
     <tr>
-      <td class='resource_name'><%= h name %></td>
+      <td class='resource_name'><%= hrn name %></td>
       <td class='number' style="color:<%= colors[name] || '#000' %>;"><%= number_with_delimiter(value.to_i) %></td>
     </tr>
   <% end -%>
@@ -70,7 +70,7 @@
   <% @request.slice(*other_keys).each do |name, value| -%>
     <% next if value.blank?  -%>
     <tr>
-      <td class='resource_name'><%= h name %></td>
+      <td class='resource_name'><%= hrn name %></td>
       <% if name == "severity" -%>
       <td class='number'><%= format_severity(value) %></td>
       <% else -%>

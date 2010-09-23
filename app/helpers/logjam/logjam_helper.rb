@@ -166,6 +166,11 @@ module Logjam
       "#{format_log_level(level)} #{colored_line}"
     end
 
+    # human resource name (escaped)
+    def hrn(s)
+      h(s.gsub(/_/, ' '))
+    end
+
     # try to fix broken string encodings. most of the time the string is latin-1 encoded
     if RUBY_VERSION >= "1.9"
       def safe_h(s)
