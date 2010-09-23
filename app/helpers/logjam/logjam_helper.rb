@@ -161,8 +161,9 @@ module Logjam
         level, line = line
       end
       l = safe_h line
-      level = 2 if level == 1 && (l =~ /rb:\d+:in|Error|Exception/) && (l !~ /^(Rendering|Completed|Processing|Parameters)/)
-      colored_line = level > 1 ? "<span class='error'>#{l}</span>" : l
+      has_backtrace = l =~ /\.rb:\d+:in/
+      level = 2 if level == 1 && (has_backtrace || l =~ /Error|Exception/) && (l !~ /^(Rendering|Completed|Processing|Parameters)/)
+      colored_line = level > 1 ? "<span class='error'>#{l.gsub(/(\s+\S+?\.rb:\d+:in \`.*?\')/){|x| "\n"<<x}}</span>" : l
       "#{format_log_level(level)} #{colored_line}"
     end
 
