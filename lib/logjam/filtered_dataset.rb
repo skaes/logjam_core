@@ -117,7 +117,12 @@ module Logjam
     end
 
     def summary
-      @summary ||= Totals.new(@db, Resource.time_resources+Resource.memory_resources+Resource.call_resources+%w(apdex response), page)
+      @summary ||=
+        begin
+          resources = Resource.time_resources + Resource.call_resources +
+            Resource.memory_resources + Resource.heap_resources - %w(heap_growth) + %w(apdex response)
+          Totals.new(@db, resources, page)
+        end
     end
 
     def measures_bytes?(attr)
