@@ -331,6 +331,15 @@ div.auto_complete ul strong.highlight {
   margin: 8px;
 }
 
+.resource-fields {
+   display: inline-block;
+   border: 1px solid #ddd;
+}
+
+.resource-fields legend {
+   font-weight: bold;
+}
+
 .menu{
     display: inline-block;
     border:none;
