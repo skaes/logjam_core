@@ -15,83 +15,85 @@
    other_keys.reject!{|k| k =~ /(^_id|lines|minute|page|_sq)$/}
 -%>
 
-<fieldset class="resource-fields">
-  <legend>Time resources</legend>
-  <table id='request-details-time' class="filter-widget">
-    <% @request.slice(*time_resources).each do |name, value| -%>
-    <% next if value.blank?  -%>
-    <tr>
-      <td class='resource_name'><%= hrn name %></td>
-      <td class='number' style="color:<%= colors[name] || '#000' %>;"><%= seconds_to_human(value / 1000.0) %></td>
-    </tr>
-    <% end -%>
-  </table>
-  <div id="times" class="filter-widget" style="margin-top:7px;">
-    <% resources = time_resources-["total_time", "gc_time"] -%>
-    <%= render :partial => "simple_pie", :locals => { :data => @request.values_at(*resources),
-        :legend => resources,
-        :colors => pie_colors.values_at(*resources) } %>
-  </div>
-</fieldset>
-
-<fieldset class="resource-fields">
-  <legend>Call resources</legend>
-  <table id='request-details-calls' class="filter-widget">
-    <% @request.slice(*call_resources).each do |name, value| -%>
-    <% next if value.blank?  -%>
-    <tr>
-      <td class='resource_name'><%= hrn name %></td>
-      <td class='number' style="color:<%= colors[name] || '#000' %>;"><%= number_with_delimiter(value.to_i) %></td>
-    </tr>
-    <% end -%>
-  </table>
-  <div id="calls" class="filter-widget" style="margin-top:7px;">
-    <% resources = *call_resources.select{|r| r =~ /_calls$/}-["gc_calls"] -%>
-    <%= render :partial => "simple_pie", :locals => {:data => @request.values_at(*resources),
-        :legend => resources,
-        :colors => pie_colors.values_at(*resources) } %>
-  </div>
-</fieldset>
-
-<fieldset class="resource-fields">
-  <legend>Memory resources</legend>
-  <table id='request-details-memory' class="filter-widget">
-    <% @request.slice(*memory_resources+heap_resources).each do |name, value| -%>
-    <% next if value.blank?  -%>
-    <tr>
-      <td class='resource_name'><%= hrn name %></td>
-      <td class='number' style="color:<%= colors[name] || '#000' %>;"><%= number_with_delimiter(value.to_i) %></td>
-    </tr>
-    <% end -%>
-  </table>
-  <div id="memory"  class="filter-widget" style="margin-top:7px;">
-    <% resources = *memory_resources-["allocated_memory"]
-       h = @request.slice(*resources)
-       h["allocated_objects"] *= 40 if h.include?("allocated_objects")
-       -%>
-    <%= render :partial => "simple_pie", :locals => {:data => h.values_at(*resources),
-        :legend => resources,
-        :colors => pie_colors.values_at(*resources) } %>
-  </div>
-</fieldset>
-
-<fieldset class="resource-fields">
-  <legend>Request attributes</legend>
-  <table id='request-details' class="filter-widget">
-    <% @request.slice(*other_keys).each do |name, value| -%>
-    <% next if value.blank?  -%>
-    <tr>
-      <td class='resource_name'><%= hrn name %></td>
-      <% if name == "severity" -%>
-      <td class='number'><%= format_severity(value) %></td>
-      <% else -%>
-      <td class='number'><%= h value %></td>
+<div id="request-details">
+  <fieldset class="resource-fields">
+    <legend>Time resources</legend>
+    <table id='request-details-time' class="filter-widget">
+      <% @request.slice(*time_resources).each do |name, value| -%>
+      <% next if value.blank?  -%>
+      <tr>
+        <td class='resource_name'><%= hrn name %></td>
+        <td class='number' style="color:<%= colors[name] || '#000' %>;"><%= seconds_to_human(value / 1000.0) %></td>
+      </tr>
       <% end -%>
-    </tr>
-    <% end -%>
-  </table>
-  <p class="clear-left"></p>
-</fieldset>
+    </table>
+    <div id="times" class="filter-widget" style="margin-top:7px;">
+      <% resources = time_resources-["total_time", "gc_time"] -%>
+      <%= render :partial => "simple_pie", :locals => { :data => @request.values_at(*resources),
+          :legend => resources,
+          :colors => pie_colors.values_at(*resources) } %>
+    </div>
+  </fieldset>
+
+  <fieldset class="resource-fields">
+    <legend>Call resources</legend>
+    <table id='request-details-calls' class="filter-widget">
+      <% @request.slice(*call_resources).each do |name, value| -%>
+      <% next if value.blank?  -%>
+      <tr>
+        <td class='resource_name'><%= hrn name %></td>
+        <td class='number' style="color:<%= colors[name] || '#000' %>;"><%= number_with_delimiter(value.to_i) %></td>
+      </tr>
+      <% end -%>
+    </table>
+    <div id="calls" class="filter-widget" style="margin-top:7px;">
+      <% resources = *call_resources.select{|r| r =~ /_calls$/}-["gc_calls"] -%>
+      <%= render :partial => "simple_pie", :locals => {:data => @request.values_at(*resources),
+          :legend => resources,
+          :colors => pie_colors.values_at(*resources) } %>
+    </div>
+  </fieldset>
+
+  <fieldset class="resource-fields">
+    <legend>Memory resources</legend>
+    <table id='request-details-memory' class="filter-widget">
+      <% @request.slice(*memory_resources+heap_resources).each do |name, value| -%>
+      <% next if value.blank?  -%>
+      <tr>
+        <td class='resource_name'><%= hrn name %></td>
+        <td class='number' style="color:<%= colors[name] || '#000' %>;"><%= number_with_delimiter(value.to_i) %></td>
+      </tr>
+      <% end -%>
+    </table>
+    <div id="memory"  class="filter-widget" style="margin-top:7px;">
+      <% resources = *memory_resources-["allocated_memory"]
+         h = @request.slice(*resources)
+         h["allocated_objects"] *= 40 if h.include?("allocated_objects")
+         -%>
+      <%= render :partial => "simple_pie", :locals => {:data => h.values_at(*resources),
+          :legend => resources,
+          :colors => pie_colors.values_at(*resources) } %>
+    </div>
+  </fieldset>
+
+  <fieldset class="resource-fields">
+    <legend>Request attributes</legend>
+    <table id='request-details' class="filter-widget">
+      <% @request.slice(*other_keys).each do |name, value| -%>
+      <% next if value.blank?  -%>
+      <tr>
+        <td class='resource_name'><%= hrn name %></td>
+        <% if name == "severity" -%>
+        <td class='number'><%= format_severity(value) %></td>
+        <% else -%>
+        <td class='number'><%= h value %></td>
+        <% end -%>
+      </tr>
+      <% end -%>
+    </table>
+    <p class="clear-left"></p>
+  </fieldset>
+</div>
 
 <pre id='request-lines' class="filter-widget">
 <% (@request["lines"]||[]).each do |line| -%>

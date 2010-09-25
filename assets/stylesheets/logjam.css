@@ -331,6 +331,12 @@ div.auto_complete ul strong.highlight {
   margin: 8px;
 }
 
+#request-details {
+  margin:0px;
+  padding:0px;
+  border:0px;
+}
+
 .resource-fields {
    display: inline-block;
    vertical-align: top;
