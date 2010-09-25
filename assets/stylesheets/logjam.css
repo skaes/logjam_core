@@ -333,7 +333,9 @@ div.auto_complete ul strong.highlight {
 
 .resource-fields {
    display: inline-block;
-   border: 1px solid #ddd;
+   vertical-align: top;
+   border: none;
+/*   border: 1px solid #ddd; */
 }
 
 .resource-fields legend {
