@@ -45,6 +45,7 @@ input, select {
   left: 0;
   right: 0;
   width: 100%;
+  min-width: 1000px;
   height: 50px;
   background: #cca383;
 }
@@ -57,7 +58,7 @@ input, select {
   vertical-align: middle;
   padding-left: 5px;
   padding-right: 5px;
-  width: 1400px;
+  min-width: 1000px;
   margin-left: 10px;
 }
 
@@ -65,7 +66,7 @@ input, select {
   position: relative;
   left: 0px;
   right: 0px;
-  width: 1440px;
+  min-width: 1000px;
   margin: 0px;
   margin-top: 5px;
 }
@@ -139,7 +140,8 @@ img {
 }
 
 #column-right {
-  float: left;
+    position: absolute;
+    left: 625px;
 }
 
 #column-right { min-width: 500px; max-width: 800px; }
