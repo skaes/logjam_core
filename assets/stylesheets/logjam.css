@@ -148,10 +148,6 @@ div#pagetimes {
   margin: -20px 0 0 10px;
 }
 
-.stats {
-  margin: 2px 0 2px 40px;
-}
-
 div#pagetimes h3 {
   font-size: 12px;
   margin-left: 0px;
@@ -226,19 +222,25 @@ td.number {text-align: right;}
 
 .error {color:red;}
 
+.plot-details { width:616px; }
+#plot-details-col1 { float:left; }
+#plot-details-col2 { float:left; margin-left:15px;}
+#plot-details-col3 { float:left; margin-left:15px;}
+.stats {
+  margin: 2px 0 2px 40px;
+}
 .stats th { font-size: 12px; }
 .stats td { font-size: 12px; padding: 0 8px; }
 .table-heading { font-weight: bold; padding-top: 10px; }
 
 #resource-plot { float:left; margin-top:-3px; }
 
-#apdex-table {float:left;}
-#apdex-table td {font-size: 90%;  line-height: 100%; white-space: nowrap; }
-#apdex-table th {font-size: 90%;  white-space: nowrap; }
+#apdex-table, #error-table {float:left;}
+#apdex-table td, #error-table td {font-size: 90%; line-height: 100%; white-space: nowrap;}
+#apdex-table th, #error-table th {font-size: 90%; white-space: nowrap;}
 
-#response-code-summary {float:right;}
-#response-code-stats td {font-size: 90%;  line-height: 100%;}
-#response-code-stats th {font-size: 90%;  line-height: 100%;}
+#response-code-stats td {font-size: 90%; line-height: 100%; white-space: nowrap;}
+#response-code-stats th {font-size: 90%; white-space: nowrap;}
 
 #graph-stats td {font-size: 90%; line-height: 100%; white-space: nowrap;}
 #graph-stats th {font-size: 90%; white-space: nowrap;}
