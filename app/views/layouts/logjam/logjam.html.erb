@@ -6,11 +6,12 @@
   <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
   <link rel="shortcut icon" href="/favicon.ico" type="image/ico" />
   <title>LogJam <%= controller.action_name %></title>
-  <%= stylesheet_link_tag 'logjam', 'jdpicker.css' %>
-  <%= javascript_include_tag :defaults %>
   <script type="text/javascript" src="/javascripts/protovis-r3.2.js"></script>
   <script type="text/javascript" src="/javascripts/jquery-1.4.2.min.js"></script>
   <script type="text/javascript" src="/javascripts/jquery.jdpicker.js"></script>
+  <link type="text/css" href="/stylesheets/smoothness/jquery-ui-1.8.5.custom.css" rel="Stylesheet" />
+  <script type="text/javascript" src="/javascripts/jquery-ui-1.8.5.custom.min.js"></script>
+  <%= stylesheet_link_tag 'logjam', 'jdpicker.css' %>
   <script type="text/javascript">
   jQuery.noConflict();
   <%= yield :page_scripts %>

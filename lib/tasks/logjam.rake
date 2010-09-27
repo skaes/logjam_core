@@ -35,6 +35,9 @@ namespace :logjam do
       system("ln -nsf #{logjam_dir}/assets/javascripts/protovis-r3.2.js #{app_dir}/public/javascripts/protovis-r3.2.js")
       system("ln -nsf #{logjam_dir}/assets/javascripts/jquery-1.4.2.min.js #{app_dir}/public/javascripts/jquery-1.4.2.min.js")
       system("ln -nsf #{logjam_dir}/assets/javascripts/jquery.jdpicker.js #{app_dir}/public/javascripts/jquery.jdpicker.js")
+
+      system("ln -nsf #{logjam_dir}/assets/javascripts/jquery-ui-1.8.5.custom.min.js #{app_dir}/public/javascripts/jquery-ui-1.8.5.custom.min.js")
+      system("ln -nsf #{logjam_dir}/assets/stylesheets/smoothness #{app_dir}/public/stylesheets/smoothness")
     end
   end
 

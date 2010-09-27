@@ -6,13 +6,14 @@ module Logjam
     before_filter :print_params if RAILS_ENV=="development"
 
     def auto_complete_for_controller_action_page
+      params[:page] = params.delete(:term)
       prepare_params
       show_modules = [":", "::"].include?(@page)
       re = show_modules ? /^::/ : /#{@page}/i
       pages = Totals.new(@db).page_names.select {|name| name =~ re}
       pages.collect!{|p| p.gsub(/^::/,'')} unless show_modules
-      @completions = pages.sort[0..34]
-      render :inline => "<%= content_tag(:ul, @completions.map{ |page| content_tag(:li, page) }.join) %>"
+      completions = pages.sort[0..34]
+      render :json => completions
     end
 
     def index
