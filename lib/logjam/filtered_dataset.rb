@@ -34,6 +34,7 @@ module Logjam
       @grouping_function = options[:grouping_function] || DEFAULTS[:grouping_function]
       @start_minute = (options[:start_minute] || DEFAULTS[:start_minute]).to_i
       @end_minute = (options[:end_minute] || DEFAULTS[:end_minute]).to_i
+      @logged_error_count = {}
     end
 
     def page_description
@@ -243,7 +244,7 @@ module Logjam
     end
 
     def logged_error_count(level)
-      @logged_error_count ||= Requests.new(@db, "minute", @page, :severity => level).count
+      @logged_error_count[level] ||= Requests.new(@db, "minute", @page, :severity => level).count
     end
 
     def response_codes
