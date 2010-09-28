@@ -8,7 +8,6 @@ module Logjam
       super
       @mongo_buffers = {}
       @request_count = 0
-      @creation_date = Date.today
     end
 
     def mongo_buffer(hash)
@@ -20,7 +19,7 @@ module Logjam
         begin
           puts "creating import buffer #{key}"
           # puts hash.to_yaml
-          MongoImportBuffer.new(key, app, env)
+          MongoImportBuffer.new(key, app, env, date_str)
         end
     end
 
@@ -31,17 +30,13 @@ module Logjam
 
     def flush_buffers
       puts "flushing #{@request_count} requests"
-      @mongo_buffers.each_value{|b| b.flush}
-      reset_buffers_if_they_were_not_created_today
-      @request_count = 0
-    end
-
-    def reset_buffers_if_they_were_not_created_today
-      today = Date.today
-      if today > @creation_date
-        @mongo_buffers = {}
-        @creation_date = today
+      today = Date.today.to_s
+      @mongo_buffers.keys.each do |key|
+        buffer = @mongo_buffers[key]
+        buffer.flush
+        @mongo_buffers.delete(key) if buffer.iso_date_string != today
       end
+      @request_count = 0
     end
 
     private
