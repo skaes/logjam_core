@@ -154,6 +154,10 @@ module Logjam
       severity_icon(l)
     end
 
+    def allow_breaks(l)
+      CGI.unescape(l.gsub(/(%2C|=)/, '\1&#x200B;'))
+    end
+
     def format_log_line(line)
       if line.is_a?(String)
         level = 1
@@ -163,7 +167,7 @@ module Logjam
       l = safe_h line
       has_backtrace = l =~ /\.rb:\d+:in/
       level = 2 if level == 1 && (has_backtrace || l =~ /Error|Exception/) && (l !~ /^(Rendering|Completed|Processing|Parameters)/)
-      colored_line = level > 1 ? "<span class='error'>#{l.gsub(/(\s+\S+?\.rb:\d+:in \`.*?\')/){|x| "\n"<<x}}</span>" : l
+      colored_line = level > 1 ? "<span class='error'>#{allow_breaks(l.gsub(/(\s+\S+?\.rb:\d+:in \`.*?\')/){|x| "\n"<<x})}</span>" : allow_breaks(l)
       "#{format_log_level(level)} #{colored_line}"
     end
 
