@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+
+require File.expand_path(File.dirname(__FILE__)+'/../../../../config/environment.rb')
+
+application = ARGV.first
+
+puts "Starting amqp importer for rails environment '#{RAILS_ENV}'"
+
+trap("INT") do
+  puts "Stopping event loop"
+  @amqp_importer.stop
+end
+
+@amqp_importer = Logjam::AMQPImporter.new(application)
+@amqp_importer.process
