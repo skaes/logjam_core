@@ -8,6 +8,8 @@ module Logjam
       super
       @mongo_buffers = {}
       @request_count = 0
+      $stdout.sync = true
+      $stderr.sync = true
     end
 
     def mongo_buffer(hash)
