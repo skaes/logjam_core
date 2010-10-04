@@ -74,7 +74,8 @@ namespace :logjam do
 
     def install_service(template_name, service_name, substitutions={})
       target_dir = "#{service_dir}/#{service_name}"
-      substitutions.merge!(:LOGJAM_DIR => app_dir, :RAILSENV => ENV['RAILS_ENV'] || "development",
+      substitutions.merge!(:LOGJAM_DIR => ENV['LOGJAM_DIR'] || app_dir,
+                           :RAILSENV => ENV['RAILS_ENV'] || "development",
                            :RUBY_PATH => `which ruby`.chomp.split('/')[0..-2].join("/"))
       system("mkdir -p #{target_dir}/log/logs")
       # order is important here: always create the dependent log service first!
