@@ -154,6 +154,10 @@ module Logjam
       severity_icon(l)
     end
 
+    def allow_breaks(l)
+      CGI.unescape(l.gsub(/(%2C|=)/, '\1&#x200B;'))
+    end
+
     def format_log_line(line)
       if line.is_a?(String)
         level = 1
@@ -161,9 +165,15 @@ module Logjam
         level, line = line
       end
       l = safe_h line
-      level = 2 if level == 1 && (l =~ /rb:\d+:in|Error|Exception/) && (l !~ /^(Rendering|Completed|Processing|Parameters)/)
-      colored_line = level > 1 ? "<span class='error'>#{l}</span>" : l
+      has_backtrace = l =~ /\.rb:\d+:in/
+      level = 2 if level == 1 && (has_backtrace || l =~ /Error|Exception/) && (l !~ /^(Rendering|Completed|Processing|Parameters)/)
+      colored_line = level > 1 ? "<span class='error'>#{allow_breaks(l.gsub(/(\s+\S+?\.rb:\d+:in \`.*?\')/){|x| "\n"<<x})}</span>" : allow_breaks(l)
       "#{format_log_level(level)} #{colored_line}"
+    end
+
+    # human resource name (escaped)
+    def hrn(s)
+      h(s.gsub(/_/, ' '))
     end
 
     # try to fix broken string encodings. most of the time the string is latin-1 encoded

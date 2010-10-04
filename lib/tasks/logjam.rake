@@ -35,6 +35,9 @@ namespace :logjam do
       system("ln -nsf #{logjam_dir}/assets/javascripts/protovis-r3.2.js #{app_dir}/public/javascripts/protovis-r3.2.js")
       system("ln -nsf #{logjam_dir}/assets/javascripts/jquery-1.4.2.min.js #{app_dir}/public/javascripts/jquery-1.4.2.min.js")
       system("ln -nsf #{logjam_dir}/assets/javascripts/jquery.jdpicker.js #{app_dir}/public/javascripts/jquery.jdpicker.js")
+
+      system("ln -nsf #{logjam_dir}/assets/javascripts/jquery-ui-1.8.5.custom.min.js #{app_dir}/public/javascripts/jquery-ui-1.8.5.custom.min.js")
+      system("ln -nsf #{logjam_dir}/assets/stylesheets/smoothness #{app_dir}/public/stylesheets/smoothness")
     end
   end
 
@@ -51,4 +54,79 @@ namespace :logjam do
       Logjam.ensure_indexes
     end
   end
+
+  namespace :daemons do
+    def service_dir
+      ENV['LOGJAM_SERVICE_DIR'] || "#{app_dir}/service"
+    end
+
+    def template_dir
+      File.expand_path(File.dirname(__FILE__) + "/../../services/")
+    end
+
+    def service_paths
+      Dir["#{service_dir}/*"]
+    end
+
+    def services
+      service_paths.join(' ')
+    end
+
+    def install_service(template_name, service_name, substitutions={})
+      target_dir = "#{service_dir}/#{service_name}"
+      substitutions.merge!(:LOGJAM_DIR => ENV['LOGJAM_DIR'] || app_dir,
+                           :RAILSENV => ENV['RAILS_ENV'] || "development",
+                           :RUBY_PATH => `which ruby`.chomp.split('/')[0..-2].join("/"))
+      system("mkdir -p #{target_dir}/log/logs")
+      # order is important here: always create the dependent log service first!
+      scripts = %w(log/run run)
+      scripts.each do |script|
+        template = File.read("#{template_dir}/#{template_name}/#{script}")
+        substitutions.each do |k,v|
+          template.gsub!(%r[#{k}], v)
+        end
+        File.open("#{target_dir}/#{script}", "w"){|f| f.puts template}
+        system("chmod 755 #{target_dir}/#{script}")
+      end
+      service_name
+    end
+
+    desc "Install logjam daemons"
+    task :install do
+      system("mkdir -p #{service_dir}")
+      importers = (ENV['LOGJAM_IMPORTERS']||"").split(/ *, */).compact
+      installed_services = []
+      if importers.blank?
+        installed_services << install_service("importer", "importer", :IMPORTER => "")
+      else
+        importers.each{|i| installed_services << install_service("importer", "importer-#{i}", :IMPORTER => i)}
+      end
+      installed_services << install_service("livestream", "live-stream")
+      old_services = service_paths.map{|f| f.split("/").compact.last} - installed_services
+      old_services.each do |old_service|
+        puts "removing old service #{old_service}"
+        system("rm -rf #{service_dir}/#{old_service}")
+      end
+    end
+
+    desc "Start logjam daemons"
+    task :start do
+      system("sv up #{services}")
+    end
+
+    desc "Stop logjam daemons"
+    task :stop do
+      system("sv down #{services}")
+    end
+
+    desc "Show logjam daemons status"
+    task :status do
+      system("sv status #{services}")
+    end
+
+    desc "Restart logjam daemons"
+    task :restart => [:stop, :start]
+
+  end
+
 end

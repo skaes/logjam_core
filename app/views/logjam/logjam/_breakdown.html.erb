@@ -13,7 +13,7 @@
   <% time_resources.each do |name| -%>
     <% next if (value = s.avg(name)).zero?  -%>
     <tr>
-      <td class='resource_name'><%= h name %></td>
+      <td class='resource_name'><%= hrn name %></td>
       <td class='number' style="color:<%= colors[name] || '#000' %>;"><%= number_with_precision(value, :precision => 2) %>ms</td>
     </tr>
   <% end -%>
@@ -30,7 +30,7 @@
   <% call_resources.each do |name| -%>
     <% next if (value = s.avg(name)).zero?  -%>
     <tr>
-      <td class='resource_name'><%= h name %></td>
+      <td class='resource_name'><%= hrn name %></td>
       <td class='number' style="color:<%= colors[name] || '#000' %>;"><%= number_with_precision(value, :precision => 2) %></td>
     </tr>
   <% end -%>
@@ -47,7 +47,7 @@
   <% (memory_resources+heap_resources).each do |name| -%>
     <% next if (value = s.avg(name)).zero?  -%>
     <tr>
-      <td class='resource_name'><%= h name %></td>
+      <td class='resource_name'><%= hrn name %></td>
       <td class='number' style="color:<%= colors[name] || '#000' %>;"><%= memory_number(value) %></td>
     </tr>
   <% end -%>

@@ -33,8 +33,18 @@
       </p>
       <%= render :partial => "resource_plot", :locals => {:width => 1440/5*2, :height => 300} %>
     </div>
-    <%= render "graph_stats" %>
-    <%= render "apdex_with_errors" %>
+    <div id='plot-details' class='stats'>
+      <div id='plot-details-col1'>
+        <%= render "graph_stats" %>
+        <%= render "apdex" %>
+      </div>
+      <div id='plot-details-col2'>
+        <%= render "response_codes" %>
+      </div>
+      <div id='plot-details-col3'>
+        <%= render "errors" %>
+      </div>
+    </div>
     <% end -%>
   </div>
 

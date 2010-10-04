@@ -1,6 +1,6 @@
 <script type="text/javascript">
 function go_home() {
-  jQuery('#controller_action_page').val("::");
+  jQuery('#page-field').val("::");
   jQuery('#grouping option:selected').val("page");
   jQuery('#resource option:selected').val("total_time");
   jQuery('#filter-form').submit();
@@ -15,6 +15,14 @@ function view_resource(resource){
 }
 jQuery(document).ready(function(){
   jQuery('#datepicker').jdPicker({date_format:"YYYY-mm-dd", selectable:[<%= Logjam.database_days(params[:app], params[:env]).map{|d| %Q|"#{d}"|}.join(', ') %>], error_out_of_range:"No data for that date."});
+});
+var initial_page_value = <%= @page.to_json %>;
+jQuery(document).ready(function(){
+  jQuery('#page-field').autocomplete({
+     source: '<%= url_for(params.slice(:year, :month, :day, :app, :env).merge(:action => "auto_complete_for_controller_action_page")) %>',
+     minLength: 2,
+     close: function(event, ui) { if (initial_page_value != jQuery('#page-field').val() ) jQuery('#filter-form').submit(); }
+  });
 });
 </script>
 <div id='header'>
@@ -39,13 +47,7 @@ jQuery(document).ready(function(){
     </p>
     <p class='filter-widget'>
       <%= label :filter, 'page selector' %><br />
-      <input id="controller_action_page" name="page" size="45" type="text" value="<%= h @page %>" onchange="form.submit()" />
-      <div class="auto_complete" id="controller_action_page_auto_complete"></div>
-      <script type="text/javascript">
-      //<![CDATA[
-      var controller_action_page_auto_completer = new Ajax.Autocompleter('controller_action_page', 'controller_action_page_auto_complete', '<%= h Logjam.base_url %>/logjam/auto_complete_for_controller_action_page', {method:'get', parameters: "year=<%=params[:year]%>&month=<%=params[:month]%>&day=<%=params[:day]%>&app=<%=@app%>&env=<%=@env%>"});
-      //]]>
-      </script>
+      <input id="page-field" class="ui-autocomplete-input" name="page" size="45" type="text" value="<%= h @page %>" />
     </p>
     <ul class='filter-widget' id='grouping-widget'>
       <li <%= html_attributes_for_grouping("page") %>>Pages</li>

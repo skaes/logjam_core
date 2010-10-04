@@ -6,13 +6,14 @@ module Logjam
     before_filter :print_params if RAILS_ENV=="development"
 
     def auto_complete_for_controller_action_page
+      params[:page] = params.delete(:term)
       prepare_params
       show_modules = [":", "::"].include?(@page)
       re = show_modules ? /^::/ : /#{@page}/i
       pages = Totals.new(@db).page_names.select {|name| name =~ re}
       pages.collect!{|p| p.gsub(/^::/,'')} unless show_modules
-      @completions = pages.sort[0..34]
-      render :inline => "<%= content_tag(:ul, @completions.map{ |page| content_tag(:li, page) }.join) %>"
+      completions = pages.sort[0..34]
+      render :json => completions
     end
 
     def index
@@ -34,7 +35,13 @@ module Logjam
         q = Requests.new(@db, "minute", @page, :response_code => 500, :limit => 500)
       else
         @title = "Logged Errors"
-        q = Requests.new(@db, "minute", @page, :severity => 3, :limit => 500)
+        severity = case params[:error_type]
+                   when "logged_warning"; then 2
+                   when "logged_error"; then 3
+                   when "logged_fatal"; then 4
+                   else 5
+                   end
+        q = Requests.new(@db, "minute", @page, :severity => severity, :limit => 500)
       end
       @error_count = q.count
       @requests = q.all

@@ -1,0 +1,4 @@
+#!/bin/sh
+export RAILS_ENV=RAILSENV
+export PATH=RUBY_PATH:/usr/local/bin:$PATH
+exec LOGJAM_DIR/vendor/plugins/logjam/script/performance-data-stream-server
