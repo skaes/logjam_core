@@ -20,6 +20,9 @@ pre {
   white-space: -o-pre-wrap; /* Opera 7 */
   word-wrap: break-word; /* Internet Explorer 5.5+ */
 }
+pre img {
+    vertical-align: top;
+}
 
 a { color: #000; }
 a:hover { color: #000; background-color:#fff; }
@@ -219,6 +222,7 @@ td {padding: 0 8px;}
 td.number {text-align: right;}
 
 .error {color:red;}
+.timestamp {font-weight:bold;}
 
 .plot-details { width:616px; }
 #plot-details-col1 { float:left; }

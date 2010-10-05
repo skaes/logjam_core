@@ -136,17 +136,17 @@ module Logjam
       image_tag("#{img}.png", :alt => "severity: #{img}", :title => "severity: #{img}")
     end
 
-    def extract_lines(log_lines)
-      log_lines.first.is_a?(Array) ? (log_lines.map{|s,l| l}) : log_lines
-    end
-
     def extract_exception(log_lines)
-      extract_lines(log_lines).map{|l| safe_h(l)}.detect{|l| l =~ /rb:\d+:in|Error|Exception/}.to_s[0..70]
+      log_lines.map{|l| safe_h(l)}.detect{|l| l =~ /rb:\d+:in|Error|Exception/}.to_s[0..70]
     end
 
     def extract_error(log_lines)
       return extract_exception(log_lines) if log_lines.first.is_a?(String) || log_lines.blank?
-      safe_h((log_lines.detect{|(s,l)| s >= 3}||[])[1].to_s)[0..70]
+      if log_lines.first.size == 2
+        safe_h((log_lines.detect{|(s,l)| s >= 3}||[])[1].to_s)[0..70]
+      else
+        safe_h((log_lines.detect{|(s,t,l)| s >= 3}||[])[2].to_s)[0..70]
+      end
     end
 
     def format_log_level(l)
@@ -161,14 +161,16 @@ module Logjam
     def format_log_line(line)
       if line.is_a?(String)
         level = 1
-      else
+      elsif line.size == 2
         level, line = line
+      else
+        level, timestamp, line = line
       end
       l = safe_h line
       has_backtrace = l =~ /\.rb:\d+:in/
       level = 2 if level == 1 && (has_backtrace || l =~ /Error|Exception/) && (l !~ /^(Rendering|Completed|Processing|Parameters)/)
       colored_line = level > 1 ? "<span class='error'>#{allow_breaks(l.gsub(/(\s+\S+?\.rb:\d+:in \`.*?\')/){|x| "\n"<<x})}</span>" : allow_breaks(l)
-      "#{format_log_level(level)} #{colored_line}"
+      "#{format_log_level(level)}<span class='timestamp'>#{timestamp[6..-1]}</span> #{colored_line}"
     end
 
     # human resource name (escaped)
