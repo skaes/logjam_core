@@ -97,9 +97,13 @@ namespace :logjam do
       importers = (ENV['LOGJAM_IMPORTERS']||"").split(/ *, */).compact
       installed_services = []
       if importers.blank?
+        installed_services << install_service("parser", "parser", :IMPORTER => "")
         installed_services << install_service("importer", "importer", :IMPORTER => "")
       else
-        importers.each{|i| installed_services << install_service("importer", "importer-#{i}", :IMPORTER => i)}
+        importers.each do |i|
+          installed_services << install_service("parser", "parser-#{i}", :IMPORTER => i)
+          installed_services << install_service("importer", "importer-#{i}", :IMPORTER => i)
+        end
       end
       installed_services << install_service("livestream", "live-stream")
       old_services = service_paths.map{|f| f.split("/").compact.last} - installed_services

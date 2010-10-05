@@ -10,8 +10,8 @@ module Logjam
 
     def mongo_buffer(hash)
       date_str = hash["started_at"][0..9]
-      app = hash["app"] || "app"
-      env = hash["env"] || "production"
+      app = hash.delete(:app) || "app"
+      env = hash.delete(:env) || "production"
       key = Logjam.db_name(date_str, app, env)
       @mongo_buffers[key] ||=
         begin

@@ -5,11 +5,10 @@ require 'json'
 
 module Logjam
 
-  class AMQPImporter
+  class AMQPLogParser
     RAILS_ENV = ENV['RAILS_ENV'] || 'development'
 
     def initialize(application)
-      @importer = MongoImporter.new
       @application = application.blank? ? nil : application
     end
 
@@ -17,36 +16,41 @@ module Logjam
       EM.run do
         trap("INT") { EM.stop_event_loop }
         trap("TERM") { EM.stop_event_loop }
-        @timer = EM.add_periodic_timer(1) do
-          @importer.flush_buffers
-        end
         queue.subscribe do |header, msg|
-          process_request(msg, header.routing_key)
+          process_line(msg, header.routing_key)
         end
       end
     end
 
     def stop
       EM.stop_event_loop
-      @importer.flush_buffers
     end
 
     private
 
-    def queue
-      @queue ||=
+    def exchange
+      @exchange ||=
         begin
           channel = MQ.new(AMQP::connect(:host => "127.0.0.1"))
-          exchange = channel.topic(exchange_name, :passive => true)
-          queue = channel.queue(queue_name, :auto_delete => true, :exclusive => true)
-
-          queue.bind(exchange, :routing_key => routing_key)
-          queue
+          channel.topic(exchange_name, :durable => true, :auto_delete => false)
         end
     end
 
     def exchange_name
       ["logjam-data-exchange", @application].compact.join("-")
+    end
+
+    def queue
+      @queue ||=
+        begin
+          channel = MQ.new(AMQP::connect(config))
+          channel.prefetch(1)
+          exchange =  channel.topic(config[:exchange], :passive => true)
+          queue = channel.queue(queue_name, :auto_delete => true, :exclusive => true)
+
+          queue.bind(exchange, :routing_key => routing_key)
+          queue
+        end
     end
 
     def routing_key
@@ -57,10 +61,13 @@ module Logjam
       [config[:queue], @application, `hostname`.chomp].compact.join('-')
     end
 
-    def process_request(msg, routing_key)
-      entry = JSON.parse(msg)
-      app_env = Logjam.routing_key_matcher.call(routing_key) || {}
-      @importer.add_entry entry.merge!(app_env)
+    def process_line(msg, routing_key)
+      Parser.parse_line(msg){|entry| publish(entry.to_hash, routing_key)}
+    end
+
+    def publish(hash, key)
+      payload = hash.to_json
+      exchange.publish(payload, :key => key)
     end
 
     def config
