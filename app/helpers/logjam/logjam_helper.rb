@@ -170,7 +170,7 @@ module Logjam
       has_backtrace = l =~ /\.rb:\d+:in/
       level = 2 if level == 1 && (has_backtrace || l =~ /Error|Exception/) && (l !~ /^(Rendering|Completed|Processing|Parameters)/)
       colored_line = level > 1 ? "<span class='error'>#{allow_breaks(l.gsub(/(\s+\S+?\.rb:\d+:in \`.*?\')/){|x| "\n"<<x})}</span>" : allow_breaks(l)
-      "#{format_log_level(level)}<span class='timestamp'>#{timestamp[6..-1]}</span> #{colored_line}"
+      "#{format_log_level(level)}<span class='timestamp'>#{timestamp.to_s[6..-1]}</span> #{colored_line}"
     end
 
     # human resource name (escaped)
