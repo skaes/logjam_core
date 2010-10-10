@@ -24,8 +24,10 @@ var vis = new pv.Panel()
     .height(h);
 
 function goto_page(page) {
-   jQuery('#page-field').val(page);
-   jQuery('#filter-form').submit();
+   if (page != "Others...") {
+     jQuery('#page-field').val(page);
+     jQuery('#filter-form').submit();
+   }
 }
 
 /* The wedge, with centered label. */
@@ -37,7 +39,7 @@ vis.add(pv.Wedge)
     .innerRadius(0)
     .outerRadius(r)
     .title(function() legend[this.index])
-    .cursor("pointer")
+    .cursor(function() legend[this.index] != "Others..." ? "pointer" : "arrow")
     .event("click", function() goto_page(legend[this.index]))
 //    .outerRadius(r-10)
 //    .def("o", -1)
