@@ -88,7 +88,7 @@ module Logjam
 
     def find(id)
       fields = Resource
-      @collection.find_one({"_id" => BSON::ObjectID.from_string(id)})
+      @collection.find_one({"_id" => BSON::ObjectId.from_string(id)})
     end
 
     def logger
