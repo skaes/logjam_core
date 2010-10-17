@@ -11,7 +11,7 @@
     | <li><%= link_to("next page", {:params => clean_params(params.merge(:offset => @next_page_offset))}) %></li>
     <% end %>
     <% unless @current_page == 1 %>
-    | <li><%= link_to("previous page", {:params => clean_params(params.merge(:offset => @previous_page_offet))}) %></li>
+    | <li><%= link_to("previous page", {:params => clean_params(params.merge(:offset => @previous_page_offset))}) %></li>
     <% end %>
     <% unless @current_page == 1 %>
     | <li><%= link_to("first page", {:params => clean_params(params.merge(:offset => 0))}) %></li>
