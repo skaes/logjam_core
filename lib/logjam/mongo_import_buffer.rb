@@ -66,11 +66,6 @@ module Logjam
       end
 
       increments = {"count" => 1}.merge!(fields)
-      [page, "all_pages", pmodule].each do |p|
-        increments.each do |f,v|
-          (@minutes_buffer[[p,minute]] ||= Hash.new(0.0))[f] += v
-        end
-      end
 
       user_experience =
         if total_time >= 2000 || response_code == 500 then {"apdex.frustrated" => 1}
@@ -82,6 +77,12 @@ module Logjam
 
       increments.merge!(user_experience)
       increments["response.#{response_code}"] = 1
+
+      [page, "all_pages", pmodule].each do |p|
+        increments.each do |f,v|
+          (@minutes_buffer[[p,minute]] ||= Hash.new(0.0))[f] += v
+        end
+      end
 
       [page, "all_pages", pmodule].each do |p|
         increments.each do |f,v|
