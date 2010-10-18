@@ -49,7 +49,7 @@ module Logjam
         $stderr.puts entry.to_yaml
         lines = [[5, entry["started_at"], ""]]
       end
-      severity = lines.map{|s,t,l| s}.max
+      severity = entry["severity"] || lines.map{|s,t,l| s}.max
 
       fields = entry
       add_allocated_memory(fields)
