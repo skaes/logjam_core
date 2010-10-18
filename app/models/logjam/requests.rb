@@ -65,20 +65,20 @@ module Logjam
       all_fields = ["page", "user_id", "heap_growth", "response_code", "severity", @resource]
       all_fields << "minute" unless all_fields.include?("minute")
       all_fields << "lines" if @options[:response_code] == 500 ||  @options[:severity]
+      query_opts = {
+        :fields => all_fields,
+        :sort => [@resource, Mongo::DESCENDING],
+        :limit => @options[:limit] || 32,
+        :skip => @options[:skip]
+      }
 
       result = nil
       access_time = Benchmark.ms do
-#         explain = @collection.find(selector,
-#                                   {:fields => all_fields,
-#                                     :sort => [@resource, Mongo::DESCENDING],
-#                                     :limit => @options[:limit] || 32}).explain
+#         explain = @collection.find(selector, query_opts).explain
 #         logger.debug explain.inspect
-        result = @collection.find(selector,
-                                  {:fields => all_fields,
-                                    :sort => [@resource, Mongo::DESCENDING],
-                                    :limit => @options[:limit] || 32}).to_a
+        result = @collection.find(selector, query_opts.dup).to_a
       end
-      logger.debug "MONGO Requests(#{selector.inspect},#{all_fields.inspect}) #{result.size} records, #{"%.1f" % (access_time)} ms"
+      logger.debug "MONGO Requests(#{selector.inspect},#{query_opts.inspect}) #{result.size} records, #{"%.1f" % (access_time)} ms"
       result
     end
 
@@ -88,7 +88,7 @@ module Logjam
 
     def find(id)
       fields = Resource
-      @collection.find_one({"_id" => BSON::ObjectID.from_string(id)})
+      @collection.find_one({"_id" => BSON::ObjectId.from_string(id)})
     end
 
     def logger

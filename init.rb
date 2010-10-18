@@ -18,3 +18,17 @@ config.to_prepare do
       end
     _EVA_
 end
+
+# fix a bug in ruby 1.9.2
+if RUBY_VERSION == "1.9.2"
+  require 'cgi'
+  require 'cgi/util'
+  ::CGI.class_eval <<-_BRAIN_
+    def CGI::unescape(string)
+      encoding = string.encoding
+      string.tr('+', ' ').gsub(/((?:%[0-9a-fA-F]{2})+)/) do
+        [$1.delete('%')].pack('H*').force_encoding(encoding)
+      end
+    end
+    _BRAIN_
+end

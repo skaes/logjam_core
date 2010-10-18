@@ -38,7 +38,7 @@ module Logjam
 
     def initialize_exchange
       @channel = MQ.new(AMQP::connect(:host => "127.0.0.1"))
-      @exchange = @channel.topic("logjam-development-exchange", :durable => true, :auto_delete => false)
+      @exchange = @channel.topic("logjam-data-exchange", :durable => true, :auto_delete => false)
     end
 
     def logfile_io(logfile_name)

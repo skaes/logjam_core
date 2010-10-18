@@ -39,9 +39,7 @@ module Logjam
           channel = MQ.new(AMQP::connect(:host => "127.0.0.1"))
           exchange = channel.topic(exchange_name, :passive => true)
           queue = channel.queue(queue_name, :auto_delete => true, :exclusive => true)
-
           queue.bind(exchange, :routing_key => routing_key)
-          queue
         end
     end
 

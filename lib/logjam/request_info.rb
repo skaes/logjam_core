@@ -11,60 +11,25 @@ module Logjam
 
     def initialize(host, process_id, user_id, lines)
       # $stderr.puts lines.inspect
-      severity = lines.map{|s,t,l| s}.max
-      @info = {:host => host, :process_id => process_id.to_i, :user_id => user_id.to_i, :lines => lines, :severity => severity}
-      @info.merge!(default_values)
-      process lines
+      @info = {:host => host, :process_id => process_id.to_i, :user_id => user_id.to_i, :lines => lines}
+      process lines, @info
       unless @info[:page]
         $stderr.puts "action could not be recognized"
         $stderr.puts "log lines: #{lines.inspect}"
       end
     end
 
-    def extract_minute(iso_string)
-      60 * iso_string[11..12].to_i + iso_string[14..15].to_i
-    end
-
-    def allocated_memory
-      @info[:allocated_bytes] + @info[:allocated_objects] * 40 rescue 0
-    end
-
     def to_hash
-      @hash ||=
-        begin
-          @info.merge! :other_time => other_time, :allocated_memory => allocated_memory
-          minute = extract_minute(@info[:started_at])
-          @info[:minute] = minute
-          @info
-        end
+      @info
     end
 
-    def default_values
-      @@default_values ||=
-        begin
-          d = {:response_code => 500}
-          Resource.time_resources.map(&:to_sym).each  { |r| d[r] = 0.0 }
-          Resource.memory_resources.map(&:to_sym).each { |r| d[r] = 0 }
-          Resource.call_resources.map(&:to_sym).each { |r| d[r] = 0 }
-          d
-        end
-    end
-
-    def other_time_resources
-      @@other_time_resources ||= Resource.time_resources.map(&:to_sym) - [:total_time, :gc_time]
-    end
-
-    def other_time
-      @info[:total_time] - other_time_resources.inject(0.0){|s,r| s += @info[r]}
-    end
-
-    def process(entry)
-      entry.each do |severity, timestamp, line|
+    def process(lines, info)
+      lines.each do |severity, timestamp, line|
         # puts "matching line #{line}"
         matchers.each do |matcher|
           if extracted_values = matcher.call(line)
             # puts "merging #{extracted_values.inspect}"
-            @info.merge! extracted_values
+            info.merge! extracted_values
             break
           end
         end

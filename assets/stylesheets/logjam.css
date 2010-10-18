@@ -298,6 +298,20 @@ td.number {text-align: right;}
   list-style: square;
 }
 
+#error_page_navigator {
+  margin-top: -5px;
+  margin-bottom: 5px;
+}
+#error_page_navigator ul {
+  list-style-type: none;
+  display: inline;
+  padding-left: 10px;
+}
+#error_page_navigator li {
+  display: inline;
+}
+
+
 #stream-title {
 }
 #stream-control {

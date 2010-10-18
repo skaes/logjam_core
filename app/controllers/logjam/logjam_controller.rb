@@ -29,10 +29,11 @@ module Logjam
 
     def errors
       get_date
+      @page_size = 25
       @page = params[:page]
       if params[:error_type] == "internal"
         @title = "Internal Server Errors"
-        q = Requests.new(@db, "minute", @page, :response_code => 500, :limit => 500)
+        q = Requests.new(@db, "minute", @page, :response_code => 500, :limit => @page_size, :skip => params[:offset].to_i)
       else
         @title = "Logged Errors"
         severity = case params[:error_type]
@@ -41,10 +42,17 @@ module Logjam
                    when "logged_fatal"; then 4
                    else 5
                    end
-        q = Requests.new(@db, "minute", @page, :severity => severity, :limit => 500)
+        q = Requests.new(@db, "minute", @page, :severity => severity, :limit => @page_size, :skip => params[:offset].to_i)
       end
       @error_count = q.count
       @requests = q.all
+      offset = params[:offset].to_i
+      @page_count = @error_count/@page_size + 1
+      @current_page = offset/@page_size + 1
+      @last_page = @page_count
+      @last_page_offset = @error_count/@page_size*@page_size
+      @next_page_offset = offset + @page_size
+      @previous_page_offset = [offset - @page_size, 0].max
     end
 
     def enlarged_plot
@@ -149,6 +157,7 @@ module Logjam
           :app => params[:app], :env => params[:env],
           :page => params[:page], :response => params[:response],
           :heap_growth_only => params[:heap_growth_only], :resource => params[:resource],
+          :offset => params[:offset], :error_type => params[:error_type],
           :grouping => params[:grouping], :grouping_function => params[:grouping_function]))
       end
     end

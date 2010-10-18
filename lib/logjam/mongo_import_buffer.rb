@@ -33,21 +33,29 @@ module Logjam
 
     def add(entry)
       host = entry["host"]
-      severity = entry["severity"]
       page = entry["page"]
       page << "#unknown_method" unless page =~ /#/
-      minute = entry["minute"]
-      response_code = entry["response_code"]
-      user_id = entry["user_id"]
-      total_time = entry["total_time"]
-      if response_code.blank?
-        $stderr.puts "no response code!"
+      unless response_code = entry["response_code"]
+        $stderr.puts "no response code"
         $stderr.puts entry.to_yaml
-        raise "no response code!"
+        response_code = 500
       end
+      user_id = entry["user_id"]
+      total_time = entry["total_time"] || 1
+
       lines = entry.delete("lines")
+      if lines.blank?
+        $stderr.puts "no request lines"
+        $stderr.puts entry.to_yaml
+        lines = [[5, entry["started_at"], ""]]
+      end
+      severity = lines.map{|s,t,l| s}.max
 
       fields = entry
+      add_allocated_memory(fields)
+      add_other_time(fields, total_time)
+      minute = add_minute(fields)
+
       fields.delete_if{|k,v| v==0 || @generic_fields.include?(k) }
       fields.keys.each{|k| fields[squared_field(k)] = (v=fields[k].to_f)*v}
 
@@ -123,6 +131,29 @@ module Logjam
     end
 
     private
+
+    def other_time_resources
+      @@other_time_resources ||= Resource.time_resources - %w(total_time gc_time)
+    end
+
+    def add_other_time(entry, total_time)
+      entry["other_time"] = total_time - other_time_resources.inject(0.0){|s,r| s += (entry[r] || 0)}
+    end
+
+    def extract_minute(iso_string)
+      60 * iso_string[11..12].to_i + iso_string[14..15].to_i
+    end
+
+    def add_allocated_memory(entry)
+      if !(allocated_memory = entry["allocated_memory"]) && (allocated_objects = entry["allocated_objects"])
+        # assume 64bit ruby
+        entry["allocated_memory"] = entry["allocated_bytes"].to_i + allocated_objects * 40
+      end
+    end
+
+    def add_minute(entry)
+      entry["minute"] = extract_minute(entry["started_at"])
+    end
 
     def squared_field(f)
       @squared_fields[f] || raise("unknown field #{f}")
