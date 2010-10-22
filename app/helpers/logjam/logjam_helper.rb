@@ -95,6 +95,15 @@ module Logjam
       end
     end
 
+    def sometimes_link_response_code(page, code, n)
+      text = memory_number(n)
+      if code.to_i < 400
+        h(text)
+      else
+        link_to(text, :params => clean_params(params.slice(:year,:month,:day).merge(:action => "response_codes", :response_code => code, :page => (@page||'').gsub(/^::/,''))))
+      end
+    end
+
     def without_module(page)
       page.blank? ? page : page.sub(/^::(.)/){$1}
     end

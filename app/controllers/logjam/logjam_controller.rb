@@ -55,6 +55,25 @@ module Logjam
       @previous_page_offset = [offset - @page_size, 0].max
     end
 
+    def response_codes
+      get_date
+      @page_size = 25
+      @page = params[:page]
+      @response_code = params[:response_code].to_i
+      @title = "Requests with response code #{@response_code}"
+      q = Requests.new(@db, "minute", @page, :response_code => @response_code, :limit => @page_size, :skip => params[:offset].to_i)
+      @error_count = q.count
+      @requests = q.all
+      offset = params[:offset].to_i
+      @page_count = @error_count/@page_size + 1
+      @current_page = offset/@page_size + 1
+      @last_page = @page_count
+      @last_page_offset = @error_count/@page_size*@page_size
+      @next_page_offset = offset + @page_size
+      @previous_page_offset = [offset - @page_size, 0].max
+      render "errors"
+    end
+
     def enlarged_plot
       @dataset = dataset_from_params
       @protovis_data, @protovis_max, @request_counts, @gc_time, @protovis_zoom = @dataset.plot_data
