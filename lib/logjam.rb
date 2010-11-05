@@ -22,6 +22,15 @@ module Logjam
     @@import_threshold
   end
 
+  @@request_cleaning_threshold = 120
+  def self.request_cleaning_threshold=(request_cleaning_threshold)
+    @@request_cleaning_threshold = request_cleaning_threshold.to_i
+  end
+
+  def self.request_cleaning_threshold
+    @@request_cleaning_threshold
+  end
+
   @@routing_key_matcher = Logjam::Matchers::ROUTING_KEY_MATCHER
   def self.routing_key_matcher=(matcher)
     @@routing_key_matcher = matcher
@@ -54,6 +63,10 @@ module Logjam
     /^logjam-(#{opts[:app]})-(#{opts[:env]})-((.+?)-(.+?)-(.+?))$/
   end
 
+  def db_date(db_name)
+    db_name =~ db_name_format && Date.parse($3)
+  end
+
   def databases(options={})
     mongo.database_names.grep(db_name_format(options.merge(:app => '.+?', :env => '.+?')))
   end
@@ -65,6 +78,17 @@ module Logjam
       Requests.ensure_indexes(db["requests"])
       Minutes.ensure_indexes(db["minutes"])
       Quants.ensure_indexes(db["quants"])
+    end
+  end
+
+  def remove_old_requests
+    databases.each do |db_name|
+      date = db_date(db_name)
+      if Date.today - Logjam.request_cleaning_threshold > date
+        puts "removing old requests: #{date.to_s}"
+        db = mongo.db(db_name)
+        db["requests"].drop
+      end
     end
   end
 

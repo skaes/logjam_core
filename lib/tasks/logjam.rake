@@ -53,6 +53,11 @@ namespace :logjam do
     task :reindex => :environment do
       Logjam.ensure_indexes
     end
+
+    desc "remove old requests"
+    task :clean => :environment do
+      Logjam.remove_old_requests
+    end
   end
 
   namespace :daemons do
