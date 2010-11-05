@@ -3,7 +3,6 @@
   <tr class='full_stats'>
     <td><%= link_to_request(minute_to_human(request["minute"]), {:params => clean_params(params.merge(:action => "show", :id => request['_id']))}, request["response_code"]) %></td>
     <td><%= link_to(h(request["page"]), {:params => clean_params(params.merge(:grouping => "page", :page => request["page"]))}, :title => "show page stats") %></td>
-    <td><%= h request["user_id"] %></td>
     <% case resource_type
        when :time -%>
     <td class='number'><%= seconds_to_human((request[resource]||0) / 1000.0) %></td>
