@@ -8,15 +8,18 @@ module Logjam
   class AMQPLogParser
     RAILS_ENV = ENV['RAILS_ENV'] || 'development'
 
-    def initialize(application)
-      @application = application.blank? ? nil : application
+    def initialize(config_name, cluster)
+      @cluster = cluster
+      @config_name = config_name
+      @application = config[:app]
+      @environment = config[:env]
     end
 
     def process
       EM.run do
         trap("INT") { EM.stop_event_loop }
         trap("TERM") { EM.stop_event_loop }
-        queue.subscribe do |header, msg|
+        parser_queue.subscribe do |header, msg|
           process_line(msg, header.routing_key)
         end
       end
@@ -28,37 +31,37 @@ module Logjam
 
     private
 
-    def exchange
-      @exchange ||=
+    def importer_exchange
+      @importer_exchange ||=
         begin
           channel = MQ.new(AMQP::connect(:host => "127.0.0.1"))
-          channel.topic(exchange_name, :durable => true, :auto_delete => false)
+          channel.topic(importer_exchange_name, :durable => true, :auto_delete => false)
         end
     end
 
-    def exchange_name
-      ["logjam-data-exchange", @application].compact.join("-")
+    def importer_exchange_name
+      ["logjam-data-exchange", @application, @environment].compact.join("-")
     end
 
-    def queue
-      @queue ||=
+    def parser_queue
+      @parser_queue ||=
         begin
           channel = MQ.new(AMQP::connect(config))
           channel.prefetch(1)
-          exchange =  channel.topic(config[:exchange], :passive => true)
-          queue = channel.queue(queue_name, :auto_delete => true, :exclusive => true)
+          exchange = channel.topic(config[:exchange], :passive => true)
+          queue = channel.queue(parser_queue_name, :auto_delete => true, :exclusive => true)
 
-          queue.bind(exchange, :routing_key => routing_key)
+          queue.bind(exchange, :routing_key => parser_routing_key)
           queue
         end
     end
 
-    def routing_key
-      ["logs", @application, "#"].compact.join('.')
+    def parser_routing_key
+      ["logs", @application, "#", @cluster].compact.join('.')
     end
 
-    def queue_name
-      [config[:queue], @application, `hostname`.chomp].compact.join('-')
+    def parser_queue_name
+      [config[:queue], @application, @environment, @cluster, `hostname`.chomp].compact.join('-')
     end
 
     def process_line(msg, routing_key)
@@ -67,11 +70,11 @@ module Logjam
 
     def publish(hash, key)
       payload = hash.to_json
-      exchange.publish(payload, :key => key)
+      importer_exchange.publish(payload, :key => key)
     end
 
     def config
-      @config ||= YAML.load_file("#{RAILS_ROOT}/config/logjam_amqp.yml")[RAILS_ENV].symbolize_keys
+      @config ||= YAML.load_file("#{RAILS_ROOT}/config/logjam_amqp.yml")[@config_name].symbolize_keys
     end
 
   end

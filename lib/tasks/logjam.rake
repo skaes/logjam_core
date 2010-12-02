@@ -77,6 +77,10 @@ namespace :logjam do
       service_paths.join(' ')
     end
 
+    def importer_specs
+      YAML.load_file("#{ ENV['LOGJAM_DIR'] || app_dir }/config/logjam_amqp.yml")
+    end
+
     def install_service(template_name, service_name, substitutions={})
       target_dir = "#{service_dir}/#{service_name}"
       substitutions.merge!(:LOGJAM_DIR => ENV['LOGJAM_DIR'] || app_dir,
@@ -99,15 +103,15 @@ namespace :logjam do
     desc "Install logjam daemons"
     task :install do
       system("mkdir -p #{service_dir}")
-      importers = (ENV['LOGJAM_IMPORTERS']||"").split(/ *, */).compact
       installed_services = []
-      if importers.blank?
-        installed_services << install_service("parser", "parser", :IMPORTER => "")
-        installed_services << install_service("importer", "importer", :IMPORTER => "")
-      else
-        importers.each do |i|
+      importer_specs.each do |i, h|
+        installed_services << install_service("importer", "importer-#{i}", :IMPORTER => i)
+        if clusters = h["clusters"]
+          clusters.each do |c|
+            installed_services << install_service("parser", "parser-#{i}-#{c}", :IMPORTER => i, :CLUSTER => c.to_s)
+          end
+        else
           installed_services << install_service("parser", "parser-#{i}", :IMPORTER => i)
-          installed_services << install_service("importer", "importer-#{i}", :IMPORTER => i)
         end
       end
       installed_services << install_service("livestream", "live-stream")

@@ -8,9 +8,11 @@ module Logjam
   class AMQPImporter
     RAILS_ENV = ENV['RAILS_ENV'] || 'development'
 
-    def initialize(application)
+    def initialize(config_name)
+      @config_name = config_name
+      @application = config[:app]
+      @environment = config[:env]
       @importer = MongoImporter.new
-      @application = application.blank? ? nil : application
     end
 
     def process
@@ -44,7 +46,7 @@ module Logjam
     end
 
     def exchange_name
-      ["logjam-data-exchange", @application].compact.join("-")
+      ["logjam-data-exchange", @application, @environment].compact.join("-")
     end
 
     def routing_key
@@ -52,17 +54,16 @@ module Logjam
     end
 
     def queue_name
-      [config[:queue], @application, `hostname`.chomp].compact.join('-')
+      ["logjam-importer-queue", @application, @environment, `hostname`.chomp].compact.join('-')
     end
 
     def process_request(msg, routing_key)
       entry = JSON.parse(msg)
-      app_env = Logjam.routing_key_matcher.call(routing_key) || {}
-      @importer.add_entry entry.merge!(app_env)
+      @importer.add_entry entry.merge!(:app => @application, :env => @environment)
     end
 
     def config
-      @config ||= YAML.load_file("#{RAILS_ROOT}/config/logjam_amqp.yml")[RAILS_ENV].symbolize_keys
+      @config ||= YAML.load_file("#{RAILS_ROOT}/config/logjam_amqp.yml")[@config_name].symbolize_keys
     end
 
   end

@@ -2,14 +2,15 @@
 
 require File.expand_path(File.dirname(__FILE__)+'/../../../../config/environment.rb')
 
-application = ARGV.first
+config_name = ARGV.first
+cluster = ARGV.second
 
-puts "Starting amqp log parser for rails environment '#{RAILS_ENV}'"
+puts "Starting amqp log parser for '#{config_name}'"
 
 trap("INT") do
   puts "Stopping event loop"
   @amqp_log_parser.stop
 end
 
-@amqp_log_parser = Logjam::AMQPLogParser.new(application)
+@amqp_log_parser = Logjam::AMQPLogParser.new(config_name, cluster)
 @amqp_log_parser.process
