@@ -105,13 +105,14 @@ namespace :logjam do
       system("mkdir -p #{service_dir}")
       installed_services = []
       importer_specs.each do |i, h|
+        next if ENV['RAILS_ENV'] == 'production' && h['env'] == 'development'
         installed_services << install_service("importer", "importer-#{i}", :IMPORTER => i)
         if clusters = h["clusters"]
           clusters.each do |c|
             installed_services << install_service("parser", "parser-#{i}-#{c}", :IMPORTER => i, :CLUSTER => c.to_s)
           end
         else
-          installed_services << install_service("parser", "parser-#{i}", :IMPORTER => i)
+          installed_services << install_service("parser", "parser-#{i}", :IMPORTER => i, :CLUSTER => '')
         end
       end
       installed_services << install_service("livestream", "live-stream")
