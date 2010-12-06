@@ -70,8 +70,9 @@ module Logjam
       stddev = page.stddev(resource)
       n = number_with_precision(stddev, :precision => 0 , :delimiter => ',')
       if stddev > 0 && page.page != "Others..."
-        options = {:params => clean_params(params.merge(:page => without_module(page.page), :action => distribution_kind(resource)))}
-        link_to(n, options, :title => distribution_kind(resource).to_s.gsub(/_/,''))
+        parameters = params.merge(:app => @app, :env => @env, :page => without_module(page.page), :action => distribution_kind(resource))
+
+        link_to(n, :params => clean_params(parameters), :title => distribution_kind(resource).to_s.gsub(/_/,''))
       else
         n
       end
@@ -91,7 +92,10 @@ module Logjam
       elsif page == "Others..."
         n
       else
-        link_to(n, :params => params.slice(:year,:month,:day).merge(:action => "errors", :error_type => "internal", :page => without_module(page)))
+        parameters = params.slice(:year,:month,:day).
+          merge(:app => @app, :env => @env, :action => "errors", :error_type => "internal", :page => without_module(page))
+
+        link_to(n, :params => clean_params(parameters))
       end
     end
 
@@ -100,7 +104,10 @@ module Logjam
       if code.to_i < 400
         h(text)
       else
-        link_to(text, :params => clean_params(params.slice(:year,:month,:day).merge(:action => "response_codes", :response_code => code, :page => (@page||'').gsub(/^::/,''))))
+        parameters = params.slice(:year,:month,:day).
+          merge(:app => @app, :env => @env, :action => "response_codes", :response_code => code, :page => (@page||'').gsub(/^::/,''))
+
+        link_to(text, :params => clean_params(parameters))
       end
     end
 
