@@ -85,9 +85,10 @@ module Logjam
     databases.each do |db_name|
       date = db_date(db_name)
       if Date.today - Logjam.request_cleaning_threshold > date
-        puts "removing old requests: #{date.to_s}"
+        puts "removing old requests: #{db_name}"
         db = mongo.db(db_name)
         db["requests"].drop
+        db.command(:repairDatabase => 1)
       end
     end
   end
