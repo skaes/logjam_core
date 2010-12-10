@@ -113,6 +113,11 @@ module Logjam
     database_apps.size == 1
   end
 
+  def default_env(app)
+    envs = database_envs(app)
+    envs.select{|e| e=="production"}.first || envs.first
+  end
+
   def sanitize_date(date_str)
     case date_str
     when Time, Date, DateTime

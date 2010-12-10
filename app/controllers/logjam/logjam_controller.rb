@@ -123,8 +123,8 @@ module Logjam
     end
 
     def get_app_env
-      @app ||= params[:app] || Logjam.database_apps.first
-      @env ||= params[:env] || Logjam.database_envs(@app).first
+      @app ||= (params[:app] ||= Logjam.database_apps.first)
+      @env ||= (params[:env] ||= Logjam.default_env(@app))
     end
 
     def get_date
