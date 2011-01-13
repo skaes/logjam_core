@@ -54,6 +54,10 @@ module Logjam
       @page_info["response"]
     end
 
+    def severity
+      @page_info["severity"]
+    end
+
     def error_count
       response["500"].to_i
     end
@@ -70,6 +74,9 @@ module Logjam
       if response
         other.response.each {|x,y| response[x] = (response[x]||0) + y}
       end
+      if severity
+        other.severity.each {|x,y| severity[x] = (severity[x]||0) + y}
+      end
     end
 
     def clone
@@ -77,6 +84,7 @@ module Logjam
       res.page_info = pi = @page_info.clone
       pi["apdex"] = pi["apdex"].clone if pi["apdex"]
       pi["response"] = pi["response"].clone if pi["response"]
+      pi["severity"] = pi["severity"].clone if pi["severity"]
       @resources.each do |r|
         pi.delete("#{r}_avg")
         pi.delete("#{r}_stddev")
@@ -103,6 +111,7 @@ module Logjam
       @resources = resources.dup
       @apdex = @resources.delete("apdex")
       @response = @resources.delete("response")
+      @severity = @resources.delete("severity")
       @pattern = pattern
       @sum = {}
       @avg = {}
@@ -166,6 +175,10 @@ module Logjam
       @response_hash ||= the_pages.inject(Hash.new(0)){|h,p| p.response.each{|k,v| h[k.to_i] += v.to_i}; h}
     end
 
+    def severities
+      @severity_hash ||= the_pages.inject(Hash.new(0)){|h,p| p.severity.each{|k,v| h[k.to_i] += v.to_i}; h}
+    end
+
     protected
 
     def selector
@@ -178,7 +191,7 @@ module Logjam
     end
 
     def compute
-      all_fields = ["page", "count", @apdex, @response].compact + @resources
+      all_fields = ["page", "count", @apdex, @response, @severity].compact + @resources
       sq_fields = @resources.map{|r| "#{r}_sq"}
       fields = {:fields => all_fields.concat(sq_fields)}
 
