@@ -46,7 +46,13 @@ module Logjam
     def selector
       query_opts = @options[:heap_growth_only] ? {"heap_growth" => {'$gt' => 0}} : {}
       query_opts.merge!(:response_code => @options[:response_code]) if @options[:response_code]
-      query_opts.merge!(:severity => {'$gte' => @options[:severity]}) if @options[:severity]
+      if severity = @options[:severity]
+        if severity.to_i < 3
+          query_opts.merge!(:severity => severity)
+        else
+          query_opts.merge!(:severity => {'$gte' => severity})
+        end
+      end
       if pattern.present? && pattern != "all_pages"
         if page_names.include?(pattern)
           query_opts.merge!(:page => pattern)

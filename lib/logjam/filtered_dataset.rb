@@ -34,7 +34,6 @@ module Logjam
       @grouping_function = options[:grouping_function] || DEFAULTS[:grouping_function]
       @start_minute = (options[:start_minute] || DEFAULTS[:start_minute]).to_i
       @end_minute = (options[:end_minute] || DEFAULTS[:end_minute]).to_i
-      @logged_error_count = {}
     end
 
     def page_description
@@ -111,7 +110,7 @@ module Logjam
     def totals
       @totals ||=
         case Resource.resource_type(resource)
-        when :time   then Totals.new(@db, Resource.time_resources+%w(apdex response), page)
+        when :time   then Totals.new(@db, Resource.time_resources+%w(apdex response severity), page)
         when :call   then Totals.new(@db, Resource.call_resources, page)
         when :memory then Totals.new(@db, Resource.memory_resources, page)
         end
@@ -243,8 +242,12 @@ module Logjam
       response_codes[500] || 0
     end
 
+    def severities
+      @severities ||= Totals.new(@db, %w(severity), @page).severities
+    end
+
     def logged_error_count(level)
-      @logged_error_count[level] ||= Requests.new(@db, "minute", @page, :severity => level).count
+      severities[level] || 0
     end
 
     def response_codes

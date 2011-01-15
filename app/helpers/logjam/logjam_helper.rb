@@ -93,9 +93,9 @@ module Logjam
         n
       else
         parameters = params.slice(:year,:month,:day).
-          merge(:app => @app, :env => @env, :action => "errors", :error_type => "internal", :page => without_module(page))
+          merge(:app => @app, :env => @env, :action => "errors", :error_type => "logged_error", :page => without_module(page))
 
-        link_to(n, :params => clean_params(parameters))
+        link_to(n, {:params => clean_params(parameters)}, :class => "error")
       end
     end
 
@@ -107,7 +107,7 @@ module Logjam
         parameters = params.slice(:year,:month,:day).
           merge(:app => @app, :env => @env, :action => "response_codes", :response_code => code, :page => (@page||'').gsub(/^::/,''))
 
-        link_to(text, :params => clean_params(parameters))
+        link_to(text, {:params => clean_params(parameters)}, :class => "error")
       end
     end
 

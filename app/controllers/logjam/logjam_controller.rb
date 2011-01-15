@@ -35,13 +35,13 @@ module Logjam
         @title = "Internal Server Errors"
         q = Requests.new(@db, "minute", @page, :response_code => 500, :limit => @page_size, :skip => params[:offset].to_i)
       else
-        @title = "Logged Errors"
         severity = case params[:error_type]
                    when "logged_warning"; then 2
                    when "logged_error"; then 3
                    when "logged_fatal"; then 4
                    else 5
                    end
+        @title = severity == 2 ? "Logged Warnings" : "Logged Errors"
         q = Requests.new(@db, "minute", @page, :severity => severity, :limit => @page_size, :skip => params[:offset].to_i)
       end
       @error_count = q.count

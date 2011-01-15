@@ -1,25 +1,25 @@
 <table id='error-table'>
   <tr><th colspan="2">errors/warnings</th></tr>
   <tr>
-    <td class="error" title="internal server errors">internal</td>
+    <td title="internal server errors">internal</td>
     <td class="number error"><%= link_to(@dataset.error_count, :params =>
       clean_params(params.slice(:year,:month,:day, :app, :env).merge(:action => "errors",
       :error_type => "internal", :page => (@page||'').gsub(/^::/,'')))) %></td>
   </tr>
   <tr>
-    <td class="error" title="logged fatal or above">fatals</td>
-    <td class="number"><%= link_to(@dataset.logged_error_count(4), :params =>
+    <td title="logged fatals">fatals</td>
+    <td class="number error"><%= link_to(@dataset.logged_error_count(4), :params =>
       clean_params(params.slice(:year,:month,:day, :app, :env).merge(:action => "errors",
       :error_type => "logged_fatal", :page =>  (@page||'').gsub(/^::/,'')))) %></td>
   </tr>
   <tr>
-    <td class="error" title="logged error or above">errors</td>
-    <td class="number"><%= link_to(@dataset.logged_error_count(3), :params =>
+    <td title="logged errors and fatals">errors</td>
+    <td class="number error"><%= link_to(@dataset.logged_error_count(3), :params =>
       clean_params(params.slice(:year,:month,:day, :app, :env).merge(:action => "errors",
       :error_type => "logged_error", :page =>  (@page||'').gsub(/^::/,'')))) %></td>
   </tr>
   <tr>
-    <td class="error" title="logged warning or above">warnings</td>
+    <td title="logged warnings">warnings</td>
     <td class="number"><%= link_to(@dataset.logged_error_count(2), :params =>
       clean_params(params.slice(:year,:month,:day, :app, :env).merge(:action => "errors",
       :error_type => "logged_warning", :page =>  (@page||'').gsub(/^::/,'')))) %></td>

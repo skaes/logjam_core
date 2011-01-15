@@ -55,11 +55,12 @@ module Logjam
     end
 
     def severity
-      @page_info["severity"]
+      @page_info["severity"] || {}
     end
 
     def error_count
-      response["500"].to_i
+      # response["500"].to_i
+      severity["3"].to_i + severity["4"].to_i
     end
 
     def add(other)
