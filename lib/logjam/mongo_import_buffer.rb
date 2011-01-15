@@ -77,7 +77,8 @@ module Logjam
 
       increments.merge!(user_experience)
       increments["response.#{response_code}"] = 1
-      increments["severity.#{severity}"] = 1
+      # only store severities which indicate warnings/errors
+      increments["severity.#{severity}"] = 1 if severity > 1
 
       [page, "all_pages", pmodule].each do |p|
         increments.each do |f,v|
