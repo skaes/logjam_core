@@ -223,6 +223,8 @@ td.number {text-align: right;}
 
 .error {color:red;}
 .error a {color:red;}
+.warn {color:brown;}
+.warn a {color:brown;}
 .timestamp {font-weight:bold;}
 
 .plot-details { width:616px; }

@@ -63,6 +63,10 @@ module Logjam
       severity["3"].to_i + severity["4"].to_i
     end
 
+    def warning_count
+      severity["2"].to_i
+    end
+
     def add(other)
       @page_info["count"] += other.count
       @resources.each do |r|

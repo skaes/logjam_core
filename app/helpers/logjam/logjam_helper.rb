@@ -99,6 +99,25 @@ module Logjam
       end
     end
 
+    def sometimes_link_errors(page)
+      error_count = page.error_count
+      warning_count = page.warning_count
+      n = error_count + warning_count
+      if n == 0
+        ""
+      elsif page.page == "Others..."
+        "#{error_count}/#{warning_count}"
+      else
+        parameters = params.slice(:year,:month,:day).
+          merge(:app => @app, :env => @env, :action => "errors", :page => without_module(page.page))
+        errors = error_count == 0 ? error_count :
+          link_to(error_count, {:params => clean_params(parameters.merge(:error_type => "logged_error"))}, :class => "error")
+        warnings = warning_count == 0 ? warning_count :
+          link_to(warning_count, {:params => clean_params(parameters.merge(:error_type => "logged_warning"))}, :class => "warn")
+        "#{errors}/#{warnings}"
+      end
+    end
+
     def sometimes_link_response_code(page, code, n)
       text = memory_number(n)
       if code.to_i < 400
