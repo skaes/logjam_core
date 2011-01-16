@@ -93,6 +93,14 @@ module Logjam
     end
   end
 
+  def update_severities
+    databases.each do |db_name|
+      puts "updating severities: #{db_name}"
+      db = mongo.db(db_name)
+      Totals.update_severities(db)
+    end
+  end
+
   def database_apps
     databases.map{|t| t[db_name_format, 1]}.uniq.sort
   end

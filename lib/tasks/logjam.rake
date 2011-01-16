@@ -58,6 +58,11 @@ namespace :logjam do
     task :clean => :environment do
       Logjam.remove_old_requests
     end
+
+    desc "update severities"
+    task :update_severities => :environment do
+      Logjam.update_severities
+    end
   end
 
   namespace :daemons do

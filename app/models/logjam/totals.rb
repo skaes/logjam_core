@@ -108,6 +108,23 @@ module Logjam
       collection
     end
 
+    def self.update_severities(db)
+      totals = db["totals"]
+      pages = totals.distinct(:page)
+      pages.each do |page|
+        severities = {}
+        [2, 3, 4].each do |severity|
+          requests = Requests.new(db, nil, page, :severity => severity)
+          num_requests = requests.count(:severity => severity)
+          severities["severity.#{severity}"] = num_requests if num_requests > 0
+        end
+        unless severities.empty?
+          puts "#{page}, #{severities.inspect}"
+          totals.update({:page => page}, {'$set' => severities}, {:upsert => false, :multi => false})
+        end
+      end
+    end
+
     attr_reader :resources, :pattern, :pages
 
     def initialize(db, resources=[], pattern='')

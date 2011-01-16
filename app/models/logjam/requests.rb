@@ -43,7 +43,7 @@ module Logjam
       @page_names ||= @database["totals"].distinct(:page)
     end
 
-    def selector
+    def selector(options={})
       query_opts = @options[:heap_growth_only] ? {"heap_growth" => {'$gt' => 0}} : {}
       query_opts.merge!(:response_code => @options[:response_code]) if @options[:response_code]
       if severity = @options[:severity]
@@ -64,7 +64,7 @@ module Logjam
       end
       query_opts.merge!(:minute => {'$gte' => @start_minute}) if @start_minute
       (query_opts[:minute] ||= {}).merge!('$lte' => @end_minute) if @end_minute
-      query_opts
+      query_opts.merge!(options)
     end
 
     def all
@@ -88,8 +88,8 @@ module Logjam
       result
     end
 
-    def count
-      @collection.find(selector).count
+    def count(options={})
+      @collection.find(selector(options)).count
     end
 
     def find(id)
