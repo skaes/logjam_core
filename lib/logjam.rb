@@ -121,6 +121,10 @@ module Logjam
     database_apps.size == 1
   end
 
+  def default_app
+    database_apps.first
+  end
+
   def default_env(app)
     envs = database_envs(app)
     envs.select{|e| e=="production"}.first || envs.first
@@ -141,6 +145,6 @@ module Logjam
 
   private
   def database_config
-    YAML.load_file("#{RAILS_ROOT}/config/logjam_database.yml")[RAILS_ENV]
+    YAML.load_file("#{Rails.root}/config/logjam_database.yml")[Rails.env]
   end
 end

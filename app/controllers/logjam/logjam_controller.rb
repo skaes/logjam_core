@@ -3,7 +3,7 @@ module Logjam
   class LogjamController < ApplicationController
     before_filter :redirect_to_clean_url, :except => [:live_stream, :auto_complete_for_controller_action_page]
     before_filter :verify_app_env
-    before_filter :print_params if RAILS_ENV=="development"
+    before_filter :print_params if ::Rails.env=="development"
 
     def auto_complete_for_controller_action_page
       params[:page] = params.delete(:term)

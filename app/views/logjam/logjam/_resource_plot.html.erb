@@ -2,11 +2,11 @@
   <script type="text/javascript+protovis">
 (function() {
 
-var data = <%= @protovis_data.to_json %>;
+var data = <%= raw @protovis_data.to_json %>;
 var interval = <%= params[:interval].to_i %>;
-var colors = <%= ((@resources.reverse+[@gc_time&&"gc_time"]).compact.map{|r| Logjam::Resource.color(r,0.8)}+["rgba(128,128,128,0.2)"]).to_json %>;
-var legend = <%= ((@resources.reverse+[@gc_time&&"gc_time"]+%w(requests/second)).compact).to_json.gsub(/_/,' ') %>;
-var request_counts = <%= @request_counts.to_json %>;
+var colors = <%= raw ((@resources.reverse+[@gc_time&&"gc_time"]).compact.map{|r| Logjam::Resource.color(r,0.8)}+["rgba(128,128,128,0.2)"]).to_json %>;
+var legend = <%= raw ((@resources.reverse+[@gc_time&&"gc_time"]+%w(requests/second)).compact).to_json.gsub(/_/,' ') %>;
+var request_counts = <%= raw @request_counts.to_json %>;
 var gc_time = <%= @gc_time ? @gc_time.to_json : "null" %>;
 var max_y = <%= @protovis_max %>;
 var zoomed_max_y = <%= @protovis_zoom * 1.5 %>;

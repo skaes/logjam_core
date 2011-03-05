@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require File.expand_path(File.dirname(__FILE__)+'/../../../../config/environment.rb')
+require File.expand_path('../../../../../config/environment.rb', __FILE__)
 
 file_name = ARGV.shift
 

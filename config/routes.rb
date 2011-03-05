@@ -1,14 +1,14 @@
-ActionController::Routing::Routes.draw do |map|
-  map.live_stream "#{Logjam.base_url}/live_stream",
-                    :controller => 'logjam/logjam', :action => 'live_stream'
+Rails.application.routes.draw do |map|
 
-  map.auto_complete "#{Logjam.base_url}/logjam/:action",
-                    :controller => 'logjam/logjam',
-                    :requirements => { :action => /auto_complete_for_\S+/ },
-                    :conditions => { :method => :get }
+  controller "logjam/logjam" do
+    scope "#{Logjam.base_url}" do
 
-  map.connect "#{Logjam.base_url}/:year/:month/:day/:action/:id", :controller => "logjam/logjam",
-     :requirements => {:year => /\d\d\d\d/, :month => /\d\d/, :day => /\d\d/}
+      get "/live_stream" => :live_stream
 
-  map.connect "#{Logjam.base_url}/:controller/:action/:id"
+      get "/:year/:month/:day(/:action(/:id))", :year => /\d\d\d\d/, :month => /\d\d/, :day => /\d\d/
+
+      get "/" => :index, :page => "::"
+
+    end
+  end
 end

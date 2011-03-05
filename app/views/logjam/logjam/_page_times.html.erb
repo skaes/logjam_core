@@ -16,10 +16,10 @@ function toggle_heap_growth_only(){
        options = {:resource => resource} -%>
     <% if @dataset.grouping? -%>
       <th><%= @dataset.grouping %></th>
-      <th <%= html_attributes_for_grouping_function("count","number of requests") %>>requests</th>
-      <th <%= html_attributes_for_grouping_function("avg", "average") %>>avg<br/><%= resource_name %></th>
-      <th <%= html_attributes_for_grouping_function("stddev", "standard deviation")%>>stddev<br/><%= resource_name %></th>
-      <th <%= html_attributes_for_grouping_function("sum", "sum") %>>sum<br/><%= resource_name %></th>
+      <th <%= raw html_attributes_for_grouping_function("count","number of requests") %>>requests</th>
+      <th <%= raw html_attributes_for_grouping_function("avg", "average") %>>avg<br/><%= resource_name %></th>
+      <th <%= raw html_attributes_for_grouping_function("stddev", "standard deviation")%>>stddev<br/><%= resource_name %></th>
+      <th <%= raw html_attributes_for_grouping_function("sum", "sum") %>>sum<br/><%= resource_name %></th>
       <% if @dataset.accumulates_time? -%>
         <% options.merge!(:resource_total => @dataset.sum(resource))-%>
         <th>% of overall<br/><%= resource_name.gsub(' ', '&nbsp;') %></th>

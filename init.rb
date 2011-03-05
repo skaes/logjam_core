@@ -7,7 +7,7 @@ config.to_prepare do
 end
 
 config.after_initialize do
-  ::ActiveSupport::Dependencies.load_once_paths.reject! { |p| p =~ %r{/logjam/} }
+  ::ActiveSupport::Dependencies.autoload_once_paths.reject! { |p| p =~ %r{/logjam/} }
 end
 
 # fix a bug in rack (more a brainfuck actually)

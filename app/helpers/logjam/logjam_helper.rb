@@ -51,9 +51,9 @@ module Logjam
       if grouping.to_sym == :page && ppage !~ /Others/ && (ppage != @page || ppage =~ /^::/)
         params = params.merge(grouping => value)
         params[:page] = without_module(ppage) unless @page == "::"
-        link_to(h(value), {:params => clean_params(params)}, :title => "filter with #{h(value)}")
+        link_to(h(value), clean_params(params), :title => "filter with #{h(value)}")
       else
-        "<span class='dead-link'>#{h(value)}</span>"
+        content_tag(:span, value, :class => 'dead-link')
       end
     end
 
@@ -72,7 +72,7 @@ module Logjam
       if stddev > 0 && page.page != "Others..."
         parameters = params.merge(:app => @app, :env => @env, :page => without_module(page.page), :action => distribution_kind(resource))
 
-        link_to(n, :params => clean_params(parameters), :title => distribution_kind(resource).to_s.gsub(/_/,''))
+        link_to(n, clean_params(parameters), :title => distribution_kind(resource).to_s.gsub(/_/,''))
       else
         n
       end
@@ -95,7 +95,7 @@ module Logjam
         parameters = params.slice(:year,:month,:day).
           merge(:app => @app, :env => @env, :action => "errors", :error_type => "logged_error", :page => without_module(page))
 
-        link_to(n, {:params => clean_params(parameters)}, :class => "error")
+        link_to(n, clean_params(parameters), :class => "error")
       end
     end
 
@@ -111,9 +111,9 @@ module Logjam
         parameters = params.slice(:year,:month,:day).
           merge(:app => @app, :env => @env, :action => "errors", :page => without_module(page.page))
         errors = error_count == 0 ? error_count :
-          link_to(error_count, {:params => clean_params(parameters.merge(:error_type => "logged_error"))}, :class => "error")
+          link_to(error_count, clean_params(parameters.merge(:error_type => "logged_error")), :class => "error")
         warnings = warning_count == 0 ? warning_count :
-          link_to(warning_count, {:params => clean_params(parameters.merge(:error_type => "logged_warning"))}, :class => "warn")
+          link_to(warning_count, clean_params(parameters.merge(:error_type => "logged_warning")), :class => "warn")
         "#{errors}/#{warnings}"
       end
     end
@@ -126,7 +126,7 @@ module Logjam
         parameters = params.slice(:year,:month,:day).
           merge(:app => @app, :env => @env, :action => "response_codes", :response_code => code, :page => (@page||'').gsub(/^::/,''))
 
-        link_to(text, {:params => clean_params(parameters)}, :class => "error")
+        link_to(text, clean_params(parameters), :class => "error")
       end
     end
 

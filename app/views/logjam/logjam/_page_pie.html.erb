@@ -8,8 +8,8 @@
 
 <script type="text/javascript+protovis">
 (function(){
-var data = <%= data.to_json %>,
-    legend = <%= legend.to_json %>;
+var data = <%= raw data.to_json %>,
+    legend = <%= raw legend.to_json %>;
 
 /* Sizing and scales. */
 var w = <%= size rescue 180 %>,

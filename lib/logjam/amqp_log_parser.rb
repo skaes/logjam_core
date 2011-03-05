@@ -6,7 +6,6 @@ require 'json'
 module Logjam
 
   class AMQPLogParser
-    RAILS_ENV = ENV['RAILS_ENV'] || 'development'
 
     def initialize(config_name, cluster)
       @cluster = cluster
@@ -74,7 +73,7 @@ module Logjam
     end
 
     def config
-      @config ||= YAML.load_file("#{RAILS_ROOT}/config/logjam_amqp.yml")[@config_name].symbolize_keys
+      @config ||= YAML.load_file("#{Rails.root}/config/logjam_amqp.yml")[@config_name].symbolize_keys
     end
 
   end

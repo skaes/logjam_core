@@ -97,7 +97,7 @@
 
 <pre id='request-lines' class="filter-widget">
 <% (@request["lines"]||[]).each do |line| -%>
-<%= format_log_line(line) %>
+<%= raw format_log_line(line) %>
 <% end -%>
 </pre>
 

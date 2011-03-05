@@ -14,19 +14,19 @@ function view_resource(resource){
   jQuery('#filter-form').submit();
 }
 jQuery(document).ready(function(){
-  jQuery('#datepicker').jdPicker({date_format:"YYYY-mm-dd", selectable:[<%= Logjam.database_days(params[:app], params[:env]).map{|d| %Q|"#{d}"|}.join(', ') %>], error_out_of_range:"No data for that date."});
+  jQuery('#datepicker').jdPicker({date_format:"YYYY-mm-dd", selectable:[<%= raw Logjam.database_days(params[:app], params[:env]).map{|d| %Q|"#{d}"|}.join(', ') %>], error_out_of_range:"No data for that date."});
 });
-var initial_page_value = <%= @page.to_json %>;
+var initial_page_value = <%= raw @page.to_json %>;
 jQuery(document).ready(function(){
   jQuery('#page-field').autocomplete({
-     source: '<%= url_for(params.slice(:year, :month, :day, :app, :env).merge(:action => "auto_complete_for_controller_action_page")) %>',
+     source: '<%= raw url_for(params.slice(:year, :month, :day, :app, :env).merge(:action => "auto_complete_for_controller_action_page")) %>',
      minLength: 2,
      close: function(event, ui) { if (initial_page_value != jQuery('#page-field').val() ) jQuery('#filter-form').submit(); }
   });
 });
 </script>
 <div id='header'>
-  <% form_tag({:action => :index}, :method => :get, :id => 'filter-form', :autocomplete => "off") do -%>
+  <%= form_tag({:action => :index}, :method => :get, :id => 'filter-form', :autocomplete => "off") do -%>
   <div id='filter'>
     <input type="button" id='home-button' value="Logjam" onclick="go_home()"/>
     <% unless Logjam.only_one_app? %>
@@ -50,8 +50,8 @@ jQuery(document).ready(function(){
       <input id="page-field" class="ui-autocomplete-input" name="page" size="45" type="text" value="<%= h @page %>" />
     </p>
     <ul class='filter-widget' id='grouping-widget'>
-      <li <%= html_attributes_for_grouping("page") %>>Pages</li>
-      <li <%= html_attributes_for_grouping("request") %>>Requests</li>
+      <li <%= raw html_attributes_for_grouping("page") %>>Pages</li>
+      <li <%= raw html_attributes_for_grouping("request") %>>Requests</li>
     </ul>
     <p class='filter-widget' style="visibility:hidden;display:none;">
       <%= label :filter, 'Show' %><br />
@@ -61,7 +61,7 @@ jQuery(document).ready(function(){
     <div class='menu'>
       <label style="color:black;">Resource selector</label><br />
       <ul id='resource-type-widget'>
-        <li><a href='#' <%= html_attributes_for_resource_type(:time) %>>Time</a>
+        <li><a href='#' <%= raw html_attributes_for_resource_type(:time) %>>Time</a>
           <ul>
             <% Logjam::Resource.time_resources.reverse.each do |r| %>
             <li><a href='#' onclick="view_resource('<%=r%>')"><%= h r.gsub(/_/,' ') %></a></li>
@@ -69,7 +69,7 @@ jQuery(document).ready(function(){
           </ul>
         </li>
         <% unless Logjam::Resource.memory_resources.empty? %>
-        <li><a href='#' <%= html_attributes_for_resource_type(:memory) %>>Memory</a>
+        <li><a href='#' <%= raw html_attributes_for_resource_type(:memory) %>>Memory</a>
           <ul>
             <% Logjam::Resource.memory_resources.reverse.each do |r| %>
             <li><a href='#' onclick="view_resource('<%=r%>')"><%= h r.gsub(/_/,' ') %></a></li>
@@ -77,14 +77,14 @@ jQuery(document).ready(function(){
           </ul>
         </li>
         <% end %>
-        <li><a href='#' <%= html_attributes_for_resource_type(:call) %>>Calls</a>
+        <li><a href='#' <%= raw html_attributes_for_resource_type(:call) %>>Calls</a>
           <ul>
             <% Logjam::Resource.call_resources.reverse.each do |r| %>
             <li><a href='#' onclick="view_resource('<%=r%>')"><%= h r.gsub(/_/,' ') %></a></li>
             <% end %>
           </ul>
         </li>
-        <!-- <td <%= html_attributes_for_resource_type("heap") %>>heap</td> -->
+        <!-- <td <%= raw html_attributes_for_resource_type("heap") %>>heap</td> -->
       </ul>
     </div>
     <p class='filter-widget' id='resource-widget' style="visibility:hidden;display:none;">

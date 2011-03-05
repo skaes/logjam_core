@@ -22,8 +22,8 @@ var
     h  = 500,
     x = pv.Scale.log(<%= @xmin %>, <%= max_x %>).range(0, w).nice(),
     y = pv.Scale.log(1, <%= max_y %>).range(0, h).nice(),
-    legend = <%= resources.to_json.gsub(/_/,' ') %>,
-    colors = pv.colors(<%= colors.to_json %>);
+    legend = <%= raw resources.to_json.gsub(/_/,' ') %>,
+    colors = pv.colors(<%= raw colors.to_json %>);
 
 /* The root panel. */
 var vis = new pv.Panel()
@@ -89,8 +89,8 @@ vis.add(pv.Dot)
     .bottom(function(d) y(d[1]))
     .lineWidth(1)
     .size(9)
-    .strokeStyle("<%= colors[i] %>")
-    .fillStyle("<%= colors[i] %>");
+    .strokeStyle("<%= raw colors[i] %>")
+    .fillStyle("<%= raw colors[i] %>");
 <% end %>
 
 /* Legend. */

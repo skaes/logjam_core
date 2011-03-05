@@ -1,8 +1,8 @@
 <script type="text/javascript+protovis">
 (function(){
 <% data_with_colors = data.map{|d| d||0}.zip(colors) %>
-var data = <%= data_with_colors.map(&:first).to_json %>;
-var legend = <%= legend.to_json %>;
+var data = <%= raw data_with_colors.map(&:first).to_json %>;
+var legend = <%= raw legend.to_json %>;
 
 /* Sizing and scales. */
 var w = <%= size rescue 100 %>,
@@ -10,7 +10,7 @@ var w = <%= size rescue 100 %>,
     r = w / 2,
     s = pv.sum(data),
     a = pv.Scale.linear(0, s).range(0, 2 * Math.PI);
-    c = pv.colors(<%= data_with_colors.map(&:second).to_json %>).range();
+    c = pv.colors(<%= raw data_with_colors.map(&:second).to_json %>).range();
 
 /* The root panel. */
 var vis = new pv.Panel()
