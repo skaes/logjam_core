@@ -42,7 +42,7 @@ module Logjam
     end
 
     def clean_params(params)
-      FilteredDataset.clean_url_params params
+      FilteredDataset.clean_url_params(params.merge :default_app => @default_app, :default_env => @default_app)
     end
 
     def sometimes_link_grouping_result(result, grouping, params)

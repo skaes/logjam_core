@@ -17,6 +17,8 @@ module Logjam
     end
 
     def index
+      # puts caller.join("\n")
+      puts cookies.inspect
       @dataset = dataset_from_params
       @protovis_data, @protovis_max, @request_counts, @gc_time, @protovis_zoom = @dataset.plot_data
       @resources = @dataset.plotted_resources-["gc_time"]
@@ -123,8 +125,10 @@ module Logjam
     end
 
     def get_app_env
-      @app ||= (params[:app] ||= Logjam.database_apps.first)
-      @env ||= (params[:env] ||= Logjam.default_env(@app))
+      @default_app ||= Logjam.default_app
+      @app ||= (params[:app] ||= @default_app)
+      @default_env ||= Logjam.default_env(@app)
+      @env ||= (params[:env] ||= @default_env)
     end
 
     def get_date
@@ -167,9 +171,11 @@ module Logjam
     end
 
     def redirect_to_clean_url
+      get_app_env
       params[:starts_at] ||= default_date.to_s(:db) unless (params[:year] && params[:month] && params[:day])
       if params[:starts_at] =~ /^(\d\d\d\d)-(\d\d)-(\d\d)$/
         redirect_to(FilteredDataset.clean_url_params(
+          :default_app => @default_app, :default_env => @default_env,
           :controller => params[:controller], :action => params[:action],
           :year => $1, :month => $2, :day => $3, :interval => params[:interval],
           :start_minute => params[:start_minute], :end_minute => params[:end_minute],
