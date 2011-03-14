@@ -1,7 +1,5 @@
 require 'logjam'
 
-config.gem 'mongo'
-
 config.to_prepare do
   ApplicationController.helper(Logjam::LogjamHelper)
 end
