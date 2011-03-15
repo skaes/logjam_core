@@ -1,4 +1,4 @@
-Rails.application.routes.draw do |map|
+Rails.application.routes.draw do
 
   controller "logjam/logjam" do
     scope "#{Logjam.base_url}" do
