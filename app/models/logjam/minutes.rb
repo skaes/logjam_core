@@ -35,7 +35,12 @@ module Logjam
       fields = {:fields => ["minute","count"].concat(@resources)}
 
       rows = nil
-      access_time = Benchmark.ms { rows = @collection.find(selector, fields.clone).to_a }
+      query = "Minutes.find(#{selector.inspect},#{fields.inspect})"
+      ActiveSupport::Notifications.instrument("mongo.logjam", :query => query) do |payload|
+        rows = @collection.find(selector, fields.clone).to_a
+        payload[:rows] = rows.size
+      end
+
       n = rows.size
 
       sums = {}
@@ -62,7 +67,7 @@ module Logjam
       @counts = counts
       counts.each_key { |m| counts[m] /= interval.to_f }
 
-      logger.debug "MONGO Minutes(#{selector.inspect},#{fields.inspect}) ==> #{n} records, size #{@minutes.size}, #{"%.1f" % (access_time)} ms}"
+      logger.debug "MONGO Minutes size #{@minutes.size}"
     end
 
     def logger

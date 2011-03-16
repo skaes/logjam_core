@@ -40,7 +40,15 @@ module Logjam
     end
 
     def page_names
-      @page_names ||= @database["totals"].distinct(:page)
+      @page_names ||=
+        begin
+          query = "Totals.distinct(:page)"
+          ActiveSupport::Notifications.instrument("mongo.logjam", :query => query) do |payload|
+            rows = @database["totals"].distinct(:page)
+            payload[:rows] = rows.size
+            rows
+          end
+        end
     end
 
     def selector(options={})
@@ -78,23 +86,31 @@ module Logjam
         :skip => @options[:skip]
       }
 
-      result = nil
-      access_time = Benchmark.ms do
-#         explain = @collection.find(selector, query_opts).explain
-#         logger.debug explain.inspect
-        result = @collection.find(selector, query_opts.dup).to_a
+      query = "Requests.find(#{selector.inspect},#{query_opts.inspect})"
+      rows = nil
+      ActiveSupport::Notifications.instrument("mongo.logjam", :query => query) do |payload|
+        # explain = @collection.find(selector, query_opts).explain
+        # logger.debug explain.inspect
+        rows = @collection.find(selector, query_opts.dup).to_a
+        payload[:rows] = rows.size
       end
-      logger.debug "MONGO Requests(#{selector.inspect},#{query_opts.inspect}) #{result.size} records, #{"%.1f" % (access_time)} ms"
-      result
+      rows
     end
 
     def count(options={})
-      @collection.find(selector(options)).count
+      selector = selector(options)
+      query = "Requests.count(#{selector.inspect})"
+      ActiveSupport::Notifications.instrument("mongo.logjam", :query => query, :rows => 1) do
+        @collection.find(selector).count
+      end
     end
 
     def find(id)
-      fields = Resource
-      @collection.find_one({"_id" => BSON::ObjectId.from_string(id)})
+      selector = {"_id" => BSON::ObjectId.from_string(id)}
+      query = "Requests.find_one(#{selector.inspect})"
+      ActiveSupport::Notifications.instrument("mongo.logjam", :query => query, :rows => 1) do
+        @collection.find_one(selector)
+      end
     end
 
     def logger

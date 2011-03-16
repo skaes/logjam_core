@@ -27,11 +27,14 @@ module Logjam
     end
 
     def compute
+      selector = {:page => @pattern, :kind => @kind}
+      fields = {:fields => ["quant"].concat(@resources)}
+      query = "Quants.find(#{selector.inspect},#{fields.inspect})"
       rows = nil
-      access_time = Benchmark.ms do
-        rows = @collection.find({:page => @pattern, :kind => @kind}, {:fields => ["quant"].concat(@resources)}).to_a
+      ActiveSupport::Notifications.instrument("mongo.logjam", :query => query) do |payload|
+        rows = @collection.find(selector, fields.clone).to_a
+        payload[:rows] = rows.size
       end
-      logger.debug "MONGO quants: #{@pattern}, #{rows.size} records, #{"%.1f" % (access_time)} ms}"
 
       quants = @quants = {}
       while row = rows.shift

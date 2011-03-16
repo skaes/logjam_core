@@ -30,3 +30,10 @@ if RUBY_VERSION == "1.9.2"
     end
     _BRAIN_
 end
+
+ActiveSupport.on_load(:action_controller) do
+  include Logjam::ControllerRuntime
+end
+
+# make sure we subscribe!
+Logjam::LogSubscriber

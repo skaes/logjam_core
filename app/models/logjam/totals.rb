@@ -146,7 +146,15 @@ module Logjam
     end
 
     def page_names
-      @page_names ||= @collection.distinct(:page)
+      @page_names ||=
+        begin
+          query = "Totals.distinct(:page)"
+          ActiveSupport::Notifications.instrument("mongo.logjam", :query => query) do |payload|
+            rows = @collection.distinct(:page)
+            payload[:rows] = rows.size
+            rows
+          end
+        end
     end
 
     def pages(options)
@@ -218,8 +226,11 @@ module Logjam
       fields = {:fields => all_fields.concat(sq_fields)}
 
       rows = nil
-      access_time = Benchmark.ms { rows = @collection.find(selector, fields.clone).to_a }
-      logger.debug "MONGO Totals.find(#{selector.inspect},#{fields.inspect}) ==> #{rows.size} records, #{"%.1f" % (access_time)} ms"
+      query = "Totals.find(#{selector.inspect},#{fields.inspect})"
+      ActiveSupport::Notifications.instrument("mongo.logjam", :query => query) do |payload|
+        rows = @collection.find(selector, fields.clone).to_a
+        payload[:rows] = rows.size
+      end
 
       result = []
       while row = rows.shift
