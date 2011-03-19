@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 export RAILS_ENV=RAILSENV
-export PATH=RUBY_PATH:/usr/local/bin:$PATH
+export PATH=DAEMON_PATH
+export GEM_HOME=GEMHOME
+export GEM_PATH=GEMPATH
 exec LOGJAM_DIR/vendor/plugins/logjam/script/performance-data-stream-server

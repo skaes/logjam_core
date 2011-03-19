@@ -90,7 +90,9 @@ namespace :logjam do
       target_dir = "#{service_dir}/#{service_name}"
       substitutions.merge!(:LOGJAM_DIR => ENV['LOGJAM_DIR'] || app_dir,
                            :RAILSENV => ENV['RAILS_ENV'] || "development",
-                           :RUBY_PATH => `which ruby`.chomp.split('/')[0..-2].join("/"))
+                           :GEMHOME => Gem.dir,
+                           :GEMPATH => Gem.path.join(':'),
+                           :DAEMON_PATH => ENV['PATH'].split(':').uniq.join(':'))
       system("mkdir -p #{target_dir}/log/logs")
       # order is important here: always create the dependent log service first!
       scripts = %w(log/run run)

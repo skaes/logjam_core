@@ -3,7 +3,7 @@
 $stdout.sync = true
 $stderr.sync = true
 
-require 'rubygems'
+require File.expand_path('../../../../../config/boot.rb', __FILE__)
 require 'em-websocket'
 require 'amqp'
 require 'mq'
