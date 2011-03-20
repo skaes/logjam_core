@@ -114,7 +114,7 @@ module Logjam
           link_to(error_count, clean_params(parameters.merge(:error_type => "logged_error")), :class => "error")
         warnings = warning_count == 0 ? warning_count :
           link_to(warning_count, clean_params(parameters.merge(:error_type => "logged_warning")), :class => "warn")
-        "#{errors}/#{warnings}"
+        raw "#{errors}/#{warnings}"
       end
     end
 
