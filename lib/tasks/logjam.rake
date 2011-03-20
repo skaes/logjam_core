@@ -86,13 +86,17 @@ namespace :logjam do
       YAML.load_file("#{ ENV['LOGJAM_DIR'] || app_dir }/config/logjam_amqp.yml")
     end
 
+    def clean_path(paths)
+      paths.map{|p| p.gsub(/\/+/,'/')}.uniq.join(':')
+    end
+
     def install_service(template_name, service_name, substitutions={})
       target_dir = "#{service_dir}/#{service_name}"
       substitutions.merge!(:LOGJAM_DIR => ENV['LOGJAM_DIR'] || app_dir,
                            :RAILSENV => ENV['RAILS_ENV'] || "development",
                            :GEMHOME => Gem.dir,
-                           :GEMPATH => (Gem.path+[Gem.default_dir]).uniq.join(':'),
-                           :DAEMON_PATH => ENV['PATH'].split(':').uniq.join(':'))
+                           :GEMPATH => clean_path(Gem.path)
+                           :DAEMON_PATH => clean_path(ENV['PATH'].split(':')))
       system("mkdir -p #{target_dir}/log/logs")
       # order is important here: always create the dependent log service first!
       scripts = %w(log/run run)
