@@ -7,16 +7,16 @@
     Page <%= h @current_page %> of <%= h @page_count %> pages
     <ul>
     <% unless @current_page == @last_page %>
-    | <li><%= link_to("next page", {:params => clean_params(params.merge(:offset => @next_page_offset))}) %></li>
+    | <li><%= link_to("next page", clean_params(params.merge(:offset => @next_page_offset))) %></li>
     <% end %>
     <% unless @current_page == 1 %>
-    | <li><%= link_to("previous page", {:params => clean_params(params.merge(:offset => @previous_page_offset))}) %></li>
+    | <li><%= link_to("previous page", clean_params(params.merge(:offset => @previous_page_offset))) %></li>
     <% end %>
     <% unless @current_page == 1 %>
-    | <li><%= link_to("first page", {:params => clean_params(params.merge(:offset => 0))}) %></li>
+    | <li><%= link_to("first page", clean_params(params.merge(:offset => 0))) %></li>
     <% end %>
     <% unless @current_page == @last_page %>
-    | <li><%= link_to("last page", {:params => clean_params(params.merge(:offset => @last_page_offset))}) %></li>
+    | <li><%= link_to("last page", clean_params(params.merge(:offset => @last_page_offset))) %></li>
     <% end %>
     </ul>
   </div>
@@ -26,9 +26,9 @@
     <% @requests.each do |r| %>
     <tr class='full_stats'>
       <td style="text-align:center"><%= severity_icon(r["severity"]) %></td>
-      <% error_link_params = {:params => clean_params(params.merge(:action =>"show", :id => r["_id"]))} %>
+      <% error_link_params = clean_params(params.merge(:action =>"show", :id => r["_id"])) %>
       <td><%= link_to(minute_to_human(r["minute"]), error_link_params, :title => "show request") %></td>
-      <td><%= link_to(h(r["page"]), {:params => clean_params(params.merge(:action => "index", :grouping => "page", :page => r["page"]))}, :title => "show page stats") %></td>
+      <td><%= link_to(h(r["page"]), clean_params(params.merge(:action => "index", :grouping => "page", :page => r["page"])), :title => "show page stats") %></td>
       <td><%= link_to(extract_error(r["lines"]||[]), error_link_params, :title => "show request")  %></td>
     </tr>
     <% end %>
