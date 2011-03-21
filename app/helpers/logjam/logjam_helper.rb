@@ -127,7 +127,7 @@ module Logjam
       else
         parameters = params.slice(:year,:month,:day).
           merge(:app => @app, :env => @env, :action => "response_codes", :above => 400, :page => without_module(page.page))
-        link_to(n, clean_params(parameters), :class => "error")
+        link_to(n, clean_params(parameters), :class => "warn")
       end
     end
 
