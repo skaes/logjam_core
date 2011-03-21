@@ -53,7 +53,13 @@ module Logjam
 
     def selector(options={})
       query_opts = @options[:heap_growth_only] ? {"heap_growth" => {'$gt' => 0}} : {}
-      query_opts.merge!(:response_code => @options[:response_code]) if @options[:response_code]
+      if rc = @options[:response_code]
+        if @options[:above]
+          query_opts.merge!(:response_code => {'$gte' => rc})
+        else
+          query_opts.merge!(:response_code => rc)
+        end
+      end
       if severity = @options[:severity]
         if severity.to_i < 3
           query_opts.merge!(:severity => severity)

@@ -13,6 +13,7 @@
     <% if resource == "total_time" -%>
       <td class='number'><%= number_with_precision(page.apdex_score, :precision => 2) %></td>
       <td class='number'><%= sometimes_link_errors(page) %></td>
+      <td class='number'><%= sometimes_link_400s(page) %></td>
     <% else -%>
       <td class='number'><%= number_to_percentage(page.sum(resource).to_f / total_time * 100, :precision => 2) %></td>
     <% end -%>

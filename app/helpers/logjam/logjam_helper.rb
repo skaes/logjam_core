@@ -118,6 +118,19 @@ module Logjam
       end
     end
 
+    def sometimes_link_400s(page)
+      n = page.four_hundreds
+      if n == 0
+        ""
+      elsif page.page == "Others..."
+        n
+      else
+        parameters = params.slice(:year,:month,:day).
+          merge(:app => @app, :env => @env, :action => "response_codes", :above => 400, :page => without_module(page.page))
+        link_to(n, clean_params(parameters), :class => "error")
+      end
+    end
+
     def sometimes_link_response_code(page, code, n)
       text = memory_number(n)
       if code.to_i < 400

@@ -61,9 +61,13 @@ module Logjam
       get_date
       @page_size = 25
       @page = params[:page]
-      @response_code = params[:response_code].to_i
-      @title = "Requests with response code #{@response_code}"
-      q = Requests.new(@db, "minute", @page, :response_code => @response_code, :limit => @page_size, :skip => params[:offset].to_i)
+      if (@response_code = params[:above].to_i) >= 400
+        @title = "Requests with response code above #{@response_code}"
+      else
+        @response_code = params[:response_code].to_i
+        @title = "Requests with response code #{@response_code}"
+      end
+      q = Requests.new(@db, "minute", @page, :response_code => @response_code, :limit => @page_size, :skip => params[:offset].to_i, :above => params[:above].present?)
       @error_count = q.count
       @requests = q.all
       offset = params[:offset].to_i

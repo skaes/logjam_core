@@ -67,6 +67,12 @@ module Logjam
       severity["2"].to_i
     end
 
+    def four_hundreds
+      n = 0
+      response.each_pair{|k,v| n += v.to_i if k =~ /^4/}
+      n
+    end
+
     def add(other)
       @page_info["count"] += other.count
       @resources.each do |r|
