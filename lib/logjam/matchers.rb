@@ -81,8 +81,10 @@ module Logjam
 
     # default rails completed line. mandatory matcher.
     # Completed 200 OK in 53ms (Views: 49.4ms | ActiveRecord: 2.6ms)
+    # Completed 200 OK in 53ms (Views: 49.4ms)
+    # Completed 302 Found in 23ms
     COMPLETED_RAILS3 = lambda do |line|
-      line =~ /^Completed (\d+) .+ in ([\S]+)ms \(Views: ([\S]+)ms \| ActiveRecord: ([\S]+)ms\)/ and
+      line =~ /^Completed (\d+) .+ in ([\S]+)ms(?: \(Views: ([\S]+)ms(?: \| ActiveRecord: ([\S]+)ms)?\))?/ and
         {
           :response_code => $1.to_i,
           :total_time => $2.to_f,

@@ -24,11 +24,11 @@ module Logjam
         severity = SEVERITIES[severity1 || severity2]
 
         key = "#{host}-#{process_id}"
-        if payload =~/^Processing/
+        if (payload =~ /^(?:Processing|Started)/) && (payload !~ /^Processing by/)
           # puts "processing"
           if request = @unprocessed_requests.delete(key)
-            puts "incomplete request:"
-            puts request.to_yaml
+            $stderr.puts "incomplete request:"
+            $stderr.puts request.to_yaml
             yield RequestInfo.new(host, process_id, user_id, request)
           end
           @unprocessed_requests[key] = [[severity, timestamp, payload]]

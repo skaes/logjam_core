@@ -64,10 +64,13 @@ module Logjam
     end
 
     def process_line(msg, routing_key)
+      # p routing_key
+      # p msg
       Parser.parse_line(msg){|entry| publish(entry.to_hash, routing_key)}
     end
 
     def publish(hash, key)
+      # p hash
       payload = hash.to_json
       importer_exchange.publish(payload, :key => key)
     end
