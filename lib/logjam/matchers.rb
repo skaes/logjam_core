@@ -79,20 +79,6 @@ module Logjam
         }
     end
 
-    # default rails completed line. mandatory matcher.
-    # Completed 200 OK in 53ms (Views: 49.4ms | ActiveRecord: 2.6ms)
-    # Completed 200 OK in 53ms (Views: 49.4ms)
-    # Completed 302 Found in 23ms
-    COMPLETED_RAILS3 = lambda do |line|
-      line =~ /^Completed (\d+) .+ in ([\S]+)ms(?: \(Views: ([\S]+)ms(?: \| ActiveRecord: ([\S]+)ms)?\))?/ and
-        {
-          :response_code => $1.to_i,
-          :total_time => $2.to_f,
-          :view_time => $3.to_f,
-          :db_time => $4.to_f
-        }
-    end
-
     # time_bandits, either the simple, out-of-the-box format
     #   Jan 13 16:58:38 starbuck-2 rails[86742]:  Completed in 238.974ms (View: 61.361, DB: 41.915(14,1)) | 200 OK [http: ...]
     # or with memcache and memory resources, via gchacks
@@ -151,7 +137,56 @@ module Logjam
           :allocated_bytes => $20.to_i,
           :live_data_set_size => $21.to_i,
           :response_code => $22.to_i
-      }
+      }.delete_if{|k,v| v == 0}
+    end
+
+    RAILS3_COMPLETED_REGEX = %r{^
+      (?<views>Views:\s(?<view_time>\S+)ms){0}
+
+      (?<db>ActiveRecord:\s(?<db_time>\S+)\((?<db_calls>\d+),(?<db_sql_query_cache_hits>\d+)\)){0}
+
+      (?<api>API:\s(?<api_time>\S+)\((?<api_calls>\d+)\)){0}
+
+      (?<search>SR:\s(?<search_time>\S+)\((?<search_calls>\d+)\)){0}
+
+      (?<memcache>MC:\s(?<memcache_time>\S+)\((?<memcache_calls>\d+)r,(?<memcache_misses>\d+)m\)){0}
+
+      (?<gearman>GM:\s(?<gearman_time>\S+)\((?<gearman_calls>\d+)\)){0}
+
+      (?<gc>GC:\s(?<gc_time>\S+)\((?<gc_calls>\d+)\)){0}
+
+      (?<heap>HP:\s(?<heap_growth>\S+)\((?<heap_size>\d+),(?<allocated_objects>\d+),(?<allocated_bytes>\d+),(?<live_data_set_size>\d+)\)){0}
+
+      (?<elem>\g<db>|\g<api>|\g<views>|\g<search>|\g<memcache>|\g<gearman>|\g<gc>|\g<heap>){0}
+
+      Completed\s(?<response_code>\d+)\s.+\sin\s(?<total_time>\S+)ms(?:\s\(\g<elem>(\s\|\s\g<elem>)*\))?
+    }x
+
+    COMPLETED_RAILS3 = lambda do |line|
+      (md = RAILS3_COMPLETED_REGEX.match(line)) and {
+        :total_time              => md[:total_time].to_f,
+        :view_time               => md[:view_time].to_f,
+        :db_time                 => md[:db_time].to_f,
+        :db_calls                => md[:db_calls].to_i,
+        :db_sql_query_cache_hits => md[:db_sql_query_cache_hits].to_i,
+        :api_time                => md[:api_time].to_f,
+        :api_calls               => md[:api_calls].to_i,
+        :search_time             => md[:search_time].to_f,
+        :search_calls            => md[:search_calls].to_i,
+        :memcache_time           => md[:memcache_time].to_f,
+        :memcache_calls          => md[:memcache_calls].to_i,
+        :memcache_misses         => md[:memcache_misses].to_i,
+        :gearman_time            => md[:gearman_time].to_f,
+        :gearman_calls           => md[:gearman_calls].to_i,
+        :gc_time                 => md[:gc_time].to_f,
+        :gc_calls                => md[:gc_calls].to_i,
+        :heap_growth             => md[:heap_growth].to_i,
+        :heap_size               => md[:heap_size].to_i,
+        :allocated_objects       => md[:allocated_objects].to_i,
+        :allocated_bytes         => md[:allocated_bytes].to_i,
+        :live_data_set_size      => md[:live_data_set_size].to_i,
+        :response_code           => md[:response_code].to_i
+      }.delete_if{|k,v| v == 0}
     end
 
     # /!\ FAILSAFE /!\  Wed Sep 15 16:49:43 +0200 2010  Status: 500
