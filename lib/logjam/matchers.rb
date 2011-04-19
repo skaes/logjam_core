@@ -153,11 +153,13 @@ module Logjam
 
       (?<gearman>GM:\s(?<gearman_time>\S+)\((?<gearman_calls>\d+)\)){0}
 
+      (?<rest>REST:\s(?<rest_time>\S+)\((?<rest_calls>\d+)\)){0}
+
       (?<gc>GC:\s(?<gc_time>\S+)\((?<gc_calls>\d+)\)){0}
 
       (?<heap>HP:\s(?<heap_growth>\S+)\((?<heap_size>\d+),(?<allocated_objects>\d+),(?<allocated_bytes>\d+),(?<live_data_set_size>\d+)\)){0}
 
-      (?<elem>\g<db>|\g<api>|\g<views>|\g<search>|\g<memcache>|\g<gearman>|\g<gc>|\g<heap>){0}
+      (?<elem>\g<db>|\g<api>|\g<views>|\g<search>|\g<memcache>|\g<gearman>|\g<rest>|\g<gc>|\g<heap>){0}
 
       Completed\s(?<response_code>\d+)\s.+\sin\s(?<total_time>\S+)ms(?:\s\(\g<elem>(\s\|\s\g<elem>)*\))?
     }x
@@ -178,6 +180,8 @@ module Logjam
         :memcache_misses         => md[:memcache_misses].to_i,
         :gearman_time            => md[:gearman_time].to_f,
         :gearman_calls           => md[:gearman_calls].to_i,
+        :rest_time               => md[:rest_time].to_f,
+        :rest_calls              => md[:rest_calls].to_i,
         :gc_time                 => md[:gc_time].to_f,
         :gc_calls                => md[:gc_calls].to_i,
         :heap_growth             => md[:heap_growth].to_i,
