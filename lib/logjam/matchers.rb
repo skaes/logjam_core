@@ -9,6 +9,7 @@ module Logjam
   # NOTE: Most of the configuration options are at the end of this file. But you also need
   #       to pay attention to the LOG_LINE_SPLITTER.
   module Matchers
+    extend self
 
     # this regexp is used to prefilter log files with egrep|zegrep (which can speed up things quite a bit)
 #    PRE_MATCH = 'Completed|Processing|Session ID'
@@ -105,39 +106,38 @@ module Logjam
         }
     end
 
-    # completed line regexp: complicated by the fact that the log file
-    # format @XING changed over time and we want to be able to parse old logfiles
+    # completed line regexp:
     #
     # Aug 09 14:33:18 somehost rails[12132] user[Anonymous] engine[jobs]: Completed in 472.898ms (View: 306.690, DB: 12.239(1,0), API: 0.000(0), SR: 112.595(1), MC: 10.867(4r,0m), GM: 0.000(0), GC: 0.000(0), HP: 0(2000001,169014,5889106,1137730)) | 200 OK [...]
     # Aug 26 15:37:29 pc-skaes-3 rails[74535] user[dddddddd]: Completed in 1517.781ms (View: 26.129, DB: 26.009(17,0), API: 41.166(1), SR: 30.590(3), MC: 6.447(9r,0m), GC: 628.893(6), HP: 0(1616240,591402,35515800)) | 200 OK ...]
     # Jul 27 16:25:29 pc-skaes-3 rails[3161] user[ddddddd]: Completed in 2352.498ms (View: 183.980, DB: 53.292(15), API: 46.657(1), SR: 7.638(3), MC: 6.345(9r,0m), GC: 970.501(10)) | 200 OK [...]
     # Jun 28 06:00:49 somehost rails[25944] user[Anonymous]: Completed in 176.044ms (View: 0.000, DB: 0.000(0), API: 0.000(0), SR: 0.000(0), MC: 2.218(1r,1m)) |  [...url...]
+    XING_COMPLETED_REGEX = %r{^
+      (?<views>View:\s(?<view_time>\S+)){0}
+
+      (?<db>DB:\s(?<db_time>\S+)\((?<db_calls>\d+),(?<db_sql_query_cache_hits>\d+)\)){0}
+
+      (?<api>API:\s(?<api_time>\S+)\((?<api_calls>\d+)\)){0}
+
+      (?<search>SR:\s(?<search_time>\S+)\((?<search_calls>\d+)\)){0}
+
+      (?<memcache>MC:\s(?<memcache_time>\S+)\((?<memcache_calls>\d+)r,(?<memcache_misses>\d+)m\)){0}
+
+      (?<gearman>GM:\s(?<gearman_time>\S+)\((?<gearman_calls>\d+)\)){0}
+
+      (?<rest>REST:\s(?<rest_time>\S+)\((?<rest_calls>\d+)\)){0}
+
+      (?<gc>GC:\s(?<gc_time>\S+)\((?<gc_calls>\d+)\)){0}
+
+      (?<heap>HP:\s(?<heap_growth>\S+)\((?<heap_size>\d+),(?<allocated_objects>\d+),(?<allocated_bytes>\d+),(?<live_data_set_size>\d+)\)){0}
+
+      (?<elem>\g<db>|\g<api>|\g<views>|\g<search>|\g<memcache>|\g<gearman>|\g<rest>|\g<gc>|\g<heap>){0}
+
+      Completed\sin\s(?<total_time>\S+)ms(?:\s\(\g<elem>(,\s\g<elem>)*\)(?:\s\|\s(?<response_code>\d+))?)?
+    }x
+
     COMPLETED_XING = lambda do |line|
-      line =~ /^Completed in ([\S]+)ms \((?:View: ([\S]+), )?DB: ([\S]+)\((\d+)(?:,(\d+))?\), API: ([\S]+)\((\d+)\), SR: ([\S]+)\((\d+)\), MC: ([\S]+)\((\d+)r,(\d+)m\)(?:, GM: ([\S]+)\((\d+)\))?(?:, GC: ([\S]+)\((\d+)\))?(?:, HP: ([\S]+)\((\d+),(\d+),(\d+)(?:,(\d+))?\))?\)(?: \| (\d+)? )?/ and
-        {
-          :total_time => $1.to_f,
-          :view_time => $2.to_f,
-          :db_time => $3.to_f,
-          :db_calls => $4.to_i,
-          :db_sql_query_cache_hits => $5.to_i,
-          :api_time => $6.to_f,
-          :api_calls => $7.to_i,
-          :search_time => $8.to_f,
-          :search_calls => $9.to_i,
-          :memcache_time => $10.to_f,
-          :memcache_calls => $11.to_i,
-          :memcache_misses => $12.to_i,
-          :gearman_time => $13.to_f,
-          :gearman_calls => $14.to_i,
-          :gc_time => $15.to_f,
-          :gc_calls => $16.to_i,
-          :heap_growth => $17.to_i,
-          :heap_size => $18.to_i,
-          :allocated_objects => $19.to_i,
-          :allocated_bytes => $20.to_i,
-          :live_data_set_size => $21.to_i,
-          :response_code => $22.to_i
-      }.delete_if{|k,v| v == 0}
+      (md = XING_COMPLETED_REGEX.match(line)) and extract_completed_line_stats(md)
     end
 
     RAILS3_COMPLETED_REGEX = %r{^
@@ -165,7 +165,26 @@ module Logjam
     }x
 
     COMPLETED_RAILS3 = lambda do |line|
-      (md = RAILS3_COMPLETED_REGEX.match(line)) and {
+      (md = RAILS3_COMPLETED_REGEX.match(line)) and extract_completed_line_stats(md)
+    end
+
+    # /!\ FAILSAFE /!\  Wed Sep 15 16:49:43 +0200 2010  Status: 500
+    FAILSAFE = lambda do |line|
+      line =~ %r{/!\\ FAILSAFE /!\\.*(?:Status: (\d+))} and {:response_code => ($1||500).to_i}
+    end
+
+    # default routing key matcher
+    ROUTING_KEY_MATCHER = lambda do |key|
+       key =~ /^logs\.(.+?)\.(.+?)\..+$/ and {:app => $1, :env => $2}
+    end
+
+    # default routing key matcher
+    XING_ROUTING_KEY_MATCHER = lambda do |key|
+       key =~ /^logs\.([^.]+)(?:\..+)?$/ and { :app => $1, :env => "production" }
+    end
+
+    def extract_completed_line_stats(md)
+      {
         :total_time              => md[:total_time].to_f,
         :view_time               => md[:view_time].to_f,
         :db_time                 => md[:db_time].to_f,
@@ -191,21 +210,6 @@ module Logjam
         :live_data_set_size      => md[:live_data_set_size].to_i,
         :response_code           => md[:response_code].to_i
       }.delete_if{|k,v| v == 0}
-    end
-
-    # /!\ FAILSAFE /!\  Wed Sep 15 16:49:43 +0200 2010  Status: 500
-    FAILSAFE = lambda do |line|
-      line =~ %r{/!\\ FAILSAFE /!\\.*(?:Status: (\d+))} and {:response_code => ($1||500).to_i}
-    end
-
-    # default routing key matcher
-    ROUTING_KEY_MATCHER = lambda do |key|
-       key =~ /^logs\.(.+?)\.(.+?)\..+$/ and {:app => $1, :env => $2}
-    end
-
-    # default routing key matcher
-    XING_ROUTING_KEY_MATCHER = lambda do |key|
-       key =~ /^logs\.([^.]+)(?:\..+)?$/ and { :app => $1, :env => "production" }
     end
 
   end
