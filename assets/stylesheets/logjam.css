@@ -221,6 +221,8 @@ td.group-thing {max-width: 32em; overflow: hidden; font-size: 90%;}
 td {padding: 0 8px;}
 td.number {text-align: right;}
 
+.new_error, .new_error td{ background-color:yellow; }
+
 .error {color:red;}
 .error a {color:red;}
 .warn {color:brown;}

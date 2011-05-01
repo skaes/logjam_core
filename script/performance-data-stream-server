@@ -6,12 +6,12 @@ $stderr.sync = true
 require File.expand_path('../../../../../config/boot.rb', __FILE__)
 require 'em-websocket'
 require 'amqp'
-require 'mq'
 require 'set'
 
 @exchanges = {}
 @queues = {}
-@buffers = Hash.new{|h,k| h[k] = []}
+@perf_buffers = Hash.new{|h,k| h[k] = []}
+@error_buffers = Hash.new{|h,k| h[k] = []}
 @sockets = Hash.new{|h,k| h[k] = Set.new}
 
 def create_queue_and_subscribe(app_env, key)
@@ -25,7 +25,8 @@ end
 
 def subscribe(app_env_key, queue)
   queue.subscribe do |header, perf_data|
-    (b = @buffers[app_env_key]) << perf_data
+    b = perf_data =~ /total_time/ ? @perf_buffers[app_env_key] : @error_buffers[app_env_key]
+    b << perf_data
     b.shift if b.size > 60
     @sockets[app_env_key].each {|s| s.send perf_data}
   end
@@ -46,7 +47,8 @@ EventMachine.run do
       @exchanges[app_env] ||= @channel.topic("logjam-performance-data-#{app_env}")
       @queues[app_env_key] ||= create_queue_and_subscribe(app_env, key)
       @sockets[app_env_key] << ws
-      @buffers[app_env_key].each{|m| ws.send m}
+      @perf_buffers[app_env_key].each{|m| ws.send m}
+      @error_buffers[app_env_key].each{|m| ws.send m}
       puts "web socket subscribed to #{app_env_key}: #{ws.object_id}"
     end
   end

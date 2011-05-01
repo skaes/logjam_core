@@ -154,6 +154,38 @@ function update_chart(values) {
   vis.render();
 };
 
+
+/* add errors to the recent errors list */
+function update_errors(errors) {
+  var table = jQuery('#recent-errors');
+  var list = jQuery('#recent-errors-head');
+  for (var i = 0, len = errors.length; i < len; ++i) {
+    var e = errors[i];
+    var severity = e["severity"];
+    var action = e["action"];
+    var time = e["time"];
+    var desc = e["description"];
+    var new_row = jQuery("<tr><td>" + severity + "</td><td>" + time + "</td><td>" + action + "</td><td>" + desc + "</td></tr>");
+    new_row.hide().addClass("new_error");
+    var rows = jQuery('#recent-errors tr');
+    var l = rows.size() - 20;
+    for (j=0; j < l; ++j) {
+      rows.last().remove();
+    }
+    list.after(new_row);
+    remove_color = function() { new_row.removeClass("new_error"); };
+    new_row.fadeIn(1000, function() { window.setTimeout(remove_color, 5000); });
+  }
+};
+
+/* update chart or error list */
+function update_view(value) {
+  if (jQuery.isArray(value))
+    update_errors(value);
+  else
+    update_chart(value);
+};
+
 /* The web socket */
 var ws = null;
 
@@ -161,7 +193,7 @@ var ws = null;
 function connect_chart() {
   if ( ws == null ) {
     ws = new WebSocket("<%= @socket_url %>");
-    ws.onmessage = function(evt) { update_chart(JSON.parse(evt.data)); };
+    ws.onmessage = function(evt) { update_view(JSON.parse(evt.data)); };
     ws.onclose = function() { connection_status = "disconnected"; vis.render(); };
     ws.onopen = function() { connection_status = "connected"; vis.render(); ws.send('<%= "#{@app}-#{@env},#{@key}" %>'); };
     ws.onerror = function() { alert("websocket error"); }
@@ -193,4 +225,10 @@ vis.render();
 jQuery(document).ready(connect_chart);
 
   </script>
+
+  <h2>Recent Errors</h2>
+  <table id="recent-errors" class="full_stats">
+  <tr id="recent-errors-head"><th>Severity</th><th>Time</th><th>Action</th><th>Description</th></tr>
+  </table>
+
 </div>

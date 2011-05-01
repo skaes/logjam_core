@@ -92,6 +92,15 @@ module Logjam
         end
       end
 
+      if severity > 2
+        # extract the first error found (duplicated code from logjam helpers)
+        description = ((lines.detect{|(s,t,l)| s >= 3})[2].to_s)[0..70] rescue "--- unknown ---"
+        error_info = {"severity" => severity, "action" => page, "description" => description, "time" => entry["started_at"]}
+        ["all_pages", pmodule].each do |p|
+          (@errors_buffer[p] ||= []) << error_info
+        end
+      end
+
       #     hour = minute / 60
       #     [page, "all_pages", pmodule].each do |p|
       #       increments.each do |f,v|
@@ -127,6 +136,7 @@ module Logjam
 
     def flush
       publish_totals
+      publish_errors
       flush_totals_buffer
       flush_minutes_buffer
       # flush_hours_buffer
@@ -174,6 +184,7 @@ module Logjam
       @totals_buffer = {}
       @minutes_buffer = {}
       # @hours_buffer = {}
+      @errors_buffer = {}
       @modules = Set.new(%w(all_pages))
     end
 
@@ -226,10 +237,15 @@ module Logjam
       @modules.each { |p| publish(p, @totals_buffer[p] || NO_REQUEST) }
     end
 
+    def publish_errors
+      @modules.each { |p| (errs = @errors_buffer[p]) && publish(p, errs.to_json) }
+      @errors_buffer.clear
+    end
+
     def publish(p, inc)
       exchange.publish(inc.to_json, :key => p.sub(/^::/,'').downcase)
     rescue
-      $stderr.puts "could not publish performance data: #{$!}"
+      $stderr.puts "could not publish performance/error data: #{$!}"
     end
   end
 end
