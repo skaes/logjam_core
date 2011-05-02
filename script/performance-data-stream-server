@@ -25,6 +25,7 @@ end
 
 def subscribe(app_env_key, queue)
   queue.subscribe do |header, perf_data|
+    # $stderr.puts perf_data if perf_data =~ /description/
     b = perf_data =~ /total_time/ ? @perf_buffers[app_env_key] : @error_buffers[app_env_key]
     b << perf_data
     b.shift if b.size > 60

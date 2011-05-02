@@ -41,12 +41,13 @@ module Logjam
       end
       user_id = entry["user_id"]
       total_time = entry["total_time"] || 1
+      started_at = entry["started_at"]
 
       lines = entry.delete("lines")
       if lines.blank?
         $stderr.puts "no request lines"
         $stderr.puts entry.to_yaml
-        lines = [[5, entry["started_at"], ""]]
+        lines = [[5, started_at, ""]]
       end
       severity = entry["severity"] || lines.map{|s,t,l| s}.max
 
@@ -91,10 +92,11 @@ module Logjam
         end
       end
 
-      if severity > 2
+      if severity > 1
         # extract the first error found (duplicated code from logjam helpers)
-        description = ((lines.detect{|(s,t,l)| s >= 3})[2].to_s)[0..70] rescue "--- unknown ---"
-        error_info = {"severity" => severity, "action" => page, "description" => description, "time" => entry["started_at"]}
+        description = ((lines.detect{|(s,t,l)| s >= 2})[2].to_s)[0..80] rescue "--- unknown ---"
+        error_info = { "severity" => severity, "action" => page,
+                       "description" => description, "time" => started_at }
         ["all_pages", pmodule].each do |p|
           (@errors_buffer[p] ||= []) << error_info
         end
@@ -237,7 +239,12 @@ module Logjam
     end
 
     def publish_errors
-      @modules.each { |p| (errs = @errors_buffer[p]) && publish(p, errs.to_json) }
+      @modules.each do |p|
+        if errs = @errors_buffer[p]
+          # $stderr.puts errs
+          publish(p, errs)
+        end
+      end
       @errors_buffer.clear
     end
 
