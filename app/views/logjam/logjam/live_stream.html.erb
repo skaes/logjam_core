@@ -154,6 +154,16 @@ function update_chart(values) {
   vis.render();
 };
 
+/* severity lables */
+function severity_label(i) {
+  switch(i) {
+  case 1: return "INFO";
+  case 2: return "WARN";
+  case 3: return "ERROR";
+  case 4: return "FATAL";
+  default: return "UNKNOWN";
+  }
+};
 
 /* add errors to the recent errors list */
 function update_errors(errors) {
@@ -161,9 +171,9 @@ function update_errors(errors) {
   var list = jQuery('#recent-errors-head');
   for (var i = 0, len = errors.length; i < len; ++i) {
     var e = errors[i];
-    var severity = e["severity"];
+    var severity = severity_label(e["severity"]);
     var action = e["action"];
-    var time = e["time"];
+    var time = e["time"].slice(11,19);
     var desc = e["description"];
     var new_row = jQuery("<tr><td>" + severity + "</td><td>" + time + "</td><td>" + action + "</td><td>" + desc + "</td></tr>");
     new_row.hide().addClass("new_error");
@@ -174,7 +184,7 @@ function update_errors(errors) {
     }
     list.after(new_row);
     remove_color = function() { new_row.removeClass("new_error"); };
-    new_row.fadeIn(1000, function() { window.setTimeout(remove_color, 5000); });
+    new_row.fadeIn(2000, remove_color );
   }
 };
 
@@ -226,7 +236,7 @@ jQuery(document).ready(connect_chart);
 
   </script>
 
-  <h2>Recent Errors</h2>
+  <h2>Recent Warnings/Errors</h2>
   <table id="recent-errors" class="full_stats">
   <tr id="recent-errors-head"><th>Severity</th><th>Time</th><th>Action</th><th>Description</th></tr>
   </table>
