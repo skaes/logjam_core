@@ -183,8 +183,8 @@ function update_errors(errors) {
       rows.last().remove();
     }
     list.after(new_row);
-    remove_color = function() { new_row.removeClass("new_error"); };
-    new_row.fadeIn(2000, remove_color );
+    remove_color = function(row) { return function() { row.removeClass("new_error"); }; };
+    new_row.fadeIn(2000, remove_color(new_row) );
   }
 };
 
