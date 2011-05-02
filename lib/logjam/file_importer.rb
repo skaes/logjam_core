@@ -1,7 +1,6 @@
 require 'fileutils'
 require 'eventmachine'
 require 'amqp'
-require 'mq'
 require 'json'
 
 module Logjam

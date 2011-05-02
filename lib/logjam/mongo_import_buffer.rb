@@ -1,5 +1,4 @@
 require 'amqp'
-require 'mq'
 require 'json'
 require 'set'
 
