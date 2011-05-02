@@ -92,16 +92,6 @@ module Logjam
         end
       end
 
-      if severity > 1
-        # extract the first error found (duplicated code from logjam helpers)
-        description = ((lines.detect{|(s,t,l)| s >= 2})[2].to_s)[0..80] rescue "--- unknown ---"
-        error_info = { "severity" => severity, "action" => page,
-                       "description" => description, "time" => started_at }
-        ["all_pages", pmodule].each do |p|
-          (@errors_buffer[p] ||= []) << error_info
-        end
-      end
-
       #     hour = minute / 60
       #     [page, "all_pages", pmodule].each do |p|
       #       increments.each do |f,v|
@@ -132,7 +122,19 @@ module Logjam
         "host" => host, "user_id" => user_id, "lines" => lines
       }.merge!(fields)
 
-      @requests.insert(request) if interesting?(request)
+      request_id = @requests.insert(request) if interesting?(request)
+
+      if severity > 1
+        # extract the first error found (duplicated code from logjam helpers)
+        description = ((lines.detect{|(s,t,l)| s >= 2})[2].to_s)[0..80] rescue "--- unknown ---"
+        error_info = { "request_id" => request_id.to_s,
+                       "severity" => severity, "action" => page,
+                       "description" => description, "time" => started_at }
+        ["all_pages", pmodule].each do |p|
+          (@errors_buffer[p] ||= []) << error_info
+        end
+      end
+
     end
 
     def flush
