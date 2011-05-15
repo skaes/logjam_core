@@ -3,14 +3,18 @@
   <script type="text/javascript+protovis">
 
 <%
-   resources, colors, data = [], [], {}
+   available_shapes = ["circle", "square", "diamond", "triangle"]
+   num_shapes = available_shapes.length
+   resources, colors, data, shapes = [], [], {}, []
    max_x = 100
    max_y = 1
-   @resources.each do |r|
+   i = -1
+   @resources.reverse.each do |r|
      rd = @dataset.histogram_data(r)
      next if rd == []
      resources << r
      colors << Logjam::Resource.color(r,0.7)
+     shapes << (r == "gc_time" ? "cross" : available_shapes[(i+=1) % num_shapes])
      data[r] = rd
      max_x = [max_x, rd.map(&:first).max].max
      max_y = [max_y, rd.map(&:second).max].max
@@ -23,7 +27,8 @@ var
     x = pv.Scale.log(<%= @xmin %>, <%= max_x %>).range(0, w).nice(),
     y = pv.Scale.log(1, <%= max_y %>).range(0, h).nice(),
     legend = <%= raw resources.to_json.gsub(/_/,' ') %>,
-    colors = pv.colors(<%= raw colors.to_json %>);
+    colors = pv.colors(<%= raw colors.to_json %>),
+    shapes = <%= raw shapes.to_json %> ;
 
 /* The root panel. */
 var vis = new pv.Panel()
@@ -89,6 +94,7 @@ vis.add(pv.Dot)
     .bottom(function(d) y(d[1]))
     .lineWidth(1)
     .size(9)
+    .shape(shapes[<%= i %>])
     .strokeStyle("<%= raw colors[i] %>")
     .fillStyle("<%= raw colors[i] %>");
 <% end %>
@@ -102,6 +108,7 @@ vis.add(pv.Dot)
     .size(16)
     .strokeStyle(colors)
     .fillStyle(colors)
+    .shape(function() shapes[this.index])
     .add(pv.Label)
        .textBaseline("middle")
        .textMargin(7)
