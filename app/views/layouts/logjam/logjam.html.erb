@@ -4,6 +4,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+  <% if params[:auto_refresh] == "1" %>
+  <meta http-equiv="refresh" content="60">
+  <% end %>
   <link rel="shortcut icon" href="/favicon.ico" type="image/ico" />
   <title>LogJam <%= controller.action_name %></title>
   <script type="text/javascript" src="/javascripts/protovis-r3.2.js"></script>

@@ -107,6 +107,7 @@ jQuery(document).ready(function(){
     <%- end -%>
     <input id="start-minute" name="start_minute" type="hidden" value="<%= h(params[:start_minute]) %>" />
     <input id="end-minute" name="end_minute" type="hidden" value="<%= h(params[:end_minute]) %>" />
+    <%= check_box_tag 'auto_refresh', "1", params['auto_refresh']=="1", :onchange => "form.submit()" %>Autorefresh
   </div>
   <% end -%>
 </div>

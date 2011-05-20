@@ -176,9 +176,13 @@ module Logjam
 
     def redirect_to_clean_url
       get_app_env
-      params[:starts_at] ||= default_date.to_s(:db) unless (params[:year] && params[:month] && params[:day])
+      py, pm, pd = params.values_at(:year, :month, :day).map(&:to_i)
+      dd = default_date
+      params[:starts_at] = dd.to_s(:db) if params[:auto_refresh] == "1" && (dd.year != py || dd.month != pm || dd.day != pd)
+      params[:starts_at] ||= dd.to_s(:db) unless (params[:year] && params[:month] && params[:day])
       if params[:starts_at] =~ /^(\d\d\d\d)-(\d\d)-(\d\d)$/
         redirect_to(FilteredDataset.clean_url_params(
+          :auto_refresh => params[:auto_refresh] == "1" ? "1" : nil,
           :default_app => @default_app, :default_env => @default_env,
           :controller => params[:controller], :action => params[:action],
           :year => $1, :month => $2, :day => $3, :interval => params[:interval],
