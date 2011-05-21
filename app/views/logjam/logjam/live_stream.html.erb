@@ -39,12 +39,21 @@ var vis = new pv.Panel()
     .width(w)
     .height(h);
 
+function connection_status_color() {
+  switch(connection_status) {
+  case 'connected'   : return "rgba(123,128,128,.5)";
+  case 'connecting'  : return "rgba(0,128,128,.5)";
+  case 'disconnected': return "rgba(123,0,0,.5)";
+  default            : return "black";
+  }
+}
+
 /* Connection status. */
 vis.add(pv.Label)
     .top(2)
     .left(2)
-    .font("14px sans-serif")
-    .textStyle("rgba(123,128,128,.5)")
+    .font("bold 14px sans-serif")
+    .textStyle(connection_status_color)
     .textAlign("left")
     .textBaseline("top")
     .text(function() connection_status);
