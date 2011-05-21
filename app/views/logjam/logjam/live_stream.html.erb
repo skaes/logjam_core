@@ -208,12 +208,22 @@ function update_view(value) {
 /* The web socket */
 var ws = null;
 
+function reconnect(){
+  var button = jQuery('#stream-toggle')
+  if ( button.val() == "pause") {
+     connection_status = "connecting";
+     vis.render();
+     window.setTimeout(connect_chart, 5000);
+  }
+};
+
+
 /* connect to the data stream */
 function connect_chart() {
   if ( ws == null ) {
     ws = new WebSocket("<%= @socket_url %>");
     ws.onmessage = function(evt) { update_view(JSON.parse(evt.data)); };
-    ws.onclose = function() { connection_status = "disconnected"; vis.render(); };
+    ws.onclose = function() { connection_status = "disconnected"; vis.render(); ws = null; reconnect(); };
     ws.onopen = function() { connection_status = "connected"; vis.render(); ws.send('<%= "#{@app}-#{@env},#{@key}" %>'); };
     ws.onerror = function() { alert("websocket error"); }
   }
@@ -228,11 +238,11 @@ function disconnect_chart() {
 /* toggle stream conection */
 function toggle_stream(button) {
   if (button.value == "resume") {
-    connect_chart();
     button.value = "pause";
+    connect_chart();
   } else {
-    disconnect_chart();
     button.value = "resume";
+    disconnect_chart();
   }
 }
 
