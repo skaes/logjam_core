@@ -41,13 +41,13 @@ module Logjam
 
     PROCESSING = lambda do |line|
       line =~ /^Processing ([\S]+)(?: .*\(for (.+) at (.+)\))?/ and
-        { :page => $1, :ip => $2, :started_at => ($3 || Time.now.to_s(:db)) }
+        { :action => $1, :ip => $2, :started_at => ($3 || Time.now.to_s(:db)) }
     end
 
     # Processing by AppsController#update_state as JS
     PROCESSING_RAILS3 = lambda do |line|
       line =~ /^Processing by ([\S]+).*/ and
-        { :page => $1 }
+        { :action => $1 }
     end
 
     # Started GET "/apps/update_state" for 87.193.61.218 at Tue Sep 14 22:07:18 +0200 2010
@@ -76,7 +76,7 @@ module Logjam
           :total_time => $1.to_f,
           :view_time => $2.to_f,
           :db_time => $3.to_f,
-          :response_code => $4.to_i,
+          :code => $4.to_i,
         }
     end
 
@@ -102,7 +102,7 @@ module Logjam
           :heap_size => $12.to_i,
           :allocated_objects => $13.to_i,
           :allocated_bytes => $14.to_i,
-          :response_code => $15.to_i,
+          :code => $15.to_i,
         }
     end
 
@@ -133,7 +133,7 @@ module Logjam
 
       (?<elem>\g<db>|\g<api>|\g<views>|\g<search>|\g<memcache>|\g<gearman>|\g<rest>|\g<gc>|\g<heap>){0}
 
-      Completed\sin\s(?<total_time>\S+)ms(?:\s\(\g<elem>(,\s\g<elem>)*\)(?:\s\|\s(?<response_code>\d+))?)?
+      Completed\sin\s(?<total_time>\S+)ms(?:\s\(\g<elem>(,\s\g<elem>)*\)(?:\s\|\s(?<code>\d+))?)?
     }x
 
     COMPLETED_XING = lambda do |line|
@@ -161,7 +161,7 @@ module Logjam
 
       (?<elem>\g<db>|\g<api>|\g<views>|\g<search>|\g<memcache>|\g<gearman>|\g<rest>|\g<gc>|\g<heap>){0}
 
-      Completed\s(?<response_code>\d+)\s.+\sin\s(?<total_time>\S+)ms(?:\s\(\g<elem>(\s\|\s\g<elem>)*\))?
+      Completed\s(?<code>\d+)\s.+\sin\s(?<total_time>\S+)ms(?:\s\(\g<elem>(\s\|\s\g<elem>)*\))?
     }x
 
     COMPLETED_RAILS3 = lambda do |line|
@@ -170,7 +170,7 @@ module Logjam
 
     # /!\ FAILSAFE /!\  Wed Sep 15 16:49:43 +0200 2010  Status: 500
     FAILSAFE = lambda do |line|
-      line =~ %r{/!\\ FAILSAFE /!\\.*(?:Status: (\d+))} and {:response_code => ($1||500).to_i}
+      line =~ %r{/!\\ FAILSAFE /!\\.*(?:Status: (\d+))} and {:code => ($1||500).to_i}
     end
 
     # default routing key matcher
@@ -208,7 +208,7 @@ module Logjam
         :allocated_objects       => md[:allocated_objects].to_i,
         :allocated_bytes         => md[:allocated_bytes].to_i,
         :live_data_set_size      => md[:live_data_set_size].to_i,
-        :response_code           => md[:response_code].to_i
+        :code                    => md[:code].to_i
       }.delete_if{|k,v| v == 0}
     end
 

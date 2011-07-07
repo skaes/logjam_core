@@ -23,7 +23,7 @@ module Logjam
       #     @hours.create_index([ ["page", Mongo::ASCENDING], ["hour", Mongo::ASCENDING] ])
 
       @import_threshold  = Logjam.import_threshold
-      @generic_fields    = Requests::GENERIC_FIELDS
+      @generic_fields    = Set.new(Requests::GENERIC_FIELDS - %w(page response_code) + %w(action code))
       @quantified_fields = Requests::QUANTIFIED_FIELDS
       @squared_fields    = Requests::SQUARED_FIELDS
 
@@ -32,9 +32,9 @@ module Logjam
 
     def add(entry)
       host = entry["host"]
-      page = entry["page"]
+      page = entry["action"]
       page << "#unknown_method" unless page =~ /#/
-      unless response_code = entry["response_code"]
+      unless response_code = entry["code"]
         $stderr.puts "no response code"
         $stderr.puts entry.to_yaml
         response_code = 500

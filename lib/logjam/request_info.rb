@@ -13,7 +13,7 @@ module Logjam
       # $stderr.puts lines.inspect
       @info = {:host => host, :process_id => process_id.to_i, :user_id => user_id.to_i, :lines => lines}
       process lines, @info
-      unless @info[:page]
+      unless @info[:action]
         $stderr.puts "action could not be recognized"
         $stderr.puts "log lines: #{lines.inspect}"
       end
