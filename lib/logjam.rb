@@ -3,6 +3,16 @@ require 'mongo'
 module Logjam
   extend self
 
+  @@streams = {}
+  def self.streams
+    @@streams
+  end
+
+  # declare a performance data stream
+  def self.stream(name, &block)
+    @@streams[name] = Stream.new(name, &block)
+  end
+
   @@base_url = ''
   def self.base_url=(base_url)
     # make sure it starts with a slash and does not end with slash and has no adjacent slashes

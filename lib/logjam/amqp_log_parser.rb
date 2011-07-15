@@ -7,10 +7,10 @@ module Logjam
   class AMQPLogParser
 
     def initialize(config_name, cluster)
+      @config = Logjam.streams[config_name]
       @cluster = cluster
-      @config_name = config_name
-      @application = config[:app]
-      @environment = config[:env]
+      @application = @config.app
+      @environment = @config.env
     end
 
     def process
@@ -32,21 +32,21 @@ module Logjam
     def importer_exchange
       @importer_exchange ||=
         begin
-          channel = MQ.new(AMQP::connect(:host => "127.0.0.1"))
+          channel = MQ.new(AMQP::connect(:host => @config.importer.host))
           channel.topic(importer_exchange_name, :durable => true, :auto_delete => false)
         end
     end
 
     def importer_exchange_name
-      ["logjam-data-exchange", @application, @environment].compact.join("-")
+      [@config.importer.exchange, @application, @environment].compact.join("-")
     end
 
     def parser_queue
       @parser_queue ||=
         begin
-          channel = MQ.new(AMQP::connect(config))
+          channel = MQ.new(AMQP::connect(:host => @config.parser.host))
           channel.prefetch(1)
-          exchange = channel.topic(config[:exchange], :passive => true)
+          exchange = channel.topic(@config.parser.exchange, :passive => true)
           queue = channel.queue(parser_queue_name, :auto_delete => true, :exclusive => true)
 
           queue.bind(exchange, :routing_key => parser_routing_key)
@@ -59,7 +59,7 @@ module Logjam
     end
 
     def parser_queue_name
-      [config[:queue], @application, @environment, @cluster, `hostname`.chomp].compact.join('-')
+      [@config.parser.queue, @application, @environment, @cluster, `hostname`.chomp].compact.join('-')
     end
 
     def process_line(msg, routing_key)
@@ -72,10 +72,6 @@ module Logjam
       # p hash
       payload = hash.to_json
       importer_exchange.publish(payload, :key => key)
-    end
-
-    def config
-      @config ||= YAML.load_file("#{Rails.root}/config/logjam_amqp.yml")[@config_name].symbolize_keys
     end
 
   end

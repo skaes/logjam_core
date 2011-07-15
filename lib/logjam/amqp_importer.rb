@@ -7,9 +7,9 @@ module Logjam
   class AMQPImporter
 
     def initialize(config_name)
-      @config_name = config_name
-      @application = config[:app]
-      @environment = config[:env]
+      @config = Logjam.streams[config_name]
+      @application = @config.app
+      @environment = @config.env
       @importer = MongoImporter.new
     end
 
@@ -36,7 +36,7 @@ module Logjam
     def queue
       @queue ||=
         begin
-          channel = MQ.new(AMQP::connect(:host => "127.0.0.1"))
+          channel = MQ.new(AMQP::connect(:host => @config.importer.host))
           exchange = channel.topic(exchange_name, :durable => true, :auto_delete => false)
           queue = channel.queue(queue_name, :auto_delete => true, :exclusive => true)
           queue.bind(exchange, :routing_key => routing_key)
@@ -44,7 +44,7 @@ module Logjam
     end
 
     def exchange_name
-      ["logjam-data-exchange", @application, @environment].compact.join("-")
+      [@config.importer.exchange, @application, @environment].compact.join("-")
     end
 
     def routing_key
@@ -52,16 +52,12 @@ module Logjam
     end
 
     def queue_name
-      ["logjam-importer-queue", @application, @environment, `hostname`.chomp].compact.join('-')
+      [@config.importer.queue, @application, @environment, `hostname`.chomp].compact.join('-')
     end
 
     def process_request(msg, routing_key)
       entry = JSON.parse(msg)
       @importer.add_entry entry.merge!(:app => @application, :env => @environment)
-    end
-
-    def config
-      @config ||= YAML.load_file("#{Rails.root}/config/logjam_amqp.yml")[@config_name].symbolize_keys
     end
 
   end
