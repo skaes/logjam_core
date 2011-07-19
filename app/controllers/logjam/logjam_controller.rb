@@ -18,7 +18,7 @@ module Logjam
 
     def index
       # puts caller.join("\n")
-      puts cookies.inspect
+      # puts cookies.inspect
       @dataset = dataset_from_params
       @protovis_data, @protovis_max, @request_counts, @gc_time, @protovis_zoom = @dataset.plot_data
       @resources = @dataset.plotted_resources-["gc_time"]
