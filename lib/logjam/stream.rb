@@ -50,7 +50,7 @@ module Logjam
     class Importer < Context
       def initialize
         host     "localhost"
-        exchange "logjam3-request-data"
+        exchange "request-stream"
         queue    "logjam3-importer-queue"
       end
     end
