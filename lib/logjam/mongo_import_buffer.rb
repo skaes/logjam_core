@@ -43,13 +43,13 @@ module Logjam
       total_time = entry["total_time"] || 1
       started_at = entry["started_at"]
 
-      lines = entry.delete("lines")
-      if lines.blank?
+      severity = entry["severity"]
+      unless lines = entry.delete("lines")
         $stderr.puts "no request lines"
         $stderr.puts entry.to_yaml
-        lines = [[5, started_at, ""]]
+        lines = []
       end
-      severity = entry["severity"] || lines.map{|s,t,l| s}.max
+      severity ||= lines.map{|s,t,l| s}.max || 5
 
       fields = entry
       add_allocated_memory(fields)
