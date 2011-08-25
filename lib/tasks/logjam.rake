@@ -115,19 +115,22 @@ namespace :logjam do
     task :install => :environment do
       system("mkdir -p #{service_dir}")
       installed_services = []
-      Logjam.streams.each do |i, s|
+      Logjam.streams(ENV['LOGJAM_SERVICE_TAG']).each do |i, s|
         next if ENV['RAILS_ENV'] == 'production' && s.env == 'development'
-        installed_services << install_service("importer", "importer-#{i}", :IMPORTER => i)
-        next unless p = s.parser
-        if clusters = p.clusters
-          clusters.each do |c|
-            installed_services << install_service("parser", "parser-#{i}-#{c}", :IMPORTER => i, :CLUSTER => c.to_s)
-          end
+        if s.is_a?(Logjam::LiveStream)
+          installed_services << install_service("livestream", "live-stream-#{s.env}", :LIVE_STREAM_BROKER => s.host)
         else
-          installed_services << install_service("parser", "parser-#{i}", :IMPORTER => i, :CLUSTER => '')
+          installed_services << install_service("importer", "importer-#{i}", :IMPORTER => i)
+          next unless p = s.parser
+          if clusters = p.clusters
+            clusters.each do |c|
+              installed_services << install_service("parser", "parser-#{i}-#{c}", :IMPORTER => i, :CLUSTER => c.to_s)
+            end
+          else
+            installed_services << install_service("parser", "parser-#{i}", :IMPORTER => i, :CLUSTER => '')
+          end
         end
       end
-      installed_services << install_service("livestream", "live-stream")
       old_services = service_paths.map{|f| f.split("/").compact.last} - installed_services
       old_services.each do |old_service|
         puts "removing old service #{old_service}"

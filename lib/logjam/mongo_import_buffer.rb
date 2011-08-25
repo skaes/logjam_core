@@ -224,9 +224,13 @@ module Logjam
     def self.exchange(app, env)
       (@exchange||={})["#{app}-#{env}"] ||=
         begin
-          channel = MQ.new(AMQP::connect(:host => "127.0.0.1"))
+          channel = MQ.new(AMQP::connect(:host => live_stream_host))
           channel.topic("logjam-performance-data-#{app}-#{env}")
         end
+    end
+
+    def self.live_stream_host
+      @live_stream_host ||= Logjam.streams["livestream-#{Rails.env}"].host rescue "127.0.0.1"
     end
 
     def exchange

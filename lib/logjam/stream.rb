@@ -4,6 +4,7 @@ module Logjam
 
     def initialize(name, &block)
       @name = name
+      @tag = "development"
       @app, @env = name.split('-')
       raise "logjam stream configuration error: missing application name #{@app}" unless @app
       raise "logjam stream configuration error: missing envrironment name #{@env}" unless @env
@@ -26,6 +27,11 @@ module Logjam
       else
         @importer
       end
+    end
+
+    def tag(*args)
+      @tag = args.first if args.first
+      @tag
     end
 
     private

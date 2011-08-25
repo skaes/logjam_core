@@ -4,13 +4,17 @@ module Logjam
   extend self
 
   @@streams = {}
-  def self.streams
-    @@streams
+  def self.streams(tag=nil)
+    tag.blank? ? @@streams : @@streams.slice(*@@streams.values.select{|v| v.tag == tag}.map(&:name))
   end
 
   # declare a performance data stream
   def self.stream(name, &block)
     @@streams[name] = Stream.new(name, &block)
+  end
+
+  def self.livestream(name, &block)
+    @@streams["livestream-#{name}"] = LiveStream.new(name, &block)
   end
 
   @@base_url = ''
