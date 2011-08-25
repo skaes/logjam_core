@@ -8,6 +8,8 @@ require 'em-websocket'
 require 'amqp'
 require 'set'
 
+broker =  ARGV[0] || "127.0.0.1"
+
 @exchanges = {}
 @queues = {}
 @perf_buffers = Hash.new{|h,k| h[k] = []}
@@ -34,7 +36,7 @@ def subscribe(app_env_key, queue)
 end
 
 EventMachine.run do
-  @channel = MQ.new(AMQP::connect(:host => "127.0.0.1"))
+  @channel = MQ.new(AMQP::connect(:host => broker))
   EventMachine::WebSocket.start(:host => "0.0.0.0", :port => 8080) do |ws|
     ws.onopen { puts "web socket connection established: #{ws.object_id}" }
 
