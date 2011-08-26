@@ -32,7 +32,9 @@ module Logjam
     def importer_exchange
       @importer_exchange ||=
         begin
-          channel = MQ.new(AMQP::connect(:host => @config.importer.host))
+          importer_host = @config.importer.host
+          puts "connecting parser output stream to rabbit on #{importer_host}"
+          channel = MQ.new(AMQP::connect(:host => importer_host))
           channel.topic(importer_exchange_name, :durable => true, :auto_delete => false)
         end
     end
@@ -44,7 +46,9 @@ module Logjam
     def parser_queue
       @parser_queue ||=
         begin
-          channel = MQ.new(AMQP::connect(:host => @config.parser.host))
+          parser_host = @config.parser.host
+          puts "connecting parser input stream to rabbit on #{parser_host}"
+          channel = MQ.new(AMQP::connect(:host => parser_host))
           channel.prefetch(1)
           exchange = channel.topic(@config.parser.exchange, :passive => true)
           queue = channel.queue(parser_queue_name, :auto_delete => true, :exclusive => true)
