@@ -230,7 +230,7 @@ module Logjam
     end
 
     def self.live_stream_host
-      @live_stream_host ||= Logjam.streams["livestream-#{Rails.env}"].host rescue "127.0.0.1"
+      @live_stream_host ||= Logjam.streams["livestream-#{Rails.env}"].host
     end
 
     def exchange
