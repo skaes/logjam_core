@@ -177,9 +177,9 @@ module Logjam
 
     def interesting?(request)
       request["total_time"].to_i > @import_threshold ||
-        request["heap_growth"].to_i > 0 ||
+        request["severity"] > 1 ||
         request["response_code"].to_i >= 400 ||
-        request["severity"] > 1
+        request["heap_growth"].to_i > 0
     end
 
     def setup_buffers
