@@ -206,6 +206,16 @@ module Logjam
       CGI.unescape(l.gsub(/(%2C|=)/, '\1&#x200B;'))
     end
 
+    def format_timestamp(timestamp)
+      t = timestamp[/\d\d:\d\d:\d\d(\.\d*)?/]
+      "<span class='timestamp'>#{t}</span>"
+    end
+
+    def format_backtrace(l)
+      bt = l.gsub(/(\s+\S+?\.rb:\d+:in \`.*?\')/){|x| "\n"<<x}.gsub(/(\n\n)/, "\n")
+      "<span class='error'>#{allow_breaks(bt)}</span>"
+    end
+
     def format_log_line(line)
       if line.is_a?(String)
         level = 1
@@ -217,8 +227,8 @@ module Logjam
       l = safe_h line
       has_backtrace = l =~ /\.rb:\d+:in/
       level = 2 if level == 1 && (has_backtrace || l =~ /Error|Exception/) && (l !~ /^(Rendering|Completed|Processing|Parameters)/)
-      colored_line = level > 1 ? "<span class='error'>#{allow_breaks(l.gsub(/(\s+\S+?\.rb:\d+:in \`.*?\')/){|x| "\n"<<x})}</span>" : allow_breaks(l)
-      "#{format_log_level(level)}<span class='timestamp'>#{timestamp.to_s[6..-1]}</span> #{colored_line}"
+      colored_line = level > 1 ? format_backtrace(l) : allow_breaks(l)
+      "#{format_log_level(level)} #{format_timestamp(timestamp.to_s)} #{colored_line}"
     end
 
     # human resource name (escaped)
