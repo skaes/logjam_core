@@ -23,7 +23,7 @@ module Logjam
       #     @hours.create_index([ ["page", Mongo::ASCENDING], ["hour", Mongo::ASCENDING] ])
 
       @import_threshold  = Logjam.import_threshold
-      @generic_fields    = Set.new(Requests::GENERIC_FIELDS - %w(page response_code) + %w(action code))
+      @generic_fields    = Set.new(Requests::GENERIC_FIELDS - %w(page response_code) + %w(action code engine))
       @quantified_fields = Requests::QUANTIFIED_FIELDS
       @squared_fields    = Requests::SQUARED_FIELDS
 
@@ -56,7 +56,7 @@ module Logjam
       add_other_time(fields, total_time)
       minute = add_minute(fields)
 
-      fields.delete_if{|k,v| v==0 || @generic_fields.include?(k) }
+      fields.delete_if{|k,v| v==0 || @generic_fields.include?(k)}
       fields.keys.each{|k| fields[squared_field(k)] = (v=fields[k].to_f)*v}
 
       pmodule = "::"
