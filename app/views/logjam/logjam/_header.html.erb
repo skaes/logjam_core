@@ -14,7 +14,7 @@ function view_resource(resource){
   jQuery('#filter-form').submit();
 }
 jQuery(document).ready(function(){
-  jQuery('#datepicker').jdPicker({date_format:"YYYY-mm-dd", selectable:[<%= raw Logjam.database_days(params[:app], params[:env]).map{|d| %Q|"#{d}"|}.join(', ') %>], error_out_of_range:"No data for that date."});
+  jQuery('#datepicker').jdPicker({date_format:"YYYY-mm-dd", selectable:[<%= raw Logjam.database_days(params[:app], params[:env], @logjam_databases).map{|d| %Q|"#{d}"|}.join(', ') %>], error_out_of_range:"No data for that date."});
 });
 var initial_page_value = <%= raw @page.to_json %>;
 jQuery(document).ready(function(){
@@ -29,16 +29,16 @@ jQuery(document).ready(function(){
   <%= form_tag({:action => :index}, :method => :get, :id => 'filter-form', :autocomplete => "off") do -%>
   <div id='filter'>
     <input type="button" id='home-button' value="Logjam" onclick="go_home()"/>
-    <% unless Logjam.only_one_app? %>
+    <% unless Logjam.only_one_app?(@logjam_databases) %>
     <p class='filter-widget'>
       <%= label :filter, 'application' %><br />
-      <%= select_tag 'app', options_for_select(Logjam.database_apps, params[:app]), :onchange => "form.submit()" %>
+      <%= select_tag 'app', options_for_select(Logjam.database_apps(@logjam_databases), params[:app]), :onchange => "form.submit()" %>
     </p>
     <% end %>
-    <% unless Logjam.only_one_env?(params[:app]) %>
+    <% unless Logjam.only_one_env?(params[:app], @logjam_databases) %>
     <p class='filter-widget'>
       <%= label :filter, 'environment' %><br />
-      <%= select_tag 'env', options_for_select(Logjam.database_envs(params[:app]), params[:env]), :onchange => "form.submit()" %>
+      <%= select_tag 'env', options_for_select(Logjam.database_envs(params[:app], @logjam_databases), params[:env]), :onchange => "form.submit()" %>
     </p>
     <% end %>
     <p class='filter-widget'>

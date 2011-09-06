@@ -118,32 +118,32 @@ module Logjam
     end
   end
 
-  def database_apps
+  def database_apps(databases=self.databases)
     databases.map{|t| t[db_name_format, 1]}.uniq.sort
   end
 
-  def database_envs(app)
+  def database_envs(app, databases=self.databases)
     databases(:app => app).map{|t| t[db_name_format, 2]}.uniq.sort
   end
 
-  def database_days(app, env)
+  def database_days(app, env, databases=self.databases)
     databases(:app => app, :env => env).map{|t| t[db_name_format, 3]}.uniq.sort.reverse
   end
 
-  def only_one_env?(app)
-    database_envs(app).size == 1
+  def only_one_env?(app, databases=self.databases)
+    database_envs(app, databases).size == 1
   end
 
-  def only_one_app?
-    database_apps.size == 1
+  def only_one_app?(databases=self.databases)
+    database_apps(databases).size == 1
   end
 
-  def default_app
-    database_apps.first
+  def default_app(databases=self.databases)
+    database_apps(databases).first
   end
 
-  def default_env(app)
-    envs = database_envs(app)
+  def default_env(app, databases=self.databases)
+    envs = database_envs(app, databases)
     envs.select{|e| e=="production"}.first || envs.first
   end
 

@@ -124,14 +124,18 @@ module Logjam
 
     private
 
+    def logjam_databases
+      @logjam_databases ||= Logjam.databases
+    end
+
     def default_date
-      (Logjam.database_days(params[:app], params[:env]).first || Date.today).to_date
+      (Logjam.database_days(params[:app], params[:env], logjam_databases).first || Date.today).to_date
     end
 
     def get_app_env
-      @default_app ||= Logjam.default_app
+      @default_app ||= Logjam.default_app(logjam_databases)
       @app ||= (params[:app] ||= @default_app)
-      @default_env ||= Logjam.default_env(@app)
+      @default_env ||= Logjam.default_env(@app, logjam_databases)
       @env ||= (params[:env] ||= @default_env)
     end
 
@@ -201,11 +205,11 @@ module Logjam
 
     def verify_app_env
       get_app_env
-      unless Logjam.database_apps.include?(@app)
+      unless Logjam.database_apps(logjam_databases).include?(@app)
         render :text => "Application '#{@app}' doesn't exist."
         return
       end
-      unless Logjam.database_envs(@app).include?(@env)
+      unless Logjam.database_envs(@app, logjam_databases).include?(@env)
         render :text => "Environment '#{@env}' doesn't exist for Application '#{@app}'."
         return
       end
