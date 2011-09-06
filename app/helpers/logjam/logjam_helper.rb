@@ -224,7 +224,7 @@ module Logjam
       else
         level, timestamp, line = line
       end
-      l = safe_h line
+      l = (safe_h line).strip
       has_backtrace = l =~ /\.rb:\d+:in/
       level = 2 if level == 1 && (has_backtrace || l =~ /Error|Exception/) && (l !~ /^(Rendering|Completed|Processing|Parameters)/)
       colored_line = level > 1 ? format_backtrace(l) : allow_breaks(l)
