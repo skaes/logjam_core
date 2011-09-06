@@ -86,7 +86,7 @@ module Logjam
   end
 
   def databases
-    puts "getting database names !!!!!!!!!!!!!!!!!!!!!!!!"
+    # puts "getting database names !!!!!!!!!!!!!!!!!!!!!!!!"
     grep(mongo.database_names)
   end
 
