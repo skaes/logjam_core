@@ -81,8 +81,13 @@ module Logjam
     db_name =~ db_name_format && Date.parse($3)
   end
 
-  def databases(options={})
-    mongo.database_names.grep(db_name_format(options.merge(:app => '.+?', :env => '.+?')))
+  def grep(databases, options = {})
+    databases.grep(db_name_format(options.merge(:app => '.+?', :env => '.+?')))
+  end
+
+  def databases
+    puts "getting database names !!!!!!!!!!!!!!!!!!!!!!!!"
+    grep(mongo.database_names)
   end
 
   def ensure_indexes
@@ -123,11 +128,11 @@ module Logjam
   end
 
   def database_envs(app, databases=self.databases)
-    databases(:app => app).map{|t| t[db_name_format, 2]}.uniq.sort
+    grep(databases, :app => app).map{|t| t[db_name_format, 2]}.uniq.sort
   end
 
   def database_days(app, env, databases=self.databases)
-    databases(:app => app, :env => env).map{|t| t[db_name_format, 3]}.uniq.sort.reverse
+    grep(databases, :app => app, :env => env).map{|t| t[db_name_format, 3]}.uniq.sort.reverse
   end
 
   def only_one_env?(app, databases=self.databases)
