@@ -9,16 +9,7 @@ module Logjam
       raise "logjam stream configuration error: missing application name #{@app}" unless @app
       raise "logjam stream configuration error: missing envrironment name #{@env}" unless @env
       @importer = Importer.new
-      @parser = nil
       instance_eval &block if block_given?
-    end
-
-    def parser &block
-      if block_given?
-        (@parser ||= Parser.new).instance_eval &block
-      else
-        @parser
-      end
     end
 
     def importer &block
@@ -58,19 +49,6 @@ module Logjam
         host     "localhost"
         exchange "request-stream"
         queue    "logjam3-importer-queue"
-      end
-    end
-
-    class Parser < Context
-      def initialize
-        host     "localhost"
-        exchange "logging_exchange"
-        queue    "logjam3-parser-queue"
-      end
-
-      def clusters(*args)
-        @clusters = args if args.size > 0
-        @clusters
       end
     end
 

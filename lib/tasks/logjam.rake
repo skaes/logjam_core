@@ -121,14 +121,6 @@ namespace :logjam do
           installed_services << install_service("livestream", "live-stream-#{s.env}", :LIVE_STREAM_BROKER => s.host)
         else
           installed_services << install_service("importer", "importer-#{i}", :IMPORTER => i)
-          next unless p = s.parser
-          if clusters = p.clusters
-            clusters.each do |c|
-              installed_services << install_service("parser", "parser-#{i}-#{c}", :IMPORTER => i, :CLUSTER => c.to_s)
-            end
-          else
-            installed_services << install_service("parser", "parser-#{i}", :IMPORTER => i, :CLUSTER => '')
-          end
         end
       end
       old_services = service_paths.map{|f| f.split("/").compact.last} - installed_services
