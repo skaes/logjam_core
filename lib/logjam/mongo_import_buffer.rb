@@ -122,7 +122,13 @@ module Logjam
         "host" => host, "user_id" => user_id, "lines" => lines
       }.merge!(fields)
 
-      request_id = @requests.insert(request) if interesting?(request)
+      if interesting?(request)
+        begin
+          request_id = @requests.insert(request)
+        rescue Exception
+          $stderr.puts "Could not insert document: #{$!}"
+        end
+      end
 
       if severity > 1
         # extract the first error found (duplicated code from logjam helpers)
