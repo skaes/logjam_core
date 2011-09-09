@@ -45,15 +45,6 @@ module Logjam
     @@request_cleaning_threshold
   end
 
-  @@routing_key_matcher = Logjam::Matchers::ROUTING_KEY_MATCHER
-  def self.routing_key_matcher=(matcher)
-    @@routing_key_matcher = matcher
-  end
-
-  def self.routing_key_matcher
-    @@routing_key_matcher
-  end
-
   def mongo
     @mongo_connection ||= begin
       conn = Mongo::Connection.new(database_config['host'])
