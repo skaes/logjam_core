@@ -28,9 +28,9 @@ module Logjam
     private
 
     class Context
-      def host(*args)
-        @host = args.first if args.first
-        @host
+      def hosts(*args)
+        @hosts = args if args.first
+        @hosts
       end
 
       def exchange(*args)
@@ -46,7 +46,7 @@ module Logjam
 
     class Importer < Context
       def initialize
-        host     "localhost"
+        hosts    "localhost"
         exchange "request-stream"
         queue    "logjam3-importer-queue"
       end

@@ -20,8 +20,14 @@ module Logjam
         @timer = EM.add_periodic_timer(1) do
           @importer.flush_buffers
         end
-        queue.subscribe do |header, msg|
-          process_request(msg, header.routing_key)
+        queues.each do |queue|
+          queue.subscribe do |header, msg|
+            process_request(msg, header.routing_key)
+          end
+        end
+        if queues.empty?
+          $stderr.puts "could not connect to any streams. rabbits all down?"
+          EM.stop_event_loop
         end
       end
     end
@@ -33,16 +39,19 @@ module Logjam
 
     private
 
-    def queue
-      @queue ||=
-        begin
-          importer_host = @config.importer.host
-          puts "connecting importer input stream to rabbit on #{importer_host}"
-          channel = MQ.new(AMQP::connect(:host => importer_host))
-          exchange = channel.topic(exchange_name, :durable => true, :auto_delete => false)
-          queue = channel.queue(queue_name, :auto_delete => true, :exclusive => true)
-          queue.bind(exchange, :routing_key => routing_key)
-        end
+    def queues
+      @queues ||= @config.importer.hosts.map{ |host| create_queue host}.compact
+    end
+
+    def create_queue(importer_host)
+      puts "connecting importer input stream to rabbit on #{importer_host}"
+      channel = MQ.new(AMQP::connect(:host => importer_host))
+      exchange = channel.topic(exchange_name, :durable => true, :auto_delete => false)
+      queue = channel.queue(queue_name, :auto_delete => true, :exclusive => true)
+      queue.bind(exchange, :routing_key => routing_key)
+    rescue Exception => e
+      puts "could not connect to rabbit on #{importer_host}"
+      nil
     end
 
     def exchange_name
