@@ -199,6 +199,7 @@ function update_errors(errors) {
     for (j=0; j < l; ++j) {
       rows.last().remove();
     }
+    new_row.removeAttr("style"); /* firefox bug */
     list.after(new_row);
     remove_color = function(row) { return function() {
                      window.setTimeout(function() { row.removeClass("new_error"); } , 10000); }; };
