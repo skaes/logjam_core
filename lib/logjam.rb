@@ -81,6 +81,19 @@ module Logjam
     grep(mongo.database_names)
   end
 
+  def sanitize_date(date_str)
+    case date_str
+    when Time, Date, DateTime
+      date_str = date_str.to_s(:db)
+    end
+    raise "invalid date" unless date_str =~ /^\d\d\d\d-\d\d-\d\d/
+    date_str[0..9]
+  end
+
+  def durations
+    ['1', '2', '5']
+  end
+
   def ensure_indexes
     databases.each do |db_name|
       db = mongo.db(db_name)
@@ -112,48 +125,6 @@ module Logjam
       db = mongo.db(db_name)
       Totals.update_severities(db)
     end
-  end
-
-  def database_apps(databases=self.databases)
-    databases.map{|t| t[db_name_format, 1]}.uniq.sort
-  end
-
-  def database_envs(app, databases=self.databases)
-    grep(databases, :app => app).map{|t| t[db_name_format, 2]}.uniq.sort
-  end
-
-  def database_days(app, env, databases=self.databases)
-    grep(databases, :app => app, :env => env).map{|t| t[db_name_format, 3]}.uniq.sort.reverse
-  end
-
-  def only_one_env?(app, databases=self.databases)
-    database_envs(app, databases).size == 1
-  end
-
-  def only_one_app?(databases=self.databases)
-    database_apps(databases).size == 1
-  end
-
-  def default_app(databases=self.databases)
-    database_apps(databases).first
-  end
-
-  def default_env(app, databases=self.databases)
-    envs = database_envs(app, databases)
-    envs.select{|e| e=="production"}.first || envs.first
-  end
-
-  def sanitize_date(date_str)
-    case date_str
-    when Time, Date, DateTime
-      date_str = date_str.to_s(:db)
-    end
-    raise "invalid date" unless date_str =~ /^\d\d\d\d-\d\d-\d\d/
-    date_str[0..9]
-  end
-
-  def durations
-    ['1', '2', '5']
   end
 
   private

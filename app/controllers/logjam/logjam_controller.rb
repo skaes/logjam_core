@@ -124,25 +124,30 @@ module Logjam
 
     private
 
-    def logjam_databases
-      @logjam_databases ||= Logjam.databases
+    def database_info
+      @database_info ||= Logjam::DatabaseInfo.new
     end
 
     def default_date
-      (Logjam.database_days(params[:app], params[:env], logjam_databases).first || Date.today).to_date
+      (database_info.days(params[:app], params[:env]).first || Date.today).to_date
     end
 
     def get_app_env
-      @default_app ||= Logjam.default_app(logjam_databases)
+      @default_app ||= database_info.default_app
       @app ||= (params[:app] ||= @default_app)
-      @default_env ||= Logjam.default_env(@app, logjam_databases)
+      @apps ||= database_info.apps
+      @default_env ||= database_info.default_env(@app)
       @env ||= (params[:env] ||= @default_env)
+      @envs ||= database_info.envs(@app)
+      @only_one_app = database_info.only_one_app?
+      @only_one_env = database_info.only_one_env?(@app)
     end
 
     def get_date
       get_app_env
       @date = "#{params['year']}-#{params['month']}-#{params['day']}".to_date unless params[:year].blank?
       @date ||= default_date
+      @days = database_info.days(@app, @env)
       @db = Logjam.db(@date, @app, @env)
     end
 
@@ -205,11 +210,11 @@ module Logjam
 
     def verify_app_env
       get_app_env
-      unless Logjam.database_apps(logjam_databases).include?(@app)
+      unless @apps.include?(@app)
         render :text => "Application '#{@app}' doesn't exist."
         return
       end
-      unless Logjam.database_envs(@app, logjam_databases).include?(@env)
+      unless @envs.include?(@env)
         render :text => "Environment '#{@env}' doesn't exist for Application '#{@app}'."
         return
       end
