@@ -230,7 +230,8 @@ function reconnect(){
 /* connect to the data stream */
 function connect_chart() {
   if ( ws == null ) {
-    ws = new WebSocket("<%= @socket_url %>");
+    var Socket = "MozWebSocket" in window ? MozWebSocket : WebSocket;
+    ws = new Socket("<%= @socket_url %>");
     ws.onmessage = function(evt) { update_view(JSON.parse(evt.data)); };
     ws.onclose = function() { connection_status = "disconnected"; vis.render(); ws = null; reconnect(); };
     ws.onopen = function() { connection_status = "connected"; vis.render(); ws.send('<%= "#{@app}-#{@env},#{@key}" %>'); };
