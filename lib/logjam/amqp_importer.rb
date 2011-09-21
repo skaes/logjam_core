@@ -45,7 +45,10 @@ module Logjam
 
     def create_queue(importer_host)
       puts "connecting importer input stream to rabbit on #{importer_host}"
-      channel = MQ.new(AMQP::connect(:host => importer_host))
+      connection = AMQP::connect(:host => importer_host)
+      # TODO: this will likely break with newer version of the AMQP gem
+      connection.instance_variable_set("@on_disconnect", proc{ connection.__send__(:reconnect) })
+      channel = MQ.new(connection)
       exchange = channel.topic(exchange_name, :durable => true, :auto_delete => false)
       queue = channel.queue(queue_name, :auto_delete => true, :exclusive => true)
       queue.bind(exchange, :routing_key => routing_key)
