@@ -56,7 +56,8 @@ namespace :logjam do
 
     desc "remove old requests"
     task :clean => :environment do
-      Logjam.remove_old_requests
+      delay = [ENV['REPAIR_DELAY'].to_i, 10].max
+      Logjam.remove_old_requests(delay)
     end
 
     desc "update severities"

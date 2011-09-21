@@ -91,7 +91,7 @@ module Logjam
     end
   end
 
-  def remove_old_requests
+  def remove_old_requests(delay = 60)
     databases.each do |db_name|
       date = db_date(db_name)
       if Date.today - Logjam.request_cleaning_threshold > date
@@ -101,6 +101,7 @@ module Logjam
           puts "removing old requests: #{db_name}"
           coll.drop
           db.command(:repairDatabase => 1)
+          sleep delay
         end
       end
     end
