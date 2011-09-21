@@ -7,9 +7,9 @@ module Logjam
   class AMQPImporter
 
     def initialize(config_name)
-      @config = Logjam.streams[config_name]
-      @application = @config.app
-      @environment = @config.env
+      @stream = Logjam.streams[config_name]
+      @application = @stream.app
+      @environment = @stream.env
       @importer = MongoImporter.new
     end
 
@@ -40,7 +40,7 @@ module Logjam
     private
 
     def queues
-      @queues ||= @config.importer.hosts.map{ |host| create_queue host}.compact
+      @queues ||= @stream.importer.hosts.map{ |host| create_queue host}.compact
     end
 
     def create_queue(importer_host)
@@ -55,7 +55,7 @@ module Logjam
     end
 
     def exchange_name
-      [@config.importer.exchange, @application, @environment].compact.join("-")
+      [@stream.importer.exchange, @application, @environment].compact.join("-")
     end
 
     def routing_key
@@ -63,7 +63,7 @@ module Logjam
     end
 
     def queue_name
-      [@config.importer.queue, @application, @environment, `hostname`.chomp].compact.join('-')
+      [@stream.importer.queue, @application, @environment, `hostname`.chomp].compact.join('-')
     end
 
     def process_request(msg, routing_key)
