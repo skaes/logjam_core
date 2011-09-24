@@ -51,6 +51,11 @@ module Logjam
       end
       severity ||= lines.map{|s,t,l| s}.max || 5
 
+      # mongo field names must not contain dots
+      if exceptions = entry["exceptions"]
+        exceptions.each{|e| e.gsub!('.','_')}
+      end
+
       fields = entry
       add_allocated_memory(fields)
       add_other_time(fields, total_time)
@@ -79,6 +84,10 @@ module Logjam
       increments["response.#{response_code}"] = 1
       # only store severities which indicate warnings/errors
       increments["severity.#{severity}"] = 1 if severity > 1
+
+      exceptions.each do |e|
+        increments["exceptions.#{e}"] = 1
+      end if exceptions
 
       [page, "all_pages", pmodule].each do |p|
         increments.each do |f,v|
@@ -121,6 +130,7 @@ module Logjam
         "severity" => severity, "page" => page, "minute" => minute, "response_code" => response_code,
         "host" => host, "user_id" => user_id, "lines" => lines
       }.merge!(fields)
+      request["exceptions"] = exceptions if exceptions
 
       if interesting?(request)
         begin
@@ -185,6 +195,7 @@ module Logjam
       request["total_time"].to_f > @import_threshold ||
         request["severity"] > 1 ||
         request["response_code"].to_i >= 400 ||
+        request["exceptions"] ||
         request["heap_growth"].to_i > 0
     end
 
