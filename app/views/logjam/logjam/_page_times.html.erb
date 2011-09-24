@@ -22,7 +22,7 @@ function toggle_heap_growth_only(){
       <th <%= raw html_attributes_for_grouping_function("sum", "sum") %>>sum<br/><%= resource_name %></th>
       <% if @dataset.accumulates_time? -%>
         <% options.merge!(:resource_total => @dataset.sum(resource))-%>
-        <th>% of overall<br/><%= resource_name.gsub(' ', '&nbsp;') %></th>
+        <th>% of overall<br/><%= raw resource_name.gsub(' ', '&nbsp;') %></th>
         <% if resource.to_sym != :total_time -%>
           <% options.merge!(:total_time => @dataset.sum("total_time")) -%>
           <th>% of<br/>total time</th>
