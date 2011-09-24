@@ -262,6 +262,14 @@ module Logjam
       severities[level] || 0
     end
 
+    def exceptions
+      @exceptions ||= Totals.new(@db, %w(exceptions), page)
+    end
+
+    def exception_count
+      exceptions.exception_count
+    end
+
     def response_codes
       @response_codes ||= Totals.new(@db, %w(response), page).response_codes
     end

@@ -254,7 +254,7 @@ td.number {text-align: right;}
 #graph-counts {font-size: 90%; margin-bottom: 10px; white-space: nowrap;}
 #graph-counts p {font-weight: bold; white-space: nowrap;}
 
-#requests, #single-request {
+#requests, #single-request, #exceptions {
   margin: 8px;
 }
 

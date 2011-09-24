@@ -43,7 +43,7 @@ module Logjam
     end
 
     def apdex
-      @page_info["apdex"]
+      @page_info["apdex"] ||= {}
     end
 
     def apdex_score
@@ -51,11 +51,19 @@ module Logjam
     end
 
     def response
-      @page_info["response"]
+      @page_info["response"] ||= {}
     end
 
     def severity
-      @page_info["severity"] || {}
+      @page_info["severity"] ||= {}
+    end
+
+    def exceptions
+      @page_info["exceptions"] ||= {}
+    end
+
+    def exception_count
+      exceptions.values.inject(0){|s,v| s += v.to_i}
     end
 
     def error_count
@@ -79,15 +87,10 @@ module Logjam
         @page_info[r] = sum(r) + other.sum(r)
         @page_info["#{r}_sq"] = sum_sq(r) + other.sum_sq(r)
       end
-      if apdex
-        other.apdex.each {|x,y| apdex[x] = (apdex[x]||0) + y}
-      end
-      if response
-        other.response.each {|x,y| response[x] = (response[x]||0) + y}
-      end
-      if severity
-        other.severity.each {|x,y| severity[x] = (severity[x]||0) + y}
-      end
+      other.apdex.each {|x,y| apdex[x] = (apdex[x]||0) + y}
+      other.response.each {|x,y| response[x] = (response[x]||0) + y}
+      other.severity.each {|x,y| severity[x] = (severity[x]||0) + y}
+      other.exceptions.each {|x,y| exceptions[x] = (exceptions[x]||0) + y}
     end
 
     def clone
@@ -96,6 +99,7 @@ module Logjam
       pi["apdex"] = pi["apdex"].clone if pi["apdex"]
       pi["response"] = pi["response"].clone if pi["response"]
       pi["severity"] = pi["severity"].clone if pi["severity"]
+      pi["exceptions"] = pi["exceptions"].clone if pi["exceptions"]
       @resources.each do |r|
         pi.delete("#{r}_avg")
         pi.delete("#{r}_stddev")
@@ -140,6 +144,7 @@ module Logjam
       @apdex = @resources.delete("apdex")
       @response = @resources.delete("response")
       @severity = @resources.delete("severity")
+      @exceptions = @resources.delete("exceptions")
       @pattern = pattern
       @sum = {}
       @avg = {}
@@ -215,11 +220,19 @@ module Logjam
       @severity_hash ||= the_pages.inject(Hash.new(0)){|h,p| p.severity.each{|k,v| h[k.to_i] += v.to_i}; h}
     end
 
+    def exceptions
+      @exceptions_hash ||= the_pages.inject(Hash.new(0)){|h,p| p.exceptions.each{|k,v| h[k] += v.to_i}; h}
+    end
+
+    def exception_count
+      @exception_count ||= exceptions.values.inject(0){|s,v| s += v}
+    end
+
     protected
 
     def selector
       case
-      when pattern == '' then {:page => /\#/}
+      when pattern.blank? then {:page => /\#/}
       when page_names.include?(pattern) then {:page => pattern}
       when page_names.grep(/^#{pattern}/).size > 0 then {:page => /^#{pattern}/}
       else {:page => /#{pattern}/}
@@ -227,7 +240,7 @@ module Logjam
     end
 
     def compute
-      all_fields = ["page", "count", @apdex, @response, @severity].compact + @resources
+      all_fields = ["page", "count", @apdex, @response, @severity, @exceptions].compact + @resources
       sq_fields = @resources.map{|r| "#{r}_sq"}
       fields = {:fields => all_fields.concat(sq_fields)}
 

@@ -17,8 +17,6 @@ module Logjam
     end
 
     def index
-      # puts caller.join("\n")
-      # puts cookies.inspect
       @dataset = dataset_from_params
       @protovis_data, @protovis_max, @request_counts, @gc_time, @protovis_zoom = @dataset.plot_data
       @resources = @dataset.plotted_resources-["gc_time"]
@@ -36,6 +34,9 @@ module Logjam
       if params[:error_type] == "internal"
         @title = "Internal Server Errors"
         q = Requests.new(@db, "minute", @page, :response_code => 500, :limit => @page_size, :skip => params[:offset].to_i)
+      elsif params[:error_type] == "exceptions"
+        @title = "Requests with '#{params[:exception]}'"
+        q = Requests.new(@db, "minute", @page, :exceptions => params[:exception], :limit => @page_size, :skip => params[:offset].to_i)
       else
         severity = case params[:error_type]
                    when "logged_warning"; then 2
@@ -46,6 +47,7 @@ module Logjam
         @title = severity == 2 ? "Logged Warnings" : "Logged Errors"
         q = Requests.new(@db, "minute", @page, :severity => severity, :limit => @page_size, :skip => params[:offset].to_i)
       end
+      @title << " for"
       @error_count = q.count
       @requests = q.all
       offset = params[:offset].to_i
@@ -78,6 +80,12 @@ module Logjam
       @next_page_offset = offset + @page_size
       @previous_page_offset = [offset - @page_size, 0].max
       render "errors"
+    end
+
+    def exceptions
+      get_date
+      @title = "Exception summary"
+      @totals = Totals.new(@db, ["exceptions"], @page)
     end
 
     def enlarged_plot
