@@ -32,7 +32,7 @@ module Logjam
 
     def add(entry)
       host = entry["host"]
-      page = entry["action"]
+      page = entry["action"] || "Unknown"
       page << "#unknown_method" unless page =~ /#/
       unless response_code = entry["code"]
         $stderr.puts "no response code"
