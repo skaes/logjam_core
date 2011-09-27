@@ -47,7 +47,6 @@ module Logjam
         @title = severity == 2 ? "Logged Warnings" : "Logged Errors"
         q = Requests.new(@db, "minute", @page, :severity => severity, :limit => @page_size, :skip => params[:offset].to_i)
       end
-      @title << " for"
       @error_count = q.count
       @requests = q.all
       offset = params[:offset].to_i
@@ -84,7 +83,7 @@ module Logjam
 
     def exceptions
       get_date
-      @title = "Exception summary"
+      @title = "Logged Exceptions"
       @totals = Totals.new(@db, ["exceptions"], @page)
     end
 

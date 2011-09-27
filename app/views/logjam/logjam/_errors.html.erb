@@ -25,7 +25,7 @@
       :error_type => "logged_warning", :page =>  (@page||'').gsub(/^::/,'')))) %></td>
   </tr>
   <tr>
-    <td title="exception summary">exception summary</td>
+    <td title="logged exceptions">logged exceptions</td>
     <td class="number error"><%= link_to(@dataset.exception_count,
       clean_params(params.slice(:year,:month,:day, :app, :env).merge(:action => "exceptions",
                                        :page =>  (@page||'').gsub(/^::/,'')))) %></td>

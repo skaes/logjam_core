@@ -22,7 +22,7 @@
   </div>
   <% end %>
   <table class='full_stats'>
-    <tr><th>Severity</th><th>Time</th><th>Action</th><th>Exception</th></tr>
+    <tr><th>Severity</th><th>Time</th><th>Action</th><th>Log Excerpt</th></tr>
     <% @requests.each do |r| %>
     <tr class='full_stats'>
       <td style="text-align:center"><%= severity_icon(r["severity"]) %></td>
