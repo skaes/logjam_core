@@ -32,6 +32,7 @@ module Logjam
 
     def add(entry)
       host = entry["host"]
+      ip = entry["ip"]
       page = entry["action"] || "Unknown"
       page << "#unknown_method" unless page =~ /#/
       unless response_code = entry["code"]
@@ -131,6 +132,7 @@ module Logjam
         "host" => host, "user_id" => user_id, "lines" => lines
       }.merge!(fields)
       request["exceptions"] = exceptions if exceptions
+      request["ip"] = ip if ip
 
       if interesting?(request)
         begin
