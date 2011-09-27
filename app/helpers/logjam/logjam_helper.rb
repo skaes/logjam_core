@@ -189,7 +189,7 @@ module Logjam
       error_line = ''
       error_level = 0
       log_lines.each do |s,t,l|
-        next unless s >= 3
+        next unless s >= 2
         next if s <= error_level
         error_level = s
         error_line = safe_h(l.to_s)
