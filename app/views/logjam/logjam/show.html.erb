@@ -54,10 +54,12 @@
     </div>
   </fieldset>
 
+  <% memory_resource_values = @request.slice(*memory_resources+heap_resources) %>
+  <% unless memory_resource_values.blank? %>
   <fieldset class="resource-fields">
     <legend>Memory resources</legend>
     <table id='request-details-memory' class="filter-widget">
-      <% @request.slice(*memory_resources+heap_resources).each do |name, value| -%>
+      <% memory_resource_values.each do |name, value| -%>
       <% next if value.blank?  -%>
       <tr>
         <td class='resource_name'><%= hrn name %></td>
@@ -75,6 +77,7 @@
           :colors => pie_colors.values_at(*resources) } %>
     </div>
   </fieldset>
+  <% end %>
 
   <fieldset class="resource-fields">
     <legend>Request attributes</legend>

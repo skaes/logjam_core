@@ -199,6 +199,10 @@ module Logjam
       @avg[resource] ||= sum(resource)/count rescue 0.0
     end
 
+    def zero_resources?(resources)
+      resources.all?{|r| avg(r) == 0}
+    end
+
     def stddev(resource)
       @stddev[resource] ||=
         begin
