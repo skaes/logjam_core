@@ -5,14 +5,17 @@
     <th>stddev</th>
   </tr>
 <% @attributes.each do |attr| -%>
+  <% avg = @dataset.statistics.avg(attr).to_f -%>
+  <% stddev = @dataset.statistics.stddev(attr).to_f -%>
+  <% next if avg == 0 && stddev == 0 -%>
   <tr>
     <td><%= hrn(attr.to_s) %></td>
     <% if attr =~ /_time/ || attr !~ /allocated/ %>
-      <td class='number'><%= time_number(@dataset.statistics.avg(attr).to_f) %></td>
-      <td class='number'><%= time_number(@dataset.statistics.stddev(attr).to_f) %></td>
+      <td class='number'><%= time_number(avg) %></td>
+      <td class='number'><%= time_number(stddev) %></td>
     <% else %>
-      <td class='number'><%= memory_number(@dataset.statistics.avg(attr).to_f) %></td>
-      <td class='number'><%= memory_number(@dataset.statistics.stddev(attr).to_f) %></td>
+      <td class='number'><%= memory_number(avg) %></td>
+      <td class='number'><%= memory_number(stddev) %></td>
     <% end %>
   </tr>
 <% end -%>
