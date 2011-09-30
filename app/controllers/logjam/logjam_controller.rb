@@ -83,6 +83,7 @@ module Logjam
 
     def exceptions
       get_date
+      @page = params[:page]
       @title = "Logged Exceptions"
       @totals = Totals.new(@db, ["exceptions"], @page)
     end
