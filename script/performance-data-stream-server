@@ -36,7 +36,8 @@ def subscribe(app_env_key, queue)
 end
 
 EventMachine.run do
-  @channel = MQ.new(AMQP::connect(:host => broker))
+  @channel = AMQP::Channel.new(AMQP.connect(:host => broker))
+  @channel.auto_recovery = true
   EventMachine::WebSocket.start(:host => "0.0.0.0", :port => 8080) do |ws|
     ws.onopen { puts "web socket connection established: #{ws.object_id}" }
 

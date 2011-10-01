@@ -12,8 +12,8 @@ keys = (ARGV[2] || "all_pages,jobs,xws").split(/,/)
 FIELDS = %w(gc_time other_time memcache_time gearman_time search_time api_time db_time view_time total_time)
 
 EM.run do
-  connection = AMQP::connect(:host => "127.0.0.1")
-  channel = MQ.new(connection)
+  connection = AMQP.connect(:host => "127.0.0.1")
+  channel = AMQP::Channel.new(connection)
   exchange = channel.topic("logjam-performance-data-#{app}-#{env}")
 
   trap("INT"){ EM.next_tick { connection.close { EM.stop_event_loop} } }

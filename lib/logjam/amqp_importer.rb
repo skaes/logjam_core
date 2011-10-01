@@ -1,4 +1,5 @@
 require 'amqp'
+require 'amqp/extensions/rabbitmq'
 require 'date'
 require 'json'
 
@@ -11,50 +12,83 @@ module Logjam
       @application = @stream.app
       @environment = @stream.env
       @importer = MongoImporter.new
+      @connections = []
     end
 
     def process
       EM.run do
-        trap("INT") { EM.stop_event_loop }
-        trap("TERM") { EM.stop_event_loop }
+        @stream.importer.hosts.each do |host|
+          settings = {:host => host, :on_tcp_connection_failure => on_tcp_connection_failure, :timeout => 1}
+          connect_importer settings
+        end
+        trap("INT") { stop }
+        trap("TERM") { stop }
         @timer = EM.add_periodic_timer(1) do
-          @importer.flush_buffers
-        end
-        queues.each do |queue|
-          queue.subscribe do |header, msg|
-            process_request(msg, header.routing_key)
-          end
-        end
-        if queues.empty?
-          $stderr.puts "could not connect to any streams. rabbits all down?"
-          EM.stop_event_loop
+           @importer.flush_buffers
         end
       end
     end
 
-    def stop
-      EM.stop_event_loop
-      @importer.flush_buffers
-    end
-
     private
 
-    def queues
-      @queues ||= @stream.importer.hosts.map{ |host| create_queue host}.compact
+    def on_tcp_connection_failure
+      Proc.new do |settings|
+        puts "connection failed: #{settings[:host]}"
+        EM::Timer.new(10) { connect_importer(settings) }
+      end
     end
 
-    def create_queue(importer_host)
-      puts "connecting importer input stream to rabbit on #{importer_host}"
-      connection = AMQP::connect(:host => importer_host)
-      # TODO: this will likely break with newer version of the AMQP gem
-      connection.instance_variable_set("@on_disconnect", proc{ connection.__send__(:reconnect) })
-      channel = MQ.new(connection)
-      exchange = channel.topic(exchange_name, :durable => true, :auto_delete => false)
-      queue = channel.queue(queue_name, :auto_delete => true, :exclusive => true)
-      queue.bind(exchange, :routing_key => routing_key)
-    rescue Exception => e
-      puts "could not connect to rabbit on #{importer_host}"
-      nil
+    def on_tcp_connection_loss(connection, settings)
+      # reconnect in 10 seconds, without enforcement
+      puts "lost connection: #{settings[:host]}"
+      connection.reconnect(false, 10)
+    end
+
+    def connect_importer(settings)
+      puts "connecting importer input stream to rabbit on #{settings[:host]}"
+      AMQP.connect(settings) do |connection|
+        connection.on_tcp_connection_loss(&method(:on_tcp_connection_loss))
+        @connections << connection
+        open_channel_and_subscribe(connection, settings[:host])
+      end
+    rescue EventMachine::ConnectionError => e
+      puts "connection error: #{e}"
+    end
+
+    def open_channel_and_subscribe(connection, broker)
+      AMQP::Channel.new(connection) do |channel|
+        channel.auto_recovery = true
+        puts "creating exchange #{exchange_name} on #{broker}"
+        exchange = channel.topic(exchange_name, :durable => true, :auto_delete => false)
+        puts "creating queue #{queue_name} on #{broker}"
+        queue = channel.queue(queue_name, queue_options)
+        puts "binding exchange #{exchange_name} to #{queue_name} on #{broker}"
+        queue.bind(exchange, :routing_key => routing_key)
+        puts "subscribing to queue #{queue_name} on #{broker}"
+        queue.subscribe do |header, msg|
+          process_request(msg, header.routing_key)
+        end
+      end
+    end
+
+    def queue_options
+      {
+        :auto_delete => true,
+        :exclusive => true,
+        :arguments => {
+          # reap messages after 5 minutes
+          "x-message-ttl" => 5 * 60 * 1000
+        }
+      }
+    end
+
+    def stop
+      if connection = @connections.shift
+        connection.close { stop }
+      else
+        @importer.flush_buffers
+        EM.stop
+      end
     end
 
     def exchange_name

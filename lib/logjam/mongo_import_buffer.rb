@@ -243,7 +243,8 @@ module Logjam
     def self.exchange(app, env)
       (@exchange||={})["#{app}-#{env}"] ||=
         begin
-          channel = MQ.new(AMQP::connect(:host => live_stream_host))
+          channel = AMQP::Channel.new(AMQP.connect(:host => live_stream_host))
+          channel.auto_recovery = true
           channel.topic("logjam-performance-data-#{app}-#{env}")
         end
     end
