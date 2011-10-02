@@ -91,14 +91,16 @@ module Logjam
       end if exceptions
 
       [page, "all_pages", pmodule].each do |p|
+        buffer = (@minutes_buffer[[p,minute]] ||= Hash.new(0.0))
         increments.each do |f,v|
-          (@minutes_buffer[[p,minute]] ||= Hash.new(0.0))[f] += v
+          buffer[f] += v
         end
       end
 
       [page, "all_pages", pmodule].each do |p|
+        buffer = (@totals_buffer[p] ||= Hash.new(0.0))
         increments.each do |f,v|
-          (@totals_buffer[p] ||= Hash.new(0.0))[f] += v
+          buffer[f] += v
         end
       end
 
