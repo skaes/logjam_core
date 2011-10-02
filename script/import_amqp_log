@@ -35,8 +35,8 @@ if profile
   printer = RubyProf::MultiPrinter.new(result)
   printer.print(:path => "#{Rails.root}",
                 :profile => "importer-profile-#{config_name}",
-                :min_percent => 1,
-                :threshold => 5,
+                :min_percent => 0.1,
+                :threshold => 1,
                 :title => "logjam importer benchmark: #{config_name}")
   system("open #{printer.stack_profile}")
 end
