@@ -26,6 +26,7 @@ module Logjam
       @generic_fields    = Set.new(Requests::GENERIC_FIELDS - %w(page response_code) + %w(action code engine))
       @quantified_fields = Requests::QUANTIFIED_FIELDS
       @squared_fields    = Requests::SQUARED_FIELDS
+      @other_time_resources = Resource.time_resources - %w(total_time gc_time)
 
       setup_buffers
     end
@@ -163,12 +164,10 @@ module Logjam
 
     private
 
-    def other_time_resources
-      @@other_time_resources ||= Resource.time_resources - %w(total_time gc_time)
-    end
-
     def add_other_time(entry, total_time)
-      entry["other_time"] = total_time - other_time_resources.inject(0.0){|s,r| s += (entry[r] || 0)}
+      ot = total_time.to_f
+      @other_time_resources.each {|r| (v = entry[r]) && (ot -= v)}
+      entry["other_time"] = ot
     end
 
     def extract_minute(iso_string)
