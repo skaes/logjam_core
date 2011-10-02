@@ -11,7 +11,7 @@ module Logjam
       @stream = Logjam.streams[config_name]
       @application = @stream.app
       @environment = @stream.env
-      @importer = MongoImporter.new
+      @importer = MongoImporter.new(@stream)
       @connections = []
     end
 
@@ -105,7 +105,7 @@ module Logjam
 
     def process_request(msg, routing_key)
       entry = JSON.parse(msg)
-      @importer.add_entry entry.merge!(:app => @application, :env => @environment)
+      @importer.add_entry entry
     end
 
   end

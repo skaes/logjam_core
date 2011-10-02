@@ -1,23 +1,24 @@
 module Logjam
 
   class MongoImporter
-    def initialize
+    def initialize(stream)
       @mongo_buffers = {}
       @request_count = 0
+      @stream = stream
+      @app = stream.app
+      @env = stream.env
       $stdout.sync = true
       $stderr.sync = true
     end
 
     def mongo_buffer(hash)
       date_str = hash["started_at"][0..9]
-      app = hash.delete(:app) || "app"
-      env = hash.delete(:env) || "production"
-      key = Logjam.db_name(date_str, app, env)
+      key = Logjam.db_name(date_str, @app, @env)
       @mongo_buffers[key] ||=
         begin
           puts "creating import buffer #{key}"
           # puts hash.to_yaml
-          MongoImportBuffer.new(key, app, env, date_str)
+          MongoImportBuffer.new(key, @app, @env, date_str)
         end
     end
 
