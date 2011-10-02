@@ -13,6 +13,7 @@ module Logjam
       @environment = @stream.env
       @importer = MongoImporter.new(@stream)
       @connections = []
+      @capture_file = File.open("#{Rails.root}/capture.log", "w") if ENV['LOGJAM_CAPTURE']
     end
 
     def process
@@ -104,6 +105,7 @@ module Logjam
     end
 
     def process_request(msg, routing_key)
+      (c = @capture_file) && (c.puts msg)
       entry = JSON.parse(msg)
       @importer.add_entry entry
     end
