@@ -3,6 +3,7 @@
 require File.expand_path('../../../../../config/environment.rb', __FILE__)
 
 config_name = ARGV.first
+profile = ARGV[1..-1].include?('--profile')
 
 puts "Starting amqp importer for config '#{config_name}'"
 
@@ -11,5 +12,31 @@ trap("INT") do
   @amqp_importer.stop
 end
 
+if profile
+  require 'ruby-prof'
+  measure_mode = "WALL_TIME"
+  ARGV.each{|arg| measure_mode=$1.upcase if arg =~ /--measure_mode=([^ ]*)/ }
+  if %w(PROCESS_TIME WALL_TIME CPU_TIME ALLOCATIONS MEMORY).include?(measure_mode)
+    RubyProf.measure_mode = RubyProf.const_get measure_mode
+  else
+    $stderr.puts "unsupported ruby_prof measure mode: #{measure_mode}"
+    RubyProf.measure_mode = RubyProf::WALL_TIME
+  end
+  RubyProf.start
+end
+
+
 @amqp_importer = Logjam::AMQPImporter.new(config_name)
 @amqp_importer.process
+
+
+if profile
+  result = RubyProf.stop
+  printer = RubyProf::MultiPrinter.new(result)
+  printer.print(:path => "#{Rails.root}",
+                :profile => "importer-profile-#{config_name}",
+                :min_percent => 1,
+                :threshold => 5,
+                :title => "logjam importer benchmark: #{config_name}")
+  system("open #{printer.stack_profile}")
+end
