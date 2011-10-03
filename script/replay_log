@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+require File.expand_path('../../../../../config/environment.rb', __FILE__)
+
+config_name = ARGV.first
+file_name = ARGV.second
+
+puts "Starting file replayer '#{config_name}'"
+
+Logjam::FileReplayer.new(config_name, file_name).process
