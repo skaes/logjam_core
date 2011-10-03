@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+
+require File.expand_path('../../../../../config/environment.rb', __FILE__)
+
+config_name = ARGV.shift
+file_name = ARGV.shift
+profile = ARGV.include?('--profile')
+
+if file_name.nil? || config_name.nil? then
+  puts "Usage: #{$0} stream_name file_name"
+  exit 1
+end
+
+if profile
+  require 'ruby-prof'
+  measure_mode = "WALL_TIME"
+  ARGV.each{|arg| measure_mode=$1.upcase if arg =~ /--measure_mode=([^ ]*)/ }
+  if %w(PROCESS_TIME WALL_TIME CPU_TIME ALLOCATIONS MEMORY).include?(measure_mode)
+    RubyProf.measure_mode = RubyProf.const_get measure_mode
+  else
+    $stderr.puts "unsupported ruby_prof measure mode: #{measure_mode}"
+    RubyProf.measure_mode = RubyProf::WALL_TIME
+  end
+  RubyProf.start
+end
+
+
+Logjam::FileImporter.new(config_name, file_name).process
+
+
+if profile
+  result = RubyProf.stop
+  printer = RubyProf::MultiPrinter.new(result)
+  printer.print(:path => "#{Rails.root}",
+                :profile => "importer-profile-#{config_name}",
+                :min_percent => 0.1,
+                :threshold => 1,
+                :title => "logjam importer benchmark: #{config_name}")
+  system("open #{printer.stack_profile}")
+end
+
