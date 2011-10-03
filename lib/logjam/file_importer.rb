@@ -22,7 +22,7 @@ module Logjam
         @connection.notify_readable = true
         trap("INT") { stop }
         @timer = EM.add_periodic_timer(1) do
-          @importer.flush_buffers(false)
+          @importer.flush_buffers
         end
       end
     end

@@ -9,6 +9,7 @@ module Logjam
       @env = stream.env
       $stdout.sync = true
       $stderr.sync = true
+      @delete_old_buffers = Rails.env != "development"
     end
 
     def mongo_buffer(hash)
@@ -27,13 +28,13 @@ module Logjam
       @request_count += 1
     end
 
-    def flush_buffers(delete_old_buffers=true)
+    def flush_buffers
       puts "flushing #{@request_count} requests"
       today = Date.today.to_s
       @mongo_buffers.keys.each do |key|
         buffer = @mongo_buffers[key]
         buffer.flush
-        @mongo_buffers.delete(key) if delete_old_buffers && buffer.iso_date_string != today
+        @mongo_buffers.delete(key) if @delete_old_buffers && buffer.iso_date_string != today
       end
       @request_count = 0
     end
