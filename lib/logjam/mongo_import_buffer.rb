@@ -25,65 +25,51 @@ module Logjam
       @import_threshold  = Logjam.import_threshold
       @generic_fields    = Set.new(Requests::GENERIC_FIELDS - %w(page response_code) + %w(action code engine))
       @quantified_fields = Requests::QUANTIFIED_FIELDS
-      @squared_fields    = Requests::SQUARED_FIELDS
+      @squared_fields    = Requests::FIELDS.map{|f| [f,"#{f}_sq"]}
       @other_time_resources = Resource.time_resources - %w(total_time gc_time)
 
       setup_buffers
     end
 
     def add(entry)
-      host = entry["host"]
-      ip = entry["ip"]
-      page = entry["action"] || "Unknown"
+      page = entry["page"] = (entry.delete("action") || "Unknown")
       page << "#unknown_method" unless page =~ /#/
-      unless response_code = entry["code"]
-        $stderr.puts "no response code"
-        $stderr.puts entry.to_yaml
-        response_code = 500
-      end
-      user_id = entry["user_id"]
-      total_time = entry["total_time"] || 1
-      started_at = entry["started_at"]
-
-      severity = entry["severity"]
-      unless lines = entry.delete("lines")
-        $stderr.puts "no request lines"
-        $stderr.puts entry.to_yaml
-        lines = []
-      end
-      severity ||= lines.map{|s,t,l| s}.max || 5
-
-      # mongo field names must not contain dots
-      if exceptions = entry["exceptions"]
-        exceptions.each{|e| e.gsub!('.','_')}
-      end
-
-      fields = entry
-      add_allocated_memory(fields)
-      add_other_time(fields, total_time)
-      minute = add_minute(fields)
-
-      fields.delete_if{|k,v| v==0 || @generic_fields.include?(k)}
-      fields.keys.each{|k| fields[squared_field(k)] = (v=fields[k].to_f)*v}
-
       pmodule = "::"
       if page =~ /^(.+?)::/ || page =~ /^([^:#]+)#/
         pmodule << $1
         @modules << pmodule
       end
 
-      increments = {"count" => 1}.merge!(fields)
+      response_code = entry["response_code"] = (entry.delete("code") || 500)
+      total_time    = (entry["total_time"] ||= 1.0)
+      started_at    = entry["started_at"]
+      lines         = (entry["lines"] ||= [])
+      severity      = (entry["severity"] ||= lines.map{|s,t,l| s}.max || 5)
 
-      user_experience =
-        if total_time >= 2000 || response_code == 500 then {"apdex.frustrated" => 1}
-        elsif total_time < 100 then {"apdex.happy" => 1, "apdex.satisfied" => 1}
-        elsif total_time < 500 then {"apdex.satisfied" => 1}
-        elsif total_time < 2000 then {"apdex.tolerating" => 1}
-        else raise "oops: #{total_time.inspect}"
-        end
+      # mongo field names must not contain dots
+      if exceptions = entry["exceptions"]
+        exceptions.each{|e| e.gsub!('.','_')}
+      end
 
-      increments.merge!(user_experience)
+      add_allocated_memory(entry)
+      add_other_time(entry, total_time)
+      minute = add_minute(entry)
+
+      increments = {"count" => 1}
+      add_squared_fields(increments, entry)
+
+      if total_time >= 2000 || response_code == 500 then
+        increments["apdex.frustrated"] = 1
+      elsif total_time < 100 then
+        increments["apdex.happy"] = increments["apdex.satisfied"] = 1
+      elsif total_time < 500 then
+        increments["apdex.satisfied"] = 1
+      elsif total_time < 2000 then
+        increments["apdex.tolerating"] = 1
+      end
+
       increments["response.#{response_code}"] = 1
+
       # only store severities which indicate warnings/errors
       increments["severity.#{severity}"] = 1 if severity > 1
 
@@ -91,14 +77,7 @@ module Logjam
         increments["exceptions.#{e}"] = 1
       end if exceptions
 
-      [page, "all_pages", pmodule].each do |p|
-        mbuffer = (@minutes_buffer[[p,minute]] ||= Hash.new(0.0))
-        tbuffer = (@totals_buffer[p] ||= Hash.new(0.0))
-        increments.each do |f,v|
-          mbuffer[f] += v
-          tbuffer[f] += v
-        end
-      end
+      add_minutes_and_totals(increments, page, pmodule, minute)
 
       #     hour = minute / 60
       #     [page, "all_pages", pmodule].each do |p|
@@ -107,34 +86,11 @@ module Logjam
       #       end
       #     end
 
-      @quantified_fields.each do |f|
-        next unless x=fields[f]
-        if f == "allocated_objects"
-          kind = "m"
-          d = 10000
-        elsif f == "allocated_bytes"
-          kind = "m"
-          d = 100000
-        else
-          kind = "t"
-          d = 100
-        end
-        x = ((x.floor/d).ceil+1)*d
-        [page, "all_pages"].each do |p|
-          (@quants_buffer[[p,kind,x]] ||= Hash.new(0.0))[f] += 1
-        end
-      end
+      add_quants(increments, page)
 
-      request = {
-        "severity" => severity, "page" => page, "minute" => minute, "response_code" => response_code,
-        "host" => host, "user_id" => user_id, "lines" => lines
-      }.merge!(fields)
-      request["exceptions"] = exceptions if exceptions
-      request["ip"] = ip if ip
-
-      if interesting?(request)
+      if interesting?(entry)
         begin
-          request_id = @requests.insert(request)
+          request_id = @requests.insert(entry)
         rescue Exception
           $stderr.puts "Could not insert document: #{$!}"
         end
@@ -185,8 +141,47 @@ module Logjam
       entry["minute"] = extract_minute(entry["started_at"])
     end
 
-    def squared_field(f)
-      @squared_fields[f] || raise("unknown field #{f}")
+    def add_squared_fields(increments, entry)
+      @squared_fields.each do |f,fsq|
+        next if (v = entry[f]).nil?
+        if v == 0
+          entry.delete(f)
+        else
+          increments[f] = (v = v.to_f)
+          increments[fsq] = v*v
+        end
+      end
+    end
+
+    def add_minutes_and_totals(increments, page, pmodule, minute)
+      [page, "all_pages", pmodule].each do |p|
+        mbuffer = (@minutes_buffer[[p,minute]] ||= Hash.new(0.0))
+        tbuffer = (@totals_buffer[p] ||= Hash.new(0.0))
+        increments.each do |f,v|
+          mbuffer[f] += v
+          tbuffer[f] += v
+        end
+      end
+    end
+
+    def add_quants(increments, page)
+      @quantified_fields.each do |f|
+        next unless x=increments[f]
+        if f == "allocated_objects"
+          kind = "m"
+          d = 10000
+        elsif f == "allocated_bytes"
+          kind = "m"
+          d = 100000
+        else
+          kind = "t"
+          d = 100
+        end
+        x = ((x.floor/d).ceil+1)*d
+        [page, "all_pages"].each do |p|
+          (@quants_buffer[[p,kind,x]] ||= Hash.new(0.0))[f] += 1
+        end
+      end
     end
 
     def interesting?(request)
