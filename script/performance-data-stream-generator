@@ -2,7 +2,7 @@
 
 require File.expand_path('../../../../../config/boot.rb', __FILE__)
 require 'amqp'
-require 'json'
+require 'yajl'
 require 'active_support'
 
 app = ARGV[0] || "app"
@@ -22,7 +22,7 @@ EM.run do
     keys.each do |key|
       count = 50+450*rand()
       data = FIELDS.inject({"count" => count}){|h,k| h[k] = 100*rand*count; h}
-      encoded_data = data.to_json
+      encoded_data = Yajl::Encoder.encode data
       # publish performance data
       exchange.publish(encoded_data, :key => key)
     end
@@ -39,7 +39,7 @@ EM.run do
            "description" => "Something broke #{error_count+=1}"
          }
         ]
-      encoded_errors = errors.to_json
+      encoded_errors = Yajl::Encoder.encode errors
       # publish error data
       exchange.publish(encoded_errors, :key => key)
     end

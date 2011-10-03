@@ -1,7 +1,7 @@
 require 'fileutils'
 require 'eventmachine'
 require 'amqp'
-require 'json'
+require 'yajl'
 
 module Logjam
 
@@ -55,7 +55,7 @@ module Logjam
       def notify_readable
         @line_count += 1
         line = @io.readline
-        entry = JSON.parse line
+        entry = Yajl::Parser.parse line
         @importer.add_entry entry
       rescue EOFError
         detach
