@@ -1,5 +1,5 @@
 require 'amqp'
-require 'yajl'
+require 'json'
 require 'set'
 
 module Logjam
@@ -266,7 +266,7 @@ module Logjam
     end
 
     def publish(p, inc)
-      exchange.publish(Yajl::Encoder.encode(inc), :key => p.sub(/^::/,'').downcase)
+      exchange.publish(inc.to_json, :key => p.sub(/^::/,'').downcase)
     rescue
       $stderr.puts "could not publish performance/error data: #{$!}"
     end

@@ -1,7 +1,7 @@
 require 'amqp'
 require 'amqp/extensions/rabbitmq'
 require 'date'
-require 'yajl'
+require 'json'
 
 module Logjam
 
@@ -106,7 +106,7 @@ module Logjam
 
     def process_request(msg, routing_key)
       (c = @capture_file) && (c.puts msg)
-      entry = Yajl::Parser.parse(msg)
+      entry = JSON.parse(msg)
       @importer.add_entry entry
     end
 
