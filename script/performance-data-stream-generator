@@ -12,6 +12,7 @@ OptionParser.new do |opt|
   opt.on("-a", "--app [APP]", "Name of the app") { |a| options[:app] = a }
   opt.on("-e", "--env [ENV]", "Name of the environment") { |e| options[:env] = e }
   opt.on("-k", "--keys [K1,K2,K3]", Array, "List of keys to generate data for") { |k| options[:keys] = k }
+  opt.on("-v", "--verbose", "Be verbose") { |v| options[:verbose] = v }
   opt.parse!
 end
 
@@ -31,6 +32,7 @@ EM.run do
       encoded_data = data.to_json
       # publish performance data
       exchange.publish(encoded_data, :key => key)
+      puts "KEY: #{key} DATA: #{encoded_data}" if options[:verbose]
     end
   end
   error_count = 0
@@ -48,6 +50,7 @@ EM.run do
       encoded_errors = errors.to_json
       # publish error data
       exchange.publish(encoded_errors, :key => key)
+      puts "KEY: #{key} ERROR: #{encoded_errors}" if options[:verbose]
     end
   end
 end
