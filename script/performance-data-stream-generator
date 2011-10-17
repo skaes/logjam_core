@@ -1,25 +1,31 @@
 #!/usr/bin/env ruby
 
 require File.expand_path('../../../../../config/boot.rb', __FILE__)
+require 'optparse'
 require 'amqp'
 require 'json'
 require 'active_support'
 
-app = ARGV[0] || "app"
-env = ARGV[1] || "production"
-keys = (ARGV[2] || "all_pages,jobs,xws").split(/,/)
+options = {:app => "app", :env => "production", :keys => %w{all_pages jobs xws}}
+
+OptionParser.new do |opt|
+  opt.on("-a", "--app [APP]", "Name of the app") { |a| options[:app] = a }
+  opt.on("-e", "--env [ENV]", "Name of the environment") { |e| options[:env] = e }
+  opt.on("-k", "--keys [K1,K2,K3]", Array, "List of keys to generate data for") { |k| options[:keys] = k }
+  opt.parse!
+end
 
 FIELDS = %w(gc_time other_time memcache_time gearman_time search_time api_time db_time view_time total_time)
 
 EM.run do
   connection = AMQP.connect(:host => "127.0.0.1")
   channel = AMQP::Channel.new(connection)
-  exchange = channel.topic("logjam-performance-data-#{app}-#{env}")
+  exchange = channel.topic("logjam-performance-data-#{options[:app]}-#{options[:env]}")
 
   trap("INT"){ EM.next_tick { connection.close { EM.stop_event_loop} } }
 
   EM.add_periodic_timer(1) do
-    keys.each do |key|
+    options[:keys].each do |key|
       count = 50+450*rand()
       data = FIELDS.inject({"count" => count}){|h,k| h[k] = 100*rand*count; h}
       encoded_data = data.to_json
@@ -29,7 +35,7 @@ EM.run do
   end
   error_count = 0
   EM.add_periodic_timer(3) do
-    keys.each do |key|
+    options[:keys].each do |key|
       errors =
         [
          {
