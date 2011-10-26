@@ -240,6 +240,11 @@ module Logjam
       h(s.gsub(/_/, ' '))
     end
 
+    def format_hash(hash)
+      contents = hash.keys.sort.map{|k| "<tr><td class='resource_name'>#{h k}</td><td>#{h hash[k]}</td></tr>"}.join("\n")
+      "<table class='embedded_table'>#{contents}</table>"
+    end
+
     # try to fix broken string encodings. most of the time the string is latin-1 encoded
     if RUBY_VERSION >= "1.9"
       def safe_h(s)

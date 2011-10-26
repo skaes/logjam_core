@@ -260,6 +260,7 @@ td.number {text-align: right;}
 
 #request-lines {
   margin-top:15px;
+  margin-bottom:15px;
 }
 
 .warning {
@@ -342,6 +343,20 @@ td.number {text-align: right;}
 
 .resource-fields legend {
    font-weight: bold;
+}
+
+.resource_name {
+   vertical-align: top;
+   white-space: nowrap;
+}
+
+.embedded_table td {
+  margin-left: 0px;
+  padding-left: 0px;
+}
+
+.embedded_table tr td:first-child {
+  width: 15em;
 }
 
 .menu{
