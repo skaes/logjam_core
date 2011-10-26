@@ -241,7 +241,15 @@ module Logjam
     end
 
     def format_hash(hash)
-      contents = hash.keys.sort.map{|k| "<tr><td class='resource_name'>#{h k}</td><td>#{h hash[k]}</td></tr>"}.join("\n")
+      contents = hash.keys.sort.map do |k|
+        val = hash[k]
+        if k == "COOKIE"
+          val = val.split(/\s*;\s*/).compact.sort.map{|s| h s}.join("</br>")
+        else
+          val = h(val)
+        end
+        "<tr><td class='resource_name'>#{h k}</td><td>#{val}</td></tr>"
+      end.join("\n")
       "<table class='embedded_table'>#{contents}</table>"
     end
 
