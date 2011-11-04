@@ -76,7 +76,6 @@ module Logjam
     def queue_options
       {
         :auto_delete => true,
-        :exclusive => true,
         :arguments => {
           # reap messages after 5 minutes
           "x-message-ttl" => 5 * 60 * 1000
