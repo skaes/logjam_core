@@ -48,12 +48,13 @@ module Logjam
     def connect_importer(settings)
       puts "connecting importer input stream to rabbit on #{settings[:host]}"
       AMQP.connect(settings) do |connection|
+        puts "connected to #{settings[:host]}"
         connection.on_tcp_connection_loss(&method(:on_tcp_connection_loss))
         @connections << connection
         open_channel_and_subscribe(connection, settings[:host])
       end
     rescue EventMachine::ConnectionError => e
-      puts "connection error: #{e}"
+      puts "#{settings[:host]}: connection error: #{e}"
     end
 
     def open_channel_and_subscribe(connection, broker)
