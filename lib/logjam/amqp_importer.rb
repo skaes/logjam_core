@@ -20,14 +20,12 @@ module Logjam
       setup_event_system
       EM.run do
         @stream.importer.hosts.each do |host|
-          settings = {:host => host, :on_tcp_connection_failure => on_tcp_connection_failure, :timeout => 1}
+          settings = {:host => host, :on_tcp_connection_failure => on_tcp_connection_failure, :timeout => 5}
           connect_importer settings
         end
-        trap("INT") { stop }
-        trap("TERM") { stop }
-        @timer = EM.add_periodic_timer(1) do
-           @importer.flush_buffers
-        end
+        trap("INT") { shutdown }
+        trap("TERM") { shutdown }
+        start_flushing
       end
     end
 
@@ -44,14 +42,18 @@ module Logjam
     def on_tcp_connection_failure
       Proc.new do |settings|
         puts "connection failed: #{settings[:host]}"
-        EM::Timer.new(10) { connect_importer(settings) }
+        puts "will try to again in 5 seconds"
+        EM::Timer.new(5) { connect_importer(settings) }
       end
     end
 
     def on_tcp_connection_loss(connection, settings)
-      # reconnect in 10 seconds, without enforcement
-      puts "lost connection: #{settings[:host]}"
-      connection.reconnect(false, 10)
+      puts "trying to reconnect: #{settings[:host]}"
+      connection.reconnect(true)
+    rescue EventMachine::ConnectionError => e
+      puts "#{settings[:host]}: could not reconnect: #{e}"
+      puts "will try to again in 5 seconds"
+      EM::Timer.new(5) { on_tcp_connection_loss(connection, settings) }
     end
 
     def connect_importer(settings)
@@ -63,26 +65,83 @@ module Logjam
         open_channel_and_subscribe(connection, settings[:host])
       end
     rescue EventMachine::ConnectionError => e
+      # we end up here when the initial connection fails
       puts "#{settings[:host]}: connection error: #{e}"
+      puts "will try to reconnect in 5 seconds"
+      EM::Timer.new(5) { connect_importer settings }
     end
 
     def open_channel_and_subscribe(connection, broker)
       AMQP::Channel.new(connection) do |channel|
         channel.auto_recovery = true
-        puts "creating exchange #{exchange_name} on #{broker}"
-        exchange = channel.topic(exchange_name, :durable => true, :auto_delete => false)
-        puts "creating queue #{queue_name} on #{broker}"
-        queue = channel.queue(queue_name, queue_options)
-        puts "binding exchange #{exchange_name} to #{queue_name} on #{broker}"
-        queue.bind(exchange, :routing_key => routing_key)
-        puts "subscribing to queue #{queue_name} on #{broker}"
-        queue.subscribe do |header, msg|
+
+        # setup request stream
+        puts "creating request stream exchange #{importer_exchange_name} on #{broker}"
+        request_stream_exchange = channel.topic(importer_exchange_name, :durable => true, :auto_delete => false)
+        puts "creating request stream queue #{importer_queue_name} on #{broker}"
+        importer_queue = channel.queue(importer_queue_name, importer_queue_options)
+        puts "binding request stream exchange #{importer_exchange_name} to #{importer_queue_name} on #{broker}"
+        importer_queue.bind(request_stream_exchange, :routing_key => importer_routing_key)
+        puts "subscribing to request stream queue #{importer_queue_name} on #{broker}"
+        importer_queue.subscribe do |header, msg|
           process_request(msg, header.routing_key)
         end
+
+        # setup heartbeats
+        heartbeat_exchange = channel.topic(heartbeat_exchange_name, :durable => true, :auto_delete => false)
+        puts "creating heartbeats queue #{heartbeat_queue_name} on #{broker}"
+        heartbeat_queue = channel.queue(heartbeat_queue_name, heartbeat_queue_options)
+        puts "binding heartbeats exchange #{heartbeat_exchange_name} to #{heartbeat_queue_name} on #{broker}"
+        heartbeat_queue.bind(heartbeat_exchange, :routing_key => heartbeat_routing_key)
+        puts "subscribing to heartbeats queue #{heartbeat_queue_name} on #{broker}"
+        heartbeat_queue.subscribe do |header, msg|
+          process_heartbeat(msg, header.routing_key)
+        end
+        send_heartbeats(heartbeat_exchange)
       end
     end
 
-    def queue_options
+    def start_flushing
+      @timer = EM.add_periodic_timer(1) do
+        @importer.flush_buffers
+      end
+    end
+
+    def stop_flushing
+      @timer.cancel
+      @importer.flush_buffers
+    end
+
+    def shutdown
+      puts "shutting down"
+      stop_heartbeats
+      stop_flushing
+      @connection_shutdown_timer = EM::Timer.new(5) { puts "hard exit" ; exit!(1) }
+      close_connections
+    end
+
+    def close_connections
+      if connection = @connections.shift
+        connection.close { close_connections }
+      else
+        @connection_shutdown_timer.cancel
+        EM.stop
+      end
+    end
+
+    def importer_exchange_name
+      [@stream.importer.exchange, @application, @environment].compact.join("-")
+    end
+
+    def importer_routing_key
+      ["logs", @application, "#"].compact.join('.')
+    end
+
+    def importer_queue_name
+      [@stream.importer.queue, @application, @environment, hostname].compact.join('-')
+    end
+
+    def importer_queue_options
       {
         :auto_delete => true,
         :arguments => {
@@ -92,25 +151,30 @@ module Logjam
       }
     end
 
-    def stop
-      if connection = @connections.shift
-        connection.close { stop }
-      else
-        @importer.flush_buffers
-        EM.stop
-      end
+    def heartbeat_exchange_name
+      "logjam3-importer-heartbeats"
     end
 
-    def exchange_name
-      [@stream.importer.exchange, @application, @environment].compact.join("-")
+    def heartbeat_routing_key
+      ["logjam", "heartbeat", @application, @environment, hostname, $$].compact.join('.')
     end
 
-    def routing_key
-      ["logs", @application, "#"].compact.join('.')
+    def heartbeat_queue_name
+      ["logjam3-importer-heartbeats", @application, @environment, `hostname`.chomp].compact.join('-')
     end
 
-    def queue_name
-      [@stream.importer.queue, @application, @environment, `hostname`.chomp].compact.join('-')
+    def heartbeat_queue_options
+      {
+        :auto_delete => true,
+        :arguments => {
+          # reap messages after 1 minute
+          "x-message-ttl" => 60 * 1000
+        }
+      }
+    end
+
+    def hostname
+      @hostname ||= `hostname`.chomp
     end
 
     def process_request(msg, routing_key)
@@ -119,5 +183,27 @@ module Logjam
       @importer.add_entry entry
     end
 
+    def send_heartbeats(heartbeat_exchange)
+      @outstanding_heartbeats = 0
+      @heartbeat_timer = EM::PeriodicTimer.new(5) do
+        if @outstanding_heartbeats > 5
+          puts "missed #{@outstanding_heartbeats} heartbeats"
+          shutdown
+        else
+          puts "sending heartbeat. outstanding: #{@outstanding_heartbeats}"
+          @outstanding_heartbeats += 1
+          heartbeat_exchange.publish("blah blah blah", :routing_key => heartbeat_routing_key)
+        end
+      end
+    end
+
+    def stop_heartbeats
+      @heartbeat_timer.cancel
+    end
+
+    def process_heartbeat(msg, routing_key)
+      @outstanding_heartbeats -= 1
+      puts "received heartbeat. outstanding: #{@outstanding_heartbeats}"
+    end
   end
 end
