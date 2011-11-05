@@ -17,11 +17,7 @@ module Logjam
     end
 
     def process
-      if EM.epoll?
-        EM.epoll
-      elsif EM.kqueue?
-        EM.kqueue
-      end
+      setup_event_system
       EM.run do
         @stream.importer.hosts.each do |host|
           settings = {:host => host, :on_tcp_connection_failure => on_tcp_connection_failure, :timeout => 1}
@@ -36,6 +32,14 @@ module Logjam
     end
 
     private
+
+    def setup_event_system
+      if EM.epoll?
+        EM.epoll
+      elsif EM.kqueue?
+        EM.kqueue
+      end
+    end
 
     def on_tcp_connection_failure
       Proc.new do |settings|
