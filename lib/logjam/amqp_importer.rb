@@ -160,7 +160,7 @@ module Logjam
     end
 
     def heartbeat_queue_name
-      ["logjam3-importer-heartbeats", @application, @environment, `hostname`.chomp].compact.join('-')
+      ["logjam3-importer-heartbeats", @application, @environment, hostname].compact.join('-')
     end
 
     def heartbeat_queue_options
