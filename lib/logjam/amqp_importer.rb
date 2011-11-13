@@ -14,6 +14,8 @@ module Logjam
       @importer = MongoImporter.new(@stream)
       @connections = []
       @capture_file = File.open("#{Rails.root}/capture.log", "w") if ENV['LOGJAM_CAPTURE']
+      @outstanding_heartbeats = Hash.new(0)
+      @heartbeat_timers = {}
     end
 
     def process
@@ -62,7 +64,7 @@ module Logjam
         puts "connected to #{settings[:host]}"
         connection.on_tcp_connection_loss(&method(:on_tcp_connection_loss))
         @connections << connection
-        open_channel_and_subscribe(connection, settings[:host])
+        open_channel_and_subscribe(connection, settings)
       end
     rescue EventMachine::ConnectionError => e
       # we end up here when the initial connection fails
@@ -71,7 +73,8 @@ module Logjam
       EM::Timer.new(5) { connect_importer settings }
     end
 
-    def open_channel_and_subscribe(connection, broker)
+    def open_channel_and_subscribe(connection, settings)
+      broker = settings[:host]
       AMQP::Channel.new(connection) do |channel|
         channel.auto_recovery = true
 
@@ -95,37 +98,41 @@ module Logjam
         heartbeat_queue.bind(heartbeat_exchange, :routing_key => heartbeat_routing_key)
         puts "subscribing to heartbeats queue #{heartbeat_queue_name} on #{broker}"
         heartbeat_queue.subscribe do |header, msg|
-          process_heartbeat(msg, header.routing_key)
+          process_heartbeat(connection, settings, msg, header.routing_key)
         end
-        send_heartbeats(heartbeat_exchange)
+        send_heartbeats(connection, settings, heartbeat_exchange)
       end
     end
 
     def start_flushing
-      @timer = EM.add_periodic_timer(1) do
+      @flushing_timer = EM.add_periodic_timer(1) do
         @importer.flush_buffers
       end
     end
 
     def stop_flushing
-      @timer.cancel
+      @flushing_timer.cancel
       @importer.flush_buffers
     end
 
     def shutdown
       puts "shutting down"
-      stop_heartbeats
+      stop_all_heartbeats
       stop_flushing
-      @connection_shutdown_timer = EM::Timer.new(5) { puts "hard exit" ; exit!(1) }
       close_connections
     end
 
     def close_connections
-      if connection = @connections.shift
-        connection.close { close_connections }
-      else
-        @connection_shutdown_timer.cancel
-        EM.stop
+      shutdown_timer = EM::Timer.new(5) { puts "hard exit" ; exit!(1) }
+      @connections.dup.each do |connection|
+        connection.close do
+          @connections.delete(connection)
+          if @connections.empty?
+            shutdown_timer.cancel
+            puts "clean exit"
+            EM.stop
+          end
+        end
       end
     end
 
@@ -183,27 +190,36 @@ module Logjam
       @importer.add_entry entry
     end
 
-    def send_heartbeats(heartbeat_exchange)
-      @outstanding_heartbeats = 0
-      @heartbeat_timer = EM::PeriodicTimer.new(5) do
-        if @outstanding_heartbeats > 5
-          puts "missed #{@outstanding_heartbeats} heartbeats"
-          shutdown
+    def send_heartbeats(connection, settings, heartbeat_exchange)
+      @outstanding_heartbeats[connection] = 0
+      @heartbeat_timers[connection] = EM::PeriodicTimer.new(5) do
+        if (n = @outstanding_heartbeats[connection]) > 5
+          puts "missed #{n} heartbeats[#{settings[:host]}, #{connection.object_id}]"
+          # the connection is presumably dead. close it hard.
+          stop_heartbeats(connection)
+          connection.set_comm_inactivity_timeout(5)
+          @connections.delete(connection).close_connection
+          connect_importer settings
         else
-          puts "sending heartbeat. outstanding: #{@outstanding_heartbeats}"
-          @outstanding_heartbeats += 1
+          puts "sending heartbeat [#{settings[:host]}, #{connection.object_id}]. outstanding: #{n}"
+          @outstanding_heartbeats[connection] += 1
           heartbeat_exchange.publish("blah blah blah", :routing_key => heartbeat_routing_key)
         end
       end
     end
 
-    def stop_heartbeats
-      @heartbeat_timer.cancel
+    def stop_all_heartbeats
+      @heartbeat_timers.keys.each {|connection| stop_heartbeats(connection)}
     end
 
-    def process_heartbeat(msg, routing_key)
-      @outstanding_heartbeats -= 1
-      puts "received heartbeat. outstanding: #{@outstanding_heartbeats}"
+    def stop_heartbeats(connection)
+      @heartbeat_timers.delete(connection).cancel
+      @outstanding_heartbeats.delete(connection)
+    end
+
+    def process_heartbeat(connection, settings, msg, routing_key)
+      n = (@outstanding_heartbeats[connection] -= 1)
+      puts "received heartbeat  [#{settings[:host]}, #{connection.object_id}]. outstanding: #{n}"
     end
   end
 end
