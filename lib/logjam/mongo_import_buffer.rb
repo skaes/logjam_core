@@ -90,6 +90,15 @@ module Logjam
 
       if interesting?(entry)
         begin
+          if request_id = entry.delete("request_id")
+            l = request_id.length
+            if l == 32
+              oid = BSON::Binary.new(request_id, BSON::Binary::SUBTYPE_UUID) rescue nil
+            elsif l == 24
+              oid = BSON::ObjectId.new(request_id) rescue nil
+            end
+            entry["_id"] = oid if oid
+          end
           request_id = @requests.insert(entry)
         rescue Exception
           $stderr.puts "Could not insert document: #{$!}"
