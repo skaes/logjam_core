@@ -20,9 +20,9 @@ pre {
   white-space: -o-pre-wrap; /* Opera 7 */
   word-wrap: break-word; /* Internet Explorer 5.5+ */
 }
-pre img {
-    vertical-align: top;
-}
+pre img { vertical-align: top; }
+pre a, #request-details a { color: blue; }
+pre a:hover, #request-details a:hover { color: blue; }
 
 a { color: #000; }
 a:hover { color: #000; background-color:#fff; }

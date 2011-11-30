@@ -78,11 +78,23 @@ module Logjam
       end
     end
 
-    def link_to_request(text, options, response_code)
+    def link_to_request(text, options, response_code = 200)
       if response_code == 500
         link_to(text, options, :title => "show request", :class => "error")
       else
         link_to(text, options, :title => "show request")
+      end
+    end
+
+    def sometimes_link_to_request(request_id)
+      app, env, oid = request_id.split('-')
+      db_name = "logjam-#{app}-#{env}-#{@date}"
+      if @logjam_databases.include?(db_name) && Requests.exists?(@date, app, env, oid)
+        parameters = params.slice(:year,:month,:day).merge(:app => app, :env => env, :action => "show", :id => oid)
+        puts parameters.inspect
+        link_to(request_id, clean_params(parameters))
+      else
+        request_id
       end
     end
 
@@ -202,8 +214,8 @@ module Logjam
       severity_icon(l)
     end
 
-    def allow_breaks(l)
-      CGI.unescape(l.gsub(/(%2C|=)/, '\1&#x200B;'))
+    def allow_breaks(l, request_id=nil)
+      request_id ? l : CGI.unescape(l.gsub(/(%2C|=)/, '\1&#x200B;'))
     end
 
     def format_timestamp(timestamp)
@@ -231,7 +243,11 @@ module Logjam
       l = (safe_h line).strip
       has_backtrace = l =~ /\.rb:\d+:in/
       level = 2 if level == 1 && (has_backtrace || l =~ /Error|Exception/) && (l !~ /^(Rendering|Completed|Processing|Parameters)/)
-      colored_line = level > 1 ? format_backtrace(l) : allow_breaks(l)
+      if l =~ /X-Logjam-Request-Id: (\S+)/
+        request_id = $1
+        l.sub!(request_id, sometimes_link_to_request(request_id))
+      end
+      colored_line = level > 1 ? format_backtrace(l) : allow_breaks(l, request_id)
       "#{format_log_level(level)} #{format_timestamp(timestamp.to_s)} #{colored_line}"
     end
 

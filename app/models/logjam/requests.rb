@@ -34,6 +34,10 @@ module Logjam
       collection
     end
 
+    def self.exists?(date, app, env, oid)
+      new(Logjam.db(date, app, env)).find(oid)
+    end
+
     attr_reader :resource, :pattern
 
     def initialize(db, resource=nil, pattern='', options={})
@@ -122,10 +126,21 @@ module Logjam
     end
 
     def find(id)
-      selector = {"_id" => BSON::ObjectId.from_string(id)}
+      selector = {"_id" => primary_key(id)}
       query = "Requests.find_one(#{selector.inspect})"
       ActiveSupport::Notifications.instrument("mongo.logjam", :query => query, :rows => 1) do
         @collection.find_one(selector)
+      end
+    end
+
+    def primary_key(id)
+      case id.length
+      when 24
+        BSON::ObjectId.from_string(id)
+      when 32
+        BSON::Binary.new(id, BSON::Binary::SUBTYPE_UUID)
+      else
+        id
       end
     end
 
