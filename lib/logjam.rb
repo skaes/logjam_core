@@ -45,6 +45,15 @@ module Logjam
     @@request_cleaning_threshold
   end
 
+  @@database_cleaning_threshold = 365
+  def self.database_cleaning_threshold=(database_cleaning_threshold)
+    @@database_cleaning_threshold = database_cleaning_threshold.to_i
+  end
+
+  def self.database_cleaning_threshold
+    @@database_cleaning_threshold
+  end
+
   def mongo
     @mongo_connection ||= begin
       conn = Mongo::Connection.new(database_config['host'])
@@ -103,6 +112,16 @@ module Logjam
           db.command(:repairDatabase => 1)
           sleep delay
         end
+      end
+    end
+  end
+
+  def drop_old_databases
+    databases.each do |db_name|
+      date = db_date(db_name)
+      if Date.today - Logjam.database_cleaning_threshold > date
+        puts "removing old database: #{db_name}"
+        mongo.drop_database(db_name)
       end
     end
   end

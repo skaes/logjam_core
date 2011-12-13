@@ -54,8 +54,9 @@ namespace :logjam do
       Logjam.ensure_indexes
     end
 
-    desc "remove old requests"
+    desc "remove old data"
     task :clean => :environment do
+      Logjam.drop_old_databases
       delay = [ENV['REPAIR_DELAY'].to_i, 10].max
       Logjam.remove_old_requests(delay)
     end
