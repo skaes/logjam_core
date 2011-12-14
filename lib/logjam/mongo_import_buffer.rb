@@ -40,7 +40,7 @@ module Logjam
         @modules << pmodule
       end
 
-      response_code = entry["response_code"] = (entry.delete("code") || 500)
+      response_code = entry["response_code"] = (entry.delete("code") || 500).to_i
       total_time    = (entry["total_time"] ||= 1.0)
       started_at    = entry["started_at"]
       lines         = (entry["lines"] ||= [])
