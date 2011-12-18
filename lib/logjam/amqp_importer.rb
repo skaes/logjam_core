@@ -152,8 +152,8 @@ module Logjam
       {
         :auto_delete => true,
         :arguments => {
-          # reap messages after 5 minutes
-          "x-message-ttl" => 5 * 60 * 1000
+          # reap messages after 30 minutes
+          "x-message-ttl" => 30 * 60 * 1000
         }
       }
     end
