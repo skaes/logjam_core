@@ -14,6 +14,7 @@ module Logjam
       @iso_date_string = iso_date_string
 
       database  = Logjam.mongo.db(dbname)
+      Logjam.ensure_known_database(dbname)
       @totals   = Totals.ensure_indexes(database["totals"])
       @minutes  = Minutes.ensure_indexes(database["minutes"])
       @quants   = Quants.ensure_indexes(database["quants"])

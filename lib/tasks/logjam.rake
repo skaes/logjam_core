@@ -65,6 +65,16 @@ namespace :logjam do
     task :update_severities => :environment do
       Logjam.update_severities
     end
+
+    desc "update known databases"
+    task :update_known_databases => :environment do
+      puts Logjam.update_known_databases
+    end
+
+    desc "list known databases"
+    task :list_known_databases => :environment do
+      puts Logjam.get_known_databases
+    end
   end
 
   namespace :daemons do
