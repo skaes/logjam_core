@@ -68,7 +68,7 @@ namespace :logjam do
 
     desc "update known databases"
     task :update_known_databases => :environment do
-      puts Logjam.update_known_databases
+      Logjam.update_known_databases
     end
 
     desc "list known databases"
