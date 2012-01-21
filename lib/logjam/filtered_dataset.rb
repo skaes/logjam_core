@@ -141,10 +141,6 @@ module Logjam
       [:allocated_memory, :allocated_bytes].include? attr.to_sym
     end
 
-    def statistics
-      @statistics ||= totals
-    end
-
     YLABELS = {:time => 'Response time (ms)', :call => '# of calls', :memory => 'Allocations (bytes)'}
 
     def ylabel
