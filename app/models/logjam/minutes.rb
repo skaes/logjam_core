@@ -12,7 +12,7 @@ module Logjam
 
     attr_reader :counts, :minutes
 
-    def initialize(db, resources, pattern, interval=5)
+    def initialize(db, resources, pattern, page_names, interval=5)
       @database = db
       @collection = @database["minutes"]
       @resources = resources
@@ -21,10 +21,6 @@ module Logjam
       @pattern = "^::#{@pattern}" if page_names.include?("::#{pattern}")
       @pattern = Regexp.new(/#{@pattern}/) unless @pattern == "all_pages" || page_names.include?(@pattern)
       compute(interval)
-    end
-
-    def page_names
-      @page_names ||= Totals.new(@database).page_names
     end
 
     private

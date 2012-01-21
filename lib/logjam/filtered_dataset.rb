@@ -162,7 +162,7 @@ module Logjam
       @plot_data ||=
         begin
           resources = plotted_resources
-          mins = Minutes.new(@db, resources, page, interval)
+          mins = Minutes.new(@db, resources, page, totals.page_names, interval)
           minutes = mins.minutes
           counts = mins.counts
           max_total = 0
