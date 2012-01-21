@@ -93,7 +93,7 @@ module Logjam
     end
 
     def count
-      @count ||= Totals.new(@db, [], "all_pages").count.to_i
+      @count ||= totals.request_count
     end
 
     def sum(time_attr = 'total_time')

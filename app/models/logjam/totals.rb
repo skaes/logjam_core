@@ -187,6 +187,18 @@ module Logjam
       @count ||= the_pages.inject(0){|n,p| n += p.count}
     end
 
+    def request_count
+      @request_count ||=
+        begin
+          query = "Totals.request_count"
+          ActiveSupport::Notifications.instrument("mongo.logjam", :query => query) do |payload|
+            rows = @collection.find({:page=>"all_pages"},{:fields=>["count"]}).to_a
+            payload[:rows] = rows.size
+            rows.first["count"].to_i
+          end
+        end
+    end
+
     def sum(resource)
       @sum[resource] ||= the_pages.inject(0.0){|n,p| n += p.sum(resource)}
     end
