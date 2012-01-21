@@ -137,7 +137,7 @@ module Logjam
 
     attr_reader :resources, :pattern, :pages
 
-    def initialize(db, resources=[], pattern='')
+    def initialize(db, resources=[], pattern='', page_name_list=nil)
       @database = db
       @collection = @database["totals"]
       @resources = resources.dup
@@ -146,6 +146,7 @@ module Logjam
       @severity = @resources.delete("severity")
       @exceptions = @resources.delete("exceptions")
       @pattern = pattern
+      @page_names = page_name_list
       @sum = {}
       @avg = {}
       @sum_sq = {}

@@ -136,7 +136,7 @@ module Logjam
         begin
           resources = Resource.time_resources + Resource.call_resources +
             Resource.memory_resources + Resource.heap_resources - %w(heap_growth) + %w(apdex response)
-          Totals.new(@db, resources, page)
+          Totals.new(@db, resources, page, totals.page_names)
         end
     end
 
