@@ -86,8 +86,12 @@ module Logjam
   end
 
   def databases
-    # puts "getting database names !!!!!!!!!!!!!!!!!!!!!!!!"
-    grep(mongo.database_names)
+    names = []
+    ActiveSupport::Notifications.instrument("mongo.logjam", :query => "load database names") do |payload|
+      names = mongo.database_names
+      payload[:rows] = 1
+    end
+    grep(names)
   end
 
   def ensure_indexes
