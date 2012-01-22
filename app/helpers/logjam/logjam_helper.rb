@@ -88,8 +88,7 @@ module Logjam
 
     def sometimes_link_to_request(request_id)
       app, env, oid = request_id.split('-')
-      db_name = "logjam-#{app}-#{env}-#{@date}"
-      if @logjam_databases.include?(db_name) && Requests.exists?(@date, app, env, oid)
+      if @database_info.db_exists?(@date, app, env) && Requests.exists?(@date, app, env, oid)
         parameters = params.slice(:year,:month,:day).merge(:app => app, :env => env, :action => "show", :id => oid)
         puts parameters.inspect
         link_to(request_id, clean_params(parameters))
