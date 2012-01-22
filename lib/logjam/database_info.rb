@@ -45,7 +45,7 @@ module Logjam
     end
 
     def db_exists?(date, app, env)
-      ((@info[app]||{})[env]||[]).include?(date)
+      ((@info[app]||{})[env]||[]).include?(Logjam.sanitize_date(date))
     end
   end
 end
