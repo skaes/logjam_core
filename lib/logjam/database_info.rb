@@ -1,30 +1,39 @@
 module Logjam
+  # stores database info as two level hash { app => { env => [day1, day2, ...]}}
   class DatabaseInfo
 
     NAME_FORMAT = Logjam.db_name_format
+    attr_reader :databases
 
-    def databases
-      @databases ||= Logjam.databases
+    def initialize
+      @databases = Logjam.databases
+      @info = {}
+      @databases.each do |dbname|
+        if dbname =~ NAME_FORMAT
+          app, env, date = $1, $2, $3
+          ((@info[app] ||= {})[env] ||= []) << date
+        end
+      end
     end
 
     def apps
-      databases.map{|t| t[NAME_FORMAT, 1]}.uniq.sort
+      @apps ||= @info.keys.sort
     end
 
     def envs(app)
-      Logjam.grep(databases, :app => app).map{|t| t[NAME_FORMAT, 2]}.uniq.sort
+      @info[app].keys.sort.reverse
     end
 
     def days(app, env)
-      Logjam.grep(databases, :app => app, :env => env).map{|t| t[NAME_FORMAT, 3]}.uniq.sort.reverse
+      @info[app][env].sort.reverse
     end
 
     def only_one_env?(app)
-      envs(app).size == 1
+      @info[app].size == 1
     end
 
     def only_one_app?
-      apps.size == 1
+      @info.size == 1
     end
 
     def default_app
@@ -35,5 +44,8 @@ module Logjam
       envs(app).select{|e| e=="production"}.first || envs.first
     end
 
+    def db_exists?(date, app, env)
+      ((@info[app]||{})[env]||[]).include?(date)
+    end
   end
 end
