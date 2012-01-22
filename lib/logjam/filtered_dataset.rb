@@ -93,7 +93,7 @@ module Logjam
     end
 
     def count
-      @count ||= Totals.new(@db, [], "all_pages").count.to_i
+      @count ||= totals.request_count
     end
 
     def sum(time_attr = 'total_time')
@@ -119,13 +119,16 @@ module Logjam
         end
     end
 
+    def resource_fields
+      case Resource.resource_type(resource)
+      when :time   then Resource.time_resources
+      when :call   then Resource.call_resources
+      when :memory then Resource.memory_resources
+      end
+    end
+
     def totals
-      @totals ||=
-        case Resource.resource_type(resource)
-        when :time   then Totals.new(@db, Resource.time_resources+%w(apdex response severity), page)
-        when :call   then Totals.new(@db, Resource.call_resources, page)
-        when :memory then Totals.new(@db, Resource.memory_resources, page)
-        end
+      @totals ||= Totals.new(@db, %w(apdex response severity exceptions) + resource_fields, page)
     end
 
     def summary
@@ -133,16 +136,12 @@ module Logjam
         begin
           resources = Resource.time_resources + Resource.call_resources +
             Resource.memory_resources + Resource.heap_resources - %w(heap_growth) + %w(apdex response)
-          Totals.new(@db, resources, page)
+          Totals.new(@db, resources, page, totals.page_names)
         end
     end
 
     def measures_bytes?(attr)
       [:allocated_memory, :allocated_bytes].include? attr.to_sym
-    end
-
-    def statistics
-      @statistics ||= totals
     end
 
     YLABELS = {:time => 'Response time (ms)', :call => '# of calls', :memory => 'Allocations (bytes)'}
@@ -163,7 +162,7 @@ module Logjam
       @plot_data ||=
         begin
           resources = plotted_resources
-          mins = Minutes.new(@db, resources, page, interval)
+          mins = Minutes.new(@db, resources, page, totals.page_names, interval)
           minutes = mins.minutes
           counts = mins.counts
           max_total = 0
@@ -226,24 +225,20 @@ module Logjam
       points
     end
 
-    def satisfaction
-      @satisfaction ||= Totals.new(@db, %w(apdex), page)
-    end
-
     def happy
-      satisfaction.apdex["happy"].to_f / satisfaction.count.to_f
+      totals.apdex["happy"].to_f / totals.count.to_f
     end
 
     def satisfied
-      satisfaction.apdex["satisfied"].to_f / satisfaction.count.to_f
+      totals.apdex["satisfied"].to_f / totals.count.to_f
     end
 
     def tolerating
-      satisfaction.apdex["tolerating"].to_f / satisfaction.count.to_f
+      totals.apdex["tolerating"].to_f / totals.count.to_f
     end
 
     def frustrated
-      satisfaction.apdex["frustrated"].to_f / satisfaction.count.to_f
+      totals.apdex["frustrated"].to_f / totals.count.to_f
     end
 
     def apdex
@@ -255,15 +250,23 @@ module Logjam
     end
 
     def severities
-      @severities ||= Totals.new(@db, %w(severity), @page).severities
+      totals.severities
     end
 
     def logged_error_count(level)
       severities[level] || 0
     end
 
+    def exceptions
+      totals
+    end
+
+    def exception_count
+      totals.exception_count
+    end
+
     def response_codes
-      @response_codes ||= Totals.new(@db, %w(response), page).response_codes
+      totals.response_codes
     end
   end
 end

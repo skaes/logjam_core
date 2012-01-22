@@ -5,14 +5,15 @@
 <div id='request' style="margin-bottom:5px;">
 <b>Request details for</b> <em><%= h @request["page"] -%></em> at <b><%= minute_to_human(@request["minute"]) -%></b>
 </div>
-<% time_resources = Logjam::Resource.time_resources
+<%
+   time_resources = Logjam::Resource.time_resources
    call_resources = Logjam::Resource.call_resources
    memory_resources = Logjam::Resource.memory_resources
    heap_resources = Logjam::Resource.heap_resources
    colors = Logjam::Resource.colors
    pie_colors = Logjam::Resource.colors_with_transparency(0.7)
    other_keys = @request.keys - time_resources - call_resources - memory_resources - heap_resources
-   other_keys.reject!{|k| k =~ /(^_id|lines|minute|page|_sq)$/}
+   other_keys.reject!{|k| k =~ /(^_id|lines|minute|page|_sq|request_info)$/}
 -%>
 
 <div id="request-details">
@@ -35,10 +36,12 @@
     </div>
   </fieldset>
 
+  <% call_resource_values = @request.slice(*call_resources) -%>
+  <% unless call_resource_values.blank? %>
   <fieldset class="resource-fields">
     <legend>Call resources</legend>
     <table id='request-details-calls' class="filter-widget">
-      <% @request.slice(*call_resources).each do |name, value| -%>
+      <% call_resource_values.each do |name, value| -%>
       <% next if value.blank?  -%>
       <tr>
         <td class='resource_name'><%= hrn name %></td>
@@ -53,11 +56,14 @@
           :colors => pie_colors.values_at(*resources) } %>
     </div>
   </fieldset>
+  <% end %>
 
+  <% memory_resource_values = @request.slice(*memory_resources+heap_resources) -%>
+  <% unless memory_resource_values.blank? %>
   <fieldset class="resource-fields">
     <legend>Memory resources</legend>
     <table id='request-details-memory' class="filter-widget">
-      <% @request.slice(*memory_resources+heap_resources).each do |name, value| -%>
+      <% memory_resource_values.each do |name, value| -%>
       <% next if value.blank?  -%>
       <tr>
         <td class='resource_name'><%= hrn name %></td>
@@ -75,6 +81,7 @@
           :colors => pie_colors.values_at(*resources) } %>
     </div>
   </fieldset>
+  <% end %>
 
   <fieldset class="resource-fields">
     <legend>Request attributes</legend>
@@ -85,6 +92,8 @@
         <td class='resource_name'><%= hrn name %></td>
         <% if name == "severity" -%>
         <td class='number'><%= format_severity(value) %></td>
+        <% elsif name == "caller_id"-%>
+        <td class='number'><%= sometimes_link_to_request(value) %></td>
         <% else -%>
         <td class='number'><%= h value %></td>
         <% end -%>
@@ -95,10 +104,30 @@
   </fieldset>
 </div>
 
+<% unless (lines = @request["lines"]).blank? -%>
 <pre id='request-lines' class="filter-widget">
-<% (@request["lines"]||[]).each do |line| -%>
+<% lines.each do |line| -%>
 <%= raw format_log_line(line) %>
 <% end -%>
 </pre>
+<% end %>
+
+<% if info = @request["request_info"] -%>
+<div id="request_info">
+  <fieldset class="resource-fields">
+    <legend>Additional Request Info</legend>
+    <table id='request-info' class="filter-widget">
+      <% %w(url method query_parameters body_parameters headers).each do |name| -%>
+      <% next if (value = info[name]).blank?  -%>
+      <tr>
+        <td class='resource_name'><%= hrn name %></td>
+        <td><%= raw(value.is_a?(Hash) ? format_hash(value) : h(value)) %></td>
+      </tr>
+      <% end -%>
+    </table>
+    <p class="clear-left"></p>
+  </fieldset>
+</div>
+<% end -%>
 
 </div>

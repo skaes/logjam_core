@@ -54,14 +54,26 @@ namespace :logjam do
       Logjam.ensure_indexes
     end
 
-    desc "remove old requests"
+    desc "remove old data"
     task :clean => :environment do
-      Logjam.remove_old_requests
+      Logjam.drop_old_databases
+      delay = [ENV['REPAIR_DELAY'].to_i, 10].max
+      Logjam.remove_old_requests(delay)
     end
 
     desc "update severities"
     task :update_severities => :environment do
       Logjam.update_severities
+    end
+
+    desc "update known databases"
+    task :update_known_databases => :environment do
+      Logjam.update_known_databases
+    end
+
+    desc "list known databases"
+    task :list_known_databases => :environment do
+      puts Logjam.get_known_databases
     end
   end
 

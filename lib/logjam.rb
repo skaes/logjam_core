@@ -45,6 +45,15 @@ module Logjam
     @@request_cleaning_threshold
   end
 
+  @@database_cleaning_threshold = 365
+  def self.database_cleaning_threshold=(database_cleaning_threshold)
+    @@database_cleaning_threshold = database_cleaning_threshold.to_i
+  end
+
+  def self.database_cleaning_threshold
+    @@database_cleaning_threshold
+  end
+
   def mongo
     @mongo_connection ||= begin
       conn = Mongo::Connection.new(database_config['host'])
@@ -56,7 +65,8 @@ module Logjam
   end
 
   def db(date, app, env)
-    mongo.db db_name(date, app, env)
+    name = db_name(date, app, env)
+    mongo.db name
   end
 
   def db_name(date, app, env)
@@ -77,8 +87,36 @@ module Logjam
   end
 
   def databases
-    # puts "getting database names !!!!!!!!!!!!!!!!!!!!!!!!"
-    grep(mongo.database_names)
+    get_known_databases
+  end
+
+  def global_db
+    mongo.db "logjam-global"
+  end
+
+  def meta_collection
+    global_db["metadata"]
+  end
+
+  def ensure_known_database(dbname)
+    meta_collection.update({:name => 'databases'}, {'$addToSet' => {:value => dbname}}, {:upsert => true, :multi => false})
+  end
+
+  def update_known_databases
+    names = mongo.database_names
+    known_databases = grep(names)
+    meta_collection.create_index("name")
+    meta_collection.update({:name => 'databases'}, {'$set' => {:value => known_databases}}, {:upsert => true, :multi => false})
+    known_databases
+  end
+
+  def get_known_databases
+    rows = []
+    ActiveSupport::Notifications.instrument("mongo.logjam", :query => "load database names") do |payload|
+      rows = meta_collection.find({:name => "databases"},{:fields => ["value"]}).to_a
+      payload[:rows] = rows.size
+    end
+    rows.first["value"]
   end
 
   def sanitize_date(date_str)
@@ -104,7 +142,7 @@ module Logjam
     end
   end
 
-  def remove_old_requests
+  def remove_old_requests(delay = 60)
     databases.each do |db_name|
       date = db_date(db_name)
       if Date.today - Logjam.request_cleaning_threshold > date
@@ -114,9 +152,23 @@ module Logjam
           puts "removing old requests: #{db_name}"
           coll.drop
           db.command(:repairDatabase => 1)
+          sleep delay
         end
       end
     end
+  end
+
+  def drop_old_databases
+    dropped = 0
+    databases.each do |db_name|
+      date = db_date(db_name)
+      if Date.today - Logjam.database_cleaning_threshold > date
+        puts "removing old database: #{db_name}"
+        mongo.drop_database(db_name)
+        dropped += 1
+      end
+    end
+    update_known_databases if dropped > 0
   end
 
   def update_severities

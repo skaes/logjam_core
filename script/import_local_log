@@ -2,14 +2,13 @@
 
 require File.expand_path('../../../../../config/environment.rb', __FILE__)
 
-config_name = ARGV.first
-profile = ARGV[1..-1].include?('--profile')
+config_name = ARGV.shift
+file_name = ARGV.shift
+profile = ARGV.include?('--profile')
 
-puts "Starting amqp importer for config '#{config_name}'"
-
-trap("INT") do
-  puts "Stopping event loop"
-  @amqp_importer.stop
+if file_name.nil? || config_name.nil? then
+  puts "Usage: #{$0} stream_name file_name"
+  exit 1
 end
 
 if profile
@@ -26,8 +25,7 @@ if profile
 end
 
 
-@amqp_importer = Logjam::AMQPImporter.new(config_name)
-@amqp_importer.process
+Logjam::FileImporter.new(config_name, file_name).process
 
 
 if profile
@@ -40,3 +38,4 @@ if profile
                 :title => "logjam importer benchmark: #{config_name}")
   system("open #{printer.stack_profile}")
 end
+

@@ -14,6 +14,7 @@ module Logjam
       @iso_date_string = iso_date_string
 
       database  = Logjam.mongo.db(dbname)
+      Logjam.ensure_known_database(dbname)
       @totals   = Totals.ensure_indexes(database["totals"])
       @minutes  = Minutes.ensure_indexes(database["minutes"])
       @quants   = Quants.ensure_indexes(database["quants"])
@@ -25,72 +26,59 @@ module Logjam
       @import_threshold  = Logjam.import_threshold
       @generic_fields    = Set.new(Requests::GENERIC_FIELDS - %w(page response_code) + %w(action code engine))
       @quantified_fields = Requests::QUANTIFIED_FIELDS
-      @squared_fields    = Requests::SQUARED_FIELDS
+      @squared_fields    = Requests::FIELDS.map{|f| [f,"#{f}_sq"]}
+      @other_time_resources = Resource.time_resources - %w(total_time gc_time)
 
       setup_buffers
     end
 
     def add(entry)
-      host = entry["host"]
-      page = entry["action"]
+      page = entry["page"] = (entry.delete("action") || "Unknown")
       page << "#unknown_method" unless page =~ /#/
-      unless response_code = entry["code"]
-        $stderr.puts "no response code"
-        $stderr.puts entry.to_yaml
-        response_code = 500
-      end
-      user_id = entry["user_id"]
-      total_time = entry["total_time"] || 1
-      started_at = entry["started_at"]
-
-      severity = entry["severity"]
-      unless lines = entry.delete("lines")
-        $stderr.puts "no request lines"
-        $stderr.puts entry.to_yaml
-        lines = []
-      end
-      severity ||= lines.map{|s,t,l| s}.max || 5
-
-      fields = entry
-      add_allocated_memory(fields)
-      add_other_time(fields, total_time)
-      minute = add_minute(fields)
-
-      fields.delete_if{|k,v| v==0 || @generic_fields.include?(k)}
-      fields.keys.each{|k| fields[squared_field(k)] = (v=fields[k].to_f)*v}
-
       pmodule = "::"
       if page =~ /^(.+?)::/ || page =~ /^([^:#]+)#/
         pmodule << $1
         @modules << pmodule
       end
 
-      increments = {"count" => 1}.merge!(fields)
+      response_code = entry["response_code"] = (entry.delete("code") || 500).to_i
+      total_time    = (entry["total_time"] ||= 1.0)
+      started_at    = entry["started_at"]
+      lines         = (entry["lines"] ||= [])
+      severity      = (entry["severity"] ||= lines.map{|s,t,l| s}.max || 5)
 
-      user_experience =
-        if total_time >= 2000 || response_code == 500 then {"apdex.frustrated" => 1}
-        elsif total_time < 100 then {"apdex.happy" => 1, "apdex.satisfied" => 1}
-        elsif total_time < 500 then {"apdex.satisfied" => 1}
-        elsif total_time < 2000 then {"apdex.tolerating" => 1}
-        else raise "oops: #{total_time.inspect}"
-        end
+      # mongo field names must not contain dots
+      if exceptions = entry["exceptions"]
+        exceptions.each{|e| e.gsub!('.','_')}
+      end
 
-      increments.merge!(user_experience)
+      add_allocated_memory(entry)
+      add_other_time(entry, total_time)
+      minute = add_minute(entry)
+
+      increments = {"count" => 1}
+      add_squared_fields(increments, entry)
+
+      if total_time >= 2000 || response_code >= 500 then
+        increments["apdex.frustrated"] = 1
+      elsif total_time < 100 then
+        increments["apdex.happy"] = increments["apdex.satisfied"] = 1
+      elsif total_time < 500 then
+        increments["apdex.satisfied"] = 1
+      elsif total_time < 2000 then
+        increments["apdex.tolerating"] = 1
+      end
+
       increments["response.#{response_code}"] = 1
+
       # only store severities which indicate warnings/errors
       increments["severity.#{severity}"] = 1 if severity > 1
 
-      [page, "all_pages", pmodule].each do |p|
-        increments.each do |f,v|
-          (@minutes_buffer[[p,minute]] ||= Hash.new(0.0))[f] += v
-        end
-      end
+      exceptions.each do |e|
+        increments["exceptions.#{e}"] = 1
+      end if exceptions
 
-      [page, "all_pages", pmodule].each do |p|
-        increments.each do |f,v|
-          (@totals_buffer[p] ||= Hash.new(0.0))[f] += v
-        end
-      end
+      add_minutes_and_totals(increments, page, pmodule, minute)
 
       #     hour = minute / 60
       #     [page, "all_pages", pmodule].each do |p|
@@ -99,32 +87,20 @@ module Logjam
       #       end
       #     end
 
-      @quantified_fields.each do |f|
-        next unless x=fields[f]
-        if f == "allocated_objects"
-          kind = "m"
-          d = 10000
-        elsif f == "allocated_bytes"
-          kind = "m"
-          d = 100000
-        else
-          kind = "t"
-          d = 100
-        end
-        x = ((x.floor/d).ceil+1)*d
-        [page, "all_pages"].each do |p|
-          (@quants_buffer[[p,kind,x]] ||= Hash.new(0.0))[f] += 1
-        end
-      end
+      add_quants(increments, page)
 
-      request = {
-        "severity" => severity, "page" => page, "minute" => minute, "response_code" => response_code,
-        "host" => host, "user_id" => user_id, "lines" => lines
-      }.merge!(fields)
-
-      if interesting?(request)
+      if interesting?(entry)
         begin
-          request_id = @requests.insert(request)
+          if request_id = entry.delete("request_id")
+            l = request_id.length
+            if l == 32
+              oid = BSON::Binary.new(request_id, BSON::Binary::SUBTYPE_UUID) rescue nil
+            elsif l == 24
+              oid = BSON::ObjectId.new(request_id) rescue nil
+            end
+            entry["_id"] = oid if oid
+          end
+          request_id = @requests.insert(entry)
         rescue Exception
           $stderr.puts "Could not insert document: #{$!}"
         end
@@ -154,12 +130,10 @@ module Logjam
 
     private
 
-    def other_time_resources
-      @@other_time_resources ||= Resource.time_resources - %w(total_time gc_time)
-    end
-
     def add_other_time(entry, total_time)
-      entry["other_time"] = total_time - other_time_resources.inject(0.0){|s,r| s += (entry[r] || 0)}
+      ot = total_time.to_f
+      @other_time_resources.each {|r| (v = entry[r]) && (ot -= v)}
+      entry["other_time"] = ot
     end
 
     def extract_minute(iso_string)
@@ -177,14 +151,54 @@ module Logjam
       entry["minute"] = extract_minute(entry["started_at"])
     end
 
-    def squared_field(f)
-      @squared_fields[f] || raise("unknown field #{f}")
+    def add_squared_fields(increments, entry)
+      @squared_fields.each do |f,fsq|
+        next if (v = entry[f]).nil?
+        if v == 0
+          entry.delete(f)
+        else
+          increments[f] = (v = v.to_f)
+          increments[fsq] = v*v
+        end
+      end
+    end
+
+    def add_minutes_and_totals(increments, page, pmodule, minute)
+      [page, "all_pages", pmodule].each do |p|
+        mbuffer = (@minutes_buffer[[p,minute]] ||= Hash.new(0.0))
+        tbuffer = (@totals_buffer[p] ||= Hash.new(0.0))
+        increments.each do |f,v|
+          mbuffer[f] += v
+          tbuffer[f] += v
+        end
+      end
+    end
+
+    def add_quants(increments, page)
+      @quantified_fields.each do |f|
+        next unless x=increments[f]
+        if f == "allocated_objects"
+          kind = "m"
+          d = 10000
+        elsif f == "allocated_bytes"
+          kind = "m"
+          d = 100000
+        else
+          kind = "t"
+          d = 100
+        end
+        x = ((x.floor/d).ceil+1)*d
+        [page, "all_pages"].each do |p|
+          (@quants_buffer[[p,kind,x]] ||= Hash.new(0.0))[f] += 1
+        end
+      end
     end
 
     def interesting?(request)
       request["total_time"].to_f > @import_threshold ||
         request["severity"] > 1 ||
         request["response_code"].to_i >= 400 ||
+        request["exceptions"] ||
         request["heap_growth"].to_i > 0
     end
 
@@ -230,7 +244,8 @@ module Logjam
     def self.exchange(app, env)
       (@exchange||={})["#{app}-#{env}"] ||=
         begin
-          channel = MQ.new(AMQP::connect(:host => live_stream_host))
+          channel = AMQP::Channel.new(AMQP.connect(:host => live_stream_host))
+          channel.auto_recovery = true
           channel.topic("logjam-performance-data-#{app}-#{env}")
         end
     end

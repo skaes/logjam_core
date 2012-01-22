@@ -78,11 +78,23 @@ module Logjam
       end
     end
 
-    def link_to_request(text, options, response_code)
+    def link_to_request(text, options, response_code = 200)
       if response_code == 500
         link_to(text, options, :title => "show request", :class => "error")
       else
         link_to(text, options, :title => "show request")
+      end
+    end
+
+    def sometimes_link_to_request(request_id)
+      app, env, oid = request_id.split('-')
+      db_name = "logjam-#{app}-#{env}-#{@date}"
+      if @logjam_databases.include?(db_name) && Requests.exists?(@date, app, env, oid)
+        parameters = params.slice(:year,:month,:day).merge(:app => app, :env => env, :action => "show", :id => oid)
+        puts parameters.inspect
+        link_to(request_id, clean_params(parameters))
+      else
+        request_id
       end
     end
 
@@ -184,26 +196,26 @@ module Logjam
       image_tag("#{img}.png", :alt => "severity: #{img}", :title => "severity: #{img}")
     end
 
-    def extract_exception(log_lines)
-      log_lines.map{|l| safe_h(l)}.detect{|l| l =~ /rb:\d+:in|Error|Exception/}.to_s[0..70]
-    end
-
-    def extract_error(log_lines)
-      return extract_exception(log_lines) if log_lines.first.is_a?(String) || log_lines.blank?
-      if log_lines.first.size == 2
-        safe_h((log_lines.detect{|(s,l)| s >= 3}||[])[1].to_s)[0..70]
-      else
-        safe_h((log_lines.detect{|(s,t,l)| s >= 3}||[])[2].to_s)[0..70]
+    def extract_error(log_lines, exception)
+      regex = Regexp.new(Regexp.escape exception.to_s) unless exception.blank?
+      error_line = ''
+      error_level = 0
+      log_lines.each do |s,t,l|
+        next unless s >= 2
+        next if s <= error_level
+        error_level = s
+        error_line = safe_h(l.to_s)
+        break if exception && error_line =~ regex
       end
+      error_line[0..70]
     end
 
     def format_log_level(l)
-#      "&#10145;"
       severity_icon(l)
     end
 
-    def allow_breaks(l)
-      CGI.unescape(l.gsub(/(%2C|=)/, '\1&#x200B;'))
+    def allow_breaks(l, request_id=nil)
+      request_id ? l : CGI.unescape(l.gsub(/(%2C|=)/, '\1&#x200B;'))
     end
 
     def format_timestamp(timestamp)
@@ -212,7 +224,11 @@ module Logjam
     end
 
     def format_backtrace(l)
-      bt = l.gsub(/(\s+\S+?\.rb:\d+:in \`.*?\')/){|x| "\n"<<x}.gsub(/(\n\n)/, "\n")
+      if l.include?("\n")
+        bt = l
+      else
+        bt = l.gsub(/(\s+\S+?\.rb:\d+:in \`.*?\')/){|x| "\n"<<x}.gsub(/(\n\n)/, "\n")
+      end
       "<span class='error'>#{allow_breaks(bt)}</span>"
     end
 
@@ -227,13 +243,30 @@ module Logjam
       l = (safe_h line).strip
       has_backtrace = l =~ /\.rb:\d+:in/
       level = 2 if level == 1 && (has_backtrace || l =~ /Error|Exception/) && (l !~ /^(Rendering|Completed|Processing|Parameters)/)
-      colored_line = level > 1 ? format_backtrace(l) : allow_breaks(l)
+      if l =~ /X-Logjam-Request-Id: (\S+)/
+        request_id = $1
+        l.sub!(request_id, sometimes_link_to_request(request_id))
+      end
+      colored_line = level > 1 ? format_backtrace(l) : allow_breaks(l, request_id)
       "#{format_log_level(level)} #{format_timestamp(timestamp.to_s)} #{colored_line}"
     end
 
     # human resource name (escaped)
     def hrn(s)
       h(s.gsub(/_/, ' '))
+    end
+
+    def format_hash(hash)
+      contents = hash.keys.sort.map do |k|
+        val = hash[k]
+        if k == "COOKIE"
+          val = val.split(/\s*;\s*/).compact.sort.map{|s| h s}.join("</br>")
+        else
+          val = h(val)
+        end
+        "<tr><td class='resource_name'>#{h k}</td><td>#{val}</td></tr>"
+      end.join("\n")
+      "<table class='embedded_table'>#{contents}</table>"
     end
 
     # try to fix broken string encodings. most of the time the string is latin-1 encoded

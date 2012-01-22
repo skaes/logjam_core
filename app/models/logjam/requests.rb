@@ -2,7 +2,7 @@ module Logjam
 
   class Requests
 
-    GENERIC_FIELDS = %w(page host ip user_id started_at process_id minute session_id new_session response_code app env severity)
+    GENERIC_FIELDS = %w(page host ip user_id started_at process_id minute session_id new_session response_code app env severity exceptions)
 
     TIME_FIELDS = Resource.time_resources
 
@@ -16,15 +16,26 @@ module Logjam
 
     SQUARED_FIELDS = FIELDS.inject({}) { |h, f| h[f] = "#{f}_sq"; h}
 
+    INDEXED_FIELDS = FIELDS + %w[response_code severity minute exceptions]
+
     def self.ensure_indexes(collection)
       ms = Benchmark.ms do
-        (FIELDS + %w[response_code severity minute started_at]).each do |f|
-          collection.create_index([ [f, Mongo::DESCENDING] ], :background => true)
+        indexes_to_drop = collection.index_information.keys.select{|i| i =~ /started_at/}
+        indexes_to_drop.each do |i|
+          logger.info  "MONGO dropping obsolete index: #{i}"
+          collection.drop_index i
+        end
+        INDEXED_FIELDS.each do |f|
+          collection.create_index([ [f, Mongo::DESCENDING] ], :background => true, :sparse => true)
           collection.create_index([ ["page", Mongo::ASCENDING], [f, Mongo::DESCENDING] ], :background => true)
         end
       end
-      logger.debug "MONGO Requests Indexes Creation: #{"%.1f" % (ms)} ms"
+      logger.info "MONGO Requests Indexes Creation (#{2*INDEXED_FIELDS.size+1}): #{"%.1f" % (ms)} ms"
       collection
+    end
+
+    def self.exists?(date, app, env, oid)
+      new(Logjam.db(date, app, env)).find(oid)
     end
 
     attr_reader :resource, :pattern
@@ -60,6 +71,9 @@ module Logjam
           query_opts.merge!(:response_code => rc)
         end
       end
+      if exs = @options[:exceptions]
+        query_opts.merge!(:exceptions => exs)
+      end
       if severity = @options[:severity]
         if severity.to_i < 3
           query_opts.merge!(:severity => severity)
@@ -84,7 +98,7 @@ module Logjam
     def all
       all_fields = ["page", "user_id", "heap_growth", "response_code", "severity", @resource]
       all_fields << "minute" unless all_fields.include?("minute")
-      all_fields << "lines" if @options[:response_code] == 500 ||  @options[:severity]
+      all_fields << "lines" if @options[:response_code] == 500 || @options[:severity] || @options[:exceptions]
       query_opts = {
         :fields => all_fields,
         :sort => [@resource, Mongo::DESCENDING],
@@ -112,10 +126,21 @@ module Logjam
     end
 
     def find(id)
-      selector = {"_id" => BSON::ObjectId.from_string(id)}
+      selector = {"_id" => primary_key(id)}
       query = "Requests.find_one(#{selector.inspect})"
       ActiveSupport::Notifications.instrument("mongo.logjam", :query => query, :rows => 1) do
         @collection.find_one(selector)
+      end
+    end
+
+    def primary_key(id)
+      case id.length
+      when 24
+        BSON::ObjectId.from_string(id)
+      when 32
+        BSON::Binary.new(id, BSON::Binary::SUBTYPE_UUID)
+      else
+        id
       end
     end
 

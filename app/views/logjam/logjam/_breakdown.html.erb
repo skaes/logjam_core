@@ -25,6 +25,7 @@
     :colors => pie_colors.values_at(*resources), :size => chart_size } %>
 </div>
 
+<% unless s.zero_resources?(call_resources) %>
 <h4>Call Resources (avg)</h4>
 <table id='request-details-calls' style="vertical-align:middle;display:inline-block;width:250px;">
   <% call_resources.each do |name| -%>
@@ -41,7 +42,8 @@
     :legend => resources,
     :colors => pie_colors.values_at(*resources), :size => chart_size } %>
 </div>
-<% unless (memory_resources+heap_resources).empty? %>
+<% end %>
+<% unless s.zero_resources?(memory_resources+heap_resources) %>
 <h4>Memory Resources (avg)</h4>
 <table id='request-details-memory' style="vertical-align:middle;display:inline-block;width:250px;">
   <% (memory_resources+heap_resources).each do |name| -%>

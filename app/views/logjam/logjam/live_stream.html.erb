@@ -1,6 +1,7 @@
 <div id="live-stream">
   <h2 id="stream-title">Live Performance Data Stream for <%= h @app %>-<%= h @env %>: <%= h @key %>
     <input id="stream-toggle" type="button" onclick="toggle_stream(this);" value="pause" />
+    <input id="warnin-toggle" type="button" onclick="toggle_warnings(this);" value="show warnings" />
   </h2>
 
   <script src="/js/swfobject.js"></script>
@@ -13,6 +14,7 @@ var resources = <%= raw @resources.reverse.to_json %>;
 var colors = <%= raw color_list.to_json %>;
 var connection_status = "disconnected";
 var legend = <%= raw (@resources.reverse+%w(requests/second)).to_json.gsub(/_/,' ') %>;
+var warning_level = 3;
 
 /* Sizing and scales. */
 var w = 600,
@@ -185,7 +187,11 @@ function update_errors(errors) {
   var list = jQuery('#recent-errors-head');
   for (var i = 0, len = errors.length; i < len; ++i) {
     var e = errors[i];
-    var severity = severity_label(e["severity"]);
+    var severity_value = e["severity"];
+    if (severity_value < warning_level) {
+       continue;
+    }
+    var severity = severity_label(severity_value);
     var action = e["action"];
     var time = e["time"].slice(11,19);
     var desc = e["description"];
@@ -199,6 +205,7 @@ function update_errors(errors) {
     for (j=0; j < l; ++j) {
       rows.last().remove();
     }
+    new_row.removeAttr("style"); /* firefox bug */
     list.after(new_row);
     remove_color = function(row) { return function() {
                      window.setTimeout(function() { row.removeClass("new_error"); } , 10000); }; };
@@ -256,6 +263,17 @@ function toggle_stream(button) {
   }
 }
 
+/* toggle warning level */
+function toggle_warnings(button) {
+  if (button.value == "show warnings") {
+    button.value = "hide warnings";
+    warning_level = 2;
+  } else {
+    button.value = "show warnings";
+    warning_level = 3;
+  }
+}
+
 /* intial draw */
 re_scale();
 vis.render();
@@ -267,7 +285,7 @@ jQuery(document).ready(connect_chart);
 
   <h2>Recent Warnings/Errors</h2>
   <table id="recent-errors" class="full_stats">
-  <tr id="recent-errors-head"><th>Severity</th><th>Time</th><th>Action</th><th>Description</th></tr>
+  <tr id="recent-errors-head"><th>Severity</th><th>Time</th><th>Action</th><th>Log Excerpt</th></tr>
   </table>
 
 </div>
