@@ -49,9 +49,13 @@ module Logjam
 
       # mongo field names must not contain dots
       if exceptions = entry["exceptions"]
-        exceptions.each{|e| e.gsub!('.','_')}
+        if exceptions.empty?
+          entry.delete("exceptions")
+          exceptions = nil
+        else
+          exceptions.each{|e| e.gsub!('.','_')}
+        end
       end
-      exceptions = nil if exceptions.empty?
 
       add_allocated_memory(entry)
       add_other_time(entry, total_time)
