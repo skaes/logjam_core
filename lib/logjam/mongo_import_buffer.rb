@@ -51,6 +51,7 @@ module Logjam
       if exceptions = entry["exceptions"]
         exceptions.each{|e| e.gsub!('.','_')}
       end
+      exceptions = nil if exceptions.empty?
 
       add_allocated_memory(entry)
       add_other_time(entry, total_time)
