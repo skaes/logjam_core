@@ -1,9 +1,9 @@
 <%= render "header" %>
 <div id='distribution-plot'>
-  <script type="text/javascript+protovis">
+  <script type="text/javascript">
 
 <%
-   available_shapes = ["circle", "square", "diamond", "triangle"]
+   available_shapes = ["circle", "square", "diamond", "triangle-down"]
    num_shapes = available_shapes.length
    resources, colors, data, shapes = [], [], {}, []
    max_x = 100
@@ -24,97 +24,140 @@
 var
     w = 700,
     h  = 500,
-    x = pv.Scale.log(<%= @xmin %>, <%= max_x %>).range(0, w).nice(),
-    y = pv.Scale.log(1, <%= max_y %>).range(0, h).nice(),
+    x = d3.scale.log().domain([<%= @xmin %>, <%= max_x %>]).range([0, w]).nice(),
+    y = d3.scale.log().domain([1, <%= max_y %>]).range([0, h]).nice(),
     legend = <%= raw resources.to_json.gsub(/_/,' ') %>,
-    colors = pv.colors(<%= raw colors.to_json %>),
+    colors = d3.scale.ordinal().range(<%= raw colors.to_json %>),
     shapes = <%= raw shapes.to_json %> ;
 
 /* The root panel. */
-var vis = new pv.Panel()
-    .width(w)
-    .height(h)
-    .margin(80)
-    .strokeStyle("#999");
+var vis = d3.select("#distribution-plot")
+    .append("svg")
+     .attr("width", w+100)
+     .attr("height", h+100)
+     .append("g")
+       .attr("transform", "translate(50,50)");
 
 /* Title */
-vis.add(pv.Label)
-    .left(w/2)
-    .top(-40)
-    .font("16px sans-serif")
-    .textAlign("center")
-    .textBaseline("middle")
+vis.append("svg:text")
+    .attr("dy", -10)
+    .attr("dx", w/2)
+    .attr("text-anchor", "middle")
+    .style("font", "16px sans-serif")
     .text("<%= @xlabel %> distribution on <%= h @dataset.date %> for '<%= h @dataset.page_description %>'");
 
 /* X-label */
-vis.add(pv.Label)
-    .left(w/2)
-    .bottom(-40)
-    .font("12px sans-serif")
-    .textAlign("center")
-    .textBaseline("middle")
+vis.append("svg:text")
+    .attr("dy", h+40)
+    .attr("dx", w/2)
+    .style("font", "12px sans-serif")
+    .attr("text-anchor", "middle")
     .text("<%= @xlabel %>");
 
-/* X-axis and ticks. */
-vis.add(pv.Rule)
-    .data(x.ticks())
-    .strokeStyle("#999")
-    .left(x)
-    .bottom(function(d) (this.index % 9 == 0) ? -10 : -5)
-    .height(function(d) (this.index % 9 == 0) ? 10 : 5)
-  .anchor("bottom").add(pv.Label)
-    .visible(function(d) this.index % 9 == 0)
-    .text(function(d) d);
+/* X-axis, ticks and tick labels. */
+var xaxis = vis.append("svg:line")
+    .style("fill", "#999")
+    .style("stroke", "#999")
+    .attr("x1", 0)
+    .attr("y1", h)
+    .attr("x2", w)
+    .attr("y2", h);
+
+vis.selectAll(".xtick")
+     .data(x.ticks())
+   .enter().append("line")
+     .attr("class", "xtick")
+     .attr("x1", x)
+     .attr("x2", x)
+     .attr("y1", h)
+     .attr("y2", function(d,i){ return (i % 9 == 0 || i % 9 == 4) ? h + 10 : h + 5; })
+     .style("fill", "#999")
+     .style("stroke", "#999");
+
+vis.selectAll(".xlabel")
+      .data(x.ticks())
+    .enter().append("text")
+      .attr("class", "xlabel")
+      .attr("x", x)
+      .attr("y", h)
+      .attr("dy", function(d, i) { return (i % 9 == 0 || i % 9 == 4 ) ? 20 : 15; })
+      .attr("text-anchor", "middle")
+      .attr("display", function(d,i){ return (i % 9 == 0 || i % 9 == 4) ? null : "none"; })
+      .style("font", "8px sans-serif")
+      .text(String);
+
 
 /* Y-label */
-vis.add(pv.Label)
-    .left(-50)
-    .bottom(h/2)
-    .font("12px sans-serif")
-    .textAlign("center")
-    .textBaseline("middle")
-    .textAngle(-Math.PI / 2)
+vis.append("svg:text")
+    .attr("dy", -40)
+    .attr("dx", -w/2+100)
+    .style("font", "12px sans-serif")
+    .attr("text-anchor", "middle")
+    .attr("transform", "rotate(270)")
     .text("Number of requests");
 
-/* Y-axis and ticks. */
-vis.add(pv.Rule)
-    .data(y.ticks())
-    .strokeStyle("#999")
-    .bottom(y)
-    .left(function(d) (this.index % 9 == 0) ? -10 : -5)
-    .width(function(d) (this.index % 9 == 0) ? 10 : 5)
-  .anchor("left").add(pv.Label)
-    .visible(function(d) this.index % 9 == 0)
-    .text(function(d) d);
+var yaxis = vis.append("svg:line")
+    .style("fill", "#999")
+    .style("stroke", "#999")
+    .attr("x1", 0)
+    .attr("y1", h)
+    .attr("x2", 0)
+    .attr("y2", 0);
+
+vis.selectAll(".ytick")
+     .data(y.ticks())
+   .enter().append("line")
+     .attr("class", "ytick")
+     .attr("x1", 0)
+     .attr("x2", function(d,i){ return (i % 9 == 0 || i % 9 == 4) ? -10 : -5; })
+     .attr("y1", y)
+     .attr("y2", y)
+     .style("fill", "#999")
+     .style("stroke", "#999");
+
+vis.selectAll(".ylabel")
+      .data(y.ticks())
+    .enter().append("text")
+      .attr("class", "ylabel")
+      .attr("x", 0)
+      .attr("y", function(d){ return h-y(d); })
+      .attr("dx", function(d, i) { return (i % 9 == 0 || i % 9 == 4 ) ? -20 : -15; })
+      .attr("text-anchor", "middle")
+      .attr("display", function(d,i){ return (i % 9 == 0 || i % 9 == 4) ? null : "none"; })
+      .style("font", "8px san-serif")
+      .text(String);
+
 
 <% resources.each_with_index do |r,i| -%>
-vis.add(pv.Dot)
+<% klazz=shapes[i] -%>
+vis.selectAll(".<%=klazz%>")
     .data(<%= data[r].to_json %>)
-    .left(function(d) x(d[0]))
-    .bottom(function(d) y(d[1]))
-    .lineWidth(1)
-    .size(9)
-    .shape(shapes[<%= i %>])
-    .strokeStyle("<%= raw colors[i] %>")
-    .fillStyle("<%= raw colors[i] %>");
+  .enter().append("svg:path")
+    .attr("class", "<%=klazz%>")
+    .attr("transform", function(d) { return "translate(" + x(d[0]) + "," + (h-y(d[1])) + ")"; })
+    .attr("d", d3.svg.symbol().type(shapes[<%= i %>]).size(24))
+    .style("stroke", "<%= raw colors[i] %>")
+    .style("fill", "<%= raw colors[i] %>");
 <% end %>
 
 /* Legend. */
-vis.add(pv.Dot)
+vis.selectAll(".legend")
     .data(legend)
-    .left(function(d) w-100)
-    .bottom(function(d) h-20-12*this.index)
-    .lineWidth(1)
-    .size(16)
-    .strokeStyle(colors)
-    .fillStyle(colors)
-    .shape(function() shapes[this.index])
-    .add(pv.Label)
-       .textBaseline("middle")
-       .textMargin(7)
-       .text(function() legend[this.index]);
+  .enter().append("svg:text")
+    .attr("class", "legend")
+    .attr("x", w-60)
+    .attr("y", function(d,i){return 20+14*i})
+    .style("font", "12px sans-serif")
+    .text(String);
 
-vis.render();
+vis.selectAll(".legendmark")
+    .data(legend)
+  .enter().append("svg:path")
+    .attr("class", "legendmark")
+    .attr("transform", function(d,i){ return "translate(" + (w-70) + "," + (17+14*i) + ")"; })
+    .attr("d", function(d,i){ return d3.svg.symbol().type(shapes[i]).size(48).call(); })
+    .style("stroke", colors)
+    .style("fill", colors);
 
   </script>
 </div>
