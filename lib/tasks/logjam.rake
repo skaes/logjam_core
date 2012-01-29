@@ -33,6 +33,9 @@ namespace :logjam do
       system("ln -nsf #{logjam_dir}/assets/images/debug.png #{app_dir}/public/images/debug.png")
 
       system("ln -nsf #{logjam_dir}/assets/javascripts/protovis-r3.2.js #{app_dir}/public/javascripts/protovis-r3.2.js")
+      system("ln -nsf #{logjam_dir}/assets/javascripts/d3.min.js #{app_dir}/public/javascripts/d3.min.js")
+      system("ln -nsf #{logjam_dir}/assets/javascripts/d3.layout.min.js #{app_dir}/public/javascripts/d3.layout.min.js")
+      system("ln -nsf #{logjam_dir}/assets/javascripts/d3.chart.min.js #{app_dir}/public/javascripts/d3.chart.min.js")
       system("ln -nsf #{logjam_dir}/assets/javascripts/jquery-1.4.2.min.js #{app_dir}/public/javascripts/jquery-1.4.2.min.js")
       system("ln -nsf #{logjam_dir}/assets/javascripts/jquery.jdpicker.js #{app_dir}/public/javascripts/jquery.jdpicker.js")
 
