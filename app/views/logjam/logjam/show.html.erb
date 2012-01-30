@@ -32,6 +32,7 @@
       <% resources = time_resources-["total_time", "gc_time"] -%>
       <%= render :partial => "simple_pie", :locals => { :data => @request.values_at(*resources),
           :legend => resources,
+          :container => "times",
           :colors => pie_colors.values_at(*resources) } %>
     </div>
   </fieldset>
@@ -52,6 +53,7 @@
     <div id="calls" class="filter-widget" style="margin-top:7px;">
       <% resources = *call_resources.select{|r| r =~ /_calls$/}-["gc_calls"] -%>
       <%= render :partial => "simple_pie", :locals => {:data => @request.values_at(*resources),
+          :container => "calls",
           :legend => resources,
           :colors => pie_colors.values_at(*resources) } %>
     </div>
@@ -78,6 +80,7 @@
          -%>
       <%= render :partial => "simple_pie", :locals => {:data => h.values_at(*resources),
           :legend => resources,
+          :container => "memory",
           :colors => pie_colors.values_at(*resources) } %>
     </div>
   </fieldset>
