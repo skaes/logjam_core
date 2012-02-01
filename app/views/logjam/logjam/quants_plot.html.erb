@@ -129,7 +129,7 @@ vis.selectAll(".ylabel")
 
 
 <% resources.each_with_index do |r,i| -%>
-<% klazz=shapes[i] -%>
+<% klazz="shape#{i}" -%>
 vis.selectAll(".<%=klazz%>")
     .data(<%= data[r].to_json %>)
   .enter().append("svg:path")
