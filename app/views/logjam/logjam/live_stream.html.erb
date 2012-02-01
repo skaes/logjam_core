@@ -2,6 +2,7 @@
   <h2 id="stream-title">Live Performance Data Stream for <%= h @app %>-<%= h @env %>: <%= h @key %>
     <input id="stream-toggle" type="button" onclick="toggle_stream(this);" value="pause" />
     <input id="warnin-toggle" type="button" onclick="toggle_warnings(this);" value="show warnings" />
+    <input id="smooth-toggle" type="button" onclick="toggle_smoothness(this);" value="smooth updates" />
   </h2>
 
   <script src="/js/swfobject.js"></script>
@@ -15,6 +16,7 @@ var colors = <%= raw color_list.to_json %>;
 var connection_status = "disconnected";
 var legend = <%= raw (@resources.reverse+%w(requests/second)).to_json.gsub(/_/,' ') %>;
 var warning_level = 3;
+var update_interval = 1;
 
 /* Sizing and scales. */
 var w = 600,
@@ -27,7 +29,7 @@ var w = 600,
     c = color_map.range();
 
 /* Data */
-function zeros(){ return d3.range(w/slice+1).map(function(){ return 0;}); }
+function zeros(){ return d3.range(w/slice+2).map(function(){ return 0;}); }
 var data = d3.range(resources.length).map(zeros);
 var request_counts = zeros();
 
@@ -41,8 +43,6 @@ var vis = d3.select("#live-stream")
        .attr("transform", "translate(40,10)");
 
 function connection_status_color() {
-  console.log(connection_status);
-  console.log("hhhhhh");
   switch(connection_status) {
   case 'connected'   : return "rgba(123,128,128,.5)";
   case 'connecting'  : return "rgba(0,128,128,.5)";
@@ -117,8 +117,18 @@ function oj(a) {
 var odata = oj(data);
 var ldata = d3.layout.stack()(odata);
 
+vis.append("svg:clipPath")
+      .attr("id", "clip")
+    .append("svg:rect")
+      .attr("width", w)
+      .attr("height", h);
+
+var clip = vis.append("g").attr("clip-path", "url(#clip)");
+
+var pane = clip.append("g");
+
 /* The stack layout. */
-vis.selectAll(".layer")
+pane.selectAll(".layer")
      .data(ldata)
      .enter().append("path")
      .attr("class", "layer")
@@ -135,7 +145,7 @@ var request_area = d3.svg.area()
      .y1(function(d) { return y2(d.y + d.y0); });
 
 var request_data = request_counts.map(function(d,i){ return {x:i, y:d, y0:0};});
-vis.selectAll(".request_count")
+pane.selectAll(".request_count")
      .data([request_data])
      .enter().append("path")
      .attr("class", "request_count")
@@ -281,23 +291,24 @@ function redraw() {
 
   request_data = request_counts.map(function(d,i){ return {x:i, y:d, y0:0};});
 
-  d = 50;
-
-  vis.selectAll(".layer")
+  pane.selectAll(".layer")
     .data(ldata)
-    .transition()
-    .duration(d)
     .attr("d", area);
 
-  vis.selectAll(".request_count")
+  pane.selectAll(".request_count")
     .data([request_data])
-    .transition()
-    .duration(d)
     .attr("d", request_area);
+
+  pane
+    .attr("transform", "translate(" + x(0) + ")")
+    .transition()
+    .ease("linear")
+    .duration(update_interval)
+    .attr("transform", "translate(" + x(-slice) + ")");
 
   vis.selectAll(".rlabel").data([50,25,0])
      .transition()
-     .duration(d)
+     .duration(100)
      .text(function(d){ return request_count_formatter(y2.invert(d)); });
 
    /* Horizontal grid lines */
@@ -315,7 +326,7 @@ function redraw() {
   vgrid.exit().remove();
 
   vgrid.transition()
-    .duration(d)
+    .duration(100)
     .attr("y1", y)
     .attr("y2", y);
 
@@ -336,7 +347,7 @@ function redraw() {
   vlabels.exit().remove();
 
   vlabels.transition()
-    .duration(d)
+     .duration(100)
     .attr("y", y)
     .text(String);
 }
@@ -393,6 +404,17 @@ function toggle_warnings(button) {
   } else {
     button.value = "show warnings";
     warning_level = 3;
+  }
+}
+
+/* toggle smoothness */
+function toggle_smoothness(button) {
+  if (button.value == "smooth updates") {
+    button.value = "discrete updates";
+    update_interval = 1000;
+  } else {
+    button.value = "smooth updates";
+    update_interval = 1;
   }
 }
 
