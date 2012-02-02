@@ -1,105 +1,40 @@
 <div id='resource-plot'>
-  <script type="text/javascript+protovis">
+
+<style type="text/css">
+.xlabel, .ylabel, .legend, .label, .rlabel {
+  font: "8px sans-serif";
+  stroke: none;
+  fill: #000;
+  stroke-width: 0.5;
+  shape-rendering: crispEdges;
+}
+</style>
+
+<script type="text/javascript">
 (function() {
 
-var data = <%= raw @protovis_data.inspect.gsub(' ','') %>;
+var data = <%= raw @js_data.inspect.gsub(' ','') %>;
 var interval = <%= params[:interval].to_i %>;
 var colors = <%= raw ((@resources.reverse+[@gc_time&&"gc_time"]).compact.map{|r| Logjam::Resource.color(r,0.8)}+["rgba(128,128,128,0.2)"]).to_json %>;
 var legend = <%= raw ((@resources.reverse+[@gc_time&&"gc_time"]+%w(requests/second)).compact).to_json.gsub(/_/,' ') %>;
-var request_counts = <%= raw @request_counts.inspect.gsub(' ','') %>;
-var gc_time = <%= @gc_time ? @gc_time.inspect.gsub(' ','') : "null" %>;
-var max_y = <%= @protovis_max %>;
-var zoomed_max_y = <%= @protovis_zoom * 1.5 %>;
+var request_counts = <%= raw @request_counts.reverse.drop_while{|d|d==0}.reverse.inspect.gsub(' ','') %>;
+var gc_time = <%= @gc_time ? @gc_time.reverse.drop_while{|_,d| d==0}.reverse.inspect.gsub(' ','') : "null" %>;
+var max_y = <%= @js_max %>;
+var zoomed_max_y = <%= @js_zoom * 1.5 %>;
 var selected_slice = <%= params[:start_minute].to_i %>;
-var selected_slice_width = <%= params[:end_minute].to_i - params[:start_minute].to_i + 1 %>
+var selected_slice_width = <%= params[:end_minute].to_i - params[:start_minute].to_i + 1 %>;
+
+/* Animation */
+var zoom_interval = 1;
 
 /* Sizing and scales. */
 var w = <%= width %>,
     h = <%= height %>,
-    x = pv.Scale.linear(0, 1440/interval-1).range(0, w),
-    y = pv.Scale.linear(0, zoomed_max_y).range(0, h).nice(),
-    y2 = pv.Scale.linear(0, pv.max(request_counts)).range(0, 50).nice(),
-    color_map = pv.colors(colors),
-    c = color_map.range();
+    x = d3.scale.linear().domain([0, 1440/interval]).range([0, w]),
+    xticks = d3.range(25).map(function(h){ return h/interval*60; }),
+    y = d3.scale.linear().domain([0, zoomed_max_y]).range([h, 0]).nice(),
+    y2 = d3.scale.linear().domain([0, d3.max(request_counts)]).range([50,0]).nice();
 
-/* The root panel. */
-var vis = new pv.Panel()
-    .strokeStyle("#999")
-    .width(w)
-    .height(h)
-    .bottom(65)
-    .left(40)
-    .right(0)
-    .top(10)
-    .title("click to toggle zoom mode")
-    .events("all")
-    .event("click", update_y_scale);
-
-/* X-label. */
-vis.add(pv.Label)
-    .left(w/2)
-    .bottom(-20)
-    .font("12px sans-serif")
-    .textStyle("#999")
-    .textAlign("center")
-    .textBaseline("middle")
-    .text("Time of day");
-
-/* X-axis and ticks. */
-vis.add(pv.Rule)
-    .data(pv.range(24).map(function(h) h/interval*60))
-    .left(x)
-    .bottom(0)
-    .visible(function(d) d)
-    .strokeStyle(function(d) d ? "rgba(128,128,128,.2)" : "#999")
-  .anchor("bottom").add(pv.Label)
-    .text(function(t) t*interval/60);
-
-/* Y-label */
-vis.add(pv.Label)
-    .left(-30)
-    .bottom(h/2)
-    .font("12px sans-serif")
-    .textStyle("#999")
-    .textAlign("center")
-    .textBaseline("middle")
-    .textAngle(-Math.PI / 2)
-    .text("<%= h @dataset.ylabel %>");
-
-<% if @dataset.plot_kind == :memory %>
-function y_ticks_formatter(d){
-  return y.tickFormat(d/1000) + "k";
-}
-<% else %>
-var y_ticks_formatter = y.tickFormat;
-<% end %>
-
-/* Y-axis and ticks. */
-vis.add(pv.Rule)
-    .data(function() y.ticks(10))
-    .bottom(function(d) y(d))
-    .strokeStyle(function(d) d ? "rgba(128,128,128,.2)" : "#999")
-  .anchor("left").add(pv.Label)
-    .text(y_ticks_formatter);
-
-/* Legend. */
-vis.add(pv.Dot)
-    .events("all")
-    .event("click", function() submit_resource(legend[this.index]))
-    .cursor(function() (legend[this.index] != "requests/second") ? "pointer": "auto")
-    .title(function() (legend[this.index] != "requests/second") ? "analyze by " + legend[this.index] : "")
-    .data(legend)
-    .left(function() 10+(120*(Math.floor(this.index/2))))
-    .bottom(function() -40-14*(this.index%2))
-    .lineWidth(1)
-    .size(16)
-    .strokeStyle(color_map)
-    .fillStyle(color_map)
-    .add(pv.Label)
-       .event("click", function() submit_resource(legend[this.index]))
-       .textBaseline("middle")
-       .textMargin(7)
-       .text(function() legend[this.index]);
 
 function submit_minutes(start, end, resource) {
    jQuery('#start-minute').val(""+start);
@@ -109,6 +44,10 @@ function submit_minutes(start, end, resource) {
 }
 
 function submit_resource(resource) {
+   if (d3.event) {
+     d3.event.preventDefault();
+     d3.event.stopPropagation();
+   }
    if (resource != "requests/second") {
      jQuery('#resource option:selected').val(resource.replace(/ /g,'_'));
      jQuery('#filter-form').submit();
@@ -116,8 +55,8 @@ function submit_resource(resource) {
 }
 
 function restrict_minutes(p, resource){
-   start = Math.floor(x.invert(p.x))*interval-3;
-   end = start+interval;
+   start = Math.floor(x.invert(p[0]))*interval-1;
+   end = start+interval+1;
    submit_minutes(start, end, resource);
 }
 
@@ -125,78 +64,266 @@ function reset_minutes(){
    submit_minutes(0, 1440, jQuery('#resource option:selected').val());
 }
 
-/* Request counts. */
-vis.add(pv.Panel)
-    .cursor("pointer")
-    .events("all")
-    .event("click", reset_minutes)
-    .title("click to reset time interval")
-    .bottom(h-50)
-    .add(pv.Area)
-      .cursor("pointer")
-      .event("click", function() restrict_minutes(this.mouse(), jQuery('#resource option:selected').val()))
-      .data(request_counts)
-      .left(function() x(this.index))
-      .bottom(0)
-      .height(function(d) y2(d))
-      .interpolate("cardinal")
-      .fillStyle("rgba(128,128,128,0.2)")
-      .strokeStyle("rgba(128,128,128,0.2)")
-      .title("requests/second (click to select time interval)")
-    .parent.add(pv.Bar)
-      .bottom(0)
-      .left(x(selected_slice/interval))
-      .width(selected_slice_width)
-      .visible(selected_slice>0)
-      .title("selected time interval")
-      .fillStyle("rgba(255,0,0,0.3)")
-;
 
-var request_count_formatter = pv.Format.number().fractionDigits(0,1);
+/* The root panel. */
+var vis = d3.select("#resource-plot")
+    .append("svg")
+     .attr("width", w+50)
+     .attr("height", h+100)
+     .style("stroke", "#999")
+     .style("strokeWidth", 1.0)
+     .on("click", update_y_scale)
+     .append("g")
+       .attr("transform", "translate(40,10)")
+       .attr("title", "click to toggle zoom mode");
 
-vis.add(pv.Label)
-    .data([0,25,50])
-    .bottom(function() 1+h-50+this.index*25)
-    .right(0)
-    .text(function(d) request_count_formatter.format(y2.invert(d)))
-    .textMargin(0)
-    .textAlign("right")
-    .textBaseline("bottom")
-;
+/* X-label */
+vis.append("svg:text")
+    .attr("class", "label")
+    .attr("dy", h+30)
+    .attr("dx", w/2)
+    .style("font", "12px sans-serif")
+    .attr("text-anchor", "middle")
+    .text("Time of day");
+
+/* X-axis and ticks. */
+vis.selectAll(".yrule")
+  .data(xticks)
+  .enter()
+    .append("line")
+    .attr("class", "yrule")
+    .style("stroke", function(d, i){ return (i%24)==0 ? "#999" : "rgba(128,128,128,.2)" })
+    .style("sroke-width", function(d, i){ return (i%24)==0 ? 2 : 1; })
+    .attr("x1", x)
+    .attr("y1", 0)
+    .attr("x2", x)
+    .attr("y2", h);
+
+
+<% if @dataset.plot_kind == :memory %>
+function y_ticks_formatter(d){
+  return d3.format(".0f")(d/1000) + "k";
+}
+<% else %>
+var y_ticks_formatter = d3.format(".0f");
+<% end %>
+
+vis.selectAll(".xlabel")
+      .data(xticks)
+    .enter().append("text")
+      .attr("class", "xlabel")
+      .attr("x", x)
+      .attr("y", h)
+      .attr("dx", 0)
+      .attr("dy", 12)
+      .attr("text-anchor", "middle")
+      .style("font", "8px sans-serif")
+      .text(function(d){return (d*interval)/60;});
+
+/* Y-label */
+vis.append("svg:text")
+    .attr("class", "label")
+    .attr("dy", -25)
+    .attr("dx", -w/2+140)
+    .style("font", "12px sans-serif")
+    .attr("text-anchor", "middle")
+    .attr("transform", "rotate(270)")
+    .text("<%= @dataset.ylabel %>");
+
+/* Y-axis and ticks. */
+
+function draw_grid() {
+  vgrid = vis.selectAll(".xrule").data(y.ticks(10));
+  vgrid.enter()
+   .append("line")
+   .attr("class", "xrule")
+   .style("stroke", function(d, i){ return (i==0) ? "#999" : "rgba(128,128,128,.2)" })
+   .attr("y1", y)
+   .attr("x1", 0)
+   .attr("y2", y)
+   .attr("x2", w);
+  vgrid.exit().remove();
+
+  vlabels = vis.selectAll(".ylabel").data(y.ticks(10));
+  vlabels.enter().append("text")
+    .attr("class", "ylabel")
+    .attr("x", 0)
+    .attr("y", y)
+    .attr("dx", -10)
+    .attr("dy", 3)
+    .attr("text-anchor", "middle")
+    .style("font", "8px sans-serif")
+    .text(y_ticks_formatter);
+  vlabels.exit().remove();
+
+  vgrid.transition()
+    .duration(zoom_interval)
+    .attr("y1", y)
+    .attr("y2", y);
+
+  vlabels.transition()
+    .duration(zoom_interval)
+    .attr("y", y)
+    .text(y_ticks_formatter);
+}
+
+draw_grid();
+
+/* Legend. */
+vis.selectAll(".legend")
+    .data(legend)
+  .enter().append("svg:text")
+    .attr("class", "legend")
+    .attr("x", function(d,i){return 10+(120*(Math.floor(i/2)))})
+    .attr("y", function(d,i){return h+50+14*(i%2)})
+    .on("click", function(d,i){ submit_resource(legend[i]) })
+    .style("font", "10px sans-serif")
+    .style("cursor", "pointer")
+    .text(String);
+
+vis.selectAll(".legendmark")
+    .data(legend)
+  .enter().append("svg:circle")
+    .attr("class", "legendmark")
+    .attr("transform", "translate(-7,-3)")
+    .attr("cx", function(d,i){return 10+(120*(Math.floor(i/2)))})
+    .attr("cy", function(d,i){return h+50+14*(i%2)})
+    .attr("r", 4)
+    .on("click", function(d,i){ submit_resource(legend[i]) })
+    .style("cursor", "pointer")
+    .style("stroke", function(d,i){ return colors[i]; })
+    .style("fill", function(d,i){ return colors[i]; });
+
+var request_count_formatter = d3.format(",.0f");
+
+vis.selectAll(".rlabel")
+    .data([50,25,0])
+    .enter()
+    .append("text")
+    .attr("class", "rlabel")
+    .style("font", "10px sans-serif")
+    .attr("text-anchor", "end")
+    .attr("y", function(d,i){ return 50-i*25-1 })
+    .attr("x", w-1)
+    .text(function(d){ return request_count_formatter(y2.invert(d)); });
+
+
+var request_area = d3.svg.area()
+     .interpolate("cardinal")
+     .x(function(d) { return x(d.x+0.5); })
+     .y0(function(d) { return y2(d.y0); })
+     .y1(function(d) { return y2(d.y + d.y0); });
+
+var request_data = request_counts.map(function(d,i){ return {x:i, y:d, y0:0};});
+
+vis.append("rect")
+    .style("cursor", "pointer")
+    .on("click", reset_minutes)
+    .attr("y", 0)
+    .attr("x", 0)
+    .attr("width", w)
+    .attr("height", 50)
+    .style("stroke", "none")
+    .style("fill", "rgba(128,128,128,.05)");
+
+/* top x axis */
+vis.append("line")
+    .attr("y1", 0)
+    .attr("x1", 0)
+    .attr("y2", 0)
+    .attr("x2", w)
+    .style("stroke", "#999")
+    .style("fill", "none");
+
+vis.selectAll(".request_count")
+     .data([request_data])
+     .enter().append("path")
+     .attr("class", "request_count")
+     .style("fill", "rgba(128,128,128,0.2)")
+     .style("cursor", "pointer")
+     .on("click", function(d,i){ restrict_minutes(d3.svg.mouse(this), jQuery('#resource option:selected').val())})
+     .style("stroke", "rgba(128,128,128,0.3)")
+     .style("stroke-width", 1)
+     .attr("d", request_area);
+
+vis.append("rect")
+      .attr("y", 0)
+      .attr("x", x(selected_slice/interval))
+      .attr("width", selected_slice_width)
+      .attr("height", 50)
+      .attr("display", function(){ return selected_slice>0 ? null : "none"; })
+      .style("stroke", "none")
+      .style("fill", "rgba(255,0,0,0.3)");
+
+var area = d3.svg.area()
+     .interpolate("step-after")
+     .x(function(d) { return x(d.x+.5); })
+     .y0(function(d) { return y(d.y0+.5); })
+     .y1(function(d) { return y(d.y+d.y0+.5); });
+
+function oj(a) {
+  return a.map(function(d){
+    return d.map(function(d){ return {x:d[0], y:d[1], y0:0}; })
+  })
+};
+
+var odata = oj(data);
+
+var ldata = d3.layout.stack()(odata);
 
 /* The stack layout. */
-vis.add(pv.Layout.Stack)
-    .layers(data)
-    .x(function(d) x(d[0]))
-    .y(function(d) y(d[1]))
-  .layer.add(pv.Area)
-    .cursor("pointer")
-    .event("click", function() restrict_minutes(this.mouse(), legend[this.parent.index]))
-    .interpolate("step-after")
-    .fillStyle(function(d) c[this.parent.index])
-    .title(function(d) legend[this.parent.index] + " (click to select time interval)");
+vis.selectAll(".layer")
+     .data(ldata)
+     .enter().append("path")
+     .attr("class", "layer")
+     .style("fill", function(d,i) { return colors[i]; })
+     .style("cursor", "pointer")
+     .on("click", function(d,i){ restrict_minutes(d3.svg.mouse(this), legend[i]); })
+     .style("stroke", "none")
+     .attr("d", area);
 
 /* GC time */
 if (gc_time != null) {
-  vis.add(pv.Line)
-    .data(gc_time)
-    .left(function(d) x(d[0]))
-    .bottom(function(d) y(d[1]))
-    .interpolate("cardinal")
-    .strokeStyle("rgba(0,0,0,.9)");
+  var gc_line = d3.svg.line()
+         .x(function(d){ return x(d[0]+0.5); })
+         .y(function(d){ return y(d[1]); })
+         .interpolate("cardinal");
+
+  gl = vis.append("g")
+         .data([gc_time]);
+
+  var da_line = gl.append("path")
+         .attr("class", "gc_time")
+         .attr("d", gc_line)
+         .style("stroke", "rgba(0,0,0,.9)")
+         .style("fill", "none");
 }
 
 var zoomed = true;
 function update_y_scale() {
   var new_max_y = zoomed ? max_y : zoomed_max_y;
   zoomed = !zoomed;
-  y.domain(0, new_max_y);
-  y.nice();
-  vis.render();
+  y.domain([0, new_max_y]).nice();
+  redraw();
 }
 
-vis.render();
+function redraw() {
+  // Update
+  draw_grid();
+
+  vis.selectAll(".layer")
+    .transition()
+    .duration(zoom_interval)
+    .attr("d", area);
+
+  if (gc_time != null) {
+    da_line.transition()
+      .duration(zoom_interval)
+      .attr("d", gc_line);
+   };
+}
+
 
 })();
 </script>
-  </div>
+</div>

@@ -1,44 +1,50 @@
-<script type="text/javascript+protovis">
+<script type="text/javascript">
 (function(){
 <% data_with_colors = data.map{|d| d||0}.zip(colors) %>
 var data = <%= raw data_with_colors.map(&:first).to_json %>;
 var legend = <%= raw legend.to_json %>;
+var container = '#<%= container %>';
 
 /* Sizing and scales. */
 var w = <%= size rescue 100 %>,
     h = <%= size rescue 100 %>,
     r = w / 2,
-    s = pv.sum(data),
-    a = pv.Scale.linear(0, s).range(0, 2 * Math.PI);
-    c = pv.colors(<%= raw data_with_colors.map(&:second).to_json %>).range();
+    s = d3.sum(data),
+    a = d3.scale.linear([0, s]).range([0, 2 * Math.PI]),
+    color = d3.scale.ordinal().range(<%= raw data_with_colors.map(&:second).to_json %>);
 
 /* The root panel. */
-var vis = new pv.Panel()
-    .width(w)
-    .height(h);
+var vis = d3.select(container).append("svg")
+    .data([data])
+    .attr("width", w)
+    .attr("height", h);
 
-/* The wedge, with centered label. */
-vis.add(pv.Wedge)
-    .data(data)
-    .bottom(w / 2)
-    .left(w / 2)
-    .innerRadius(0)
-    .outerRadius(r)
-    .angle(a)
-    .fillStyle(function(d) c[this.index])
-    .title(function() legend[this.index])
-//    .event("mouseover", function() this.innerRadius(0))
-//    .event("mouseout", function() this.innerRadius(r - 20))
-//  .anchor("center").add(pv.Label)
-//    .visible(function(d) d > .15)
-//    .textAngle(0)
-//    .text(function(d) d.toFixed(2))
-  .anchor("center").add(pv.Label)
-    .visible(function(d) d/s > .1)
-    .textAngle(0)
-    .text(function(d) (100*d/s).toFixed()+"%");
-;
+//  .append("g")
+//    .attr("transform", "translate(" + w / 2 + "," + h / 2 + ")");
 
-vis.render();
+/* The pie. */
+var
+    donut = d3.layout.pie(),
+    arc = d3.svg.arc().innerRadius(0).outerRadius(r);
+
+var arcs = vis.selectAll("g.arc")
+    .data(donut)
+  .enter().append("g")
+    .attr("class", "arc")
+    .style("font", "10px sans-serif")
+    .attr("transform", "translate(" + r + "," + r + ")");
+
+arcs.append("path")
+    .attr("fill", function(d, i) { return color(i); })
+    .attr("d", arc);
+
+arcs.append("text")
+    .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
+    .attr("dy", ".35em")
+    .attr("text-anchor", "middle")
+    .attr("display", function(d) { return d.value/s > .1 ? null : "none"; })
+//    .attr("title", function(d,i){ return legend[i];})
+    .text(function(d, i) { return (100*d.value/s).toFixed()+"%"; });
+
 })();
 </script>
