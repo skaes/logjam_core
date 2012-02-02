@@ -23,6 +23,7 @@ var max_y = <%= @js_max %>;
 var zoomed_max_y = <%= @js_zoom * 1.5 %>;
 var selected_slice = <%= params[:start_minute].to_i %>;
 var selected_slice_width = <%= params[:end_minute].to_i - params[:start_minute].to_i + 1 %>;
+var max_request_count = d3.max(request_counts);
 
 /* Animation */
 var zoom_interval = 1;
@@ -33,8 +34,7 @@ var w = <%= width %>,
     x = d3.scale.linear().domain([0, 1440/interval]).range([0, w]),
     xticks = d3.range(25).map(function(h){ return h/interval*60; }),
     y = d3.scale.linear().domain([0, zoomed_max_y]).range([h, 0]).nice(),
-    y2 = d3.scale.linear().domain([0, d3.max(request_counts)]).range([50,0]).nice();
-
+    y2 = d3.scale.linear().domain([0, max_request_count]).range([50,0]).nice();
 
 function submit_minutes(start, end, resource) {
    jQuery('#start-minute').val(""+start);
@@ -194,7 +194,7 @@ vis.selectAll(".legendmark")
     .style("stroke", function(d,i){ return colors[i]; })
     .style("fill", function(d,i){ return colors[i]; });
 
-var request_count_formatter = d3.format(",.0f");
+var request_count_formatter = d3.format((max_request_count < 10) ? ",.1f" : ",.0f");
 
 vis.selectAll(".rlabel")
     .data([50,25,0])
@@ -258,8 +258,8 @@ vis.append("rect")
 var area = d3.svg.area()
      .interpolate("step-after")
      .x(function(d) { return x(d.x+.5); })
-     .y0(function(d) { return y(d.y0+.5); })
-     .y1(function(d) { return y(d.y+d.y0+.5); });
+     .y0(function(d) { return y(d.y0); })
+     .y1(function(d) { return y(d.y+d.y0); });
 
 function oj(a) {
   return a.map(function(d){
