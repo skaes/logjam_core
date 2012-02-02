@@ -90,6 +90,15 @@ vis.selectAll(".x-axis-label")
     .attr("display", function(d){ return (d && ((d/slice)%10==0)) ? null : "none";})
     .text(function(d){ return "t"+ (d/slice-60);});
 
+/* top x axis */
+vis.append("line")
+    .attr("y1", 0)
+    .attr("x1", 0)
+    .attr("y2", 0)
+    .attr("x2", w)
+    .style("stroke", "#999")
+    .style("fill", "none");
+
 /* Y-label */
 vis.append("svg:text")
     .attr("class", "label")
@@ -150,7 +159,7 @@ pane.selectAll(".request_count")
      .enter().append("path")
      .attr("class", "request_count")
      .style("fill", "rgba(128,128,128,0.3)")
-     .style("stroke", "rgba(100,100,100,0.3)")
+     .style("stroke", "rgba(64,64,64,0.3)")
      .attr("d", request_area);
 
 /* Legend. */
@@ -186,12 +195,10 @@ vis.selectAll(".rlabel")
     .style("fill", "#000")
     .attr("class", "rlabel")
     .style("font", "10px sans-serif")
-    .attr("text-anchor", "start")
-    .attr("dy", ".35em")
+    .attr("text-anchor", "end")
     .attr("y", function(d,i){ return 50-i*25-1 })
-    .attr("x", w+3)
+    .attr("x", w-1)
     .text(function(d){ return request_count_formatter(y2.invert(d)); });
-
 
 /* recompute the Y-scale. */
 function re_scale() {
