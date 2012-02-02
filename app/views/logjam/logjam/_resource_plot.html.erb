@@ -24,15 +24,16 @@ var zoomed_max_y = <%= @protovis_zoom * 1.5 %>;
 var selected_slice = <%= params[:start_minute].to_i %>;
 var selected_slice_width = <%= params[:end_minute].to_i - params[:start_minute].to_i + 1 %>;
 
+/* Animation */
+var zoom_interval = 1;
+
 /* Sizing and scales. */
 var w = <%= width %>,
     h = <%= height %>,
     x = d3.scale.linear().domain([0, 1440/interval]).range([0, w]),
     xticks = d3.range(25).map(function(h){ return h/interval*60; }),
     y = d3.scale.linear().domain([0, zoomed_max_y]).range([h, 0]).nice(),
-    y2 = d3.scale.linear().domain([0, d3.max(request_counts)]).range([50,0]).nice(),
-    color_map = d3.scale.ordinal(colors),
-    c = color_map.range();
+    y2 = d3.scale.linear().domain([0, d3.max(request_counts)]).range([50,0]).nice();
 
 
 function submit_minutes(start, end, resource) {
@@ -97,41 +98,14 @@ vis.selectAll(".yrule")
     .attr("x2", x)
     .attr("y2", h);
 
-var vgrid = vis.selectAll(".xrule").data(y.ticks(10));
-
-vgrid.enter()
-    .append("line")
-    .attr("class", "xrule")
-    .style("stroke", function(d, i){ return (i==0) ? "#999" : "rgba(128,128,128,.2)" })
-    .attr("y1", y)
-    .attr("x1", 0)
-    .attr("y2", y)
-    .attr("x2", w);
-
-vgrid.exit().remove();
-
-var vlabels = vis.selectAll(".ylabel")
-      .data(y.ticks(10))
 
 <% if @dataset.plot_kind == :memory %>
 function y_ticks_formatter(d){
-  return d3.format(",.0f")(d/1000) + "k";
+  return d3.format(".0f")(d/1000) + "k";
 }
 <% else %>
-var y_ticks_formatter = d3.format(",.0f");
+var y_ticks_formatter = d3.format(".0f");
 <% end %>
-
-vlabels.enter().append("text")
-      .attr("class", "ylabel")
-      .attr("x", 0)
-      .attr("y", y)
-      .attr("dx", -10)
-      .attr("dy", 3)
-      .attr("text-anchor", "middle")
-      .style("font", "8px sans-serif")
-      .text(y_ticks_formatter);
-
-vlabels.exit().remove();
 
 vis.selectAll(".xlabel")
       .data(xticks)
@@ -157,6 +131,42 @@ vis.append("svg:text")
 
 /* Y-axis and ticks. */
 
+function draw_grid() {
+  vgrid = vis.selectAll(".xrule").data(y.ticks(10));
+  vgrid.enter()
+   .append("line")
+   .attr("class", "xrule")
+   .style("stroke", function(d, i){ return (i==0) ? "#999" : "rgba(128,128,128,.2)" })
+   .attr("y1", y)
+   .attr("x1", 0)
+   .attr("y2", y)
+   .attr("x2", w);
+  vgrid.exit().remove();
+
+  vlabels = vis.selectAll(".ylabel").data(y.ticks(10));
+  vlabels.enter().append("text")
+    .attr("class", "ylabel")
+    .attr("x", 0)
+    .attr("y", y)
+    .attr("dx", -10)
+    .attr("dy", 3)
+    .attr("text-anchor", "middle")
+    .style("font", "8px sans-serif")
+    .text(y_ticks_formatter);
+  vlabels.exit().remove();
+
+  vgrid.transition()
+    .duration(zoom_interval)
+    .attr("y1", y)
+    .attr("y2", y);
+
+  vlabels.transition()
+    .duration(zoom_interval)
+    .attr("y", y)
+    .text(y_ticks_formatter);
+}
+
+draw_grid();
 
 /* Legend. */
 vis.selectAll(".legend")
@@ -287,23 +297,14 @@ function update_y_scale() {
   redraw();
 }
 
-var zoom_interval = 500;
-
 function redraw() {
   // Update
+  draw_grid();
+
   vis.selectAll(".layer")
     .transition()
     .duration(zoom_interval)
     .attr("d", area);
-
-  vgrid.transition()
-    .duration(zoom_interval)
-    .attr("y1", y)
-    .attr("y2", y);
-
-  vlabels.transition()
-    .duration(zoom_interval)
-    .attr("y", y);
 
   if (gc_time != null) {
     da_line.transition()
