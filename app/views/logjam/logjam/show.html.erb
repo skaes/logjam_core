@@ -110,7 +110,7 @@
 <% unless (lines = @request["lines"]).blank? -%>
 <pre id='request-lines' class="filter-widget">
 <% lines.each do |line| -%>
-<%= raw format_log_line(line) %>
+<span class="logline"><%= raw format_log_line(line) %></span>
 <% end -%>
 </pre>
 <% end %>
@@ -134,3 +134,14 @@
 <% end -%>
 
 </div>
+
+<script type="text/javascript">
+jQuery(document).ready(function(){
+  jQuery('.logline').dblclick(function(){
+      var text = jQuery(this).html().replace(/[\u200B]/g ,'');
+      var ref = text.match(/http:\/\/[^\s]+/);
+      if (ref != null)
+        window.prompt ("Extracted Curl Command:", "curl '" + ref + "'");
+   })
+});
+</script>
