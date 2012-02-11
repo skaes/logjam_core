@@ -263,6 +263,10 @@ td.number {text-align: right;}
   margin-bottom:15px;
 }
 
+#request-lines a {
+  color: blue;
+}
+
 .warning {
   font-size: 200%;
   color: blue;

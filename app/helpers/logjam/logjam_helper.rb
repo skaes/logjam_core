@@ -222,13 +222,13 @@ module Logjam
       "<span class='timestamp'>#{t}</span>"
     end
 
-    def format_backtrace(l)
+    def format_backtrace(l, request_id=nil)
       if l.include?("\n")
         bt = l
       else
         bt = l.gsub(/(\s+\S+?\.rb:\d+:in \`.*?\')/){|x| "\n"<<x}.gsub(/(\n\n)/, "\n")
       end
-      "<span class='error'>#{allow_breaks(bt)}</span>"
+      "<span class='error'>#{allow_breaks(bt, request_id)}</span>"
     end
 
     def format_log_line(line)
@@ -246,7 +246,7 @@ module Logjam
         request_id = $1
         l.sub!(request_id, sometimes_link_to_request(request_id))
       end
-      colored_line = level > 1 ? format_backtrace(l) : allow_breaks(l, request_id)
+      colored_line = level > 1 ? format_backtrace(l, request_id) : allow_breaks(l, request_id)
       "#{format_log_level(level)} #{format_timestamp(timestamp.to_s)} #{colored_line}"
     end
 
