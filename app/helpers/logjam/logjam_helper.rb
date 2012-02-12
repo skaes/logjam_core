@@ -223,10 +223,13 @@ module Logjam
     end
 
     def format_backtrace(l, request_id=nil)
-      if l.include?("\n")
+      if l.include?("\n") && l !~ /\[\S+?\.pm:\d+\] &lt;/
         bt = l
       else
-        bt = l.gsub(/(\s+\S+?\.rb:\d+:in \`.*?\')/){|x| "\n"<<x}.gsub(/(\n\n)/, "\n")
+        bt = l.gsub(/(\s+\S+?\.rb:\d+:in \`.*?\')/){|x| "\n" << x}
+        bt.gsub!(/(&lt; \S+? \[\S+?\.pm:\d+\])/){|x| "\n" << x}
+        bt.sub!(/(\(\S+? \[\S+?\.pm:\d+\])/){|x| "\n" << x}
+        bt.gsub!(/(\n\n)/, "\n")
       end
       "<span class='error'>#{allow_breaks(bt, request_id)}</span>"
     end
