@@ -41,7 +41,7 @@ module Logjam
     end
 
     def default_env(app)
-      envs(app).select{|e| e=="production"}.first || envs.first
+      envs(app).select{|e| e=="production"}.first || envs(app).first
     end
 
     def db_exists?(date, app, env)
