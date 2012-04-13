@@ -7,11 +7,6 @@ profile = ARGV[1..-1].include?('--profile')
 
 puts "Starting amqp importer for config '#{config_name}'"
 
-trap("INT") do
-  puts "Stopping event loop"
-  @amqp_importer.stop
-end
-
 if profile
   require 'ruby-prof'
   measure_mode = "WALL_TIME"
@@ -23,20 +18,22 @@ if profile
     RubyProf.measure_mode = RubyProf::WALL_TIME
   end
   RubyProf.start
+
+  at_exit do
+    result = RubyProf.stop
+    printer = RubyProf::MultiPrinter.new(result)
+    printer.print(:path => "#{Rails.root}",
+                  :profile => "importer-profile-#{config_name}",
+                  :min_percent => 0.1,
+                  :threshold => 1,
+                  :title => "logjam importer benchmark: #{config_name}")
+    system("open #{printer.stack_profile}") if RUBY_PLATFORM =~ /darwin/
+  end
 end
 
+# GC.enable_stats
+# GC.enable_trace
 
 @amqp_importer = Logjam::AMQPImporter.new(config_name)
 @amqp_importer.process
 
-
-if profile
-  result = RubyProf.stop
-  printer = RubyProf::MultiPrinter.new(result)
-  printer.print(:path => "#{Rails.root}",
-                :profile => "importer-profile-#{config_name}",
-                :min_percent => 0.1,
-                :threshold => 1,
-                :title => "logjam importer benchmark: #{config_name}")
-  system("open #{printer.stack_profile}")
-end
