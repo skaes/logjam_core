@@ -4,11 +4,7 @@ module Logjam
 
   class MongoImportBuffer
 
-    attr_reader :iso_date_string
-
     def initialize(dbname, publisher)
-      @iso_date_string = Logjam.iso_date_string(dbname)
-
       database = Logjam.mongo.db(dbname)
       Logjam.ensure_known_database(dbname)
       @totals  = Totals.ensure_indexes(database["totals"])

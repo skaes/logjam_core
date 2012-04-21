@@ -29,9 +29,13 @@ module Logjam
       states
     end
 
+    def socket_file_name(pid)
+      "#{Rails.root}/tmp/sockets/state-#{@app}-#{@env}-#{pid}.ipc"
+    end
+
     def clean_old_sockets
       log_info "cleaning old sockets"
-      FileUtils.rm_f(Dir.glob("#{Rails.root}/tmp/sockets/state-#{@app}-#{@env}-*"))
+      FileUtils.rm_f(Dir.glob(socket_file_name("*")))
     end
 
     def start_servers(n)
@@ -74,7 +78,7 @@ module Logjam
       if socket = @sockets.delete(pid)
         log_info "removing server #{pid}"
         socket.close
-        FileUtils.rm_f("#{Rails.root}/tmp/sockets/state-#{@app}-#{@env}-#{pid}")
+        FileUtils.rm_f(socket_file_name(pid))
         log_info "removed server #{pid}"
         pid
       end
@@ -84,7 +88,7 @@ module Logjam
       log_info "adding server #{pid}"
       socket = @context.socket(ZMQ::REQ)
       socket.setsockopt(ZMQ::LINGER, 100)
-      socket.connect("ipc:///#{Rails.root}/tmp/sockets/state-#{@app}-#{@env}-#{pid}")
+      socket.connect("ipc:///#{socket_file_name(pid)}")
       @sockets[pid] = socket
       log_info "added server #{pid}"
     end

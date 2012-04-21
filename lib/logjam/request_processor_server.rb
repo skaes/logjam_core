@@ -17,11 +17,11 @@ module Logjam
       Process.pid
     end
 
-    def socket_spec
-      "ipc:///#{Rails.root}/tmp/sockets/state-#{@app}-#{@env}-#{id}"
+    def socket_file_name
+      "#{Rails.root}/tmp/sockets/state-#{@app}-#{@env}-#{id}.ipc"
     end
 
-    class StateHandler
+    class ResetStateHandler
       def initialize(server)
         @server = server
       end
@@ -34,7 +34,7 @@ module Logjam
       log_info "setting up state connection #{id}"
       @socket = @context.socket(ZMQ::REP)
       @socket.setsockopt(ZMQ::LINGER, 500) # milliseconds
-      @connection = @context.bind(@socket, socket_spec, StateHandler.new(self))
+      @connection = @context.bind(@socket, "ipc:///#{socket_file_name}", ResetStateHandler.new(self))
     end
 
     def on_reset_state_received(messages)
@@ -49,9 +49,10 @@ module Logjam
     def reset_state
       log_info "received reset state"
       info = []
-      @processors.each do |dbname, processor|
-        info << [dbname, processor.reset_state]
+      @processors.each do |db_name, processor|
+        info << [db_name, processor.reset_state]
       end
+      clean_old_processors
       Marshal.dump(info)
     end
 
@@ -62,8 +63,7 @@ module Logjam
     end
 
     def processor(hash)
-      date_str = hash["started_at"][0..9]
-      dbname = Logjam.db_name(date_str, @app, @env)
+      dbname = Logjam.db_name(hash["started_at"], @app, @env)
       @processors[dbname] ||=
         begin
           log_info "creating request processor #{dbname}"
@@ -74,5 +74,9 @@ module Logjam
         end
     end
 
+    def clean_old_processors
+      current_db_name = Logjam.db_name(Date.today, @app, @env)
+      @processors.delete_if{|db_name,_| db_name != current_db_name}
+    end
   end
 end
