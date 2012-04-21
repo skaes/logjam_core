@@ -3,9 +3,10 @@ require 'json'
 
 module Logjam
   class LiveStreamPublisher
-    def initialize(app, env)
-      @app = app
-      @env = env
+    def initialize(stream)
+      @stream = stream
+      @app = stream.app
+      @env = stream.env
     end
 
     def publish(modules, totals_buffer, errors_buffer)

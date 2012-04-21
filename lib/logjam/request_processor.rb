@@ -20,6 +20,7 @@ module Logjam
       @totals_buffer = {}
       @minutes_buffer = {}
       @errors_buffer = {}
+      @request_count = 0
     end
     private :reset_buffers
 
@@ -29,13 +30,15 @@ module Logjam
         :minutes => @minutes_buffer,
         :quants => @quants_buffer,
         :errors => @errors_buffer,
-        :modules => @modules
+        :modules => @modules,
+        :count => @request_count
       }
       reset_buffers
       state
     end
 
     def add(entry)
+      @request_count += 1
       page = entry["page"] = (entry.delete("action") || "Unknown")
       page << "#unknown_method" unless page =~ /#/
       pmodule = "::"

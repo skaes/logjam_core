@@ -6,29 +6,21 @@ module Logjam
 
     attr_reader :iso_date_string
 
-    def initialize(dbname, app, env, iso_date_string, processor, publisher)
-      @app = app
-      @env = env
-      @iso_date_string = iso_date_string
+    def initialize(dbname, publisher)
+      @iso_date_string = Logjam.iso_date_string(dbname)
 
-      database  = Logjam.mongo.db(dbname)
+      database = Logjam.mongo.db(dbname)
       Logjam.ensure_known_database(dbname)
-      @totals   = Totals.ensure_indexes(database["totals"])
-      @minutes  = Minutes.ensure_indexes(database["minutes"])
-      @quants   = Quants.ensure_indexes(database["quants"])
-      @requests = Requests.ensure_indexes(database["requests"])
+      @totals  = Totals.ensure_indexes(database["totals"])
+      @minutes = Minutes.ensure_indexes(database["minutes"])
+      @quants  = Quants.ensure_indexes(database["quants"])
 
-      @processor = processor
       @publisher = publisher
       @state = nil
     end
 
-    def add(entry)
-      @processor.process_request(entry)
-    end
-
     def add_values(state)
-      return if state.blank?
+      return 0 if state.blank?
       if @state
         @state[:modules].merge(state[:modules])
         state[:errors].each do |mod,errors|
@@ -40,9 +32,10 @@ module Logjam
       else
         @state = state
       end
+      state.delete(:count) || 0
     end
 
-    def flush
+    def flush_and_publish
       @publisher.publish(@state[:modules], @state[:totals], @state[:errors])
       flush_totals_buffer(@state[:totals])
       flush_minutes_buffer(@state[:minutes])

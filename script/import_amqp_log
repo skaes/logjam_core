@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
 
+$stdout.sync = true
+$stderr.sync = true
+
 require File.expand_path('../../../../../config/environment.rb', __FILE__)
 
 config_name = ARGV.first
@@ -33,7 +36,7 @@ end
 
 # GC.enable_stats
 # GC.enable_trace
-
-@amqp_importer = Logjam::AMQPImporter.new(config_name)
-@amqp_importer.process
+stream = Logjam.streams[config_name]
+importer = Logjam::ImporterManager.new(stream)
+importer.process
 

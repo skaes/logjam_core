@@ -7,35 +7,21 @@ module Logjam
 
     include LogWithProcessId
 
-    def initialize(app, env, num_servers=1)
-      @app = app
-      @env = env
+    def initialize(stream)
+      @stream = stream
+      @app = @stream.app
+      @env = @stream.env
       @servers = []
-      @state_sockets = {}
+      @sockets = {}
       @context = ZMQ::Context.new(1)
       $PROGRAM_NAME = "logjam-importer-#{@app}-#{@env}"
       clean_old_sockets
-      start_servers(num_servers)
-      create_push_socket
-    end
-
-    def process_request(request)
-      @push_socket.send(Marshal.dump(request)) if @push_socket
-    rescue
-      log_error "could not send request: #{$!.class}"
-    end
-
-    def create_push_socket
-      log_info "creating requests push socket"
-      @push_socket = @context.socket(ZMQ::PUSH)
-      @push_socket.setsockopt(ZMQ::LINGER, 100)
-      @push_socket.bind("ipc:///#{Rails.root}/tmp/sockets/requests-#{@app}-#{@env}")
-      log_info "created requests push socket"
+      start_servers(@stream.workers)
     end
 
     def reset_state
       states = []
-      @state_sockets.each_value do |socket|
+      @sockets.each_value do |socket|
         socket.send("RESET_STATE")
         data = socket.recv
         states << Marshal.load(data)
@@ -45,7 +31,6 @@ module Logjam
 
     def clean_old_sockets
       log_info "cleaning old sockets"
-      FileUtils.rm_f("#{Rails.root}/tmp/sockets/requests-#{@app}-#{@env}")
       FileUtils.rm_f(Dir.glob("#{Rails.root}/tmp/sockets/state-#{@app}-#{@env}-*"))
     end
 
@@ -59,15 +44,16 @@ module Logjam
     def fork_worker
       log_info "forking worker"
       pid = EM.fork_reactor do
-        log_info "started worker #{Process.pid}"
+        worker_pid = Process.pid
+        log_info "started worker #{worker_pid}"
         $PROGRAM_NAME = "logjam-worker-#{@app}-#{@env}"
-        RequestProcessorServer.new(@app, @env, Process.pid)
+        AMQPImporter.new(@stream).process
       end
       add_server(pid)
     end
 
     def child_status_change
-      log_info "CHLD status change: #{@state_sockets.keys.sort.inspect}"
+      log_info "CHLD status change: #{@sockets.keys.sort.inspect}"
       if (pid = wait_child) && remove_server(pid)
         log_error "Child worker #{pid} died"
         fork_worker
@@ -85,7 +71,7 @@ module Logjam
     end
 
     def remove_server(pid)
-      if socket = @state_sockets.delete(pid)
+      if socket = @sockets.delete(pid)
         log_info "removing server #{pid}"
         socket.close
         FileUtils.rm_f("#{Rails.root}/tmp/sockets/state-#{@app}-#{@env}-#{pid}")
@@ -99,14 +85,14 @@ module Logjam
       socket = @context.socket(ZMQ::REQ)
       socket.setsockopt(ZMQ::LINGER, 100)
       socket.connect("ipc:///#{Rails.root}/tmp/sockets/state-#{@app}-#{@env}-#{pid}")
-      @state_sockets[pid] = socket
+      @sockets[pid] = socket
       log_info "added server #{pid}"
     end
 
     def shutdown
       log_info "shutting down workers"
       trap("CHLD"){}
-      @state_sockets.keys.dup.each do |pid|
+      @sockets.keys.dup.each do |pid|
         begin
           Process.kill("TERM", pid)
           Process.wait(pid)
@@ -116,11 +102,9 @@ module Logjam
           remove_server(pid)
         end
       end
-      log_info "closing push socket"
-      @push_socket.close
-      @push_socket = nil
-      FileUtils.rm_f("#{Rails.root}/tmp/sockets/requests-#{@app}-#{@env}")
+      log_info "closing ZMQ context"
       @context.close
+      log_info "worker shutdown completed"
     end
   end
 end

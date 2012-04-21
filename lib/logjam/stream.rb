@@ -25,6 +25,11 @@ module Logjam
       @tag
     end
 
+    def workers(*args)
+      @workers = [1, args.first.to_i].max if args.first
+      @workers || 1
+    end
+
     private
 
     class Context

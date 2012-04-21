@@ -8,45 +8,35 @@ module Logjam
       @mongo_buffers = {}
       @request_count = 0
       @stream = stream
-      @app = stream.app
-      @env = stream.env
-      $stdout.sync = true
-      $stderr.sync = true
       @delete_old_buffers = Rails.env != "development"
-      @publisher = LiveStreamPublisher.new(@app, @env)
-      @processor = RequestProcessorProxy.new(@app, @env, 2)
+      @publisher = LiveStreamPublisher.new(@stream)
     end
 
-    def mongo_buffer(hash)
-      date_str = hash["started_at"][0..9]
-      key = Logjam.db_name(date_str, @app, @env)
-      @mongo_buffers[key] ||=
+    def mongo_buffer(db_name)
+      @mongo_buffers[db_name] ||=
         begin
-          log_info "creating import buffer #{key}"
-          # log_info hash.to_yaml
-          MongoImportBuffer.new(key, @app, @env, date_str, @processor, @publisher)
+          log_info "creating import buffer #{db_name}"
+          MongoImportBuffer.new(db_name, @publisher)
         end
     end
 
-    def add_entry(entry)
-      mongo_buffer(entry).add entry
-      @request_count += 1
-    end
-
-    def flush_buffers
-      log_info "flushing #{@request_count} requests"
-      today = Date.today.to_s
-      states = @processor.reset_state
-      log_info "received states" # ": #{states.inspect}"
+    def process(states)
+      # log_info "received states: #{states.inspect}"
       states.each do |infos|
         infos.each do |dbname,values|
-          buffer = @mongo_buffers[dbname]
-          buffer.add_values(values)
+          buffer = mongo_buffer(dbname)
+          @request_count += buffer.add_values(values)
         end
       end
+      flush_buffers_and_publish
+    end
+
+    def flush_buffers_and_publish
+      log_info "flushing #{@request_count} requests"
+      today = Date.today.to_s
       @mongo_buffers.keys.each do |key|
         buffer = @mongo_buffers[key]
-        buffer.flush
+        buffer.flush_and_publish
         @mongo_buffers.delete(key) if @delete_old_buffers && buffer.iso_date_string != today
       end
     rescue Exception
@@ -55,9 +45,5 @@ module Logjam
       @request_count = 0
     end
 
-    def shutdown
-      log_error "shutting down processor"
-      @processor.shutdown
-    end
   end
 end

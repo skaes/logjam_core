@@ -9,38 +9,44 @@ module Logjam
 
     include LogWithProcessId
 
-    def initialize(config_name)
-      @stream = Logjam.streams[config_name]
+    def initialize(stream)
+      @stream = stream
       @application = @stream.app
       @environment = @stream.env
-      @importer = MongoImporter.new(@stream)
+      @processor = RequestProcessorServer.new(@stream)
       @connections = []
-      @capture_file = File.open("#{Rails.root}/capture.log", "w") if ENV['LOGJAM_CAPTURE']
+      @capture_file = File.open("#{Rails.root}/capture-#{$$}.log", "w") if ENV['LOGJAM_CAPTURE']
       @outstanding_heartbeats = Hash.new(0)
       @heartbeat_timers = {}
-      @process_id = Process.pid
     end
 
     def process
-      setup_event_system
-      EM.run do
-        @stream.importer.hosts.each do |host|
-          settings = {:host => host, :on_tcp_connection_failure => on_tcp_connection_failure, :timeout => 5}
-          connect_importer settings
-        end
-        trap("INT") { shutdown }
-        trap("TERM") { shutdown }
-        start_flushing
+      @stream.importer.hosts.each do |host|
+        settings = {:host => host, :on_tcp_connection_failure => on_tcp_connection_failure, :timeout => 5}
+        connect_importer settings
       end
+      trap_signals
+      shutdown_if_reparented_to_root_process
     end
 
     private
 
-    def setup_event_system
-      if EM.epoll?
-        EM.epoll
-      elsif EM.kqueue?
-        EM.kqueue
+    def trap_signals
+      trap("CHLD", "DEFAULT")
+      trap("EXIT", "DEFAULT")
+      trap("INT")  { }
+      trap("TERM") { shutdown }
+    end
+
+    def shutdown_if_reparented_to_root_process
+      EM.add_periodic_timer(1) do
+        if Process.ppid == 1
+          begin
+            log_error "refusing to become an orphan. committing suicide."
+          ensure
+            exit!(1)
+          end
+        end
       end
     end
 
@@ -53,7 +59,6 @@ module Logjam
     end
 
     def on_tcp_connection_loss(connection, settings)
-      return unless @process_id == Process.pid # don't try to reconnect in forkes subprocesses
       log_info "trying to reconnect: #{settings[:host]}"
       connection.reconnect(true)
     rescue EventMachine::ConnectionError => e
@@ -108,26 +113,13 @@ module Logjam
       end
     end
 
-    def start_flushing
-      @flushing_timer = EM.add_periodic_timer(1) do
-        @importer.flush_buffers
-      end
-    end
-
-    def stop_flushing
-      @flushing_timer.cancel
-      @importer.flush_buffers
-    end
-
     def shutdown
-      log_info "shutting down amqp importer"
       stop_all_heartbeats
-      stop_flushing
-      @importer.shutdown
       close_connections
     end
 
     def close_connections
+      log_info "shutting down amqp connections"
       shutdown_timer = EM::Timer.new(5) { log_info "hard exit" ; exit!(1) }
       @connections.dup.each do |connection|
         connection.close do
@@ -135,7 +127,9 @@ module Logjam
           if @connections.empty?
             shutdown_timer.cancel
             log_info "clean exit"
-            EM.stop
+            exit!(0)
+            # TODO: figure out why EM.stop doesn't work
+            # EM.stop
           end
         end
       end
@@ -172,7 +166,7 @@ module Logjam
     end
 
     def heartbeat_queue_name
-      ["logjam3-importer-heartbeats", @application, @environment, hostname].compact.join('-')
+      ["logjam3-importer-heartbeats", @application, @environment, hostname, $$].compact.join('-')
     end
 
     def heartbeat_queue_options
@@ -191,8 +185,8 @@ module Logjam
 
     def process_request(msg, routing_key)
       (c = @capture_file) && (c.puts msg)
-      entry = JSON.parse(msg)
-      @importer.add_entry entry
+      request = JSON.parse(msg)
+      @processor.process_request(request)
     end
 
     def send_heartbeats(connection, settings, heartbeat_exchange)
@@ -214,6 +208,7 @@ module Logjam
     end
 
     def stop_all_heartbeats
+      log_info "stopping heartbeats"
       @heartbeat_timers.keys.each {|connection| stop_heartbeats(connection)}
     end
 

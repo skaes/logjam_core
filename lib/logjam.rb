@@ -82,6 +82,10 @@ module Logjam
     db_name =~ db_name_format && Date.parse($3)
   end
 
+  def iso_date_string(db_name)
+    db_name =~ db_name_format && $3
+  end
+
   def grep(databases, options = {})
     databases.grep(db_name_format(options.merge(:app => '.+?', :env => '.+?')))
   end
