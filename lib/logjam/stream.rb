@@ -30,6 +30,25 @@ module Logjam
       @workers || 1
     end
 
+    module Thresholds
+      def import_threshold(*args)
+        @import_threshold = args.first.to_i if args.first
+        @import_threshold ||= Logjam.import_threshold
+      end
+
+      def request_cleaning_threshold(*args)
+        @request_cleaning_threshold = args.first.to_i if args.first
+        @request_cleaning_threshold ||= Logjam.request_cleaning_threshold
+      end
+
+      def database_cleaning_threshold(*args)
+        @database_cleaning_threshold = args.first.to_i if args.first
+        @database_cleaning_threshold ||= Logjam.database_cleaning_threshold
+      end
+    end
+
+    include Thresholds
+
     private
 
     class Context

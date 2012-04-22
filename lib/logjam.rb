@@ -82,6 +82,10 @@ module Logjam
     db_name =~ db_name_format && Date.parse($3)
   end
 
+  def self.stream_for(db_name)
+    db_name =~ db_name_format && @@streams["#{$1}-#{$2}"]
+  end
+
   def iso_date_string(db_name)
     db_name =~ db_name_format && $3
   end
@@ -149,7 +153,9 @@ module Logjam
   def remove_old_requests(delay = 60)
     databases.each do |db_name|
       date = db_date(db_name)
-      if Date.today - Logjam.request_cleaning_threshold > date
+      stream = stream_for(db_name) || Logjam
+      # puts "request cleaning threshold for #{db_name}: #{stream.request_cleaning_threshold}"
+      if Date.today - stream.request_cleaning_threshold > date
         db = mongo.db(db_name)
         coll = db["requests"]
         if coll.count > 0
@@ -162,13 +168,16 @@ module Logjam
     end
   end
 
-  def drop_old_databases
+  def drop_old_databases(delay = 60)
     dropped = 0
     databases.each do |db_name|
       date = db_date(db_name)
-      if Date.today - Logjam.database_cleaning_threshold > date
+      stream = stream_for(db_name) || Logjam
+      # puts "db cleaning threshold for #{db_name}: #{stream.database_cleaning_threshold}"
+      if Date.today - stream.database_cleaning_threshold > date
         puts "removing old database: #{db_name}"
         mongo.drop_database(db_name)
+        sleep delay
         dropped += 1
       end
     end
