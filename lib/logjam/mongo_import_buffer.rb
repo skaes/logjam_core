@@ -25,6 +25,7 @@ module Logjam
         [:totals, :minutes, :quants].each do |k|
           merge_values(@state[k], state[k])
         end
+        p @state
       else
         @state = state
       end
@@ -43,9 +44,10 @@ module Logjam
     private
 
     def merge_values(a,b)
-      b.each do |mod,values|
-        values.each do |k,v|
-          a[k] = (a[k]||0) + v
+      b.each do |mod,b_values|
+        a_values = (a[mod] ||= {})
+        b_values.each do |k,v|
+          a_values[k] = (a_values[k]||0) + v
         end
       end
     end
