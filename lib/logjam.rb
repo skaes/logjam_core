@@ -150,8 +150,12 @@ module Logjam
     end
   end
 
+  def databases_sorted_by_date
+    databases.sort_by{|db| db =~ /^([-a-z]+)-(\d[-0-9]+)/ && "#{$2}-#{$1}"}
+  end
+
   def remove_old_requests(delay = 60)
-    databases.each do |db_name|
+    databases_sorted_by_date.each do |db_name|
       date = db_date(db_name)
       stream = stream_for(db_name) || Logjam
       # puts "request cleaning threshold for #{db_name}: #{stream.request_cleaning_threshold}"
@@ -170,7 +174,7 @@ module Logjam
 
   def drop_old_databases(delay = 60)
     dropped = 0
-    databases.each do |db_name|
+    databases_sorted_by_date.each do |db_name|
       date = db_date(db_name)
       stream = stream_for(db_name) || Logjam
       # puts "db cleaning threshold for #{db_name}: #{stream.database_cleaning_threshold}"
