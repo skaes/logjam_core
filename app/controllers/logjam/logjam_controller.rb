@@ -24,7 +24,9 @@ module Logjam
 
     def show
       get_date
-      @request = Requests.new(@db).find(params[:id])
+      unless @request = Requests.new(@db).find(params[:id])
+        render :file => "#{Rails.root}/public/404.html", :status => :not_found
+      end
     end
 
     def errors
