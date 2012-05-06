@@ -154,6 +154,33 @@ module Logjam
     databases.sort_by{|db| db =~ /^([-a-z]+)-(\d[-0-9]+)/ && "#{$2}-#{$1}"}
   end
 
+  def import_databases(from_host, database_names, options = {})
+    options = (options||{}).reverse_merge(:delay => 60, :drop_existing => false)
+    puts "importing databases from #{from_host}"
+    known_databases = mongo.database_names
+    imported = 0
+    database_names.each do |db_name|
+      if known_databases.include?(db_name)
+        if options[:drop_existing]
+          puts "dropping target database #{db_name}"
+          mongo.drop_database(db_name)
+        else
+          puts "cowardly refusing to overwrite existing database #{db_name}"
+          next
+        end
+      end
+      puts "copying #{db_name} from #{from_host}"
+      mongo.copy_database(db_name, db_name, from_host)
+      puts "done!"
+      imported += 1
+      sleep options[:delay]
+    end
+    if imported > 0
+      puts "updating known databases"
+      Logjam.update_known_databases
+    end
+  end
+
   def remove_old_requests(delay = 60)
     databases_sorted_by_date.each do |db_name|
       date = db_date(db_name)

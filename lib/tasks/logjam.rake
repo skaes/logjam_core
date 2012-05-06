@@ -82,6 +82,24 @@ namespace :logjam do
     task :list_known_databases => :environment do
       puts Logjam.get_known_databases
     end
+
+    desc "import databases"
+    task :import_databases => :environment do
+      from_host = ENV['FROM_HOST']
+      from_file = ENV['FROM_FILE']
+      delay = (ENV['DELAY'] || 60).to_i
+      drop_existing = ENV['DROP_DB'] == "1"
+      if from_host.blank?
+        $stderr.puts "no host specified to copy database from. please specify FROM_HOST=..."
+        exit 1
+      elsif from_file.blank? || ! File.exists?(from_file) || ! File.readable?(from_file)
+        $stderr.puts "no file given or not readable. use FROM_FILE=..."
+        exit 1
+      else
+        databases_to_copy = File.readlines(from_file).map(&:strip).map(&:chomp).sort
+        Logjam.import_databases(from_host, databases_to_copy, delay: delay, drop_existing: drop_existing)
+      end
+    end
   end
 
   namespace :daemons do
