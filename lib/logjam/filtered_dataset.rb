@@ -226,7 +226,7 @@ module Logjam
     end
 
     def happy_count
-      totals.apdex["happy"].to_f
+      totals.apdex["happy"].to_i
     end
 
     def happy
@@ -234,7 +234,7 @@ module Logjam
     end
 
     def satisfied_count
-      totals.apdex["satisfied"].to_f
+      totals.apdex["satisfied"].to_i
     end
 
     def satisfied
@@ -242,7 +242,7 @@ module Logjam
     end
 
     def tolerating_count
-      totals.apdex["tolerating"].to_f
+      totals.apdex["tolerating"].to_i
     end
 
     def tolerating
@@ -250,7 +250,7 @@ module Logjam
     end
 
     def frustrated_count
-      totals.apdex["frustrated"].to_f
+      totals.apdex["frustrated"].to_i
     end
 
     def frustrated
