@@ -6,6 +6,7 @@ module Logjam
       @stream = stream
       @application = @stream.app
       @environment = @stream.env
+      @database_flush_interval = @stream.database_flush_interval
       @importer = MongoImporter.new(@stream)
     end
 
@@ -39,7 +40,7 @@ module Logjam
     end
 
     def start_flushing
-      @flushing_timer = EM.add_periodic_timer(1) do
+      @flushing_timer = EM.add_periodic_timer(@database_flush_interval) do
         flush_buffers
       end
     end

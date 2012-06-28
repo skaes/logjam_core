@@ -54,6 +54,15 @@ module Logjam
     @@database_cleaning_threshold
   end
 
+  @@database_flush_interval = 1
+  def self.database_flush_interval=(database_flush_interval)
+    @@database_flush_interval = database_flush_interval.to_i
+  end
+
+  def self.database_flush_interval
+    @@database_flush_interval
+  end
+
   def mongo
     @mongo_connection ||= begin
       conn = Mongo::Connection.new(database_config['host'])

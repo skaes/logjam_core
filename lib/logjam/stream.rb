@@ -45,6 +45,11 @@ module Logjam
         @database_cleaning_threshold = args.first.to_i if args.first
         @database_cleaning_threshold ||= Logjam.database_cleaning_threshold
       end
+
+      def database_flush_interval(*args)
+        @database_flush_interval = args.first.to_i if args.first
+        @database_flush_interval ||= Logjam.database_flush_interval
+      end
     end
 
     include Thresholds
