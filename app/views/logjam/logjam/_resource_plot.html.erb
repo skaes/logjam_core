@@ -55,8 +55,8 @@ function submit_resource(resource) {
 }
 
 function restrict_minutes(p, resource){
-   start = Math.floor(x.invert(p[0]))*interval-1;
-   end = start+interval+1;
+   start = Math.max(0, Math.floor(x.invert(p[0]))*interval-2*interval);
+   end = start+interval;
    submit_minutes(start, end, resource);
 }
 
