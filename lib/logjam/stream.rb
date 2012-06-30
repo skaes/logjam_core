@@ -12,7 +12,7 @@ module Logjam
       instance_eval &block if block_given?
     end
 
-    def importer &block
+    def importer(&block)
       if block_given?
         @importer.instance_eval &block
       else
@@ -28,6 +28,11 @@ module Logjam
     def workers(*args)
       @workers = [1, args.first.to_i].max if args.first
       @workers || 1
+    end
+
+    def database(*args)
+      @database = args.first if args.first
+      @database || "default"
     end
 
     module Thresholds

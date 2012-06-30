@@ -5,7 +5,7 @@ module Logjam
   class MongoImportBuffer
 
     def initialize(dbname, publisher)
-      database = Logjam.mongo.db(dbname)
+      database = Logjam.connection_for(dbname).db(dbname)
       Logjam.ensure_known_database(dbname)
       @totals  = Totals.ensure_indexes(database["totals"])
       @minutes = Minutes.ensure_indexes(database["minutes"])

@@ -63,19 +63,38 @@ module Logjam
     @@database_flush_interval
   end
 
-  def mongo
-    @mongo_connection ||= begin
-      conn = Mongo::Connection.new(database_config['host'])
-      if database_config['user'] && database_config['pass']
-        conn.db('admin').authenticate(database_config['user'], database_config['pass'])
+  @@mongo_connections = {}
+  def mongo_connection(connection_name)
+    config = database_config[connection_name] || database_config['default']
+    key = "#{config['host']}-#{config['port']}"
+    @@mongo_connections[key] ||=
+      begin
+        connection = Mongo::Connection.new(config['host'], config['port'])
+        if config['user'] && config['pass']
+          connection.db('admin').authenticate(config['user'], config['pass'])
+        end
+        connection
       end
-      conn
-    end
+  end
+
+  def establish_connections
+    database_config.each_key{|name| mongo_connection(name)}
+  end
+
+  def connections
+    establish_connections
+    @@mongo_connections.values
+  end
+
+  def connection_for(db_name)
+    stream = stream_for(db_name)
+    mongo_connection(stream.database)
   end
 
   def db(date, app, env)
     name = db_name(date, app, env)
-    mongo.db name
+    connection = connection_for(name)
+    connection.db name
   end
 
   def db_name(date, app, env)
@@ -107,33 +126,42 @@ module Logjam
     get_known_databases
   end
 
-  def global_db
-    mongo.db "logjam-global"
+  def global_db(connection)
+    connection.db "logjam-global"
   end
 
-  def meta_collection
-    global_db["metadata"]
+  def meta_collection(connection)
+    global_db(connection)["metadata"]
   end
 
   def ensure_known_database(dbname)
-    meta_collection.update({:name => 'databases'}, {'$addToSet' => {:value => dbname}}, {:upsert => true, :multi => false})
+    connection = connection_for(dbname)
+    meta_collection(connection).update({:name => 'databases'}, {'$addToSet' => {:value => dbname}}, {:upsert => true, :multi => false})
   end
 
   def update_known_databases
-    names = mongo.database_names
-    known_databases = grep(names)
-    meta_collection.create_index("name")
-    meta_collection.update({:name => 'databases'}, {'$set' => {:value => known_databases}}, {:upsert => true, :multi => false})
-    known_databases
+    all_known_databases = []
+    connections.each do |connection|
+      names = connection.database_names
+      known_databases = grep(names)
+      meta_collection(connection).create_index("name")
+      meta_collection(connection).update({:name => 'databases'}, {'$set' => {:value => known_databases}}, {:upsert => true, :multi => false})
+      all_known_databases.concat(known_databases)
+    end
+    all_known_databases
   end
 
   def get_known_databases
-    rows = []
-    ActiveSupport::Notifications.instrument("mongo.logjam", :query => "load database names") do |payload|
-      rows = meta_collection.find({:name => "databases"},{:fields => ["value"]}).to_a
-      payload[:rows] = rows.size
+    all_known_databases = []
+    connections.each do |connection|
+      rows = []
+      ActiveSupport::Notifications.instrument("mongo.logjam", :query => "load database names") do |payload|
+        rows = meta_collection(connection).find({:name => "databases"},{:fields => ["value"]}).to_a
+        payload[:rows] = rows.size
+      end
+      all_known_databases.concat(rows.first["value"])
     end
-    rows.first["value"]
+    all_known_databases
   end
 
   def sanitize_date(date_str)
@@ -151,7 +179,7 @@ module Logjam
 
   def ensure_indexes
     databases.each do |db_name|
-      db = mongo.db(db_name)
+      db = connection_for(db_name).db(db_name)
       Totals.ensure_indexes(db["totals"])
       Requests.ensure_indexes(db["requests"])
       Minutes.ensure_indexes(db["minutes"])
@@ -196,7 +224,7 @@ module Logjam
       stream = stream_for(db_name) || Logjam
       # puts "request cleaning threshold for #{db_name}: #{stream.request_cleaning_threshold}"
       if Date.today - stream.request_cleaning_threshold > date
-        db = mongo.db(db_name)
+        db = connection_for(db_name).db(db_name)
         coll = db["requests"]
         if coll.count > 0
           puts "removing old requests: #{db_name}"
@@ -216,7 +244,7 @@ module Logjam
       # puts "db cleaning threshold for #{db_name}: #{stream.database_cleaning_threshold}"
       if Date.today - stream.database_cleaning_threshold > date
         puts "removing old database: #{db_name}"
-        mongo.drop_database(db_name)
+        connection_for(db_name).drop_database(db_name)
         sleep delay
         dropped += 1
       end
@@ -227,7 +255,7 @@ module Logjam
   def update_severities
     databases.each do |db_name|
       puts "updating severities: #{db_name}"
-      db = mongo.db(db_name)
+      db = connection_for(db_name).db(db_name)
       Totals.update_severities(db)
     end
   end

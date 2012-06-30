@@ -68,7 +68,7 @@ module Logjam
         begin
           log_info "creating request processor #{dbname}"
           Logjam.ensure_known_database(dbname)
-          database = Logjam.mongo.db(dbname)
+          database = Logjam.connection_for(dbname).db(dbname)
           requests_collection = Requests.ensure_indexes(database["requests"])
           RequestProcessor.new(requests_collection)
         end
