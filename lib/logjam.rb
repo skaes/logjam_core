@@ -143,7 +143,7 @@ module Logjam
     all_known_databases = []
     connections.each do |connection|
       names = connection.database_names
-      known_databases = grep(names)
+      known_databases = grep(names).sort
       meta_collection(connection).create_index("name")
       meta_collection(connection).update({:name => 'databases'}, {'$set' => {:value => known_databases}}, {:upsert => true, :multi => false})
       all_known_databases.concat(known_databases)
