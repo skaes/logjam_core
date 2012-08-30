@@ -114,6 +114,7 @@ module Logjam
           request_id = @requests.insert(entry)
         rescue Exception
           $stderr.puts "Could not insert document: #{$!}"
+          $stderr.puts entry.inspect
         end
       end
 
