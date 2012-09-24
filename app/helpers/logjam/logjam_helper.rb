@@ -261,7 +261,7 @@ module Logjam
     def format_hash(hash)
       contents = hash.keys.sort.map do |k|
         val = hash[k]
-        if k == "COOKIE"
+        if k =~ /\ACOOKIE\z/i
           val = val.split(/\s*;\s*/).compact.sort.map{|s| h s}.join("</br>")
         else
           val = h(val)
