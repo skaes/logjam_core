@@ -1,8 +1,10 @@
+# encoding: utf-8
 require 'set'
 
 module Logjam
 
   class RequestProcessor
+    include Logjam::LogWithProcessId
 
     def initialize(request_collection)
       @requests = request_collection
@@ -112,9 +114,21 @@ module Logjam
             entry["_id"] = oid if oid
           end
           request_id = @requests.insert(entry)
-        rescue Exception
-          $stderr.puts "Could not insert document: #{$!}"
-          $stderr.puts entry.inspect
+        rescue Exception => e
+          if e.message =~ /String not valid UTF-8|key.*must not contain '.'/
+            begin
+              log_error "fixing json: #{e.class}(#{e})"
+              entry = try_to_fix(entry)
+              request_id = @requests.insert(entry)
+              log_info "request insertion succeeed: #{entry.inspect}"
+            rescue Exception => e
+              log_error "Could not insert document: #{e.class}(#{e})"
+              log_error entry.inspect
+            end
+          else
+            log_error "Could not insert document: #{e.class}(#{e})"
+            log_error entry.inspect
+          end
         end
       end
 
@@ -132,6 +146,55 @@ module Logjam
     end
 
     private
+
+    DOT_REPLACEMENT = '∙'
+    raise "fried turtles on my plate!" unless DOT_REPLACEMENT.encoding == Encoding::UTF_8
+
+    def try_to_fix(entry)
+      case entry
+      when Hash
+        h = Hash.new
+        entry.each_pair do |k,v|
+          new_key = k.is_a?(String) ? ensure_utf8(k).gsub('.', DOT_REPLACEMENT) : try_to_fix(k)
+          h[new_key] = try_to_fix(v)
+        end
+        h
+      when Array
+        entry.collect!{|e| try_to_fix(e)}
+      when String
+        ensure_utf8(entry)
+      else
+        entry
+      end
+    end
+
+    LIKELY_ENCODINGS =
+      [
+       Encoding::Windows_1252, # English and some other Western languages (superset of ISO8859_1)
+       Encoding::Windows_1250, # Central European and Eastern European languages
+       Encoding::Windows_1251, # languages that use the Cyrillic script
+       Encoding::Windows_1254  # Turkish
+      ]
+
+    def ensure_utf8(string)
+      # Try it as UTF-8 directly
+      string.force_encoding('UTF-8')
+      return string if string.valid_encoding?
+      # bad luck. try some other encodings.
+      string.force_encoding('ASCII-8BIT')
+      LIKELY_ENCODINGS.each do |encoding|
+        begin
+          if res = string.encode(Encoding::UTF_8, encoding)
+            log_error "changed encoding to #{encoding.name}: #{res}"
+            return res
+          end
+        rescue EncodingError
+        end
+      end
+      # give up and replace unkown characters
+      log_error "no valid encodings found"
+      string.encode!('UTF-8', :invalid => :replace, :undef => :replace)
+    end
 
     def add_other_time(entry, total_time)
       ot = total_time.to_f
