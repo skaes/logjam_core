@@ -177,7 +177,12 @@ module Logjam
       ]
 
     def ensure_utf8(string)
+      return string if string.ascii_only?
       # Try it as UTF-8 directly
+      if string.frozen?
+        log_error "frozen string: #{string}"
+        string = string.dup
+      end
       string.force_encoding('UTF-8')
       return string if string.valid_encoding?
       # bad luck. try some other encodings.
@@ -192,7 +197,7 @@ module Logjam
         end
       end
       # give up and replace unkown characters
-      log_error "no valid encodings found"
+      log_error "no valid encoding found"
       string.encode!('UTF-8', :invalid => :replace, :undef => :replace)
     end
 
