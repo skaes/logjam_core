@@ -26,9 +26,9 @@ var
     h  = 500,
     x = d3.scale.log().domain([<%= @xmin %>, <%= max_x %>]).range([0, w]).nice(),
     y = d3.scale.log().domain([1, <%= max_y %>]).range([0, h]).nice(),
-    legend = <%= raw resources.to_json.gsub(/_/,' ') %>,
-    colors = d3.scale.ordinal().range(<%= raw colors.to_json %>),
-    shapes = <%= raw shapes.to_json %> ;
+    legend = <%= raw Oj.dump(resources).gsub(/_/,' ') %>,
+    colors = d3.scale.ordinal().range(<%= raw Oj.dump(colors) %>),
+    shapes = <%= raw Oj.dump(shapes) %> ;
 
 /* The root panel. */
 var vis = d3.select("#distribution-plot")
@@ -131,7 +131,7 @@ vis.selectAll(".ylabel")
 <% resources.each_with_index do |r,i| -%>
 <% klazz="shape#{i}" -%>
 vis.selectAll(".<%=klazz%>")
-    .data(<%= data[r].to_json %>)
+    .data(<%= Oj.dump(data[r]) %>)
   .enter().append("svg:path")
     .attr("class", "<%=klazz%>")
     .attr("transform", function(d) { return "translate(" + x(d[0]) + "," + (h-y(d[1])) + ")"; })

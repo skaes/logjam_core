@@ -8,8 +8,8 @@
 
 <script type="text/javascript">
 (function(){
-var data = <%= raw data.to_json %>,
-    legend = <%= raw legend.to_json %>;
+var data = <%= raw Oj.dump(data) %>,
+    legend = <%= raw Oj.dump(legend) %>;
 
 /* Sizing and scales. */
 var w = <%= size rescue 180 %>,

@@ -1,5 +1,5 @@
 require 'amqp'
-require 'json'
+require 'oj'
 
 module Logjam
   class LiveStreamPublisher
@@ -48,7 +48,7 @@ module Logjam
     end
 
     def send_data(p, data)
-      exchange.publish(data.to_json, :key => p.sub(/^::/,'').downcase)
+      exchange.publish(Oj.dump(data), :key => p.sub(/^::/,'').downcase)
     rescue
       $stderr.puts "could not publish performance/error data: #{$!}"
     end

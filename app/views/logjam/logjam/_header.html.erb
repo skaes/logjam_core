@@ -16,7 +16,7 @@ function view_resource(resource){
 jQuery(document).ready(function(){
   jQuery('#datepicker').jdPicker({date_format:"YYYY-mm-dd", selectable:[<%= raw @days.map{|d| %Q|"#{d}"|}.join(', ') %>], error_out_of_range:"No data for that date."});
 });
-var initial_page_value = <%= raw @page.to_json %>;
+var initial_page_value = <%= raw Oj.dump(@page) %>;
 jQuery(document).ready(function(){
   jQuery('#page-field').autocomplete({
      source: '<%= raw url_for(params.slice(:year, :month, :day, :app, :env).merge(:action => "auto_complete_for_controller_action_page")) %>',

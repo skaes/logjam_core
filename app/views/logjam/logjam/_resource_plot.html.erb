@@ -15,8 +15,8 @@
 
 var data = <%= raw @js_data.inspect.gsub(' ','') %>;
 var interval = <%= params[:interval].to_i %>;
-var colors = <%= raw ((@resources.reverse+[@gc_time&&"gc_time"]).compact.map{|r| Logjam::Resource.color(r,0.8)}+["rgba(128,128,128,0.2)"]).to_json %>;
-var legend = <%= raw ((@resources.reverse+[@gc_time&&"gc_time"]+%w(requests/second)).compact).to_json.gsub(/_/,' ') %>;
+var colors = <%= raw Oj.dump((@resources.reverse+[@gc_time&&"gc_time"]).compact.map{|r| Logjam::Resource.color(r,0.8)}+["rgba(128,128,128,0.2)"]) %>;
+var legend = <%= raw Oj.dump((@resources.reverse+[@gc_time&&"gc_time"]+%w(requests/second)).compact).gsub(/_/,' ') %>;
 var request_counts = <%= raw @request_counts.reverse.drop_while{|d|d==0}.reverse.inspect.gsub(' ','') %>;
 var gc_time = <%= @gc_time ? @gc_time.reverse.drop_while{|_,d| d==0}.reverse.inspect.gsub(' ','') : "null" %>;
 var max_y = <%= @js_max %>;

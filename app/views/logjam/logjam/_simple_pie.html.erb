@@ -1,8 +1,8 @@
 <script type="text/javascript">
 (function(){
 <% data_with_colors = data.map{|d| d||0}.zip(colors) %>
-var data = <%= raw data_with_colors.map(&:first).to_json %>;
-var legend = <%= raw legend.to_json %>;
+var data = <%= raw Oj.dump(data_with_colors.map(&:first)) %>;
+var legend = <%= raw Oj.dump(legend) %>;
 var container = '#<%= container %>';
 
 /* Sizing and scales. */
@@ -11,7 +11,7 @@ var w = <%= size rescue 100 %>,
     r = w / 2,
     s = d3.sum(data),
     a = d3.scale.linear([0, s]).range([0, 2 * Math.PI]),
-    color = d3.scale.ordinal().range(<%= raw data_with_colors.map(&:second).to_json %>);
+    color = d3.scale.ordinal().range(<%= raw Oj.dump(data_with_colors.map(&:second)) %>);
 
 /* The root panel. */
 var vis = d3.select(container).append("svg")

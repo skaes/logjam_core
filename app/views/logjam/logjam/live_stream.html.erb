@@ -11,10 +11,10 @@
   <script type="text/javascript">
 
 <% color_list = @resources.reverse.map{|r| Logjam::Resource.color(r,0.7)}+["rgba(128,128,128,0.3)"] %>
-var resources = <%= raw @resources.reverse.to_json %>;
-var colors = <%= raw color_list.to_json %>;
+var resources = <%= raw Oj.dump(@resources.reverse) %>;
+var colors = <%= raw Oj.dump(color_list) %>;
 var connection_status = "disconnected";
-var legend = <%= raw (@resources.reverse+%w(requests/second)).to_json.gsub(/_/,' ') %>;
+var legend = <%= raw Oj.dump(@resources.reverse+%w(requests/second)).gsub(/_/,' ') %>;
 var warning_level = 3;
 var update_interval = 1;
 

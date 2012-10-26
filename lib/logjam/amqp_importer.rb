@@ -1,7 +1,7 @@
 require 'amqp'
 require 'amqp/extensions/rabbitmq'
 require 'date'
-require 'json'
+require 'oj'
 
 module Logjam
 
@@ -185,7 +185,7 @@ module Logjam
 
     def process_request(msg, routing_key)
       (c = @capture_file) && (c.puts msg)
-      request = JSON.parse(msg)
+      request = Oj.load(msg, :mode => :compat)
       @processor.process_request(request)
     end
 
