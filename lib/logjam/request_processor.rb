@@ -115,12 +115,12 @@ module Logjam
           end
           request_id = @requests.insert(entry)
         rescue Exception => e
-          if e.message =~ /String not valid UTF-8|key.*must not contain '.'/
+          if e.message =~ /String not valid UTF-8|key.*must not contain '.'|Cannot serialize the Numeric type BigDecimal/
             begin
               log_error "fixing json: #{e.class}(#{e})"
               entry = try_to_fix(entry)
               request_id = @requests.insert(entry)
-              log_info "request insertion succeeed: #{entry.inspect}"
+              log_info "request insertion succeeed"
             rescue Exception => e
               log_error "Could not insert document: #{e.class}(#{e})"
               log_error entry.inspect
@@ -163,6 +163,8 @@ module Logjam
         entry.collect!{|e| try_to_fix(e)}
       when String
         ensure_utf8(entry)
+      when BigDecimal
+        entry.to_f
       else
         entry
       end
