@@ -6,9 +6,9 @@ module Logjam
   class RequestProcessor
     include Logjam::LogWithProcessId
 
-    def initialize(request_collection)
+    def initialize(stream, request_collection)
+      @stream = stream
       @requests = request_collection
-      @import_threshold  = Logjam.import_threshold
       @generic_fields    = Set.new(Requests::GENERIC_FIELDS - %w(page response_code) + %w(action code engine))
       @quantified_fields = Requests::QUANTIFIED_FIELDS
       @squared_fields    = Requests::FIELDS.map{|f| [f,"#{f}_sq"]}
@@ -102,7 +102,7 @@ module Logjam
 
       add_quants(increments, page)
 
-      if interesting?(entry)
+      if @stream.interesting_request?(entry)
         begin
           if request_id = entry.delete("request_id")
             l = request_id.length
@@ -265,14 +265,6 @@ module Logjam
           (@quants_buffer[[p,kind,x]] ||= Hash.new(0.0))[f] += 1
         end
       end
-    end
-
-    def interesting?(request)
-      request["total_time"].to_f > @import_threshold ||
-        request["severity"] > 1 ||
-        request["response_code"].to_i >= 400 ||
-        request["exceptions"] ||
-        request["heap_growth"].to_i > 0
     end
 
   end

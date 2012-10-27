@@ -59,6 +59,18 @@ module Logjam
 
     include Thresholds
 
+    module InterestingRequest
+      def interesting_request?(request)
+        request["total_time"].to_f > import_threshold ||
+          request["severity"] > 1 ||
+          request["response_code"].to_i >= 400 ||
+          request["exceptions"] ||
+          request["heap_growth"].to_i > 0
+      end
+    end
+
+    include InterestingRequest
+
     private
 
     class Context

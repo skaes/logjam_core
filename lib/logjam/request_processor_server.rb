@@ -6,8 +6,7 @@ module Logjam
     include LogWithProcessId
 
     def initialize(stream)
-      @app = stream.app
-      @env = stream.env
+      @stream = stream
       @processors = {}
       @context = EM::ZeroMQ::Context.new(1)
       setup_connection
@@ -18,7 +17,7 @@ module Logjam
     end
 
     def socket_file_name
-      "#{Rails.root}/tmp/sockets/state-#{@app}-#{@env}-#{id}.ipc"
+      "#{Rails.root}/tmp/sockets/state-#{@stream.app}-#{@stream.env}-#{id}.ipc"
     end
 
     class ResetStateHandler
@@ -63,19 +62,19 @@ module Logjam
     end
 
     def processor(hash)
-      dbname = Logjam.db_name(hash["started_at"], @app, @env)
+      dbname = Logjam.db_name(hash["started_at"], @stream.app, @stream.env)
       @processors[dbname] ||=
         begin
           log_info "creating request processor #{dbname}"
           Logjam.ensure_known_database(dbname)
           database = Logjam.connection_for(dbname).db(dbname)
           requests_collection = Requests.ensure_indexes(database["requests"])
-          RequestProcessor.new(requests_collection)
+          RequestProcessor.new(@stream, requests_collection)
         end
     end
 
     def clean_old_processors
-      current_db_name = Logjam.db_name(Date.today, @app, @env)
+      current_db_name = Logjam.db_name(Date.today, @stream.app, @stream.env)
       @processors.delete_if{|db_name,_| db_name != current_db_name}
     end
   end
