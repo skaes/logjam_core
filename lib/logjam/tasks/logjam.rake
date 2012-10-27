@@ -15,7 +15,6 @@ namespace :logjam do
   namespace :assets do
     desc "create symbolic links for logjam assets in the public directory"
     task :link do
-      puts app_dir ; exit
       system("find #{public_dir} -type l | xargs rm")
 
       images = Dir.glob("#{logjam_dir}/assets/images/*.{jpg,png,gif}")
