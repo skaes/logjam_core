@@ -1,7 +1,7 @@
 namespace :logjam do
 
   def app_dir
-    File.expand_path("../../../../../..", __FILE__)
+    Rails.root.to_s
   end
 
   def public_dir
