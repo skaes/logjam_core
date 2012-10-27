@@ -4,4 +4,4 @@ export PATH=DAEMON_PATH
 export GEM_HOME=GEMHOME
 export GEM_PATH=GEMPATH
 exec 2>&1
-exec LOGJAM_DIR/vendor/plugins/logjam/script/performance-data-stream-server LIVE_STREAM_BROKER
+exec LOGJAM_DIR/vendor/logjam/script/performance-data-stream-server LIVE_STREAM_BROKER

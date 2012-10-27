@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require File.expand_path('../../../../../config/environment.rb', __FILE__)
+require_relative '../../../config/environment'
 
 config_name = ARGV.first
 file_name = ARGV.second

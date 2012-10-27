@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require File.expand_path('../../../../../config/boot.rb', __FILE__)
+require_relative '../../../config/boot'
 require 'optparse'
 require 'amqp'
 require 'oj'
@@ -29,7 +29,7 @@ EM.run do
     options[:keys].each do |key|
       count = 50+450*rand()
       data = FIELDS.inject({"count" => count}){|h,k| h[k] = 100*rand*count; h}
-      encoded_data = Oj.dump(data)
+      encoded_data = Oj.dump(data, :mode => :compat)
       # publish performance data
       exchange.publish(encoded_data, :key => key)
       puts "KEY: #{key} DATA: #{encoded_data}" if options[:verbose]
@@ -47,7 +47,7 @@ EM.run do
            "description" => "Something broke #{error_count+=1}"
          }
         ]
-      encoded_errors = Oj.dump(errors)
+      encoded_errors = Oj.dump(errors, :mode => :compat)
       # publish error data
       exchange.publish(encoded_errors, :key => key)
       puts "KEY: #{key} ERROR: #{encoded_errors}" if options[:verbose]

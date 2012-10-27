@@ -3,7 +3,7 @@
 $stdout.sync = true
 $stderr.sync = true
 
-require File.expand_path('../../../../../config/boot.rb', __FILE__)
+require_relative '../../../config/boot'
 require 'em-websocket'
 require 'amqp'
 require 'set'
