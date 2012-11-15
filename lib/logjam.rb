@@ -172,7 +172,7 @@ module Logjam
     when Time, Date, DateTime
       date_str = date_str.to_s(:db)
     end
-    raise "invalid date" unless date_str =~ /^\d\d\d\d-\d\d-\d\d/
+    raise "invalid date: #{date_str.inspect}" unless date_str =~ /^\d\d\d\d-\d\d-\d\d/
     date_str[0..9]
   end
 

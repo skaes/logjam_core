@@ -59,6 +59,9 @@ module Logjam
       # log_info "received request"
       # log_info r.inspect
       processor(r).add(r)
+    rescue => e
+      log_info "failed to process request: #{e.class}(#{e})"
+      log_info r.inspect
     end
 
     def processor(hash)
