@@ -48,7 +48,7 @@ module Logjam
     def sometimes_link_grouping_result(result, grouping, params)
       value = result.send(grouping)
       ppage = params[:page]
-      if grouping.to_sym == :page && ppage !~ /Others/ && (ppage != @page || ppage =~ /^::/)
+      if grouping.to_sym == :page && ppage !~ /\AOthers/ && (ppage != @page || ppage =~ /^::/)
         params = params.merge(grouping => value)
         params[:page] = without_module(ppage) unless @page == "::"
         link_to(h(value), clean_params(params), :title => "filter with #{h(value)}")
