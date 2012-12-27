@@ -3,7 +3,16 @@
 <div id='single-request'>
 
 <div id='request' style="margin-bottom:5px;">
-<b>Request details for</b> <em><%= h @request["page"] -%></em> at <b><%= minute_to_human(@request["minute"]) -%></b>
+<b>Request details for</b>
+<%
+  page, minute = @request["page"], @request["minute"]
+  _params = clean_params(params.except(:id, :action).merge(:page => page))
+  page_params = _params.merge(:grouping => "page")
+  request_params = _params.merge(:grouping => "request", :start_minute => minute, :end_minute => minute)
+-%>
+<em><%= link_to(h(page), page_params, :title => "show page stats") -%></em>
+at
+<b><%= link_to(minute_to_human(minute), request_params, :title => "show requests") -%></b>
 </div>
 <%
    time_resources = Logjam::Resource.time_resources
