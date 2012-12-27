@@ -165,7 +165,17 @@ namespace :logjam do
     end
 
     desc "Restart logjam daemons"
-    task :restart => [:stop, :start]
+    task :restart do
+      interrupted=false
+      trap('INT'){interrupted=true}
+      daemon_match = ENV['DAEMON_MATCH'] ? /#{ENV['DAEMON_MATCH']}/ : /./
+      service_paths.each do |service|
+        next unless service =~ daemon_match
+        system "sv restart #{service}"
+        sleep (ENV['RESTART_DELAY']||1).to_i
+        break if interrupted
+      end
+    end
 
   end
 
