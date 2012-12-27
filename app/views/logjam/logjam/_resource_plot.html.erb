@@ -108,7 +108,8 @@ function tooltip_formatter(d){
   return d3.format(".0f")(d/1000) + "k";
 }
 <% else %>
-var y_ticks_formatter = d3.format(".0f");
+var y_tick_precision = '<%= @js_max < 10 ? ".1f" : "0.f" %>';
+var y_ticks_formatter = d3.format(y_tick_precision);
 <% if @dataset.plot_kind == :time %>
 function tooltip_formatter(d){
   return d3.round(d,1) + " ms";
