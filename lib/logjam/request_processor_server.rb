@@ -1,4 +1,4 @@
-require 'em-zeromq-mri'
+require 'em-zeromq'
 
 module Logjam
   class RequestProcessorServer
@@ -20,25 +20,17 @@ module Logjam
       "#{Rails.root}/tmp/sockets/state-#{@stream.app}-#{@stream.env}-#{id}.ipc"
     end
 
-    class ResetStateHandler
-      def initialize(server)
-        @server = server
-      end
-      def on_readable(socket, messages)
-        @server.on_reset_state_received(messages)
-      end
-    end
-
     def setup_connection
       log_info "setting up state connection #{id}"
       @socket = @context.socket(ZMQ::REP)
       @socket.setsockopt(ZMQ::LINGER, 500) # milliseconds
-      @connection = @context.bind(@socket, "ipc:///#{socket_file_name}", ResetStateHandler.new(self))
+      @socket.on(:message){|*parts| on_reset_state_received(parts) }
+      @socket.bind("ipc:///#{socket_file_name}")
     end
 
-    def on_reset_state_received(messages)
+    def on_reset_state_received(message_parts)
       message = reset_state
-      if @connection.socket.send_string(message, ZMQ::NOBLOCK)
+      if @socket.send_msg(message)
         log_info "sent request processor state"
       else
         log_error "sending request processor state failed"

@@ -1,4 +1,4 @@
-require 'zmq'
+require 'ffi-rzmq'
 require 'fileutils'
 
 module Logjam
@@ -22,9 +22,13 @@ module Logjam
     def reset_state
       states = []
       @sockets.each_value do |socket|
-        socket.send("RESET_STATE")
-        data = socket.recv
-        states << Marshal.load(data)
+        socket.send_string("RESET_STATE")
+        data = ""
+        if socket.recv_string(data) < 0
+          log_error "failed to receive reset state data"
+        else
+          states << Marshal.load(data)
+        end
       end
       states
     end
@@ -107,7 +111,7 @@ module Logjam
         end
       end
       log_info "closing ZMQ context"
-      @context.close
+      @context.terminate
       log_info "worker shutdown completed"
     end
   end
