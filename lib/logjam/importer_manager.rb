@@ -37,6 +37,9 @@ module Logjam
       flush_buffers
       stop_workers
       EM.stop
+      # exit immediately to avoid:
+      # Assertion failed: (errno != EINVAL), function _RunKqueueOnce, file em.cpp, line 608.
+      exit(0)
     end
 
     def start_flushing

@@ -88,6 +88,11 @@ module Logjam
         @queue = args.first if args.first
         @queue
       end
+
+      def type(*args)
+        @type = args.first if args.first
+        @type
+      end
     end
 
     class Importer < Context
@@ -95,6 +100,7 @@ module Logjam
         hosts    "localhost"
         exchange "request-stream"
         queue    "logjam3-importer-queue"
+        type     :amqp
       end
     end
 

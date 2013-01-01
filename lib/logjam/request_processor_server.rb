@@ -5,10 +5,10 @@ module Logjam
 
     include LogWithProcessId
 
-    def initialize(stream)
+    def initialize(stream, zmq_context = nil)
       @stream = stream
       @processors = {}
-      @context = EM::ZeroMQ::Context.new(1)
+      @context = zmq_context || EM::ZeroMQ::Context.new(1)
       setup_connection
     end
 
@@ -24,11 +24,14 @@ module Logjam
       log_info "setting up state connection #{id}"
       @socket = @context.socket(ZMQ::REP)
       @socket.setsockopt(ZMQ::LINGER, 500) # milliseconds
-      @socket.on(:message){|*parts| on_reset_state_received(parts) }
+      @socket.on(:message) do |*parts|
+        parts.each(&:close)
+        on_reset_state_received
+      end
       @socket.bind("ipc:///#{socket_file_name}")
     end
 
-    def on_reset_state_received(message_parts)
+    def on_reset_state_received
       message = reset_state
       if @socket.send_msg(message)
         log_info "sent request processor state"

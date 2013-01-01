@@ -1,4 +1,5 @@
 require 'ffi-rzmq'
+require 'em-zeromq'
 require 'fileutils'
 
 module Logjam
@@ -55,7 +56,12 @@ module Logjam
         worker_pid = Process.pid
         log_info "started worker #{worker_pid}"
         $PROGRAM_NAME = "logjam-worker-#{@app}-#{@env}"
-        AMQPImporter.new(@stream).process
+        case @stream.importer.type
+        when :amqp
+          AMQPImporter.new(@stream).process
+        when :zmq
+          ZMQImporter.new(@stream).process
+        end
       end
       add_server(pid)
     end
