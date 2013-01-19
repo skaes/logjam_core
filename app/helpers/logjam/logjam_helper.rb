@@ -89,24 +89,10 @@ module Logjam
     def sometimes_link_to_request(request_id)
       app, env, oid = request_id.split('-')
       if @database_info.db_exists?(@date, app, env) && Requests.exists?(@date, app, env, oid)
-        parameters = params.slice(:year,:month,:day).merge(:app => app, :env => env, :action => "show", :id => oid)
-        puts parameters.inspect
+        parameters = params.merge(:app => app, :env => env, :action => "show", :id => oid)
         link_to(request_id, clean_params(parameters))
       else
         request_id
-      end
-    end
-
-    def sometimes_link_errors(page, n)
-      if n == 0
-        ""
-      elsif page == "Others..."
-        n
-      else
-        parameters = params.slice(:year,:month,:day).
-          merge(:app => @app, :env => @env, :action => "errors", :error_type => "logged_error", :page => without_module(page))
-
-        link_to(n, clean_params(parameters), :class => "error")
       end
     end
 
@@ -119,8 +105,7 @@ module Logjam
       elsif page.page == "Others..."
         "#{error_count}/#{warning_count}"
       else
-        parameters = params.slice(:year,:month,:day).
-          merge(:app => @app, :env => @env, :action => "errors", :page => without_module(page.page))
+        parameters = params.merge(:app => @app, :env => @env, :action => "errors", :page => without_module(page.page))
         errors = error_count == 0 ? error_count :
           link_to(error_count, clean_params(parameters.merge(:error_type => "logged_error")), :class => "error")
         warnings = warning_count == 0 ? warning_count :
@@ -136,8 +121,7 @@ module Logjam
       elsif page.page == "Others..."
         n
       else
-        parameters = params.slice(:year,:month,:day).
-          merge(:app => @app, :env => @env, :action => "response_codes", :above => 400, :page => without_module(page.page))
+        parameters = params.merge(:app => @app, :env => @env, :action => "response_codes", :above => 400, :page => without_module(page.page))
         link_to(n, clean_params(parameters), :class => "warn")
       end
     end
@@ -147,8 +131,7 @@ module Logjam
       if code.to_i < 400
         h(text)
       else
-        parameters = params.slice(:year,:month,:day).
-          merge(:app => @app, :env => @env, :action => "response_codes", :response_code => code, :page => (@page||'').gsub(/^::/,''))
+        parameters = params.merge(:app => @app, :env => @env, :action => "response_codes", :response_code => code, :page => (@page||'').gsub(/^::/,''))
 
         link_to(text, clean_params(parameters), :class => "error")
       end

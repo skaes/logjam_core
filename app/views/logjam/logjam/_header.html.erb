@@ -1,16 +1,23 @@
+<% home_url = url_for(params.merge(:action => :index).except(:interval)) %>
 <script type="text/javascript">
 function go_home() {
   jQuery('#page-field').val("::");
   jQuery('#grouping option:selected').val("page");
   jQuery('#resource option:selected').val("total_time");
+  jQuery('#start-minute').val("");
+  jQuery('#end-minute').val("");
+  jQuery('#interval').val("5");
+  jQuery('#filter-form').attr("action", "<%= home_url %>");
   jQuery('#filter-form').submit();
 }
 function view_grouping(grouping){
   jQuery('#grouping option:selected').val(grouping);
+  jQuery('#filter-form').attr("action", "<%= home_url %>");
   jQuery('#filter-form').submit();
 }
 function view_resource(resource){
   jQuery('#resource option:selected').val(resource);
+  jQuery('#filter-form').attr("action", "<%= home_url %>");
   jQuery('#filter-form').submit();
 }
 jQuery(document).ready(function(){
@@ -26,7 +33,7 @@ jQuery(document).ready(function(){
 });
 </script>
 <div id='header'>
-  <%= form_tag({:action => :index}, :method => :get, :id => 'filter-form', :autocomplete => "off") do -%>
+  <%= form_tag(params.except(:id), :method => :get, :id => 'filter-form', :autocomplete => "off") do -%>
   <div id='filter'>
     <input type="button" id='home-button' value="Logjam" onclick="go_home()"/>
     <% unless @only_one_app %>
@@ -105,8 +112,15 @@ jQuery(document).ready(function(){
       <%= check_box_tag 'heap_growth_only', "1", params['heap_growth_only']=="1", :onchange => "form.submit()" %>
     </p>
     <%- end -%>
-    <input id="start-minute" name="start_minute" type="hidden" value="<%= h(params[:start_minute]) %>" />
-    <input id="end-minute" name="end_minute" type="hidden" value="<%= h(params[:end_minute]) %>" />
+    <% if params[:start_minute] %>
+      <input id="start-minute" name="start_minute" type="hidden" value="<%= h(params[:start_minute]) %>" />
+    <% end %>
+    <% if params[:end_minute] %>
+      <input id="end-minute" name="end_minute" type="hidden" value="<%= h(params[:end_minute]) %>" />
+    <% end %>
+    <% if params[:interval] %>
+      <input id="interval" name="interval" type="hidden" value="<%= h(params[:interval]) %>" />
+    <% end %>
     <%= check_box_tag 'auto_refresh', "1", params['auto_refresh']=="1", :onchange => "form.submit()" %>Autorefresh
   </div>
   <% end -%>

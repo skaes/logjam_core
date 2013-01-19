@@ -23,14 +23,14 @@ module Logjam
     end
 
     def show
-      get_date
+      prepare_params
       unless @request = Requests.new(@db).find(params[:id])
         render :file => "#{Rails.root}/public/404.html", :status => :not_found
       end
     end
 
     def errors
-      get_date
+      prepare_params
       @page_size = 25
       @page = params[:page]
       if params[:error_type] == "internal"
@@ -61,7 +61,7 @@ module Logjam
     end
 
     def response_codes
-      get_date
+      prepare_params
       @page_size = 25
       @page = params[:page]
       if (@response_code = params[:above].to_i) >= 400
@@ -84,7 +84,7 @@ module Logjam
     end
 
     def exceptions
-      get_date
+      prepare_params
       @page = params[:page]
       @title = "Logged Exceptions"
       @totals = Totals.new(@db, ["exceptions"], @page)
@@ -201,7 +201,7 @@ module Logjam
       params[:starts_at] = dd.to_s(:db) if params[:auto_refresh] == "1" && (dd.year != py || dd.month != pm || dd.day != pd)
       params[:starts_at] ||= dd.to_s(:db) unless (params[:year] && params[:month] && params[:day])
       if params[:starts_at] =~ /^(\d\d\d\d)-(\d\d)-(\d\d)$/
-        redirect_to(FilteredDataset.clean_url_params(
+        new_params = FilteredDataset.clean_url_params(
           :auto_refresh => params[:auto_refresh] == "1" ? "1" : nil,
           :default_app => @default_app, :default_env => @default_env,
           :controller => params[:controller], :action => params[:action],
@@ -211,7 +211,8 @@ module Logjam
           :page => params[:page], :response => params[:response],
           :heap_growth_only => params[:heap_growth_only], :resource => params[:resource],
           :offset => params[:offset], :error_type => params[:error_type],
-          :grouping => params[:grouping], :grouping_function => params[:grouping_function]))
+          :grouping => params[:grouping], :grouping_function => params[:grouping_function])
+        redirect_to new_params
       end
     end
 

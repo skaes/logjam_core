@@ -50,6 +50,7 @@ function submit_resource(resource) {
    }
    if (resource != "requests/second") {
      jQuery('#resource option:selected').val(resource.replace(/ /g,'_'));
+     jQuery('#filter-form').attr("action", "<%= url_for(params.merge(:action => :index).except(:interval)) %>");
      jQuery('#filter-form').submit();
    }
 }
