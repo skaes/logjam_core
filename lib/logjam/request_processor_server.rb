@@ -12,6 +12,11 @@ module Logjam
       setup_connection
     end
 
+    def stop
+      log_info "closing state connection"
+      @socket.unbind if @socket
+    end
+
     def id
       Process.pid
     end
@@ -33,6 +38,7 @@ module Logjam
 
     def on_reset_state_received
       message = reset_state
+      log_info "sending processor state"
       if @socket.send_msg(message)
         log_info "sent request processor state"
       else

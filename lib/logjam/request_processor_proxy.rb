@@ -21,6 +21,7 @@ module Logjam
     end
 
     def reset_state
+      log_info "send reset state"
       states = []
       @sockets.each_value do |socket|
         socket.send_string("RESET_STATE")
@@ -104,19 +105,22 @@ module Logjam
     end
 
     def shutdown
-      log_info "shutting down workers"
       trap("CHLD"){}
-      @sockets.keys.dup.each do |pid|
+      log_info "shutting down workers"
+      @sockets.each_key{ |pid| Process.kill("TERM", pid) }
+      log_info "waiting for children to terminate"
+      @sockets.each_key do |pid|
         begin
-          Process.kill("TERM", pid)
-          Process.wait(pid)
-        rescue Exception
+          Process.wait(pid, Process::WNOHANG)
+        rescue
           log_error "waiting for child worker #{pid} raised #{$!}"
-        ensure
-          remove_server(pid)
         end
       end
+      log_info "closing worker sockets"
+      @sockets.keys.dup.each{ |pid| remove_server(pid) }
       log_info "worker shutdown completed"
+    rescue
+      log_error "shutting down workers raised #{$!}"
     end
   end
 end

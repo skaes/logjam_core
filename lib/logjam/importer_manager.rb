@@ -43,9 +43,11 @@ module Logjam
       @importer.stop
       log_info "closing ZMQ context"
       @zmq_context.terminate
+      log_info "stopping eventmachine"
       EM.stop
       # exit immediately to avoid:
       # Assertion failed: (errno != EINVAL), function _RunKqueueOnce, file em.cpp, line 608.
+      log_info "exiting worker manager"
       exit(0)
     end
 

@@ -64,9 +64,15 @@ module Logjam
     end
 
     def shutdown
+      log_info "shutting down zmq importer"
       @socket.setsockopt(ZMQ::UNSUBSCRIBE, subscription_key)
       @socket.unbind
+      log_info "stopping processor"
+      @processor.stop
       EM.stop
+      # exit immediately to avoid: Assertion failed: ok (mailbox.cpp:79)
+      log_info "exiting zmq_worker"
+      exit!(0)
     end
 
     def subscription_key
