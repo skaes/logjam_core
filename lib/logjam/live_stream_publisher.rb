@@ -1,12 +1,21 @@
-require 'amqp'
 require 'oj'
 
 module Logjam
   class LiveStreamPublisher
-    def initialize(stream)
+    include LogWithProcessId
+
+    def initialize(stream, zmq_context)
       @stream = stream
       @app = stream.app
       @env = stream.env
+      @socket = zmq_context.socket(ZMQ::PUSH)
+      @socket.setsockopt(ZMQ::LINGER, 100)
+      @socket.setsockopt(ZMQ::SNDHWM, 1000)
+      @socket.connect("tcp://#{live_stream_host}:9607")
+    end
+
+    def stop
+      @socket.close
     end
 
     def publish(modules, totals_buffer, errors_buffer)
@@ -14,21 +23,8 @@ module Logjam
       publish_errors(modules, errors_buffer)
     end
 
-    def self.exchange(app, env)
-      (@exchange||={})["#{app}-#{env}"] ||=
-        begin
-          channel = AMQP::Channel.new(AMQP.connect(:host => live_stream_host))
-          channel.auto_recovery = true
-          channel.topic("logjam-performance-data-#{app}-#{env}")
-        end
-    end
-
-    def self.live_stream_host
-      @live_stream_host ||= Logjam.streams["livestream-#{Rails.env}"].host
-    end
-
-    def exchange
-      @exchange ||= self.class.exchange(@app, @env)
+    def live_stream_host
+      Logjam.streams["livestream-#{Rails.env}"].host
     end
 
     NO_REQUEST = {"count" => 0}
@@ -48,9 +44,11 @@ module Logjam
     end
 
     def send_data(p, data)
-      exchange.publish(Oj.dump(data), :key => p.sub(/^::/,'').downcase)
-    rescue
-      $stderr.puts "could not publish performance/error data: #{$!}"
+      app_env_key = "#{@app}-#{@env},#{p.sub(/^::/,'').downcase}"
+      perf_data = Oj.dump(data, :mode => :compat)
+      @socket.send_strings([app_env_key, perf_data], ZMQ::DONTWAIT)
+    rescue => e
+      log_error "could not publish performance/error data: #{e.class}(#{e})"
     end
   end
 

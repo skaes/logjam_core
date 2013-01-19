@@ -4,11 +4,15 @@ module Logjam
 
     include LogWithProcessId
 
-    def initialize(stream)
+    def initialize(stream, zmq_context)
       @import_buffers = {}
       @request_count = 0
       @stream = stream
-      @publisher = LiveStreamPublisher.new(@stream)
+      @publisher = LiveStreamPublisher.new(@stream, zmq_context)
+    end
+
+    def stop
+      @publisher.stop
     end
 
     def import_buffer(db_name)

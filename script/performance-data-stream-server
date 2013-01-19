@@ -5,41 +5,54 @@ $stderr.sync = true
 
 require_relative '../../../config/boot'
 require 'em-websocket'
-require 'amqp'
+require 'em-zeromq'
 require 'set'
 
-broker =  ARGV[0] || "127.0.0.1"
-
-@exchanges = {}
-@queues = {}
 @perf_buffers = Hash.new{|h,k| h[k] = []}
 @error_buffers = Hash.new{|h,k| h[k] = []}
 @sockets = Hash.new{|h,k| h[k] = Set.new}
 
-def create_queue_and_subscribe(app_env, key)
-  exchange = @exchanges[app_env]
-  queue_name = "#{app_env}-#{key}-#{`hostname`.chomp}"
-  queue = @channel.queue(queue_name, :auto_delete => true, :exclusive => true)
-  queue.bind(exchange, :key => key)
-  subscribe("#{app_env},#{key}", queue)
-  queue
+@processed = 0
+
+def handle_perf_data(app_env_key, perf_data)
+  # puts app_env_key, perf_data
+  b = perf_data =~ /total_time/ ? @perf_buffers[app_env_key] : @error_buffers[app_env_key]
+  b << perf_data
+  b.shift if b.size > 60
+  @sockets[app_env_key].each {|s| s.send perf_data}
+  @processed += 1
 end
 
-def subscribe(app_env_key, queue)
-  queue.subscribe do |header, perf_data|
-    # $stderr.puts perf_data if perf_data =~ /description/
-    b = perf_data =~ /total_time/ ? @perf_buffers[app_env_key] : @error_buffers[app_env_key]
-    b << perf_data
-    b.shift if b.size > 60
-    @sockets[app_env_key].each {|s| s.send perf_data}
+zmq_context = ZMQ::Context.new(1)
+
+EM.run do
+  context = EM::ZeroMQ::Context.new(zmq_context)
+  socket = context.socket(ZMQ::PULL)
+  socket.setsockopt(ZMQ::LINGER, 100)
+  socket.setsockopt(ZMQ::RCVHWM, 1000)
+  socket.bind("tcp://0.0.0.0:9607")
+  socket.on(:message) do |*parts|
+    begin
+      app_env_key = parts[0].copy_out_string
+      perf_data   = parts[1].copy_out_string
+      handle_perf_data(app_env_key, perf_data)
+    rescue => e
+      $stderr.puts "#{e.class}(#{e})"
+    ensure
+      parts.each(&:close)
+    end
   end
-end
 
-EventMachine.run do
-  @channel = AMQP::Channel.new(AMQP.connect(:host => broker))
-  @channel.auto_recovery = true
-  EventMachine::WebSocket.start(:host => "0.0.0.0", :port => 8080) do |ws|
-    ws.onopen { puts "web socket connection established: #{ws.object_id}" }
+  EM.add_periodic_timer(5) do
+    puts "processed: #{@processed}"
+    @processed = 0
+  end
+
+  web_socket_port = RUBY_PLATFORM =~ /darwin/ ? 9608 : 8080
+  EM::WebSocket.start(:host => "0.0.0.0", :port => web_socket_port) do |ws|
+    ws.onopen do
+      puts "web socket connection established: #{ws.object_id}"
+    end
 
     ws.onclose do
       puts "web socket connection closed: #{ws.object_id}"
@@ -47,9 +60,6 @@ EventMachine.run do
     end
 
     ws.onmessage do |app_env_key|
-      app_env, key = app_env_key.split(/,/)
-      @exchanges[app_env] ||= @channel.topic("logjam-performance-data-#{app_env}")
-      @queues[app_env_key] ||= create_queue_and_subscribe(app_env, key)
       @sockets[app_env_key] << ws
       @perf_buffers[app_env_key].each{|m| ws.send m}
       @error_buffers[app_env_key].each{|m| ws.send m}
@@ -57,3 +67,5 @@ EventMachine.run do
     end
   end
 end
+
+zmq_context.terminate

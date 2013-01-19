@@ -8,13 +8,13 @@ module Logjam
 
     include LogWithProcessId
 
-    def initialize(stream)
+    def initialize(stream, zmq_context)
       @stream = stream
       @app = @stream.app
       @env = @stream.env
       @servers = []
       @sockets = {}
-      @context = ZMQ::Context.new(1)
+      @context = zmq_context
       $PROGRAM_NAME = "logjam-importer-#{@app}-#{@env}"
       clean_old_sockets
       start_servers(@stream.workers)
@@ -116,8 +116,6 @@ module Logjam
           remove_server(pid)
         end
       end
-      log_info "closing ZMQ context"
-      @context.terminate
       log_info "worker shutdown completed"
     end
   end

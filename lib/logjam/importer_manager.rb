@@ -1,3 +1,5 @@
+require 'em-zeromq'
+
 module Logjam
   class ImporterManager
     include LogWithProcessId
@@ -7,7 +9,9 @@ module Logjam
       @application = @stream.app
       @environment = @stream.env
       @database_flush_interval = @stream.database_flush_interval
-      @importer = MongoImporter.new(@stream)
+      log_info "creating ZMQ context"
+      @zmq_context = ZMQ::Context.new(1)
+      @importer = MongoImporter.new(@stream, @zmq_context)
     end
 
     def process
@@ -36,6 +40,9 @@ module Logjam
       stop_flushing
       flush_buffers
       stop_workers
+      @importer.stop
+      log_info "closing ZMQ context"
+      @zmq_context.terminate
       EM.stop
       # exit immediately to avoid:
       # Assertion failed: (errno != EINVAL), function _RunKqueueOnce, file em.cpp, line 608.
@@ -60,7 +67,7 @@ module Logjam
     end
 
     def start_workers
-      @proxy = RequestProcessorProxy.new(@stream)
+      @proxy = RequestProcessorProxy.new(@stream, @zmq_context)
     end
 
     def stop_workers

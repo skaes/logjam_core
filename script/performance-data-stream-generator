@@ -2,7 +2,8 @@
 
 require_relative '../../../config/boot'
 require 'optparse'
-require 'amqp'
+require 'ffi-rzmq'
+require 'eventmachine'
 require 'oj'
 require 'active_support'
 
@@ -18,26 +19,34 @@ end
 
 FIELDS = %w(gc_time other_time memcache_time gearman_time search_time api_time db_time view_time total_time)
 
-EM.run do
-  connection = AMQP.connect(:host => "127.0.0.1")
-  channel = AMQP::Channel.new(connection)
-  exchange = channel.topic("logjam-performance-data-#{options[:app]}-#{options[:env]}")
+app  = options[:app]
+env  = options[:env]
+keys = options[:keys]
 
-  trap("INT"){ EM.next_tick { connection.close { EM.stop_event_loop} } }
+context = ZMQ::Context.new(1)
+socket = context.socket(ZMQ::PUSH)
+socket.setsockopt(ZMQ::SNDHWM, 1000)
+socket.setsockopt(ZMQ::LINGER, 100)
+socket.connect("tcp://localhost:9607")
+
+EM.run do
+
+  trap("INT"){ EM.stop }
 
   EM.add_periodic_timer(1) do
-    options[:keys].each do |key|
+    keys.each do |key|
       count = 50+450*rand()
       data = FIELDS.inject({"count" => count}){|h,k| h[k] = 100*rand*count; h}
       encoded_data = Oj.dump(data, :mode => :compat)
       # publish performance data
-      exchange.publish(encoded_data, :key => key)
+      msg = ["#{app}-#{env}-#{key}", encoded_data]
+      socket.send_strings msg, ZMQ::DONTWAIT
       puts "KEY: #{key} DATA: #{encoded_data}" if options[:verbose]
     end
   end
   error_count = 0
-  EM.add_periodic_timer(3) do
-    options[:keys].each do |key|
+  EM.add_periodic_timer(2) do
+    keys.each do |key|
       errors =
         [
          {
@@ -49,8 +58,13 @@ EM.run do
         ]
       encoded_errors = Oj.dump(errors, :mode => :compat)
       # publish error data
-      exchange.publish(encoded_errors, :key => key)
+      msg = ["#{app}-#{env}-#{key}", encoded_errors]
+      socket.send_strings msg, ZMQ::DONTWAIT
       puts "KEY: #{key} ERROR: #{encoded_errors}" if options[:verbose]
     end
   end
 end
+
+socket.close
+context.terminate
+

@@ -56,7 +56,7 @@ module Logjam
         @socket.connect(address)
       end
       @socket.on(:message) do |p1, p2|
-        key  = p1.copy_out_string; p1.close
+        key = p1.copy_out_string; p1.close
         msg = p2.copy_out_string; p2.close
         # puts key, msg
         process_request(msg)

@@ -126,7 +126,8 @@ module Logjam
     def live_stream
       get_app_env
       @resources = Logjam::Resource.time_resources-%w(total_time gc_time)
-      @socket_url = "ws://#{request.host}:8080/"
+      ws_port = RUBY_PLATFORM =~ /darwin/ ? 9608 : 8080
+      @socket_url = "ws://#{request.host}:#{ws_port}/"
       @key = params[:page].to_s
       @key = "all_pages" if @key.blank? || @key == "::"
       @key = @key.sub(/^::/,'').downcase
