@@ -105,7 +105,7 @@ module Logjam
   end
 
   def db_name_format(options={})
-    opts = options.merge(:app => '.+?', :env => '.+?')
+    opts = {:app => '.+?', :env => '.+?'}.merge(options)
     /^logjam-(#{opts[:app]})-(#{opts[:env]})-((.+?)-(.+?)-(.+?))$/
   end
 
@@ -122,7 +122,8 @@ module Logjam
   end
 
   def grep(databases, options = {})
-    databases.grep(db_name_format(options.merge(:app => '.+?', :env => '.+?')))
+    opts = {:app => '.+?', :env => '.+?'}.merge(options)
+    databases.grep(db_name_format(opts))
   end
 
   def databases
@@ -253,6 +254,20 @@ module Logjam
       end
     end
     update_known_databases if dropped > 0
+  end
+
+  def drop_applications(apps)
+    databases = get_known_databases
+    apps.each do |app|
+      db_names = grep(databases, :app => app)
+      next if db_names.empty?
+      db_names.each do |db_name|
+        puts "dropping #{db_name}"
+        connection_for(db_name).drop_database(db_name)
+      end
+    end
+    puts "updating known databases"
+    Logjam.update_known_databases
   end
 
   def update_severities

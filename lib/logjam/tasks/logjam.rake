@@ -44,6 +44,11 @@ namespace :logjam do
       Logjam.drop_old_databases(delay)
     end
 
+    desc "drop databases"
+    task :drop_apps => :environment do
+      Logjam.drop_applications(ENV['APPLICATIONS'].to_s.split(/\s*,\s*/))
+    end
+
     desc "remove old data"
     task :clean => :drop_old do
       delay = [ENV['REPAIR_DELAY'].to_i, 5].max
