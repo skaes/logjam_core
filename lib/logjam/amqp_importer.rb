@@ -8,6 +8,7 @@ module Logjam
   class AMQPImporter
 
     include LogWithProcessId
+    include ReparentingTimer
 
     def initialize(stream)
       @stream = stream
@@ -36,18 +37,6 @@ module Logjam
       trap("EXIT", "DEFAULT")
       trap("INT")  { }
       trap("TERM") { shutdown }
-    end
-
-    def shutdown_if_reparented_to_root_process
-      EM.add_periodic_timer(1) do
-        if Process.ppid == 1
-          begin
-            log_error "refusing to become an orphan. committing suicide."
-          ensure
-            exit!(1)
-          end
-        end
-      end
     end
 
     def on_tcp_connection_failure
@@ -114,6 +103,7 @@ module Logjam
     end
 
     def shutdown
+      stop_reparenting_timer
       stop_all_heartbeats
       close_connections
     end

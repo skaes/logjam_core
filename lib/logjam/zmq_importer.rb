@@ -8,6 +8,7 @@ module Logjam
   class ZMQImporter
 
     include LogWithProcessId
+    include ReparentingTimer
 
     def initialize(stream)
       @stream       = stream
@@ -33,18 +34,6 @@ module Logjam
       trap("TERM") { shutdown }
     end
 
-    def shutdown_if_reparented_to_root_process
-      EM.add_periodic_timer(1) do
-        if Process.ppid == 1
-          begin
-            log_error "refusing to become an orphan. committing suicide."
-          ensure
-            exit!(1)
-          end
-        end
-      end
-    end
-
     def setup_connection
       @socket = @context.socket(ZMQ::SUB)
       @socket.setsockopt(ZMQ::LINGER, 500)
@@ -64,6 +53,7 @@ module Logjam
     end
 
     def shutdown
+      stop_reparenting_timer
       log_info "shutting down zmq importer"
       @socket.setsockopt(ZMQ::UNSUBSCRIBE, subscription_key)
       @socket.unbind
