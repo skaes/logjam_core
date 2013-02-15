@@ -6,9 +6,10 @@ module Logjam
   class RequestProcessor
     include Logjam::LogWithProcessId
 
-    def initialize(stream, request_collection)
+    def initialize(stream, request_collection, old_format)
       @stream = stream
       @requests = request_collection
+      @has_metrics_index = !old_format
       @generic_fields    = Set.new(Requests::GENERIC_FIELDS - %w(page response_code) + %w(action code engine))
       @quantified_fields = Requests::QUANTIFIED_FIELDS
       @squared_fields    = Requests::FIELDS.map{|f| [f,"#{f}_sq"]}
@@ -103,49 +104,63 @@ module Logjam
       add_quants(increments, page)
 
       if @stream.interesting_request?(entry)
-        begin
-          if request_id = entry.delete("request_id")
-            l = request_id.length
-            if l == 32
-              oid = BSON::Binary.new(request_id, BSON::Binary::SUBTYPE_UUID) rescue nil
-            elsif l == 24
-              oid = BSON::ObjectId.new(request_id) rescue nil
-            end
-            entry["_id"] = oid if oid
-          end
-          request_id = @requests.insert(entry)
-        rescue Exception => e
-          if e.message =~ /String not valid UTF-8|key.*must not contain '.'|Cannot serialize the Numeric type BigDecimal/
-            begin
-              log_error "fixing json: #{e.class}(#{e})"
-              entry = try_to_fix(entry)
-              request_id = @requests.insert(entry)
-              log_info "request insertion succeeed"
-            rescue Exception => e
-              log_error "Could not insert document: #{e.class}(#{e})"
-              log_error entry.inspect
-            end
-          else
-            log_error "Could not insert document: #{e.class}(#{e})"
-            log_error entry.inspect
+        request_id = store_request(entry)
+
+        if severity > 1 && request_id
+          # extract the first error found (duplicated code from logjam helpers)
+          description = ((lines.detect{|(s,t,l)| s >= 2})[2].to_s)[0..80] rescue "--- unknown ---"
+          error_info = { "request_id" => request_id.to_s,
+                         "severity" => severity, "action" => page,
+                         "description" => description, "time" => started_at }
+          ["all_pages", pmodule].each do |p|
+           (@errors_buffer[p] ||= []) << error_info
           end
         end
       end
-
-      if severity > 1
-        # extract the first error found (duplicated code from logjam helpers)
-        description = ((lines.detect{|(s,t,l)| s >= 2})[2].to_s)[0..80] rescue "--- unknown ---"
-        error_info = { "request_id" => request_id.to_s,
-                       "severity" => severity, "action" => page,
-                       "description" => description, "time" => started_at }
-        ["all_pages", pmodule].each do |p|
-          (@errors_buffer[p] ||= []) << error_info
-        end
-      end
-
     end
 
     private
+
+    def store_request(entry)
+      if request_id = entry.delete("request_id")
+        l = request_id.length
+        if l == 32
+          oid = BSON::Binary.new(request_id, BSON::Binary::SUBTYPE_UUID) rescue nil
+        elsif l == 24
+          oid = BSON::ObjectId.new(request_id) rescue nil
+        end
+        entry["_id"] = oid if oid
+      end
+      convert_metrics_for_indexing(entry)
+      @requests.insert(entry)
+    rescue Exception => e
+      if e.message =~ /String not valid UTF-8|key.*must not contain '.'|Cannot serialize the Numeric type BigDecimal/
+        begin
+          log_error "fixing json: #{e.class}(#{e})"
+          entry = try_to_fix(entry)
+          request_id = @requests.insert(entry)
+          log_info "request insertion succeeed"
+        rescue Exception => e
+          log_error "Could not insert document: #{e.class}(#{e})"
+          log_error entry.inspect
+        end
+      else
+        log_error "Could not insert document: #{e.class}(#{e})"
+        log_error entry.inspect
+      end
+      request_id
+    end
+
+    def convert_metrics_for_indexing(entry)
+      return unless @has_metrics_index
+      metrics = []
+      Requests::FIELDS.each do |f|
+        if v = entry.delete(f)
+          metrics << {"n" => f, "v" => v} if v != 0
+        end
+      end
+      entry["metrics"] = metrics
+    end
 
     DOT_REPLACEMENT = '∙'
     raise "fried turtles on my plate!" unless DOT_REPLACEMENT.encoding == Encoding::UTF_8

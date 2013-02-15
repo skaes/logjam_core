@@ -16,22 +16,31 @@ module Logjam
 
     SQUARED_FIELDS = FIELDS.inject({}) { |h, f| h[f] = "#{f}_sq"; h}
 
-    INDEXED_FIELDS = FIELDS + %w[response_code severity minute exceptions]
+    INDEXED_FIELDS = %w[response_code severity minute exceptions]
+
+    def self.indexed_fields(collection)
+      collection.index_information.keys.map{|i| i.gsub(/_-?1/,'')}
+    end
 
     def self.ensure_indexes(collection)
+      old_format = nil
       ms = Benchmark.ms do
-        indexes_to_drop = collection.index_information.keys.select{|i| i =~ /started_at/}
-        indexes_to_drop.each do |i|
-          logger.info  "MONGO dropping obsolete index: #{i}"
-          collection.drop_index i
-        end
-        INDEXED_FIELDS.each do |f|
-          collection.create_index([ [f, Mongo::DESCENDING] ], :background => true, :sparse => true)
-          collection.create_index([ ["page", Mongo::ASCENDING], [f, Mongo::DESCENDING] ], :background => true)
+        fields = indexed_fields(collection)
+        old_format = fields.include?("total_time")
+        if (fields & INDEXED_FIELDS) == INDEXED_FIELDS
+          logger.info "MONGO assuming request indexes already exist"
+        else
+          logger.info "MONGO creating request indexes"
+          collection.create_index([ ["metrics.n", 1], ["metrics.v", -1] ], :background => true)
+          collection.create_index([ ["page", 1], ["metrics.n", 1], ["metrics.v", -1] ], :background => true)
+          INDEXED_FIELDS.each do |f|
+            collection.create_index([ [f, 1] ], :background => true, :sparse => true)
+            collection.create_index([ ["page", 1], [f, 1] ], :background => true)
+          end
         end
       end
-      logger.info "MONGO Requests Indexes Creation (#{2*INDEXED_FIELDS.size+1}): #{"%.1f" % (ms)} ms"
-      collection
+      puts "MONGO Requests Indexes Creation (#{2*INDEXED_FIELDS.size+2+1}): #{"%.1f" % (ms)} ms"
+      [collection, old_format]
     end
 
     def self.exists?(date, app, env, oid)
@@ -43,6 +52,7 @@ module Logjam
     def initialize(db, resource=nil, pattern='', options={})
       @database = db
       @collection = @database["requests"]
+      @old_format = self.class.indexed_fields(@collection).include?("total_time")
       @resource = resource
       @pattern = pattern.to_s.sub(/^::/,'')
       @options = options
@@ -63,7 +73,18 @@ module Logjam
     end
 
     def selector(options={})
-      query_opts = @options[:heap_growth_only] ? {"heap_growth" => {'$gt' => 0}} : {}
+      if @old_format || INDEXED_FIELDS.include?(@resource)
+        query_opts = {}
+      else
+        query_opts = {"metrics.n" => @resource}
+      end
+      if @options[:heap_growth_only]
+        if @old_format
+          query_opts.merge!("heap_growth" => {'$gt' => 0})
+        else
+          query_opts.merge!("metrics.n" => "heap_growth", "metrics.v" => {'$gt' => 0})
+        end
+      end
       if rc = @options[:response_code]
         if @options[:above]
           query_opts.merge!(:response_code => {'$gte' => rc})
@@ -96,12 +117,18 @@ module Logjam
     end
 
     def all
-      all_fields = ["page", "user_id", "heap_growth", "response_code", "severity", @resource]
-      all_fields << "minute" unless all_fields.include?("minute")
-      all_fields << "lines" if @options[:response_code] == 500 || @options[:severity] || @options[:exceptions]
+      fields = ["page", "user_id", "response_code", "severity"]
+      if @old_format
+        fields.concat ["heap_growth", @resource]
+        fields << "minute" unless @resource == "minute"
+      else
+        fields.concat ["metrics", "minute"]
+      end
+      fields << "lines" if @options[:response_code] || @options[:severity] || @options[:exceptions]
+
       query_opts = {
-        :fields => all_fields,
-        :sort => [@resource, Mongo::DESCENDING],
+        :fields => fields,
+        :sort => @old_format || INDEXED_FIELDS.include?(@resource) ?  [@resource, -1] : ["metrics.v", -1],
         :limit => @options[:limit] || 32,
         :skip => @options[:skip]
       }
@@ -109,9 +136,10 @@ module Logjam
       query = "Requests.find(#{selector.inspect},#{query_opts.inspect})"
       rows = nil
       ActiveSupport::Notifications.instrument("mongo.logjam", :query => query) do |payload|
-        # explain = @collection.find(selector, query_opts).explain
+        # explain = @collection.find(selector, query_opts.dup).explain
         # logger.debug explain.inspect
         rows = @collection.find(selector, query_opts.dup).to_a
+        rows.each{|row| convert_metrics(row)}
         payload[:rows] = rows.size
       end
       rows
@@ -129,7 +157,15 @@ module Logjam
       selector = {"_id" => primary_key(id)}
       query = "Requests.find_one(#{selector.inspect})"
       ActiveSupport::Notifications.instrument("mongo.logjam", :query => query, :rows => 1) do
-        @collection.find_one(selector)
+        row = @collection.find_one(selector)
+        convert_metrics(row) if row
+        row
+      end
+    end
+
+    def convert_metrics(row)
+      if metrics = row.delete("metrics")
+        metrics.each{|m| row[m["n"]] = m["v"]}
       end
     end
 
