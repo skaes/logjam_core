@@ -46,6 +46,7 @@ module Logjam
       @grouping_function = options[:grouping_function] || DEFAULTS[:grouping_function]
       @start_minute = (options[:start_minute] || DEFAULTS[:start_minute]).to_i
       @end_minute = (options[:end_minute] || DEFAULTS[:end_minute]).to_i
+      @collected_resources = options[:collected_resources]
     end
 
     def page_description
@@ -124,7 +125,7 @@ module Logjam
       when :time   then Resource.time_resources
       when :call   then Resource.call_resources
       when :memory then Resource.memory_resources
-      end
+      end & @collected_resources
     end
 
     def totals
@@ -134,8 +135,8 @@ module Logjam
     def summary
       @summary ||=
         begin
-          resources = Resource.time_resources + Resource.call_resources +
-            Resource.memory_resources + Resource.heap_resources - %w(heap_growth) + %w(apdex response)
+          all_resources = Resource.time_resources + Resource.call_resources + Resource.memory_resources + Resource.heap_resources
+          resources = (all_resources & @collected_resources) - %w(heap_growth) + %w(apdex response)
           Totals.new(@db, resources, page, totals.page_names)
         end
     end
@@ -155,7 +156,7 @@ module Logjam
     end
 
     def plotted_resources
-      Resource.resources_for_type(plot_kind) - resources_excluded_from_plot
+      (Resource.resources_for_type(plot_kind) & @collected_resources) - resources_excluded_from_plot
     end
 
     def plot_data

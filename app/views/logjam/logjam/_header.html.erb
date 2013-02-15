@@ -70,27 +70,29 @@ jQuery(document).ready(function(){
       <ul id='resource-type-widget'>
         <li><a href='#' <%= raw html_attributes_for_resource_type(:time) %>>Time</a>
           <ul>
-            <% Logjam::Resource.time_resources.reverse.each do |r| %>
+            <% (Logjam::Resource.time_resources.reverse & @collected_resources).each do |r| %>
             <li><a href='#' onclick="view_resource('<%=r%>')"><%= h r.gsub(/_/,' ') %></a></li>
             <% end %>
           </ul>
         </li>
-        <% unless Logjam::Resource.memory_resources.empty? %>
+        <% unless (Logjam::Resource.memory_resources & @collected_resources).empty? %>
         <li><a href='#' <%= raw html_attributes_for_resource_type(:memory) %>>Memory</a>
           <ul>
-            <% Logjam::Resource.memory_resources.reverse.each do |r| %>
+            <% (Logjam::Resource.memory_resources.reverse & @collected_resources).each do |r| %>
             <li><a href='#' onclick="view_resource('<%=r%>')"><%= h r.gsub(/_/,' ') %></a></li>
             <% end %>
           </ul>
         </li>
         <% end %>
+        <% unless (Logjam::Resource.call_resources & @collected_resources).empty? %>
         <li><a href='#' <%= raw html_attributes_for_resource_type(:call) %>>Calls</a>
           <ul>
-            <% Logjam::Resource.call_resources.reverse.each do |r| %>
+            <% (Logjam::Resource.call_resources.reverse & @collected_resources).each do |r| %>
             <li><a href='#' onclick="view_resource('<%=r%>')"><%= h r.gsub(/_/,' ') %></a></li>
             <% end %>
           </ul>
         </li>
+        <% end %>
         <!-- <td <%= raw html_attributes_for_resource_type("heap") %>>heap</td> -->
       </ul>
     </div>

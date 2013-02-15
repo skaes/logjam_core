@@ -169,6 +169,19 @@ module Logjam
         end
     end
 
+    def collected_resources
+      @collected_resources ||=
+        begin
+          query = "Totals.find({page:'all_pages'})"
+          row = nil
+          ActiveSupport::Notifications.instrument("mongo.logjam", :query => query) do |payload|
+            payload[:rows] = 1
+            row = @collection.find_one({:page => 'all_pages'},{})
+          end
+          row ? row.keys & Requests::FIELDS : Requests::FIELDS
+        end
+    end
+
     def pages(options)
       order = options[:order] || :sum
       limit = options[:limit] || 1000

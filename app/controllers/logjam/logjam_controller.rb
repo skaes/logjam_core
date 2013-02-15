@@ -171,6 +171,7 @@ module Logjam
       params[:grouping_function] ||= FilteredDataset::DEFAULTS[:grouping_function]
       @plot_kind = Resource.resource_type(params[:resource])
       @attributes = Resource.resources_for_type(@plot_kind)
+      @collected_resources = Totals.new(@db).collected_resources
       @page = params[:page]
     end
 
@@ -188,6 +189,7 @@ module Logjam
         :heap_growth_only => params[:heap_growth_only],
         :plot_kind => @plot_kind,
         :resource => params[:resource] || :total_time,
+        :collected_resources => @collected_resources,
         :grouping => params[:grouping],
         :grouping_function => (params[:grouping_function] || :avg).to_sym,
         :start_minute => params[:start_minute].to_i,
