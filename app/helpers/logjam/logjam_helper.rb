@@ -189,7 +189,7 @@ module Logjam
         error_line = safe_h(l.to_s)
         break if exception && error_line =~ regex
       end
-      error_line[0..70].html_safe
+      error_line[0..100].html_safe
     end
 
     def format_log_level(l)
