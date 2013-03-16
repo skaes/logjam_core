@@ -48,7 +48,7 @@ function submit_resource(resource) {
      d3.event.preventDefault();
      d3.event.stopPropagation();
    }
-   if (resource != "requests/second") {
+   if (resource != "requests/second" && resource != "free slots") {
      jQuery('#resource option:selected').val(resource.replace(/ /g,'_'));
      jQuery('#filter-form').attr("action", "<%= url_for(params.merge(:action => :index).except(:interval)) %>");
      jQuery('#filter-form').submit();
@@ -101,7 +101,7 @@ vis.selectAll(".yrule")
     .attr("y2", h);
 
 
-<% if @dataset.plot_kind == :memory %>
+<% if @dataset.plot_kind == :memory || @dataset.plot_kind == :heap %>
 function y_ticks_formatter(d){
   return d3.format(".0f")(d/1000) + "k";
 }
@@ -309,7 +309,7 @@ vis.selectAll(".layer")
      .enter().append("path")
      .attr("class", "layer")
      .style("fill", function(d,i) { return colors[i]; })
-     .style("cursor", "pointer")
+     .style("cursor", function(d,i) { return(legend[i] == "free slots" ? "arrow" : "pointer"); })
      .on("click", function(d,i){ restrict_minutes(d3.svg.mouse(this), legend[i]); })
      .on("mousemove", function(d,i){ mouse_over_layer(d, i, this)})
      .on("mouseover", function(d,i){ mouse_over_layer(d, i, this)})
@@ -327,7 +327,7 @@ if (gc_time != null) {
   gl = vis.append("g")
          .data([gc_time]);
 
-  var da_line = gl.append("path")
+  var da_gc_line = gl.append("path")
          .attr("class", "gc_time")
          .attr("d", gc_line)
          .style("stroke", "rgba(0,0,0,.9)")
@@ -352,9 +352,15 @@ function redraw() {
     .attr("d", area);
 
   if (gc_time != null) {
-    da_line.transition()
+    da_gc_line.transition()
       .duration(zoom_interval)
       .attr("d", gc_line);
+   };
+
+  if (heap_size != null) {
+    da_heap_size_line.transition()
+      .duration(zoom_interval)
+      .attr("d", heap_size_line);
    };
 }
 

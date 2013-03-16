@@ -18,8 +18,7 @@ module Logjam
 
     def index
       @dataset = dataset_from_params
-      @js_data, @js_max, @request_counts, @gc_time, @js_zoom = @dataset.plot_data
-      @resources = @dataset.plotted_resources-["gc_time"]
+      @resources, @js_data, @js_max, @request_counts, @gc_time, @js_zoom = @dataset.plot_data
     end
 
     def show
@@ -92,8 +91,7 @@ module Logjam
 
     def enlarged_plot
       @dataset = dataset_from_params
-      @js_data, @js_max, @request_counts, @gc_time, @js_zoom = @dataset.plot_data
-      @resources = @dataset.plotted_resources-["gc_time"]
+      @resources, @js_data, @js_max, @request_counts, @gc_time, @js_zoom = @dataset.plot_data
     end
 
     def request_time_distribution

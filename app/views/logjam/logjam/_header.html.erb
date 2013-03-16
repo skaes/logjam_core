@@ -75,15 +75,6 @@ jQuery(document).ready(function(){
             <% end %>
           </ul>
         </li>
-        <% unless (Logjam::Resource.memory_resources & @collected_resources).empty? %>
-        <li><a href='#' <%= raw html_attributes_for_resource_type(:memory) %>>Memory</a>
-          <ul>
-            <% (Logjam::Resource.memory_resources.reverse & @collected_resources).each do |r| %>
-            <li><a href='#' onclick="view_resource('<%=r%>')"><%= h r.gsub(/_/,' ') %></a></li>
-            <% end %>
-          </ul>
-        </li>
-        <% end %>
         <% unless (Logjam::Resource.call_resources & @collected_resources).empty? %>
         <li><a href='#' <%= raw html_attributes_for_resource_type(:call) %>>Calls</a>
           <ul>
@@ -93,7 +84,24 @@ jQuery(document).ready(function(){
           </ul>
         </li>
         <% end %>
-        <!-- <td <%= raw html_attributes_for_resource_type("heap") %>>heap</td> -->
+        <% unless (Logjam::Resource.memory_resources & @collected_resources).empty? %>
+        <li><a href='#' <%= raw html_attributes_for_resource_type(:memory) %>>Memory</a>
+          <ul>
+            <% (Logjam::Resource.memory_resources.reverse & @collected_resources).each do |r| %>
+            <li><a href='#' onclick="view_resource('<%=r%>')"><%= h r.gsub(/_/,' ') %></a></li>
+            <% end %>
+          </ul>
+        </li>
+        <% end %>
+        <% unless (Logjam::Resource.heap_resources & @collected_resources).empty? %>
+        <li><a href='#' <%= raw html_attributes_for_resource_type(:heap) %>>Heap</a>
+          <ul>
+            <% (Logjam::Resource.heap_resources.reverse & @collected_resources).each do |r| %>
+            <li><a href='#' onclick="view_resource('<%=r%>')"><%= h r.gsub(/_/,' ') %></a></li>
+            <% end %>
+          </ul>
+        </li>
+        <% end %>
       </ul>
     </div>
     <p class='filter-widget' id='resource-widget' style="visibility:hidden;display:none;">

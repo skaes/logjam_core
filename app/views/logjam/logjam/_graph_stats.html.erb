@@ -10,12 +10,12 @@
   <% next if avg == 0 && stddev == 0 -%>
   <tr>
     <td><%= hrn(attr.to_s) %></td>
-    <% if attr =~ /_time/ || attr !~ /allocated/ %>
+    <% if attr =~ /_time/ || attr !~ /allocated|heap|live/ %>
       <td class='number'><%= time_number(avg) %></td>
       <td class='number'><%= time_number(stddev) %></td>
     <% else %>
-      <td class='number'><%= memory_number(avg) %></td>
-      <td class='number'><%= memory_number(stddev) %></td>
+      <td class='number'><%= memory_number(avg) %>k</td>
+      <td class='number'><%= memory_number(stddev) %>k</td>
     <% end %>
   </tr>
 <% end -%>

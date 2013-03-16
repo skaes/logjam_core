@@ -9,6 +9,7 @@ module Logjam
         when :time   then Resource.time_resources
         when :memory then Resource.memory_resources
         when :call   then Resource.call_resources
+        when :heap   then Resource.heap_resources
         end
       end
 
@@ -42,7 +43,8 @@ module Logjam
 
       # returns a Hash mapping resources to colors, used for plotting
       def colors
-        @colors ||= Hash[*resource_map.values.flatten.map {|h| [h.keys.first, h.values.first]}.flatten]
+        @colors ||=
+          Hash[*resource_map.values.flatten.map {|h| [h.keys.first, h.values.first]}.flatten].merge!("free_slots"=>"#b3d1f9")
       end
 
       def color(resource, transparency=0)
@@ -64,7 +66,9 @@ module Logjam
       end
 
       def resource_options
-        ((memory_resources.empty? ? [] : memory_resources + [nil]) + call_resources + [nil] + time_resources).map {|r| [resource_name(r), r]}
+        heap_options = heap_resources.empty? ? [] : heap_resources + [nil]
+        memory_options = memory_resources.empty? ? [] : memory_resources + [nil]
+        (heap_options + memory_options + call_resources + [nil] + time_resources).map {|r| [resource_name(r), r]}
       end
 
       def resource_type(resource)
@@ -74,6 +78,8 @@ module Logjam
           :call
         elsif memory_resources.include? resource
           :memory
+        elsif heap_resources.include? resource
+          :heap
         else
           nil
         end
@@ -88,6 +94,7 @@ module Logjam
         when :time   then 'total_time'
         when :call   then resource_exists?('db_calls') ? 'db_calls' : call_resources.first
         when :memory then 'allocated_objects'
+        when :heap   then 'heap_size'
         end
       end
 
@@ -128,7 +135,8 @@ module Logjam
         # least = {:time => 'least', :call => 'fewest', :memory => 'least'}[type]
         # best = {:time => 'fastest', :call => 'least busy', :memory => 'skinniest'}[type]
 
-        return 'nonsensical' if grouping.to_sym != :request && resource.to_sym == :heap_size && grouping_function.to_sym == :sum
+        return 'nonsensical' if grouping.to_sym != :request && grouping_function.to_sym == :sum &&
+          [:heap_size, :live_data_set_size].include?(resource.to_sym)
         return 'nonsensical' if grouping.to_sym == :request && resource.to_sym == :requests
 
         if grouping?(grouping)

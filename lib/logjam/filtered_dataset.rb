@@ -125,6 +125,7 @@ module Logjam
       when :time   then Resource.time_resources
       when :call   then Resource.call_resources
       when :memory then Resource.memory_resources
+      when :heap   then Resource.heap_resources
       end & @collected_resources
     end
 
@@ -145,14 +146,15 @@ module Logjam
       [:allocated_memory, :allocated_bytes].include? attr.to_sym
     end
 
-    YLABELS = {:time => 'Response time (ms)', :call => '# of calls', :memory => 'Allocations (bytes)'}
+    YLABELS = { :time => 'Response time (ms)', :call => '# of calls',
+                :memory => 'Allocations (bytes)', :heap => 'Heap size (slots)'}
 
     def ylabel
       YLABELS[plot_kind] || ""
     end
 
     def resources_excluded_from_plot
-      ['total_time', 'allocated_memory', 'requests']
+      %w(total_time allocated_memory requests heap_growth)
     end
 
     def plotted_resources
@@ -169,6 +171,7 @@ module Logjam
           max_total = 0
           plot_resources = resources.clone
           plot_resources += ["gc_time"] if plot_resources.delete("gc_time")
+          plot_resources.unshift("free_slots") if plot_resources.delete("heap_size")
           zero = Hash.new(0.0)
           results = plot_resources.inject({}){|h,r| h[r] = {}; h}
           totals = []
@@ -177,7 +180,7 @@ module Logjam
             row = minutes[i] || zero
             total = 0
             plot_resources.each do |r|
-              v = row[r]
+              v = r == "free_slots" ? row["heap_size"] - row["live_data_set_size"] : row[r]
               total += v unless r == "gc_time"
               results[r][i] = v
             end
@@ -185,12 +188,13 @@ module Logjam
             max_total = total if max_total < total
             nonzero += 1 if total > 0
           end
+          puts results.inspect
           plot_data = data_for_proto_vis(results, plot_resources).reverse
           gc_time = plot_data.shift if resources.include?("gc_time")
           request_counts = []
           intervals_per_day.times{|i| request_counts << (counts[i] || 0) / 60.0}
           y_zoom = totals.sort[(totals.size*0.9).to_i].to_f
-          [plot_data, max_total, request_counts, gc_time, y_zoom]
+          [plot_resources-["gc_time"], plot_data, max_total, request_counts, gc_time, y_zoom]
         end
     end
 
