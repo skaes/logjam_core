@@ -39,7 +39,7 @@ EM.run do
       data = FIELDS.inject({"count" => count}){|h,k| h[k] = 100*rand*count; h}
       encoded_data = Oj.dump(data, :mode => :compat)
       # publish performance data
-      msg = ["#{app}-#{env}-#{key}", encoded_data]
+      msg = ["#{app}-#{env},#{key}", encoded_data]
       socket.send_strings msg, ZMQ::DONTWAIT
       puts "KEY: #{key} DATA: #{encoded_data}" if options[:verbose]
     end
@@ -58,7 +58,7 @@ EM.run do
         ]
       encoded_errors = Oj.dump(errors, :mode => :compat)
       # publish error data
-      msg = ["#{app}-#{env}-#{key}", encoded_errors]
+      msg = ["#{app}-#{env},#{key}", encoded_errors]
       socket.send_strings msg, ZMQ::DONTWAIT
       puts "KEY: #{key} ERROR: #{encoded_errors}" if options[:verbose]
     end
