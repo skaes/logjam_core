@@ -5,9 +5,6 @@
     <input id="smooth-toggle" type="button" onclick="toggle_smoothness(this);" value="smooth updates" />
   </h2>
 
-  <script src="/js/swfobject.js"></script>
-  <script src="/js/FABridge.js"></script>
-  <script src="/js/web_socket.js"></script>
   <script type="text/javascript">
 
 <% color_list = @resources.reverse.map{|r| Logjam::Resource.color(r,0.7)}+["rgba(128,128,128,0.3)"] %>

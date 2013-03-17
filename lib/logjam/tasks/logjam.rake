@@ -27,8 +27,6 @@ namespace :logjam do
       FileUtils.ln_s stylesheets, "#{public_dir}/stylesheets/"
 
       FileUtils.ln_s "#{logjam_dir}/assets/stylesheets/smoothness", "#{public_dir}/stylesheets/"
-
-      FileUtils.ln_s "#{logjam_dir}/assets/js", public_dir
     end
   end
 
