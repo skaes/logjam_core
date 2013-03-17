@@ -85,7 +85,7 @@ jQuery(document).ready(function(){
         </li>
         <% end %>
         <% unless (Logjam::Resource.memory_resources & @collected_resources).empty? %>
-        <li><a href='#' <%= raw html_attributes_for_resource_type(:memory) %>>Memory</a>
+        <li><a href='#' <%= raw html_attributes_for_resource_type(:memory) %>>Allocations</a>
           <ul>
             <% (Logjam::Resource.memory_resources.reverse & @collected_resources).each do |r| %>
             <li><a href='#' onclick="view_resource('<%=r%>')"><%= h r.gsub(/_/,' ') %></a></li>
@@ -114,12 +114,6 @@ jQuery(document).ready(function(){
       <%= label :filter, 'sorted by' %><br />
       <%= select_tag 'grouping_function', options_for_select(Logjam::Resource.grouping_functions, params['grouping_function']),
           :onchange => "form.submit()" %>
-    </p>
-    <%- end -%>
-    <%- if params[:grouping] == "request" && Logjam::Resource.heap_resources.include?("heap_growth") -%>
-    <p class='filter-widget' id='heap-growth-widget' style="visibility:hidden;display:none;">
-      <%= label :filter, 'heap growth only' %><br />
-      <%= check_box_tag 'heap_growth_only', "1", params['heap_growth_only']=="1", :onchange => "form.submit()" %>
     </p>
     <%- end -%>
     <% if params[:start_minute] %>

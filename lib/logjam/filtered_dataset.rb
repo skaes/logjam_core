@@ -4,7 +4,7 @@ module Logjam
     HEAP_SLOT_SIZE = 40
 
     attr_accessor :interval, :page, :response_code,
-    :plot_kind, :heap_growth_only, :resource, :grouping, :grouping_function,
+    :plot_kind, :resource, :grouping, :grouping_function,
     :start_minute, :end_minute, :date
 
     DEFAULTS = {:plot_kind => :time, :interval => '5',
@@ -39,7 +39,6 @@ module Logjam
       @interval = (options[:interval] || DEFAULTS[:interval]).to_i
       @page = options[:page].to_s
       @response_code = options[:response_code] if options[:response_code].present?
-      @heap_growth_only = options[:heap_growth_only].present?
       @plot_kind = options[:plot_kind] || DEFAULTS[:plot_kind]
       @resource = options[:resource] || DEFAULTS[:resource]
       @grouping = options[:grouping]
@@ -108,7 +107,7 @@ module Logjam
     def do_the_query
       @query_result ||=
         if grouping == "request"
-          query_opts = {:heap_growth_only => heap_growth_only, :start_minute => @start_minute, :end_minute => @end_minute}
+          query_opts = {:start_minute => @start_minute, :end_minute => @end_minute}
           Requests.new(@db, resource, page, query_opts).all
         else
           if grouping_function.to_sym == :count
@@ -188,7 +187,6 @@ module Logjam
             max_total = total if max_total < total
             nonzero += 1 if total > 0
           end
-          puts results.inspect
           plot_data = data_for_proto_vis(results, plot_resources).reverse
           gc_time = plot_data.shift if resources.include?("gc_time")
           request_counts = []

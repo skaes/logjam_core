@@ -3,10 +3,6 @@ function sort_by(order){
   jQuery('#grouping_function option:selected').val(order);
   jQuery('#filter-form').submit();
 }
-function toggle_heap_growth_only(){
-  jQuery('#heap_growth_only').attr("checked", '<%= params[:heap_growth_only]=="1" ? "": "checked" %>');
-  jQuery('#filter-form').submit();
-}
 </script>
 <table class='full_stats'>
   <tr>
@@ -38,9 +34,6 @@ function toggle_heap_growth_only(){
       <th>minute</th>
       <th>page</th>
       <th class="sorted"><%= resource_name %></th>
-      <% if resource_type == :memory %>
-      <th class="clickable" onclick="toggle_heap_growth_only()">heap growth</th>
-      <% end %>
   </tr>
       <%= render "request_statistics", options.merge(:requests => @dataset.do_the_query) %>
     <% end -%>

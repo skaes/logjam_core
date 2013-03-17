@@ -14,8 +14,8 @@
       <td class='number'><%= time_number(avg) %></td>
       <td class='number'><%= time_number(stddev) %></td>
     <% else %>
-      <td class='number'><%= memory_number(avg) %>k</td>
-      <td class='number'><%= memory_number(stddev) %>k</td>
+      <td class='number'><%= time_number(avg/1024.0) %>k</td>
+      <td class='number'><%= time_number(stddev/1024.0) %>k</td>
     <% end %>
   </tr>
 <% end -%>

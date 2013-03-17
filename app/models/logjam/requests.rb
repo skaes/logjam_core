@@ -78,13 +78,6 @@ module Logjam
       else
         query_opts = {"metrics.n" => @resource}
       end
-      if @options[:heap_growth_only]
-        if @old_format
-          query_opts.merge!("heap_growth" => {'$gt' => 0})
-        else
-          query_opts.merge!("metrics.n" => "heap_growth", "metrics.v" => {'$gt' => 0})
-        end
-      end
       if rc = @options[:response_code]
         if @options[:above]
           query_opts.merge!(:response_code => {'$gte' => rc})

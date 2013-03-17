@@ -184,7 +184,6 @@ module Logjam
         :env => @env,
         :interval => params[:interval].to_i,
         :page => @page,
-        :heap_growth_only => params[:heap_growth_only],
         :plot_kind => @plot_kind,
         :resource => params[:resource] || :total_time,
         :collected_resources => @collected_resources,
@@ -209,7 +208,7 @@ module Logjam
           :start_minute => params[:start_minute], :end_minute => params[:end_minute],
           :app => params[:app], :env => params[:env],
           :page => params[:page], :response => params[:response],
-          :heap_growth_only => params[:heap_growth_only], :resource => params[:resource],
+          :resource => params[:resource],
           :offset => params[:offset], :error_type => params[:error_type],
           :grouping => params[:grouping], :grouping_function => params[:grouping_function])
         redirect_to new_params
