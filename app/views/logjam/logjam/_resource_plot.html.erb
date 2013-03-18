@@ -13,10 +13,12 @@
 <script type="text/javascript">
 (function() {
 
-var data = <%= raw @js_data.inspect.gsub(' ','') %>;
+// var events   = <%= raw Oj.dump(@events) %>;
+var events   = [[600, 'Deploy Release_300_01'],[720, 'I did something else']];
+var data     = <%= raw @js_data.inspect.gsub(' ','') %>;
 var interval = <%= params[:interval].to_i %>;
-var colors = <%= raw Oj.dump((@resources.reverse+[@gc_time&&"gc_time"]).compact.map{|r| Logjam::Resource.color(r,0.8)}+["rgba(128,128,128,0.2)"]) %>;
-var legend = <%= raw Oj.dump((@resources.reverse+[@gc_time&&"gc_time"]+%w(requests/second)).compact).gsub(/_/,' ') %>;
+var colors   = <%= raw Oj.dump((@resources.reverse+[@gc_time&&"gc_time"]).compact.map{|r| Logjam::Resource.color(r,0.8)}+["rgba(128,128,128,0.2)"]) %>;
+var legend   = <%= raw Oj.dump((@resources.reverse+[@gc_time&&"gc_time"]+%w(requests/second)).compact).gsub(/_/,' ') %>;
 var request_counts = <%= raw @request_counts.reverse.drop_while{|d|d==0}.reverse.inspect.gsub(' ','') %>;
 var gc_time = <%= @gc_time ? @gc_time.reverse.drop_while{|_,d| d==0}.reverse.inspect.gsub(' ','') : "null" %>;
 var max_y = <%= @js_max %>;
@@ -31,10 +33,10 @@ var zoom_interval = 1;
 /* Sizing and scales. */
 var w = <%= width %>,
     h = <%= height %>,
-    x = d3.scale.linear().domain([0, 1440/interval]).range([0, w]),
     xticks = d3.range(25).map(function(h){ return h/interval*60; }),
-    y = d3.scale.linear().domain([0, zoomed_max_y]).range([h, 0]).nice(),
-    y2 = d3.scale.linear().domain([0, max_request_count]).range([50,0]).nice();
+    x =      d3.scale.linear().domain([0, 1440/interval]).range([0, w]),
+    y =      d3.scale.linear().domain([0, zoomed_max_y]).range([h, 0]).nice(),
+    y2 =     d3.scale.linear().domain([0, max_request_count]).range([50,0]).nice();
 
 function submit_minutes(start, end, resource) {
    jQuery('#start-minute').val(""+start);
@@ -67,7 +69,7 @@ function reset_minutes(){
 
 
 /* The root panel. */
-var vis = d3.select("#resource-plot")
+vis = d3.select("#resource-plot")
     .append("svg")
      .attr("width", w+50)
      .attr("height", h+100)
@@ -81,7 +83,8 @@ var vis = d3.select("#resource-plot")
 /* X-label */
 vis.append("svg:text")
     .attr("class", "label")
-    .attr("dy", h+30)
+    .attr("dy", h+40)
+  // The data itself
     .attr("dx", w/2)
     .style("font", "12px sans-serif")
     .attr("text-anchor", "middle")
@@ -127,7 +130,7 @@ vis.selectAll(".xlabel")
     .enter().append("text")
       .attr("class", "xlabel")
       .attr("x", x)
-      .attr("y", h)
+      .attr("y", h + 6)
       .attr("dx", 0)
       .attr("dy", 12)
       .attr("text-anchor", "middle")
@@ -189,7 +192,7 @@ vis.selectAll(".legend")
   .enter().append("svg:text")
     .attr("class", "legend")
     .attr("x", function(d,i){return 10+(120*(Math.floor(i/2)))})
-    .attr("y", function(d,i){return h+50+14*(i%2)})
+    .attr("y", function(d,i){return h+60+14*(i%2)})
     .on("click", function(d,i){ submit_resource(legend[i]) })
     .style("font", "10px sans-serif")
     .style("cursor", "pointer")
@@ -201,7 +204,7 @@ vis.selectAll(".legendmark")
     .attr("class", "legendmark")
     .attr("transform", "translate(-7,-3)")
     .attr("cx", function(d,i){return 10+(120*(Math.floor(i/2)))})
-    .attr("cy", function(d,i){return h+50+14*(i%2)})
+    .attr("cy", function(d,i){return h+60+14*(i%2)})
     .attr("r", 4)
     .on("click", function(d,i){ submit_resource(legend[i]) })
     .style("cursor", "pointer")
@@ -363,6 +366,30 @@ function redraw() {
       .attr("d", heap_size_line);
    };
 }
+
+function mouse_over_event(d, i) {
+  var mouseCoords = d3.svg.mouse(this);
+
+  vis.selectAll(".tooltip").
+    attr("x", mouseCoords[0] + 15).
+    attr("y", mouseCoords[1] + 3).
+    text(d[1]);
+}
+
+vis.selectAll(".event")
+  .data(events)
+  .enter()
+    .append("circle")
+    .on("mouseover", mouse_over_event)
+    .on("mousemove", mouse_over_event)
+    .on("mouseout", function() { vis.selectAll(".tooltip").text("")})
+    .attr("class", "event")
+    .attr("cx", function(d,i) { return x(d[0] / interval) })
+    .attr("cy", h)
+    .attr("r", 4)
+    .style("stroke", "rgba(255,0,0,0)")
+    .style("fill", "rgba(255,0,0,.5)");
+
 
 /* tooltip (last to be on top of everything else) */
 vis.selectAll(".tooltip")
