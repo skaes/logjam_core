@@ -155,7 +155,7 @@ module Logjam
     end
 
     def events_routing_key
-      ["logjam", "events", @application, @environment].compact.join('.')
+      ["events", @application, @environment].compact.join('.')
     end
 
     def heartbeat_exchange_name
