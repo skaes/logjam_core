@@ -135,9 +135,9 @@ module Logjam
         # least = {:time => 'least', :call => 'fewest', :memory => 'least'}[type]
         # best = {:time => 'fastest', :call => 'least busy', :memory => 'skinniest'}[type]
 
-        return 'nonsensical' if grouping.to_sym != :request && grouping_function.to_sym == :sum &&
+        return 'nonsensical sort order' if grouping.to_sym != :request && grouping_function.to_sym == :sum &&
           [:heap_size, :live_data_set_size].include?(resource.to_sym)
-        return 'nonsensical' if grouping.to_sym == :request && resource.to_sym == :requests
+        return 'nonsensical sort order' if grouping.to_sym == :request && resource.to_sym == :requests
 
         if grouping?(grouping)
           case grouping_function.to_sym
