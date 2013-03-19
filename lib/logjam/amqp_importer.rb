@@ -14,7 +14,8 @@ module Logjam
       @stream = stream
       @application = @stream.app
       @environment = @stream.env
-      @processor = RequestProcessorServer.new(@stream)
+      @request_processor = RequestProcessorServer.new(@stream)
+      @event_processor = EventsProcessor.new(@stream)
       @connections = []
       @capture_file = File.open("#{Rails.root}/capture-#{$$}.log", "w") if ENV['LOGJAM_CAPTURE']
       @outstanding_heartbeats = Hash.new(0)
@@ -83,9 +84,15 @@ module Logjam
         importer_queue = channel.queue(importer_queue_name, importer_queue_options)
         log_info "binding request stream exchange #{importer_exchange_name} to #{importer_queue_name} on #{broker}"
         importer_queue.bind(request_stream_exchange, :routing_key => importer_routing_key)
+        importer_queue.bind(request_stream_exchange, :routing_key => events_routing_key)
         log_info "subscribing to request stream queue #{importer_queue_name} on #{broker}"
         importer_queue.subscribe do |header, msg|
-          process_request(msg, header.routing_key)
+          case header.routingkey
+          when /^logs/
+             process_request(msg, header.routing_key)
+          when /^events/
+             process_event(msg, header.routing_key)
+          end
         end
 
         # setup heartbeats
@@ -142,9 +149,13 @@ module Logjam
         :auto_delete => true,
         :arguments => {
           # reap messages after 1 minute
-          "x-message-ttl" => 1 * 60 * 1000
+          "x-message-ttl" => 60 * 1000
         }
       }
+    end
+
+    def events_routing_key
+      ["logjam", "events", @application, @environment].compact.join('.')
     end
 
     def heartbeat_exchange_name
@@ -176,7 +187,12 @@ module Logjam
     def process_request(msg, routing_key)
       (c = @capture_file) && (c.puts msg)
       request = Oj.load(msg, :mode => :compat)
-      @processor.process_request(request)
+      @request_processor.process(request)
+    end
+
+    def process_event(msg, routing_key)
+      event = Oj.load(msg, :mode => :compat)
+      @event_processor.process(event)
     end
 
     def send_heartbeats(connection, settings, heartbeat_exchange)

@@ -56,7 +56,7 @@ module Logjam
       Marshal.dump(info)
     end
 
-    def process_request(r)
+    def process(r)
       # log_info "received request"
       # log_info r.inspect
       processor(r).add(r)
