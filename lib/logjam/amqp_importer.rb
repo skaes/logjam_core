@@ -15,7 +15,7 @@ module Logjam
       @application = @stream.app
       @environment = @stream.env
       @request_processor = RequestProcessorServer.new(@stream)
-      @event_processor = EventsProcessor.new(@stream)
+      @event_processor = EventProcessor.new(@stream)
       @connections = []
       @capture_file = File.open("#{Rails.root}/capture-#{$$}.log", "w") if ENV['LOGJAM_CAPTURE']
       @outstanding_heartbeats = Hash.new(0)
@@ -87,7 +87,7 @@ module Logjam
         importer_queue.bind(request_stream_exchange, :routing_key => events_routing_key)
         log_info "subscribing to request stream queue #{importer_queue_name} on #{broker}"
         importer_queue.subscribe do |header, msg|
-          case header.routingkey
+          case header.routing_key
           when /^logs/
              process_request(msg, header.routing_key)
           when /^events/

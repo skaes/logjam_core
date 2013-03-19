@@ -7,6 +7,8 @@ module Logjam
 
     def process(event)
       # write to mongo
+      puts "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      p event
     end
 
   end
