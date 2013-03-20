@@ -6,9 +6,7 @@ module Logjam
     end
 
     def process(event)
-      # write to mongo
-      puts "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-      p event
+      Logjam::Events.insert(event)
     end
 
   end
