@@ -3,14 +3,6 @@ module Logjam
 
     include Helpers
 
-    def self.ensure_indexes(collection)
-      ms = Benchmark.ms do
-        collection.create_index([ ["page", Mongo::ASCENDING], ["minute", Mongo::ASCENDING] ], :background => true)
-      end
-      logger.debug "MONGO #{self.class} Indexes Creation: #{"%.1f" % (ms)} ms"
-      collection
-    end
-
     attr_accessor :events
 
     def initialize(db)
