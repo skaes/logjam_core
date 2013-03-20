@@ -1,7 +1,7 @@
 module Logjam
   class Events
 
-    include Helpers
+    extend Helpers
 
     attr_accessor :events
 
