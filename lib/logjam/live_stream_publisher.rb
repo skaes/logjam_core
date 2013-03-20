@@ -2,7 +2,7 @@ require 'oj'
 
 module Logjam
   class LiveStreamPublisher
-    include LogWithProcessId
+    include Helpers
 
     def initialize(stream, zmq_context)
       @stream = stream

@@ -13,10 +13,11 @@
 <script type="text/javascript">
 (function() {
 
-var data = <%= raw @js_data.inspect.gsub(' ','') %>;
+var events   = <%= raw Oj.dump(@js_events.map { |event| [event["minute"], event["label"]] }) %>;
+var data     = <%= raw @js_data.inspect.gsub(' ','') %>;
 var interval = <%= params[:interval].to_i %>;
-var colors = <%= raw Oj.dump((@resources.reverse+[@gc_time&&"gc_time"]).compact.map{|r| Logjam::Resource.color(r,0.8)}+["rgba(128,128,128,0.2)"]) %>;
-var legend = <%= raw Oj.dump((@resources.reverse+[@gc_time&&"gc_time"]+%w(requests/second)).compact).gsub(/_/,' ') %>;
+var colors   = <%= raw Oj.dump((@resources.reverse+[@gc_time&&"gc_time"]).compact.map{|r| Logjam::Resource.color(r,0.8)}+["rgba(128,128,128,0.2)"]) %>;
+var legend   = <%= raw Oj.dump((@resources.reverse+[@gc_time&&"gc_time"]+%w(requests/second)).compact).gsub(/_/,' ') %>;
 var request_counts = <%= raw @request_counts.reverse.drop_while{|d|d==0}.reverse.inspect.gsub(' ','') %>;
 var gc_time = <%= @gc_time ? @gc_time.reverse.drop_while{|_,d| d==0}.reverse.inspect.gsub(' ','') : "null" %>;
 var max_y = <%= @js_max %>;
@@ -31,10 +32,10 @@ var zoom_interval = 1;
 /* Sizing and scales. */
 var w = <%= width %>,
     h = <%= height %>,
-    x = d3.scale.linear().domain([0, 1440/interval]).range([0, w]),
     xticks = d3.range(25).map(function(h){ return h/interval*60; }),
-    y = d3.scale.linear().domain([0, zoomed_max_y]).range([h, 0]).nice(),
-    y2 = d3.scale.linear().domain([0, max_request_count]).range([50,0]).nice();
+    x =      d3.scale.linear().domain([0, 1440/interval]).range([0, w]),
+    y =      d3.scale.linear().domain([0, zoomed_max_y]).range([h, 0]).nice(),
+    y2 =     d3.scale.linear().domain([0, max_request_count]).range([50,0]).nice();
 
 function submit_minutes(start, end, resource) {
    jQuery('#start-minute').val(""+start);
@@ -240,6 +241,39 @@ vis.append("rect")
     .style("stroke", "none")
     .style("fill", "rgba(128,128,128,.05)");
 
+function mouse_over_event(d, i) {
+  var mouseCoords = d3.svg.mouse(this);
+
+  d3.select(this).style("stroke", "rgba(255,0,0,.5)");
+
+  vis.selectAll(".tooltip").
+    attr("x", mouseCoords[0] + 15).
+    attr("y", mouseCoords[1] + 3).
+    text(d[1]);
+}
+
+function mouse_over_out() {
+  vis.selectAll(".tooltip").text("")
+  d3.select(this).style("stroke", "rgba(255,0,0,.0)");
+}
+
+vis.selectAll(".eventLine")
+  .data(events)
+  .enter()
+    .append("line")
+      .attr("class", "eventLine")
+      .style("stroke", "rgba(255,0,0,.0)")
+      .style("stroke-width", "3")
+      .attr("x1", function(d,i) { return x(d[0] / interval) })
+      .attr("y1", 0)
+      .attr("x2", function(d,i) { return x(d[0] / interval) })
+      .attr("y2", h)
+      .on("mouseover", mouse_over_event)
+      .on("mousemove", mouse_over_event)
+      .on("mouseout",  mouse_over_out);
+
+
+
 /* top x axis */
 vis.append("line")
     .attr("y1", 0)
@@ -363,6 +397,25 @@ function redraw() {
       .attr("d", heap_size_line);
    };
 }
+
+vis.selectAll(".event")
+  .data(events)
+  .enter()
+    .append("polygon")
+      .attr("class", "event")
+      .attr("points", function(d,i) {
+        var xCenter = x(d[0] / interval),
+            y       = 0,
+            p1      = [xCenter - 5, y],
+            p2      = [xCenter + 5, y],
+            p3      = [xCenter, y + 7];
+
+        var what = [p1, p2, p3].map(function(point) { return point[0] + "," + point[1] }).join(" ")
+        console.log(what)
+        return what;
+      })
+      .style("stroke", "rgba(255,0,0,0)")
+      .style("fill", "rgba(255,0,0,1)");
 
 /* tooltip (last to be on top of everything else) */
 vis.selectAll(".tooltip")

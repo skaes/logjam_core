@@ -6,7 +6,7 @@ module Logjam
 
   class RequestProcessorProxy
 
-    include LogWithProcessId
+    include Helpers
 
     def initialize(stream, zmq_context)
       @stream = stream

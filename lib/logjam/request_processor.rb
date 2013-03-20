@@ -4,7 +4,7 @@ require 'set'
 module Logjam
 
   class RequestProcessor
-    include Logjam::LogWithProcessId
+    include Logjam::Helpers
 
     def initialize(stream, request_collection, old_format)
       @stream = stream
@@ -224,10 +224,6 @@ module Logjam
       entry["other_time"] = ot
     end
 
-    def extract_minute(iso_string)
-      60 * iso_string[11..12].to_i + iso_string[14..15].to_i
-    end
-
     def add_allocated_memory(entry)
       if !(allocated_memory = entry["allocated_memory"]) && (allocated_objects = entry["allocated_objects"])
         # assume 64bit ruby
@@ -236,7 +232,7 @@ module Logjam
     end
 
     def add_minute(entry)
-      entry["minute"] = extract_minute(entry["started_at"])
+      entry["minute"] = extract_minute_from_iso8601(entry["started_at"])
     end
 
     def add_squared_fields(increments, entry)

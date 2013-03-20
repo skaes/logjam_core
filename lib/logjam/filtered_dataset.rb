@@ -164,6 +164,7 @@ module Logjam
       @plot_data ||=
         begin
           resources = plotted_resources
+          events = Events.new(@db).events
           mins = Minutes.new(@db, resources, page, totals.page_names, interval)
           minutes = mins.minutes
           counts = mins.counts
@@ -192,7 +193,7 @@ module Logjam
           request_counts = []
           intervals_per_day.times{|i| request_counts << (counts[i] || 0) / 60.0}
           y_zoom = totals.sort[(totals.size*0.9).to_i].to_f
-          [plot_resources-["gc_time"], plot_data, max_total, request_counts, gc_time, y_zoom]
+          [plot_resources-["gc_time"], plot_data, events, max_total, request_counts, gc_time, y_zoom]
         end
     end
 

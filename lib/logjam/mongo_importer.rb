@@ -2,7 +2,7 @@ module Logjam
 
   class MongoImporter
 
-    include LogWithProcessId
+    include Helpers
 
     def initialize(stream, zmq_context)
       @import_buffers = {}

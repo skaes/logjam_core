@@ -2,7 +2,7 @@ require 'em-zeromq'
 
 module Logjam
   class ImporterManager
-    include LogWithProcessId
+    include Helpers
 
     def initialize(stream)
       @stream = stream
