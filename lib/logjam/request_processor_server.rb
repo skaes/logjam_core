@@ -3,7 +3,7 @@ require 'em-zeromq'
 module Logjam
   class RequestProcessorServer
 
-    include LogWithProcessId
+    include Helpers
 
     def initialize(stream, zmq_context = nil)
       @stream = stream

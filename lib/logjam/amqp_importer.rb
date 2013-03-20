@@ -7,7 +7,7 @@ module Logjam
 
   class AMQPImporter
 
-    include LogWithProcessId
+    include Helpers
     include ReparentingTimer
 
     def initialize(stream)

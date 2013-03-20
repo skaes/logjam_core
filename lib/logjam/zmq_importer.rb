@@ -7,7 +7,7 @@ module Logjam
 
   class ZMQImporter
 
-    include LogWithProcessId
+    include Helpers
     include ReparentingTimer
 
     def initialize(stream)

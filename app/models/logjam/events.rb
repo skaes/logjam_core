@@ -1,6 +1,8 @@
 module Logjam
   class Events
 
+    include Helpers
+
     def self.ensure_indexes(collection)
       ms = Benchmark.ms do
         collection.create_index([ ["page", Mongo::ASCENDING], ["minute", Mongo::ASCENDING] ], :background => true)
@@ -17,8 +19,8 @@ module Logjam
       @events = compute
     end
 
-    def self.insert(label)
-      @collection.insert({:minute => 1, :label => label})
+    def self.insert(event)
+      @collection.insert({:minute => extract_minute_from_iso8601(event["started_at"]), :label => event["label"]})
     end
 
     private
