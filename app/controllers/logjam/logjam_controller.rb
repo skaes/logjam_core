@@ -91,7 +91,7 @@ module Logjam
 
     def enlarged_plot
       @dataset = dataset_from_params
-      @resources, @js_data, @js_max, @request_counts, @gc_time, @js_zoom = @dataset.plot_data
+      @resources, @js_data, @js_events, @js_max, @request_counts, @gc_time, @js_zoom = @dataset.plot_data
     end
 
     def request_time_distribution

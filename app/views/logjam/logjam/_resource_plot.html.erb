@@ -13,8 +13,7 @@
 <script type="text/javascript">
 (function() {
 
-// var events   = <%= raw Oj.dump(@events) %>;
-var events   = [[600, 'Deploy Release_300_01'],[720, 'I did something else']];
+var events   = <%= raw Oj.dump(@js_events.map { |event| [event["minute"], event["label"]] }) %>;
 var data     = <%= raw @js_data.inspect.gsub(' ','') %>;
 var interval = <%= params[:interval].to_i %>;
 var colors   = <%= raw Oj.dump((@resources.reverse+[@gc_time&&"gc_time"]).compact.map{|r| Logjam::Resource.color(r,0.8)}+["rgba(128,128,128,0.2)"]) %>;
