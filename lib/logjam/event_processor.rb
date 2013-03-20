@@ -6,8 +6,13 @@ module Logjam
     end
 
     def process(event)
-      Logjam::Events.insert(event)
+      Events.new(db(event)).insert(event)
     end
 
+    private
+
+    def db(event)
+      Logjam.db(event["started_at"], @stream.app, @stream.env)
+    end
   end
 end

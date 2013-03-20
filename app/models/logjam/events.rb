@@ -1,21 +1,26 @@
 module Logjam
   class Events
 
-    extend Helpers
-
-    attr_accessor :events
+    include Helpers
 
     def initialize(db)
-      @database = db
-      @collection = @database["events"]
-      @events = compute
+      @database   = db
+      @collection = db.collection("events")
     end
 
-    def self.insert(event)
-      @collection.insert({:minute => extract_minute_from_iso8601(event["started_at"]), :label => event["label"]})
+    def insert(event)
+      @collection.insert(event.merge(:minute => extract_minute_from_iso8601(event["started_at"])))
+    end
+
+    def events
+      @events ||= compute
     end
 
     private
+
+    def db
+      Logjam.db
+    end
 
     def compute
       rows = []
