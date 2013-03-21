@@ -1,0 +1,13 @@
+<fieldset class="resource-fields">
+  <legend><%= title %></legend>
+  <table id='request-details' class="filter-widget">
+    <% fields.each do |name, value| -%>
+    <% next if value.blank? -%>
+    <tr>
+      <td class='resource_name'><%= hrn name %></td>
+      <td class='number'><%= h value %></td>
+    </tr>
+    <% end -%>
+  </table>
+  <p class="clear-left"></p>
+</fieldset>
