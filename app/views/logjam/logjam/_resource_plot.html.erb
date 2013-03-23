@@ -33,9 +33,9 @@ var zoom_interval = 1;
 var w = <%= width %>,
     h = <%= height %>,
     xticks = d3.range(25).map(function(h){ return h/interval*60; }),
-    x =      d3.scale.linear().domain([0, 1440/interval]).range([0, w]),
-    y =      d3.scale.linear().domain([0, zoomed_max_y]).range([h, 0]).nice(),
-    y2 =     d3.scale.linear().domain([0, max_request_count]).range([50,0]).nice();
+    x      = d3.scale.linear().domain([0, 1440/interval]).range([0, w]),
+    y      = d3.scale.linear().domain([0, zoomed_max_y]).range([h, 0]).nice(),
+    y2     = d3.scale.linear().domain([0, max_request_count]).range([50,0]).nice();
 
 function submit_minutes(start, end, resource) {
    jQuery('#start-minute').val(""+start);
@@ -244,7 +244,7 @@ vis.append("rect")
 function mouse_over_event(d, i) {
   var mouseCoords = d3.svg.mouse(this);
 
-  d3.select(this).style("stroke", "rgba(255,0,0,.5)");
+  d3.select("#eventLine"+i).style("stroke", "rgba(255,0,0,.5)");
 
   vis.selectAll(".tooltip").
     attr("x", mouseCoords[0] + 15).
@@ -254,7 +254,7 @@ function mouse_over_event(d, i) {
 
 function mouse_over_out() {
   vis.selectAll(".tooltip").text("")
-  d3.select(this).style("stroke", "rgba(255,0,0,.0)");
+  d3.selectAll(".eventLine").style("stroke", "rgba(255,0,0,.0)");
 }
 
 vis.selectAll(".eventLine")
@@ -262,6 +262,7 @@ vis.selectAll(".eventLine")
   .enter()
     .append("line")
       .attr("class", "eventLine")
+      .attr("id", function(d,i){ return("eventLine" + i)})
       .style("stroke", "rgba(255,0,0,.0)")
       .style("stroke-width", "3")
       .attr("x1", function(d,i) { return x(d[0] / interval) })
@@ -405,7 +406,7 @@ vis.selectAll(".event")
       .attr("class", "event")
       .attr("points", function(d,i) {
         var xCenter = x(d[0] / interval),
-            y       = 0,
+            y       = -5,
             p1      = [xCenter - 5, y],
             p2      = [xCenter + 5, y],
             p3      = [xCenter, y + 7];
@@ -415,7 +416,11 @@ vis.selectAll(".event")
         return what;
       })
       .style("stroke", "rgba(255,0,0,0)")
-      .style("fill", "rgba(255,0,0,1)");
+      .style("fill", "rgba(255,0,0,1)")
+      .on("mouseover", mouse_over_event)
+      .on("mousemove", mouse_over_event)
+      .on("mouseout",  mouse_over_out);
+
 
 /* tooltip (last to be on top of everything else) */
 vis.selectAll(".tooltip")
