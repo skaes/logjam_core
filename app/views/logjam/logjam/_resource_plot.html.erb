@@ -247,8 +247,8 @@ function mouse_over_event(d, i) {
   d3.select("#eventLine"+i).style("stroke", "rgba(255,0,0,.5)");
 
   vis.selectAll(".tooltip").
-    attr("x", mouseCoords[0] + 15).
-    attr("y", mouseCoords[1] + 3).
+    attr("x", mouseCoords[0] + 10).
+    attr("y", mouseCoords[1] + 15).
     text(d[1]);
 }
 
