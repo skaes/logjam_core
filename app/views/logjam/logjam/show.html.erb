@@ -95,25 +95,9 @@ at
   </fieldset>
   <% end %>
 
-  <fieldset class="resource-fields">
-    <legend>Request attributes</legend>
-    <table id='request-details' class="filter-widget">
-      <% @request.slice(*other_keys).each do |name, value| -%>
-      <% next if value.blank?  -%>
-      <tr>
-        <td class='resource_name'><%= hrn name %></td>
-        <% if name == "severity" -%>
-        <td class='number'><%= format_severity(value) %></td>
-        <% elsif name == "caller_id"-%>
-        <td class='number'><%= sometimes_link_to_request(value) %></td>
-        <% else -%>
-        <td class='number'><%= h value %></td>
-        <% end -%>
-      </tr>
-      <% end -%>
-    </table>
-    <p class="clear-left"></p>
-  </fieldset>
+  <% Logjam::RequestDetailPlugins.all.each do |plugin| %>
+    <%= render "request_details_fieldset", instance_exec(@request, &plugin) %>
+  <% end %>
 </div>
 
 <% unless (lines = @request["lines"]).blank? -%>
