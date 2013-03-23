@@ -15,17 +15,18 @@ module Logjam
     end
 
     DEFAULT_REQUEST_DETAILS_PLUGIN = ->(request) do
-      fields = request.keys - Logjam::Resource.time_resources -
-                              Logjam::Resource.call_resources -
-                              Logjam::Resource.memory_resources -
-                              Logjam::Resource.heap_resources
+      fields = request.keys - ::Logjam::Resource.all_resources
 
       fields.reject!{|k| k =~ /(^_id|lines|minute|page|_sq|request_info)$/}
 
       locals = request.slice(*fields)
 
-      locals["severity"]  = format_severity(request["severity"])
-      locals["caller_id"] = sometimes_link_to_request(request["caller_id"])
+      if severity = request["severity"]
+        locals["severity"] = format_severity(severity)
+      end
+      if caller_id = request["caller_id"]
+        locals["caller_id"] = sometimes_link_to_request(caller_id)
+      end
 
       { :title => "Request attributes", :fields => locals }
     end
