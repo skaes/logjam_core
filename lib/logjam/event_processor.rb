@@ -1,5 +1,6 @@
 module Logjam
   class EventProcessor
+    include Helpers
 
     def initialize(stream)
       @stream = stream
@@ -7,6 +8,9 @@ module Logjam
 
     def process(event)
       Events.new(db(event)).insert(event)
+    rescue => e
+      log_error("error during processing event: #{event.inspect}")
+      log_error("#{e.class}(#{e})")
     end
 
     private
