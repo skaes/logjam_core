@@ -25,4 +25,9 @@
     <td class="number error"><%= link_to(@dataset.exception_count,
       clean_params(params.merge(:action => "exceptions", :page =>  (@page||'').gsub(/^::/,'')))) %></td>
   </tr>
+  <tr>
+    <td title="javascript exceptions">javascript exceptions</td>
+    <td class="number error"><%= link_to(@dataset.js_exception_count,
+      clean_params(params.merge(:action => "js_exceptions", :page =>  (@page||'').gsub(/^::/,'')))) %></td>
+  </tr>
 </table>

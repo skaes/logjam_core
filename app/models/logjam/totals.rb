@@ -66,6 +66,14 @@ module Logjam
       exceptions.values.inject(0){|s,v| s += v.to_i}
     end
 
+    def js_exceptions
+      @page_info["js_exceptions"] ||= {}
+    end
+
+    def js_exception_count
+      js_exceptions.values.inject(0){|s,v| s += v.to_i}
+    end
+
     def error_count
       # response["500"].to_i
       severity["3"].to_i + severity["4"].to_i
@@ -100,6 +108,7 @@ module Logjam
       pi["response"] = pi["response"].clone if pi["response"]
       pi["severity"] = pi["severity"].clone if pi["severity"]
       pi["exceptions"] = pi["exceptions"].clone if pi["exceptions"]
+      pi["js_exceptions"] = pi["js_exceptions"].clone if pi["js_exceptions"]
       @resources.each do |r|
         pi.delete("#{r}_avg")
         pi.delete("#{r}_stddev")
@@ -145,6 +154,7 @@ module Logjam
       @response = @resources.delete("response")
       @severity = @resources.delete("severity")
       @exceptions = @resources.delete("exceptions")
+      @js_exceptions = @resources.delete("js_exceptions")
       @pattern = pattern
       @page_names = page_name_list
       @sum = {}
@@ -256,6 +266,14 @@ module Logjam
 
     def exception_count
       @exception_count ||= exceptions.values.inject(0){|s,v| s += v}
+    end
+
+    def js_exceptions
+      @js_exceptions_hash ||= the_pages.inject(Hash.new(0)){|h,p| p.js_exceptions.each{|k,v| h[k] += v.to_i}; h}
+    end
+
+    def js_exception_count
+      @js_exception_count ||= js_exceptions.values.inject(0){|s,v| s += v}
     end
 
     protected

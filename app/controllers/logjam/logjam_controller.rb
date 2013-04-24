@@ -89,6 +89,13 @@ module Logjam
       @totals = Totals.new(@db, ["exceptions"], @page)
     end
 
+    def js_exceptions
+      prepare_params
+      @page = params[:page]
+      @title = "Logged JavaScript Exceptions"
+      @totals = Totals.new(@db, ["js_exceptions"], @page)
+    end
+
     def enlarged_plot
       @dataset = dataset_from_params
       @resources, @js_data, @js_events, @js_max, @request_counts, @gc_time, @js_zoom = @dataset.plot_data

@@ -285,6 +285,10 @@ module Logjam
       totals.exception_count
     end
 
+    def js_exception_count
+      totals.js_exception_count
+    end
+
     def response_codes
       totals.response_codes
     end
