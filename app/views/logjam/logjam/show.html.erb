@@ -101,11 +101,11 @@ at
 </div>
 
 <% unless (lines = @request["lines"]).blank? -%>
-<pre id='request-lines' class="filter-widget">
+<div id='request-lines' class="filter-widget">
 <% lines.each do |line| -%>
-<span class="logline"><%= raw format_log_line(line) %></span>
+<span class="logline" data-logjam-tags="<%= line_tags(line) %>"><pre><%= raw format_log_line(line) %></pre></span>
 <% end -%>
-</pre>
+</div>
 <% end %>
 
 <% if info = @request["request_info"] -%>
