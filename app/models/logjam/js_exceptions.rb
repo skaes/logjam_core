@@ -17,8 +17,8 @@ module Logjam
       @collection.find('logjam_request_id' => request_id)
     end
 
-    def insert(excepton)
-      @collection.insert(exception.merge(:minute => extract_minute_from_iso8601(event["started_at"])))
+    def insert(exception)
+      @collection.insert(exception.merge(:minute => extract_minute_from_iso8601(exception["started_at"])))
     end
 
     def exceptions

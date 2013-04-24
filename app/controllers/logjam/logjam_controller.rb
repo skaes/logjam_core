@@ -32,7 +32,10 @@ module Logjam
       prepare_params
       @page_size = 25
       @page = params[:page]
-      if params[:error_type] == "internal"
+      if params[:error_type] == "javascript"
+        @title = "Javascript Exceptions"
+        q = JsExceptions.new(@db).all
+        elsif params[:error_type] == "internal"
         @title = "Internal Server Errors"
         q = Requests.new(@db, "minute", @page, :response_code => 500, :limit => @page_size, :skip => params[:offset].to_i)
       elsif params[:error_type] == "exceptions"
