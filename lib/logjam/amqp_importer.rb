@@ -16,6 +16,7 @@ module Logjam
       @environment = @stream.env
       @request_processor = RequestProcessorServer.new(@stream)
       @event_processor = EventProcessor.new(@stream)
+      @js_exception_processor = JsExceptionProcessor.new(@stream)
       @connections = []
       @capture_file = File.open("#{Rails.root}/capture-#{$$}.log", "w") if ENV['LOGJAM_CAPTURE']
       @outstanding_heartbeats = Hash.new(0)
@@ -92,6 +93,8 @@ module Logjam
              process_request(msg, header.routing_key)
           when /^events/
              process_event(msg, header.routing_key)
+          when /^javascript/
+            process_js_exception(msg, headers.routing_key)
           end
         end
 
@@ -193,6 +196,11 @@ module Logjam
     def process_event(msg, routing_key)
       event = Oj.load(msg, :mode => :compat)
       @event_processor.process(event)
+    end
+
+    def process_js_exception(msg, routing_key)
+      exception = Oj.load(msg, :mode => :compat)
+      @js_exception_processor.process(exception)
     end
 
     def send_heartbeats(connection, settings, heartbeat_exchange)
