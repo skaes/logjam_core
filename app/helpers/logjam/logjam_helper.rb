@@ -41,6 +41,16 @@ module Logjam
       end
     end
 
+    def line_tags(line)
+      logline = line.last.strip
+      tags = []
+      tags << "view"      if logline =~ /^Rendered/
+      tags << "api"       if logline =~ /(^API|PerlBackend)/
+      tags << "memcache"  if logline =~ /^DALLI/
+      tags << "rest"      if logline =~ /(^REST|RESTApi)/
+      tags.join(" ")
+    end
+
     def clean_params(params)
       FilteredDataset.clean_url_params(params.merge :default_app => @default_app, :default_env => @default_app)
     end
