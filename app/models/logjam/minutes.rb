@@ -37,11 +37,8 @@ module Logjam
         payload[:rows] = rows.size
       end
 
-      n = rows.size
-
       sums = {}
       counts = Hash.new(0.0)
-      max_sum = 0
       while row = rows.shift
         count = row["count"]
         slot = row["minute"] / interval
