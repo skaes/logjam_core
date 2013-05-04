@@ -23,7 +23,24 @@ module Logjam
       compute(interval)
     end
 
+    def exceptions
+      @exceptions ||=
+        begin
+          exceptions = Hash.new{|h,e| h[e] = {}}
+          @minutes.each do |m,h|
+            (h["exceptions"]||{}).each do |e,c|
+            exceptions[e][m] = c
+            end
+          end
+          exceptions
+        end
+    end
+
     private
+
+    def compound_resources
+      %w(apdex exceptions severity)
+    end
 
     def compute(interval)
       logger.debug "pattern: #{@pattern}, resources: #{@resources.inspect}"
@@ -37,24 +54,41 @@ module Logjam
         payload[:rows] = rows.size
       end
 
+      # aggregate values according to given interval
       sums = {}
       counts = Hash.new(0.0)
+      counter_resources = @resources - compound_resources
+      hashed_resources = @resources & compound_resources
       while row = rows.shift
         count = row["count"]
         slot = row["minute"] / interval
         counts[slot] += count
         sum_sofar = (sums[slot] ||= Hash.new(0.0))
-        @resources.each do |f|
+        counter_resources.each do |f|
           v = row[f].to_f
           v /= 40 if f == "allocated_bytes" # HACK!!!
           sum_sofar[f] += v
+        end
+        hashed_resources.each do |r|
+          unless (h = sum_sofar[r]).is_a?(Hash)
+            h = sum_sofar[r] = Hash.new(0)
+          end
+          if vals = row[r]
+            vals.each do |f,v|
+              h[f] += v.to_i
+            end
+          end
         end
       end
 
       @minutes = sums
       sums.each do |m,r|
         cnt = counts[m]
-        r.each_key { |f| r[f] /= cnt }
+        r.each_key do |f|
+          unless (v = r[f]).is_a?(Hash)
+            r[f] = v/cnt
+          end
+        end
       end
 
       @counts = counts

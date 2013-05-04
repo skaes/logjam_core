@@ -1,14 +1,107 @@
 <%= render "header" %>
 
+<style type="text/css">
+.xlabel, .ylabel, .legend, .label, .rlabel, .tooltip {
+  font: "8px sans-serif";
+  stroke: none;
+  fill: #000;
+  stroke-width: 0.5;
+  shape-rendering: crispEdges;
+}
+</style>
+
 <div id='exceptions'>
   <h1><%= h @title %> <%= h @page %> (<%= @totals.exception_count %> total)</h1>
   <table class='full_stats'>
-    <tr><th>Exception</th><th>Count</th></tr>
-    <% @totals.exceptions.to_a.sort.each do |e,c| %>
+    <tr><th>Exception</th><th>Count</th><th>Distribution over time (0-24h, 2 minute intervals)</th></tr>
+    <% @totals.exceptions.to_a.sort.each_with_index do |(e,c),i| %>
     <tr class='full_stats'>
       <% url = url_for(clean_params(params.merge(:action => "errors", :error_type => "exceptions", :exception => e))) %>
       <td><%= link_to e, url %></td>
-      <td class='number'><%= link_to c, url %>
+      <td class='number'><%= link_to c, url %></td>
+      <td class='echart' id='<%= "echart-#{i}" %>'>
+        <script type="text/javascript">
+(function() {
+<%
+    max_x = @minutes.exceptions[e].keys.max
+    max_y = @minutes.exceptions[e].values.max
+%>
+var data = <%= raw Oj.dump((0..max_x).each_with_object({}){|i,h|h[i]=-1}.merge!(@minutes.exceptions[e]).map{|k,v| [k,v]}) %>;
+var max_y = <%= max_y %>;
+var max_x = <%= max_x %>;
+var h = 15;
+var w = 1440/2;
+var x = d3.scale.linear().domain([0, w]).range([0, w]);
+var y = d3.scale.linear().domain([0, max_y]).range([h, 0]).nice();
+var vis = d3.select('<%= "#echart-#{i}" %>')
+     .append("svg")
+     .attr("width", w)
+     .attr("height", h)
+     .style("stroke", "lightsteelblue")
+     .style("strokeWidth", 1.0)
+     .style("cursor", "pointer")
+     .on("mouseover", mouse_over_event)
+     .on("mousemove", mouse_over_event)
+     .on("mouseout",  mouse_over_out)
+     .on("click", function(){ document.location = '<%= url %>';})
+;
+
+var xaxis = vis.append("svg:line")
+    .style("fill", "#999")
+    .style("stroke", "#999")
+    .attr("x1", 0)
+    .attr("y1", h)
+    .attr("x2", w)
+    .attr("y2", h);
+
+vis.selectAll(".rlabel")
+    .data([20])
+    .enter()
+    .append("text")
+    .attr("class", "rlabel")
+    .style("font", "8px sans-serif")
+    .attr("text-anchor", "end")
+    .attr("dy", ".75em")
+    .attr("x", w-1)
+    .text("" + max_y);
+
+var line = d3.svg.line()
+    .interpolate("cardinal")
+    .x(function(d,i) { return x(d[0]); })
+    .y(function(d) { return y(d[1]); })
+;
+
+function mouse_over_event(d, i) {
+  var mouseCoords = d3.svg.mouse(this);
+  var n = data[mouseCoords[0]][1];
+  var text =  (n < 0) ? "" : "" + n;
+  vis.selectAll(".tooltip")
+    .attr("x", mouseCoords[0]+15)
+    .text(text);
+}
+
+function mouse_over_out() {
+  vis.selectAll(".tooltip").text("")
+}
+
+vis.append("svg:path")
+  .attr("d", line(data))
+  .style("stroke", "steelblue")
+  .style("fill", "none")
+;
+
+vis.selectAll(".tooltip")
+    .data([1])
+    .enter().append("svg:text")
+    .attr("class", "tooltip")
+    .attr("x", 0)
+    .attr("y", h-1)
+    .style("cursor", "none")
+    .text("");
+
+})();
+        </script>
+      </td>
     </tr>
     <% end %>
   </table>
