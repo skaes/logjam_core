@@ -242,7 +242,7 @@ vis.append("rect")
     .style("fill", "rgba(128,128,128,.05)");
 
 function mouse_over_event(d, i) {
-  var mouseCoords = d3.svg.mouse(this);
+  var mouseCoords = d3.mouse(this);
 
   d3.select("#eventLine"+i).style("stroke", "rgba(255,0,0,.5)");
 
@@ -285,7 +285,7 @@ vis.append("line")
     .style("fill", "none");
 
 function mouse_over_requests(d, i, n) {
-  var p = d3.svg.mouse(n);
+  var p = d3.mouse(n);
   var di = Math.ceil(x.invert(p[0]))-1;
   var text = d3.round(request_counts[di]) + " req/sec";
   vis.selectAll(".tooltip").attr("x", p[0]-15).attr("y", p[1]-5).text(text);
@@ -297,7 +297,7 @@ vis.selectAll(".request_count")
      .attr("class", "request_count")
      .style("fill", "rgba(128,128,128,0.2)")
      .style("cursor", "pointer")
-     .on("click", function(d,i){ restrict_minutes(d3.svg.mouse(this), jQuery('#resource option:selected').val())})
+     .on("click", function(d,i){ restrict_minutes(d3.mouse(this), jQuery('#resource option:selected').val())})
      .on("mouseover", function(d,i){ mouse_over_requests(d, i, this)})
      .on("mousemove", function(d,i){ mouse_over_requests(d, i, this)})
      .on("mouseout", function(d,i){ vis.selectAll(".tooltip").text("")})
@@ -331,7 +331,7 @@ var odata = oj(data);
 var ldata = d3.layout.stack()(odata);
 
 function mouse_over_layer(d, i, n) {
-  var p = d3.svg.mouse(n);
+  var p = d3.mouse(n);
   var di = Math.ceil(x.invert(p[0]))-1;
   // text = legend[i] + ': ' + tooltip_formatter(data[i][di][1]);
   var text = tooltip_formatter(data[i][di][1]);
@@ -345,7 +345,7 @@ vis.selectAll(".layer")
      .attr("class", "layer")
      .style("fill", function(d,i) { return colors[i]; })
      .style("cursor", function(d,i) { return(legend[i] == "free slots" ? "arrow" : "pointer"); })
-     .on("click", function(d,i){ restrict_minutes(d3.svg.mouse(this), legend[i]); })
+     .on("click", function(d,i){ restrict_minutes(d3.mouse(this), legend[i]); })
      .on("mousemove", function(d,i){ mouse_over_layer(d, i, this)})
      .on("mouseover", function(d,i){ mouse_over_layer(d, i, this)})
      .on("mouseout", function(d,i){ vis.selectAll(".tooltip").text("")})
