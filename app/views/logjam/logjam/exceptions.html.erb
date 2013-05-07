@@ -88,11 +88,12 @@ tooltip.tipsy({
 });
 
 function mouse_over_event(d, i) {
-  var mouseCoords = d3.mouse(this);
-  var x = data[mouseCoords[0]];
+  var p = d3.mouse(this);
+  var di = Math.ceil(x.invert(p[0]))-1;
+  var xc = data[di];
   var n = 0;
-  if (x) {
-    n = x[1];
+  if (xc) {
+    n = xc[1];
   }
   tooltip_text = tooltip_formatter((n <= 0) ? 0 : n);
 }
