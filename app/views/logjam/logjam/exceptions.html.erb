@@ -80,10 +80,10 @@ var tooltip_formatter = d3.format("3d");
 tooltip.tipsy({
   trigger: 'hover',
   follow: 'x',
-  offset: 0,
+  offsetY: -20,
   gravity: 's',
   html: false,
-  opacity: 0.7,
+  opacity: 0.8,
   title: function() { return tooltip_text; }
 });
 

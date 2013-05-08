@@ -157,9 +157,14 @@
         } else if (/^[^e]e$/.test(options.gravity) && arrow.position() != null) {
           var x = event.pageX - ($(arrow).position().left+($(arrow).outerWidth()/2));
         } else {
-          var x = event.pageX - ($(tipsy.$tip).outerWidth()/2);
+          if ('w' == options.gravity) {
+            var x = event.pageX;
+          } else {
+            var x = event.pageX - ($(tipsy.$tip).outerWidth()/2);
+          }
         }
-        $(tipsy.$tip).css('left', x+options.offset);
+        $(tipsy.$tip).css('left', x+options.offsetX);
+        $(tipsy.$tip).css('top', event.pageY-($(tipsy.$tip).outerHeight()/2)+options.offsetY);
       } else if (options.follow == 'y') {
         if (/^w|^e/.test(options.gravity) ) {
           $(tipsy.$tip).css('top', event.pageY-($(tipsy.$tip).outerHeight()/2));
@@ -202,6 +207,8 @@
     html: false,
     live: false,
     offset: 0,
+    offsetX: 0,
+    offsetY: 0,
     opacity: 0.8,
     title: 'title',
     trigger: 'hover',
