@@ -246,7 +246,7 @@ var event_tooltip_text = "";
 function mouse_over_event(d, i) {
   var mouseCoords = d3.mouse(this);
   d3.select("#eventLine"+i).style("stroke", "rgba(255,0,0,.5)");
-  event_tooltip_text = d[1];
+  event_tooltip_text = d[1] + time_suffix(Math.floor(d[0]));
 }
 
 function mouse_over_out() {
@@ -286,7 +286,7 @@ var request_tooltip_text = "";
 function mouse_over_requests(d, i, n) {
   var p = d3.mouse(n);
   var di = Math.ceil(x.invert(p[0]))-1;
-  request_tooltip_text = d3.round(request_counts[di]) + " req/sec";
+  request_tooltip_text = d3.round(request_counts[di]) + " req/sec" + time_suffix(di*interval);
 }
 
 vis.selectAll(".request_count")
@@ -337,16 +337,22 @@ function oj(a) {
 };
 
 var odata = oj(data);
-
 var ldata = d3.layout.stack()(odata);
 
 var layer_tooltip_text = "";
+var tooltime_formatter = d3.format("02d");
+
+function time_suffix(n) {
+  var h = Math.floor(n / 60);
+  var m = Math.floor(n % 60);
+  return(" ~ " + tooltime_formatter(h) + ":" + tooltime_formatter(m));
+}
 
 function mouse_over_layer(d, i, n) {
   var p = d3.mouse(n);
   var di = Math.ceil(x.invert(p[0]))-1;
-  // layer_tooltip_text = legend[i] + ': ' + tooltip_formatter(data[i][di][1]);
-  layer_tooltip_text = tooltip_formatter(data[i][di][1]) + " " + legend[i];
+  var dp = data[i][di];
+  layer_tooltip_text = tooltip_formatter(dp[1]) + " " + legend[i] + time_suffix(dp[0]*interval);
 }
 
 /* The stack layout. */
@@ -435,7 +441,6 @@ vis.selectAll(".event")
             p3      = [xCenter, y + 7];
 
         var what = [p1, p2, p3].map(function(point) { return point[0] + "," + point[1] }).join(" ")
-        console.log(what)
         return what;
       })
       .style("stroke", "rgba(255,0,0,0)")

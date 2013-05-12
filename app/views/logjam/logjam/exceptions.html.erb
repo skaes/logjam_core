@@ -76,6 +76,7 @@ var line = d3.svg.line()
 var tooltip = jQuery('<%= "#echart-#{i}" %> svg');
 var tooltip_text = "";
 var tooltip_formatter = d3.format("3d");
+var tooltip_timeformatter = d3.format("02d");
 
 tooltip.tipsy({
   trigger: 'hover',
@@ -90,12 +91,17 @@ tooltip.tipsy({
 function mouse_over_event(d, i) {
   var p = d3.mouse(this);
   var di = Math.ceil(x.invert(p[0]))-1;
+  if (di<0) di=0;
   var xc = data[di];
   var n = 0;
+  var m = 2*di;
+  var hour = tooltip_timeformatter(Math.floor(m / 60));
+  var minute1 = tooltip_timeformatter(Math.floor(m % 60));
+  var minute2 = tooltip_timeformatter(Math.floor((m % 60)+1));
   if (xc) {
     n = xc[1];
   }
-  tooltip_text = tooltip_formatter((n <= 0) ? 0 : n);
+  tooltip_text = tooltip_formatter((n <= 0) ? 0 : n) + " ~ " + hour + ":" + minute1 + "-" + minute2 ;
 }
 
 function mouse_over_out() {
