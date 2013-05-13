@@ -23,13 +23,15 @@ at
    pie_colors = Logjam::Resource.colors_with_transparency(0.7)
    other_keys = @request.keys - time_resources - call_resources - memory_resources - heap_resources
    other_keys.reject!{|k| k =~ /(^_id|lines|minute|page|_sq|request_info)$/}
+
+   sorted_time_resources = @request.slice(*time_resources).sort { |a, b| b.last <=> a.last }
 -%>
 
 <div id="request-details">
   <fieldset class="resource-fields">
     <legend>Time resources</legend>
     <table id='request-details-time' class="filter-widget">
-      <% @request.slice(*time_resources).each do |name, value| -%>
+      <% sorted_time_resources.each do |name, value| -%>
       <% next if value.blank?  -%>
       <tr>
         <td class='resource_name'><%= hrn name %></td>
@@ -51,7 +53,7 @@ at
   <fieldset class="resource-fields">
     <legend>Call resources</legend>
     <table id='request-details-calls' class="filter-widget">
-      <% call_resource_values.each do |name, value| -%>
+      <% call_resource_values.sort_by { |e| -e.last }.each do |name, value| -%>
       <% next if value.blank?  -%>
       <tr>
         <td class='resource_name'><%= hrn name %></td>
@@ -101,11 +103,11 @@ at
 </div>
 
 <% unless (lines = @request["lines"]).blank? -%>
-<pre id='request-lines' class="filter-widget">
+<div id='request-lines' class="filter-widget">
 <% lines.each do |line| -%>
-<span class="logline"><%= raw format_log_line(line) %></span>
+<span class="logline" data-logjam-tags="<%= line_tags(line) %>"><pre><%= raw format_log_line(line) %></pre></span>
 <% end -%>
-</pre>
+</div>
 <% end %>
 
 <% if info = @request["request_info"] -%>

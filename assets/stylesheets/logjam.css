@@ -12,7 +12,8 @@ filter form p {
 
 pre {
   background-color: #eee;
-  padding: 10px;
+  margin: 1px 0!important;
+  padding: 5px!important;
   font-size: 11px;
   white-space: pre-wrap; /* css-3 */
   white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */

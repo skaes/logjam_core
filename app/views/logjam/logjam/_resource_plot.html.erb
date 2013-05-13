@@ -118,7 +118,7 @@ function tooltip_formatter(d){
 }
 <% else %>
 function tooltip_formatter(d){
-  return d3.round(d,1) + " calls/req";
+  return d3.round(d,1);
 }
 <% end %>
 <% end %>
@@ -241,19 +241,16 @@ vis.append("rect")
     .style("stroke", "none")
     .style("fill", "rgba(128,128,128,.05)");
 
+var event_tooltip_text = "";
+
 function mouse_over_event(d, i) {
-  var mouseCoords = d3.svg.mouse(this);
-
+  var mouseCoords = d3.mouse(this);
   d3.select("#eventLine"+i).style("stroke", "rgba(255,0,0,.5)");
-
-  vis.selectAll(".tooltip").
-    attr("x", mouseCoords[0] + 10).
-    attr("y", mouseCoords[1] + 15).
-    text(d[1]);
+  event_tooltip_text = d[1] + time_suffix(Math.floor(d[0]));
 }
 
 function mouse_over_out() {
-  vis.selectAll(".tooltip").text("")
+  event_tooltip_text = "";
   d3.selectAll(".eventLine").style("stroke", "rgba(255,0,0,.0)");
 }
 
@@ -284,11 +281,12 @@ vis.append("line")
     .style("stroke", "#999")
     .style("fill", "none");
 
+var request_tooltip_text = "";
+
 function mouse_over_requests(d, i, n) {
-  var p = d3.svg.mouse(n);
+  var p = d3.mouse(n);
   var di = Math.ceil(x.invert(p[0]))-1;
-  var text = d3.round(request_counts[di]) + " req/sec";
-  vis.selectAll(".tooltip").attr("x", p[0]-15).attr("y", p[1]-5).text(text);
+  request_tooltip_text = d3.round(request_counts[di]) + " req/sec" + time_suffix(di*interval);
 }
 
 vis.selectAll(".request_count")
@@ -297,13 +295,25 @@ vis.selectAll(".request_count")
      .attr("class", "request_count")
      .style("fill", "rgba(128,128,128,0.2)")
      .style("cursor", "pointer")
-     .on("click", function(d,i){ restrict_minutes(d3.svg.mouse(this), jQuery('#resource option:selected').val())})
+     .on("click", function(d,i){ restrict_minutes(d3.mouse(this), jQuery('#resource option:selected').val())})
      .on("mouseover", function(d,i){ mouse_over_requests(d, i, this)})
      .on("mousemove", function(d,i){ mouse_over_requests(d, i, this)})
-     .on("mouseout", function(d,i){ vis.selectAll(".tooltip").text("")})
+     .on("mouseout", function(d,i){ request_tooltip_text = ""; })
      .style("stroke", "rgba(128,128,128,0.3)")
      .style("stroke-width", 1)
      .attr("d", request_area);
+
+jQuery('.request_count').tipsy({
+  trigger: 'hover',
+  follow: 'x',
+  offset: 0,
+  offsetX: 0,
+  offsetY: -20,
+  gravity: 's',
+  html: false,
+  opacity: 0.7,
+  title: function() { return request_tooltip_text; }
+});
 
 vis.append("rect")
       .attr("y", 0)
@@ -327,15 +337,22 @@ function oj(a) {
 };
 
 var odata = oj(data);
-
 var ldata = d3.layout.stack()(odata);
 
+var layer_tooltip_text = "";
+var tooltime_formatter = d3.format("02d");
+
+function time_suffix(n) {
+  var h = Math.floor(n / 60);
+  var m = Math.floor(n % 60);
+  return(" ~ " + tooltime_formatter(h) + ":" + tooltime_formatter(m));
+}
+
 function mouse_over_layer(d, i, n) {
-  var p = d3.svg.mouse(n);
+  var p = d3.mouse(n);
   var di = Math.ceil(x.invert(p[0]))-1;
-  // text = legend[i] + ': ' + tooltip_formatter(data[i][di][1]);
-  var text = tooltip_formatter(data[i][di][1]);
-  vis.selectAll(".tooltip").attr("x", p[0]-15).attr("y", p[1]-5).text(text);
+  var dp = data[i][di];
+  layer_tooltip_text = tooltip_formatter(dp[1]) + " " + legend[i] + time_suffix(dp[0]*interval);
 }
 
 /* The stack layout. */
@@ -345,12 +362,24 @@ vis.selectAll(".layer")
      .attr("class", "layer")
      .style("fill", function(d,i) { return colors[i]; })
      .style("cursor", function(d,i) { return(legend[i] == "free slots" ? "arrow" : "pointer"); })
-     .on("click", function(d,i){ restrict_minutes(d3.svg.mouse(this), legend[i]); })
+     .on("click", function(d,i){ restrict_minutes(d3.mouse(this), legend[i]); })
      .on("mousemove", function(d,i){ mouse_over_layer(d, i, this)})
      .on("mouseover", function(d,i){ mouse_over_layer(d, i, this)})
-     .on("mouseout", function(d,i){ vis.selectAll(".tooltip").text("")})
+     .on("mouseout", function(d,i){ layer_tooltip_text = ""; })
      .style("stroke", "none")
      .attr("d", area);
+
+jQuery('.layer').tipsy({
+  trigger: 'hover',
+  follow: 'x',
+  offset: 0,
+  offsetX: 0,
+  offsetY: -20,
+  gravity: 's',
+  html: false,
+  opacity: 0.7,
+  title: function() { return layer_tooltip_text; }
+});
 
 /* GC time */
 if (gc_time != null) {
@@ -412,7 +441,6 @@ vis.selectAll(".event")
             p3      = [xCenter, y + 7];
 
         var what = [p1, p2, p3].map(function(point) { return point[0] + "," + point[1] }).join(" ")
-        console.log(what)
         return what;
       })
       .style("stroke", "rgba(255,0,0,0)")
@@ -421,16 +449,20 @@ vis.selectAll(".event")
       .on("mousemove", mouse_over_event)
       .on("mouseout",  mouse_over_out);
 
+var event_tip_options = {
+  trigger: 'hover',
+  follow: 'x',
+  offset: 0,
+  offsetX: 10,
+  offsetY: 20,
+  gravity: 'w',
+  html: false,
+  opacity: 0.7,
+  title: function() { return event_tooltip_text; }
+};
 
-/* tooltip (last to be on top of everything else) */
-vis.selectAll(".tooltip")
-    .data([1])
-    .enter().append("svg:text")
-    .attr("class", "tooltip")
-    .attr("x", 0)
-    .attr("y", 0)
-    .style("cursor", "none")
-    .text("");
+jQuery('.event').tipsy(event_tip_options);
+jQuery('.eventLine').tipsy(event_tip_options);
 
 })();
 </script>

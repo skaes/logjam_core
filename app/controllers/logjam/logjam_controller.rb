@@ -90,6 +90,7 @@ module Logjam
       @page = params[:page]
       @title = "Logged Exceptions"
       @totals = Totals.new(@db, ["exceptions"], @page)
+      @minutes = Minutes.new(@db, ["exceptions"], @page, @totals.page_names, 2)
     end
 
     def js_exceptions
@@ -153,7 +154,8 @@ module Logjam
 
     def get_app_env
       @default_app ||= database_info.default_app
-      @app ||= (params[:app] ||= @default_app)
+      @app ||= (params[:app] ||= (session[:last_app] || @default_app))
+      session[:last_app] = @app
       @apps ||= database_info.apps
       @default_env ||= database_info.default_env(@app)
       @env ||= (params[:env] ||= @default_env)
