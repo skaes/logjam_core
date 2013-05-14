@@ -18,7 +18,7 @@ module Logjam
     end
 
     def find_by_request(request_id)
-      @collection.find('logjam_request_id' => request_id)
+      @collection.find('logjam_request_id' => request_id).to_a
     end
 
     def insert(exception)

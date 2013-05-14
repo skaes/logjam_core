@@ -23,6 +23,8 @@ module Logjam
 
     def show
       prepare_params
+      logjam_request_id = [@app, @env, params[:id]].join('-')
+      @js_exceptions = Logjam::JsExceptions.new(@db).find_by_request(logjam_request_id)
       unless @request = Requests.new(@db).find(params[:id])
         render :file => "#{Rails.root}/public/404.html", :status => :not_found
       end
