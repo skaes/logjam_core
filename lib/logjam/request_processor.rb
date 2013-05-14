@@ -119,6 +119,18 @@ module Logjam
       end
     end
 
+    def add_js_exception(exception)
+      @request_count ||= 0
+      db = Logjam.db(Time.parse(exception["started_at"]), @stream.app, @stream.env)
+      JsExceptions.new(db).insert(exception)
+      tbuffer = (@totals_buffer['global#global'] ||= Hash.new(0.0))
+      key = exception['description'].gsub('.', '_period_').gsub('$', '_dollar_')
+      tbuffer["js_exceptions.#{key}"] += 1
+      tbuffer['count'] = 0.0 unless tbuffer.has_key?('count')
+      # mbuffer = (@minutes_buffer[['all_pages',minute]] ||= Hash.new(0.0))
+      # mbuffer['js_exceptions'] += 1
+    end
+
     private
 
     def store_request(entry)

@@ -32,25 +32,26 @@ module Logjam
       prepare_params
       @page_size = 25
       @page = params[:page]
-      if params[:error_type] == "javascript"
-        @title = "Javascript Exceptions"
-        q = JsExceptions.new(@db).all
-        elsif params[:error_type] == "internal"
-        @title = "Internal Server Errors"
-        q = Requests.new(@db, "minute", @page, :response_code => 500, :limit => @page_size, :skip => params[:offset].to_i)
-      elsif params[:error_type] == "exceptions"
-        @title = "Requests with '#{params[:exception]}'"
-        q = Requests.new(@db, "minute", @page, :exceptions => params[:exception], :limit => @page_size, :skip => params[:offset].to_i)
-      else
-        severity = case params[:error_type]
-                   when "logged_warning"; then 2
-                   when "logged_error"; then 3
-                   when "logged_fatal"; then 4
-                   else 5
-                   end
-        @title = severity == 2 ? "Logged Warnings" : "Logged Errors"
-        q = Requests.new(@db, "minute", @page, :severity => severity, :limit => @page_size, :skip => params[:offset].to_i)
-      end
+      case params[:error_type]
+        when "javascript"
+          @title = "Javascript Exceptions"
+          q = JsExceptions.new(@db).all
+        when "internal"
+          @title = "Internal Server Errors"
+          q = Requests.new(@db, "minute", @page, :response_code => 500, :limit => @page_size, :skip => params[:offset].to_i)
+        when "exceptions"
+          @title = "Requests with '#{params[:exception]}'"
+          q = Requests.new(@db, "minute", @page, :exceptions => params[:exception], :limit => @page_size, :skip => params[:offset].to_i)
+        else
+          severity = case params[:error_type]
+                     when "logged_warning"; then 2
+                     when "logged_error"; then 3
+                     when "logged_fatal"; then 4
+                     else 5
+                     end
+          @title = severity == 2 ? "Logged Warnings" : "Logged Errors"
+          q = Requests.new(@db, "minute", @page, :severity => severity, :limit => @page_size, :skip => params[:offset].to_i)
+        end
       @error_count = q.count
       @requests = q.all
       offset = params[:offset].to_i

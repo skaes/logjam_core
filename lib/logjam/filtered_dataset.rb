@@ -129,7 +129,7 @@ module Logjam
     end
 
     def totals
-      @totals ||= Totals.new(@db, %w(apdex response severity exceptions) + resource_fields, page)
+      @totals ||= Totals.new(@db, %w(apdex response severity exceptions js_exceptions) + resource_fields, page)
     end
 
     def summary

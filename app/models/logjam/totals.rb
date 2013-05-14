@@ -288,7 +288,7 @@ module Logjam
     end
 
     def compute
-      all_fields = ["page", "count", @apdex, @response, @severity, @exceptions].compact + @resources
+      all_fields = ["page", "count", @apdex, @response, @severity, @exceptions, @js_exceptions].compact + @resources
       sq_fields = @resources.map{|r| "#{r}_sq"}
       fields = {:fields => all_fields.concat(sq_fields)}
 
