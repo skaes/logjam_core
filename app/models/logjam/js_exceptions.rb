@@ -3,6 +3,10 @@ module Logjam
 
     include Helpers
 
+    def self.request_id_from_exception(exception)
+      exception["request_id"] = exception["logjam_request_id"].split('-').last
+    end
+
     def initialize(db)
       @database   = db
       @collection = db.collection("js_exceptions")

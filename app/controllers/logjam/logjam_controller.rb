@@ -33,9 +33,6 @@ module Logjam
       @page_size = 25
       @page = params[:page]
       case params[:error_type]
-        when "javascript"
-          @title = "Javascript Exceptions"
-          q = JsExceptions.new(@db).all
         when "internal"
           @title = "Internal Server Errors"
           q = Requests.new(@db, "minute", @page, :response_code => 500, :limit => @page_size, :skip => params[:offset].to_i)
@@ -61,6 +58,14 @@ module Logjam
       @last_page_offset = @error_count/@page_size*@page_size
       @next_page_offset = offset + @page_size
       @previous_page_offset = [offset - @page_size, 0].max
+    end
+
+    def js_exceptions
+      prepare_params
+      exception_type = params[:js_exception]
+
+      @title = "Javascript Exceptions"
+      @exceptions = JsExceptions.new(@db).all
     end
 
     def response_codes
@@ -94,7 +99,7 @@ module Logjam
       @minutes = Minutes.new(@db, ["exceptions"], @page, @totals.page_names, 2)
     end
 
-    def js_exceptions
+    def js_exception_types
       prepare_params
       @page = params[:page]
       @title = "Logged JavaScript Exceptions"

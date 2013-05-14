@@ -1,0 +1,15 @@
+<%= render "header" %>
+
+<div id='exceptions'>
+  <h1><%= h @title %> <%= h @page %> (<%= @totals.js_exception_count %> total)</h1>
+  <table class='full_stats'>
+    <tr><th>Exception</th><th>Count</th></tr>
+    <% @totals.js_exceptions.to_a.sort.each do |e,c| %>
+    <tr class='full_stats'>
+      <% url = url_for(clean_params(params.merge(:action => "js_exceptions", :js_exception => e))) %>
+      <td><%= link_to e, url %></td>
+      <td class='number'><%= link_to c, url %>
+    </tr>
+    <% end %>
+  </table>
+</div>
