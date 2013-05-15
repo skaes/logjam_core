@@ -286,7 +286,14 @@ module Logjam
     end
 
     def js_exception_count
-      totals.js_exception_count
+      # FIXME: this is an ugly hack to show the total number of js exceptions on the default start page
+      # this can go away once the js exceptions are inserted into the total
+      # collection with a proper 'module' and 'action'
+      if page == '::'
+        Totals.new(@db, %w(js_exceptions), 'all_pages').js_exception_count
+      else
+        totals.js_exception_count
+      end
     end
 
     def response_codes

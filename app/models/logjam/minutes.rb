@@ -24,22 +24,30 @@ module Logjam
     end
 
     def exceptions
-      @exceptions ||=
-        begin
-          exceptions = Hash.new{|h,e| h[e] = {}}
-          @minutes.each do |m,h|
-            (h["exceptions"]||{}).each do |e,c|
-            exceptions[e][m] = c
-            end
-          end
-          exceptions
-        end
+      @exceptions ||= extract_exceptions('exceptions')
+    end
+
+    def js_exceptions
+      @js_exceptions ||= extract_exceptions('js_exceptions')
+      logger.info("@js_exceptions = #{@js_exceptions.inspect}")
+      @js_exceptions
     end
 
     private
 
+    # extract either 'exceptions' or 'js_exceptions' from the minutes records
+    def extract_exceptions(key)
+      exceptions = Hash.new{|h,e| h[e] = {}}
+      @minutes.each do |m,h|
+        (h[key]||{}).each do |e,c|
+          exceptions[e][m] = c
+        end
+      end
+      exceptions
+    end
+
     def compound_resources
-      %w(apdex exceptions severity)
+      %w(apdex exceptions js_exceptions severity)
     end
 
     def compute(interval)

@@ -121,6 +121,7 @@ module Logjam
       @page = params[:page]
       @title = "Logged JavaScript Exceptions"
       @totals = Totals.new(@db, ["js_exceptions"], @page)
+      @minutes = Minutes.new(@db, ["js_exceptions"], @page, @totals.page_names, 2)
     end
 
     def enlarged_plot
