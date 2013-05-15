@@ -23,6 +23,12 @@ def handle_perf_data(app_env_key, perf_data)
   @processed += 1
 end
 
+def send_perf_data(ws, text)
+  ws.send text
+rescue => e
+  $stderr.puts "#{e.class}(#{e})"
+end
+
 zmq_context = ZMQ::Context.new(1)
 
 EM.run do
@@ -61,8 +67,8 @@ EM.run do
 
     ws.onmessage do |app_env_key|
       @sockets[app_env_key] << ws
-      @perf_buffers[app_env_key].each{|m| ws.send m}
-      @error_buffers[app_env_key].each{|m| ws.send m}
+      @perf_buffers[app_env_key].each{|m| send_perf_data(ws, m)}
+      @error_buffers[app_env_key].each{|m| send_perf_data(ws, m)}
       puts "web socket subscribed to #{app_env_key}: #{ws.object_id}"
     end
   end
