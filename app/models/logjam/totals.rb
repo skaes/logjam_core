@@ -270,7 +270,7 @@ module Logjam
     end
 
     def callers
-      @callers_hash ||= the_pages.inject(Hash.new(0)){|h,p| p.callers.each{|k,v| h[k] += v.to_i}; h}
+      @callers_hash ||= the_pages.inject(Hash.new(0)){|h,p| p.callers.each{|k,v| h[k] += (v.to_i rescue 0)}; h}
     end
 
     def callers_count
