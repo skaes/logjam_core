@@ -92,6 +92,13 @@ module Logjam
         increments["exceptions.#{e}"] = 1
       end if exceptions
 
+      if (caller_action = entry["caller_action"]) && (caller_id = entry["caller_id"])
+        if caller_id =~ /\A([^-]+)-([^-]+)-([^-])+\z/ && !caller_action.blank?
+          caller_name = "callers.#{$1}-#{caller_action}"
+          increments[caller_name] = 1
+        end
+      end
+
       add_minutes_and_totals(increments, page, pmodule, minute)
 
       #     hour = minute / 60
@@ -108,7 +115,7 @@ module Logjam
 
         if severity > 1 && request_id
           # extract the first error found (duplicated code from logjam helpers)
-          description = ((lines.detect{|(s,t,l)| s >= 2})[2].to_s)[0..80] rescue "--- unknown ---"
+          description = ((lines.detect{|(s,_,_)| s >= 2})[2].to_s)[0..80] rescue "--- unknown ---"
           error_info = { "request_id" => request_id.to_s,
                          "severity" => severity, "action" => page,
                          "description" => description, "time" => started_at }
@@ -252,7 +259,7 @@ module Logjam
         mbuffer = (@minutes_buffer[[p,minute]] ||= Hash.new(0.0))
         tbuffer = (@totals_buffer[p] ||= Hash.new(0.0))
         increments.each do |f,v|
-          mbuffer[f] += v
+          mbuffer[f] += v unless f =~ /^callers\./
           tbuffer[f] += v
         end
       end

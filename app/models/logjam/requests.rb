@@ -2,7 +2,7 @@ module Logjam
 
   class Requests
 
-    GENERIC_FIELDS = %w(page host ip user_id started_at process_id minute session_id new_session response_code app env severity exceptions)
+    GENERIC_FIELDS = %w(page host ip user_id started_at process_id minute session_id new_session response_code app env severity exceptions callers)
 
     TIME_FIELDS = Resource.time_resources
 

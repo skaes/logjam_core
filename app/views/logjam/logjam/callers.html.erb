@@ -1,0 +1,16 @@
+<%= render "header" %>
+
+<div id='callers'>
+  <h1><%= h @title %> '<%= h @page %>'</h1>
+  <table class='full_stats'>
+    <tr><th>Application</th><th>Action</th><th>Calls</th></tr>
+    <% @totals.callers.sort_by{|k,v| -v}.each do |caller, call_count| %>
+    <% app, controller = caller.split('-') %>
+    <tr class='full_stats'>
+      <td><%= app %></td>
+      <td><%= controller %></td>
+      <td style='text-align:right;'><%= call_count %></td>
+    </tr>
+    <% end %>
+  </table>
+</div>

@@ -255,8 +255,13 @@ td.number {text-align: right;}
 #graph-counts {font-size: 90%; margin-bottom: 10px; white-space: nowrap;}
 #graph-counts p {font-weight: bold; white-space: nowrap;}
 
-#requests, #single-request, #exceptions {
+#requests, #single-request, #exceptions, #callers {
   margin: 8px;
+}
+
+#caller_link {
+    color: blue;
+    margin-left: 190px;
 }
 
 #request-lines {

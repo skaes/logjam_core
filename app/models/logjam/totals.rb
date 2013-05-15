@@ -81,6 +81,14 @@ module Logjam
       n
     end
 
+    def callers
+      @page_info["callers"] ||= {}
+    end
+
+    def callers_count
+      callers.values.inject(0){|s,v| s += v.to_i}
+    end
+
     def add(other)
       @page_info["count"] += other.count
       @resources.each do |r|
@@ -91,6 +99,7 @@ module Logjam
       other.response.each {|x,y| response[x] = (response[x]||0) + y}
       other.severity.each {|x,y| severity[x] = (severity[x]||0) + y}
       other.exceptions.each {|x,y| exceptions[x] = (exceptions[x]||0) + y}
+      other.callers.each {|x,y| callers[x] = (callers[x]||0) + y}
     end
 
     def clone
@@ -100,6 +109,7 @@ module Logjam
       pi["response"] = pi["response"].clone if pi["response"]
       pi["severity"] = pi["severity"].clone if pi["severity"]
       pi["exceptions"] = pi["exceptions"].clone if pi["exceptions"]
+      pi["callers"] = pi["callers"].clone if pi["callers"]
       @resources.each do |r|
         pi.delete("#{r}_avg")
         pi.delete("#{r}_stddev")
@@ -145,6 +155,7 @@ module Logjam
       @response = @resources.delete("response")
       @severity = @resources.delete("severity")
       @exceptions = @resources.delete("exceptions")
+      @callers = @resources.delete("callers")
       @pattern = pattern
       @page_names = page_name_list
       @sum = {}
@@ -258,6 +269,14 @@ module Logjam
       @exception_count ||= exceptions.values.inject(0){|s,v| s += v}
     end
 
+    def callers
+      @callers_hash ||= the_pages.inject(Hash.new(0)){|h,p| p.callers.each{|k,v| h[k] += v.to_i}; h}
+    end
+
+    def callers_count
+      @callers_count ||= callers.values.inject(0){|s,v| s += v}
+    end
+
     protected
 
     def selector
@@ -270,7 +289,7 @@ module Logjam
     end
 
     def compute
-      all_fields = ["page", "count", @apdex, @response, @severity, @exceptions].compact + @resources
+      all_fields = ["page", "count", @apdex, @response, @severity, @exceptions, @callers].compact + @resources
       sq_fields = @resources.map{|r| "#{r}_sq"}
       fields = {:fields => all_fields.concat(sq_fields)}
 
@@ -283,6 +302,7 @@ module Logjam
 
       result = []
       while row = rows.shift
+        puts row.inspect
         result << Total.new(row, @resources)
       end
       # logger.debug result.inspect
