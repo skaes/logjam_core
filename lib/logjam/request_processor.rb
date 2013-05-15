@@ -121,6 +121,7 @@ module Logjam
     end
 
     def add_js_exception(exception)
+      # TODO: change 'global#global' to the actual controller#action combo once it is available
       @request_count ||= 0
       db = Logjam.db(Time.parse(exception["started_at"]), @stream.app, @stream.env)
       JsExceptions.new(db).insert(exception)
@@ -128,8 +129,10 @@ module Logjam
       key = JsExceptions.key_from_description(exception['description'])
       tbuffer["js_exceptions.#{key}"] += 1
       tbuffer['count'] = 0.0 unless tbuffer.has_key?('count')
-      # mbuffer = (@minutes_buffer[['all_pages',minute]] ||= Hash.new(0.0))
-      # mbuffer['js_exceptions'] += 1
+      minute = exception["minute"]
+      minute = extract_minute_from_iso8601(exception["started_at"])
+      mbuffer = (@minutes_buffer[['global#global',minute]] ||= Hash.new(0.0))
+      mbuffer['js_exceptions'] += 1
     end
 
     private
