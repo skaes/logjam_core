@@ -19,10 +19,20 @@ module Logjam
       @database   = db
       @collection = db.collection("js_exceptions")
       @collection.ensure_index('logjam_request_id')
+      @collection.ensure_index('description')
     end
 
     def all
       @collection.find.to_a
+    end
+
+    def count(options = {})
+      @collection.find(options[:selector]).count()
+    end
+
+    def find(options = {})
+      selector = options.delete(:selector)
+      @collection.find(selector, options).to_a
     end
 
     def find_by_request(request_id)

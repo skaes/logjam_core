@@ -64,10 +64,25 @@ module Logjam
 
     def js_exceptions
       prepare_params
-      exception_type = params[:js_exception]
+      @page_size = 25
+      offset = params[:offset].to_i
+
+      exceptions = JsExceptions.new(@db)
+      description = JsExceptions.description_from_key(params[:js_exception])
 
       @title = "Javascript Exceptions"
-      @exceptions = JsExceptions.new(@db).all
+      options = { selector: { description: description } }
+      @error_count = exceptions.count(options)
+      options[:skip] = offset
+      options[:limit] = @page_size
+
+      @exceptions = exceptions.find(options)
+      @current_page = offset/@page_size + 1
+      @page_count = @error_count/@page_size + 1
+      @last_page = @page_count
+      @last_page_offset = @error_count/@page_size*@page_size
+      @next_page_offset = offset + @page_size
+      @previous_page_offset = [offset - @page_size, 0].max
     end
 
     def response_codes
