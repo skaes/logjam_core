@@ -44,6 +44,8 @@ module Logjam
     end
 
     def send_data(p, data)
+      # for now, don't send caller and exception counts, as they might contain UTF dots'
+      data = data.reject{|k,v| k =~ /\A(callers|exceptions)\./}
       app_env_key = "#{@app}-#{@env},#{p.sub(/^::/,'').downcase}"
       perf_data = Oj.dump(data, :mode => :compat)
       @socket.send_strings([app_env_key, perf_data], ZMQ::DONTWAIT)
