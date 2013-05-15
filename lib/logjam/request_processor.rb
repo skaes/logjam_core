@@ -1,5 +1,6 @@
 # encoding: utf-8
 require 'set'
+require 'uri'
 
 module Logjam
 
@@ -124,7 +125,7 @@ module Logjam
       db = Logjam.db(Time.parse(exception["started_at"]), @stream.app, @stream.env)
       JsExceptions.new(db).insert(exception)
       tbuffer = (@totals_buffer['global#global'] ||= Hash.new(0.0))
-      key = exception['description'].gsub('.', '_period_').gsub('$', '_dollar_')
+      key = JsExceptions.key_from_description(exception['description'])
       tbuffer["js_exceptions.#{key}"] += 1
       tbuffer['count'] = 0.0 unless tbuffer.has_key?('count')
       # mbuffer = (@minutes_buffer[['all_pages',minute]] ||= Hash.new(0.0))

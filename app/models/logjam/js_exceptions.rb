@@ -7,6 +7,14 @@ module Logjam
       exception["request_id"] = exception["logjam_request_id"].split('-').last
     end
 
+    def self.key_from_description(description)
+      key = URI.escape(description, /[.$]/)
+    end
+
+    def self.description_from_key(mongo_key)
+      key = URI.unescape(mongo_key)
+    end
+
     def initialize(db)
       @database   = db
       @collection = db.collection("js_exceptions")
