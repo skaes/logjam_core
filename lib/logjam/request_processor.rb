@@ -94,8 +94,9 @@ module Logjam
 
       if (caller_action = entry["caller_action"]) && (caller_id = entry["caller_id"])
         if caller_id =~ /\A([^-]+)-([^-]+)-([^-])+\z/ && !caller_action.blank?
+          caller_app = $1
           caller_action.gsub!('.', DOT_REPLACEMENT)
-          caller_name = "callers.#{$1}-#{caller_action}"
+          caller_name = "callers.#{caller_app}-#{caller_action}"
           increments[caller_name] = 1
         end
       end
