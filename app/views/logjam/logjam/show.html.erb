@@ -112,21 +112,33 @@
   <% end %>
 <% end %>
 
-<% if @js_exceptions.present? %>
+<% if @js_exceptions.present? -%>
   <div id="js_exceptions">
     <fieldset class="resource-fields">
       <legend>Javascript Exceptions</legend>
       <table>
-        <% @js_exceptions.each do |e| %>
-          <% e.reject{|k,v| k =~ /^_/}.each do |k,v| %>
-            <tr><td><%= k %></td><td><%= v %></td></tr>
-          <% end %>
-          <tr><td colspan=2>---</td></tr>
-        <% end %>
+        <% @js_exceptions.each.with_index do |e, i| -%>
+          <% unless i == 0 -%>
+            <tr><td colspan=2><hr /></td></tr>
+          <% end -%>
+          <%
+              # 'logjam_request_id' is redundant information
+              # 'controller' and 'action' are just the controller and action of
+              #   the rails-app that was the recipiant of the error report
+              # 'minute' is injected by the logjam code and isn't useful in this context
+              # 'description' will be added back at the beginning of the list
+              keys_to_reject = %w(description logjam_request_id controller action minute).join('|')
+              keys = e.keys.reject{|k| k =~ /^_|^(#{keys_to_reject})$/}
+              keys = ['description'] + keys
+              keys.each do |key|
+          -%>
+            <tr><td><%= key %></td><td><%= e[key] %></td></tr>
+          <% end -%>
+        <% end -%>
       </table>
     </fieldset>
   </div>
-<% end %>
+<% end -%>
 
 <% if @request.present? %>
   <% if info = @request["request_info"] -%>
