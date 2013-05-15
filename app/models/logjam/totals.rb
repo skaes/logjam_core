@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 module Logjam
 
   class Total
@@ -270,7 +271,8 @@ module Logjam
     end
 
     def callers
-      @callers_hash ||= the_pages.inject(Hash.new(0)){|h,p| p.callers.each{|k,v| h[k] += (v.to_i rescue 0)}; h}
+      # callers unfortunately have dots in their names
+      @callers_hash ||= the_pages.inject(Hash.new(0)){|h,p| p.callers.each{|k,v| h[k.gsub('∙','.')] += v.to_i}; h}
     end
 
     def callers_count
