@@ -29,8 +29,6 @@ module Logjam
 
     def js_exceptions
       @js_exceptions ||= extract_exceptions('js_exceptions')
-      logger.info("@js_exceptions = #{@js_exceptions.inspect}")
-      @js_exceptions
     end
 
     private
