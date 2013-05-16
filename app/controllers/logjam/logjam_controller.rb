@@ -24,6 +24,8 @@ module Logjam
 
     def show
       prepare_params
+      logjam_request_id = [@app, @env, params[:id]].join('-')
+      @js_exceptions = Logjam::JsExceptions.new(@db).find_by_request(logjam_request_id)
       unless @request = Requests.new(@db).find(params[:id])
         render :file => "#{Rails.root}/public/404.html", :status => :not_found
       end
@@ -33,27 +35,51 @@ module Logjam
       prepare_params
       @page_size = 25
       @page = params[:page]
-      if params[:error_type] == "internal"
-        @title = "Internal Server Errors"
-        q = Requests.new(@db, "minute", @page, :response_code => 500, :limit => @page_size, :skip => params[:offset].to_i)
-      elsif params[:error_type] == "exceptions"
-        @title = "Requests with '#{params[:exception]}'"
-        q = Requests.new(@db, "minute", @page, :exceptions => params[:exception], :limit => @page_size, :skip => params[:offset].to_i)
-      else
-        severity = case params[:error_type]
-                   when "logged_warning"; then 2
-                   when "logged_error"; then 3
-                   when "logged_fatal"; then 4
-                   else 5
-                   end
-        @title = severity == 2 ? "Logged Warnings" : "Logged Errors"
-        q = Requests.new(@db, "minute", @page, :severity => severity, :limit => @page_size, :skip => params[:offset].to_i)
-      end
+      case params[:error_type]
+        when "internal"
+          @title = "Internal Server Errors"
+          q = Requests.new(@db, "minute", @page, :response_code => 500, :limit => @page_size, :skip => params[:offset].to_i)
+        when "exceptions"
+          @title = "Requests with '#{params[:exception]}'"
+          q = Requests.new(@db, "minute", @page, :exceptions => params[:exception], :limit => @page_size, :skip => params[:offset].to_i)
+        else
+          severity = case params[:error_type]
+                     when "logged_warning"; then 2
+                     when "logged_error"; then 3
+                     when "logged_fatal"; then 4
+                     else 5
+                     end
+          @title = severity == 2 ? "Logged Warnings" : "Logged Errors"
+          q = Requests.new(@db, "minute", @page, :severity => severity, :limit => @page_size, :skip => params[:offset].to_i)
+        end
       @error_count = q.count
       @requests = q.all
       offset = params[:offset].to_i
       @page_count = @error_count/@page_size + 1
       @current_page = offset/@page_size + 1
+      @last_page = @page_count
+      @last_page_offset = @error_count/@page_size*@page_size
+      @next_page_offset = offset + @page_size
+      @previous_page_offset = [offset - @page_size, 0].max
+    end
+
+    def js_exceptions
+      prepare_params
+      @page_size = 25
+      offset = params[:offset].to_i
+
+      exceptions = JsExceptions.new(@db)
+      description = JsExceptions.description_from_key(params[:js_exception])
+
+      @title = "Javascript Exceptions"
+      options = { selector: { description: description } }
+      @error_count = exceptions.count(options)
+      options[:skip] = offset
+      options[:limit] = @page_size
+
+      @exceptions = exceptions.find(options)
+      @current_page = offset/@page_size + 1
+      @page_count = @error_count/@page_size + 1
       @last_page = @page_count
       @last_page_offset = @error_count/@page_size*@page_size
       @next_page_offset = offset + @page_size
@@ -158,6 +184,14 @@ module Logjam
           render :json => Oj.dump(data, :mode => :compat)
         end
       end
+    end
+
+    def js_exception_types
+      prepare_params
+      @page = params[:page]
+      @title = "Logged JavaScript Exceptions"
+      @totals = Totals.new(@db, ["js_exceptions"], @page)
+      @minutes = Minutes.new(@db, ["js_exceptions"], @page, @totals.page_names, 2)
     end
 
     def enlarged_plot

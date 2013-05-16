@@ -65,6 +65,13 @@ module Logjam
       log_info r.inspect
     end
 
+    def process_js_exception(exception)
+      processor(exception).add_js_exception(exception)
+    rescue => e
+      log_info "failed to process JS exception: #{e.class}(#{e})"
+      log_info exception.inspect
+    end
+
     def processor(hash)
       dbname = Logjam.db_name(hash["started_at"], @stream.app, @stream.env)
       @processors[dbname] ||=

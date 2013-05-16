@@ -67,6 +67,14 @@ module Logjam
       exceptions.values.inject(0){|s,v| s += v.to_i}
     end
 
+    def js_exceptions
+      @page_info["js_exceptions"] ||= {}
+    end
+
+    def js_exception_count
+      js_exceptions.values.inject(0){|s,v| s += v.to_i}
+    end
+
     def error_count
       # response["500"].to_i
       severity["3"].to_i + severity["4"].to_i
@@ -111,6 +119,7 @@ module Logjam
       pi["severity"] = pi["severity"].clone if pi["severity"]
       pi["exceptions"] = pi["exceptions"].clone if pi["exceptions"]
       pi["callers"] = pi["callers"].clone if pi["callers"]
+      pi["js_exceptions"] = pi["js_exceptions"].clone if pi["js_exceptions"]
       @resources.each do |r|
         pi.delete("#{r}_avg")
         pi.delete("#{r}_stddev")
@@ -171,6 +180,7 @@ module Logjam
       @severity = @resources.delete("severity")
       @exceptions = @resources.delete("exceptions")
       @callers = @resources.delete("callers")
+      @js_exceptions = @resources.delete("js_exceptions")
       @pattern = pattern
       @page_names = page_name_list
       @sum = {}
@@ -293,6 +303,14 @@ module Logjam
       @callers_count ||= callers.values.inject(0){|s,v| s += v}
     end
 
+    def js_exceptions
+      @js_exceptions_hash ||= the_pages.inject(Hash.new(0)){|h,p| p.js_exceptions.each{|k,v| h[k] += v.to_i}; h}
+    end
+
+    def js_exception_count
+      @js_exception_count ||= js_exceptions.values.inject(0){|s,v| s += v}
+    end
+
     protected
 
     def selector
@@ -305,7 +323,7 @@ module Logjam
     end
 
     def compute
-      all_fields = ["page", "count", @apdex, @response, @severity, @exceptions, @callers].compact + @resources
+      all_fields = ["page", "count", @apdex, @response, @severity, @exceptions, @js_exceptions, @callers].compact + @resources
       sq_fields = @resources.map{|r| "#{r}_sq"}
       fields = {:fields => all_fields.concat(sq_fields)}
 
@@ -318,10 +336,8 @@ module Logjam
 
       result = []
       while row = rows.shift
-        puts row.inspect
         result << Total.new(row, @resources)
       end
-      # logger.debug result.inspect
       result
     end
 

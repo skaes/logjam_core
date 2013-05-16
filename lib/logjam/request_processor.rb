@@ -1,5 +1,6 @@
 # encoding: utf-8
 require 'set'
+require 'uri'
 
 module Logjam
 
@@ -125,6 +126,26 @@ module Logjam
            (@errors_buffer[p] ||= []) << error_info
           end
         end
+      end
+    end
+
+    def add_js_exception(exception)
+      # TODO: fill in the actual controller#action combo for the page once it
+      # is available and also fill in a sensible value for pmodule
+      page = 'fixme#fixme'
+      # pmodule = '::JavaScriptError'
+      @request_count ||= 0
+      db = Logjam.db(Time.parse(exception["started_at"]), @stream.app, @stream.env)
+      JsExceptions.new(db).insert(exception)
+      key = JsExceptions.key_from_description(exception['description'])
+      # [page, 'all_pages', pmodule].each do |p|
+      [page, 'all_pages'].each do |p|
+        tbuffer = (@totals_buffer[p] ||= Hash.new(0.0))
+        tbuffer["js_exceptions.#{key}"] += 1
+        tbuffer['count'] = 0.0 unless tbuffer.has_key?('count')
+        minute = extract_minute_from_iso8601(exception["started_at"])
+        mbuffer = (@minutes_buffer[[p,minute]] ||= Hash.new(0.0))
+        mbuffer["js_exceptions.#{key}"] += 1
       end
     end
 

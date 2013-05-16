@@ -85,6 +85,7 @@ module Logjam
         log_info "binding request stream exchange #{importer_exchange_name} to #{importer_queue_name} on #{broker}"
         importer_queue.bind(request_stream_exchange, :routing_key => importer_routing_key)
         importer_queue.bind(request_stream_exchange, :routing_key => events_routing_key)
+        importer_queue.bind(request_stream_exchange, :routing_key => js_exceptions_routing_key)
         log_info "subscribing to request stream queue #{importer_queue_name} on #{broker}"
         importer_queue.subscribe do |header, msg|
           case header.routing_key
@@ -92,6 +93,8 @@ module Logjam
              process_request(msg, header.routing_key)
           when /^events/
              process_event(msg, header.routing_key)
+          when /^javascript/
+            process_js_exception(msg, header.routing_key)
           end
         end
 
@@ -158,6 +161,10 @@ module Logjam
       ["events", @application, @environment].compact.join('.')
     end
 
+    def js_exceptions_routing_key
+      ["javascript", @application, @environment].compact.join('.')
+    end
+
     def heartbeat_exchange_name
       "logjam3-importer-heartbeats"
     end
@@ -193,6 +200,11 @@ module Logjam
     def process_event(msg, routing_key)
       event = Oj.load(msg, :mode => :compat)
       @event_processor.process(event)
+    end
+
+    def process_js_exception(msg, routing_key)
+      exception = Oj.load(msg, :mode => :compat)
+      @request_processor.process_js_exception(exception)
     end
 
     def send_heartbeats(connection, settings, heartbeat_exchange)
