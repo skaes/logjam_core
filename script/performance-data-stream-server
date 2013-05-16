@@ -34,7 +34,7 @@ def handle_perf_data(app_env_key, perf_data, pub_socket)
   b << perf_data
   b.shift if b.size > 60
   send_to_web_sockets(app_env_key, perf_data)
-  pub_socket.send_msg(app_env_key, perf_data)
+  pub_socket.send_msg(app_env_key, perf_data) if metrics_payload
 rescue => e
   $stderr.puts "#{e.class}(#{e})"
 ensure
