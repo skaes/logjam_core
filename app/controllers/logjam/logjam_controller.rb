@@ -151,7 +151,13 @@ module Logjam
     def get_transform
       case params[:group]
       when 'module'
-        ->(k){ p = k.split('-'); "#{p[0]}-#{p[1].split(/(::)|#/)[0]}" }
+        ->(k)do
+          p = k.split('-')
+          m = p[1].split(/(::)|#/)[0]
+          # TODO: dirty hack
+          m = p[0].capitalize if m =~ /Controller\z/
+          "#{p[0]}-#{m}"
+        end
       when 'application'
         ->(k){ k.split('-')[0] }
       else
