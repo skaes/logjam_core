@@ -9,6 +9,7 @@ require 'em-zeromq'
 @processed = 0
 
 zmq_context = ZMQ::Context.new(1)
+server = ARGV[0] || "localhost"
 
 EM.run do
   context = EM::ZeroMQ::Context.new(zmq_context)
@@ -16,7 +17,7 @@ EM.run do
   sub_socket = context.socket(ZMQ::SUB)
   sub_socket.setsockopt(ZMQ::LINGER, 100)
   sub_socket.setsockopt(ZMQ::RCVHWM, 1000)
-  sub_socket.connect("tcp://localhost:9611")
+  sub_socket.connect("tcp://#{server}:9611")
   sub_socket.subscribe
 
   sub_socket.on(:message) do |*parts|
