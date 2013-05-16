@@ -1,0 +1,42 @@
+#!/usr/bin/env ruby
+
+$stdout.sync = true
+$stderr.sync = true
+
+require_relative '../../../config/boot'
+require 'em-zeromq'
+
+@processed = 0
+
+zmq_context = ZMQ::Context.new(1)
+
+EM.run do
+  context = EM::ZeroMQ::Context.new(zmq_context)
+
+  sub_socket = context.socket(ZMQ::SUB)
+  sub_socket.setsockopt(ZMQ::LINGER, 100)
+  sub_socket.setsockopt(ZMQ::RCVHWM, 1000)
+  sub_socket.connect("tcp://localhost:9611")
+  sub_socket.subscribe
+
+  sub_socket.on(:message) do |*parts|
+    begin
+      @processed += 1
+      app_env_key = parts[0].copy_out_string
+      perf_data   = parts[1].copy_out_string
+      puts app_env_key, perf_data
+    rescue => e
+      $stderr.puts "#{e.class}(#{e})"
+    ensure
+      parts.each(&:close)
+    end
+  end
+
+  EM.add_periodic_timer(5) do
+    puts "processed: #{@processed}"
+    @processed = 0
+  end
+
+end
+
+zmq_context.terminate

@@ -21,12 +21,23 @@ rescue => e
   $stderr.puts text
 end
 
-def handle_perf_data(app_env_key, perf_data)
+def send_to_web_sockets(app_env_key, perf_data)
+  @sockets[app_env_key].each {|s| send_perf_data(s, perf_data)}
+rescue => e
+  $stderr.puts "#{e.class}(#{e})"
+end
+
+def handle_perf_data(app_env_key, perf_data, pub_socket)
   # puts app_env_key, perf_data
-  b = perf_data =~ /total_time/ ? @perf_buffers[app_env_key] : @error_buffers[app_env_key]
+  metrics_payload = perf_data =~ /total_time/
+  b = metrics_payload ? @perf_buffers[app_env_key] : @error_buffers[app_env_key]
   b << perf_data
   b.shift if b.size > 60
-  @sockets[app_env_key].each {|s| send_perf_data(s, perf_data)}
+  send_to_web_sockets(app_env_key, perf_data)
+  pub_socket.send_msg(app_env_key, perf_data)
+rescue => e
+  $stderr.puts "#{e.class}(#{e})"
+ensure
   @processed += 1
 end
 
@@ -34,15 +45,22 @@ zmq_context = ZMQ::Context.new(1)
 
 EM.run do
   context = EM::ZeroMQ::Context.new(zmq_context)
-  socket = context.socket(ZMQ::PULL)
-  socket.setsockopt(ZMQ::LINGER, 100)
-  socket.setsockopt(ZMQ::RCVHWM, 1000)
-  socket.bind("tcp://0.0.0.0:9607")
-  socket.on(:message) do |*parts|
+
+  pull_socket = context.socket(ZMQ::PULL)
+  pull_socket.setsockopt(ZMQ::LINGER, 100)
+  pull_socket.setsockopt(ZMQ::RCVHWM, 1000)
+  pull_socket.bind("tcp://0.0.0.0:9607")
+
+  pub_socket = context.socket(ZMQ::PUB)
+  pub_socket.setsockopt(ZMQ::LINGER, 100)
+  pub_socket.setsockopt(ZMQ::SNDHWM, 1000)
+  pub_socket.bind("tcp://0.0.0.0:9611")
+
+  pull_socket.on(:message) do |*parts|
     begin
       app_env_key = parts[0].copy_out_string
       perf_data   = parts[1].copy_out_string
-      handle_perf_data(app_env_key, perf_data)
+      handle_perf_data(app_env_key, perf_data, pub_socket)
     rescue => e
       $stderr.puts "#{e.class}(#{e})"
     ensure

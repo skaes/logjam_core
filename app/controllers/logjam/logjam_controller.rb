@@ -4,6 +4,7 @@ module Logjam
     before_filter :redirect_to_clean_url, :except => [:live_stream, :auto_complete_for_controller_action_page, :call_relationships]
     before_filter :verify_app_env, :except => [:call_relationships]
     before_filter :print_params if ::Rails.env=="development"
+    after_filter :allow_cross_domain_ajax
 
     def auto_complete_for_controller_action_page
       params[:page] = params.delete(:term)
@@ -301,5 +302,10 @@ module Logjam
         return
       end
     end
+
+    def allow_cross_domain_ajax
+      response.headers['Access-Control-Allow-Origin'] = '*'
+    end
+
   end
 end
