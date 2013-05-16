@@ -92,9 +92,40 @@ module Logjam
 
     def callers
       prepare_params
+      params[:sort] ||= 'count'
+      params[:group] ||= 'module'
       @page = params[:page]
-      @title = "Callers of action"
-      @totals = Totals.new(@db, ["callers"], @page)
+      @title = "Callers of '#{@page}'"
+      @callers = Totals.new(@db, ["callers"], @page).callers
+      transform =
+        case params[:group]
+        when 'module'
+          ->(k){ p = k.split('-'); "#{p[0]}-#{p[1].split(/(::)|#/)[0]}" }
+        when 'application'
+          ->(k){ k.split('-')[0] }
+        else
+          nil
+        end
+      @callers = @callers.each_with_object(Hash.new(0)){|(k,v),h| h[transform.call(k)] += v} if transform
+      respond_to do |format|
+        format.html do
+          @callers =
+            case params[:sort]
+            when 'name'
+              @callers.sort_by{|k,v| k}
+            else
+              @callers.sort_by{|k,v| -v}
+            end
+        end
+        format.json do
+          page = @page == 'all_pages' ? '::' : @page
+          page.sub!(/\A::/,'')
+          app = page == '' ? @app : "#{@app}::"
+          target = "#{app}#{page}"
+          array = @callers.map{|k,v| {source: k.sub('-','::'), target: target, count: v}}
+          render :json => Oj.dump(array, :mode => :compat)
+        end
+      end
     end
 
     def enlarged_plot

@@ -10,6 +10,18 @@ module Logjam
       number_with_precision(f.floor, :delimiter => ",", :separator => ".", :precision => 0)
     end
 
+    def integer_number(i)
+      number_with_precision(i.to_i, :delimiter => ",", :precision => 0)
+    end
+
+    def callers_sorting_options
+      %w(name count)
+    end
+
+    def callers_grouping_options
+      %w(application module action)
+    end
+
     def seconds_to_human(seconds)
       case
       when seconds < 60

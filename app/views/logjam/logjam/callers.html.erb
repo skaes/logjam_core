@@ -1,16 +1,25 @@
 <%= render "header" %>
 
 <div id='callers'>
-  <h1><%= h @title %> '<%= h @page %>'</h1>
-  <table class='full_stats'>
+  <h1><%= h @title %></h1>
+    <%= form_tag(params, :method => :get) do %>
+      <%= hidden_field_tag :app, @app %>
+      <%= hidden_field_tag :env, @env %>
+      <%= hidden_field_tag :page, @page %>
+      <span>Group by:</span>
+      <%= select_tag 'group', options_for_select(callers_grouping_options, params[:group]), :onchange => "form.submit()" %>
+      <span>Sort by:</span>
+      <%= select_tag 'sort', options_for_select(callers_sorting_options, params[:sort]), :onchange => "form.submit()" %>
+    <% end %>
+  <table class='full_stats' style='display-inline'>
     <tr><th>Application</th><th>Action</th><th>Calls</th></tr>
-    <% @totals.callers.sort_by{|k,v| -v}.each do |caller, call_count| %>
-    <% app, controller = caller.split('-') %>
-    <tr class='full_stats'>
-      <td><%= app %></td>
-      <td><%= controller %></td>
-      <td style='text-align:right;'><%= call_count %></td>
-    </tr>
+    <% @callers.each do |caller, count| %>
+      <% app, controller = caller.split('-') %>
+      <tr class='full_stats'>
+        <td><%= app %></td>
+        <td><%= controller %></td>
+        <td style='text-align:right;'><%= integer_number(count) %></td>
+      </tr>
     <% end %>
   </table>
 </div>
