@@ -123,7 +123,12 @@ module Logjam
 
   def grep(databases, options = {})
     opts = {:app => '.+?', :env => '.+?'}.merge(options)
-    databases.grep(db_name_format(opts))
+    dbs = databases.grep(db_name_format(opts))
+    if date = options[:date]
+      dbs.grep(/#{sanitize_date(date)}/)
+    else
+      dbs
+    end
   end
 
   def databases

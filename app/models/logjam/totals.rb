@@ -146,6 +146,20 @@ module Logjam
       end
     end
 
+    def self.call_relationships(db, app)
+      totals = db["totals"]
+      rows = []
+      ActiveSupport::Notifications.instrument("mongo.logjam", :query => "Totals.call_relationships()") do |payload|
+        rows = totals.find({:page => /#/}, :fields => %w(page callers)).to_a
+        payload[:rows] = rows.size
+      end
+      rows.each_with_object({}) do |r,o|
+        callers = r['callers']
+        page = r['page']
+        o["#{app}-#{page}"] = callers unless callers.blank? || page !~ /#/
+      end
+    end
+
     attr_reader :resources, :pattern, :pages
 
     def initialize(db, resources=[], pattern='', page_name_list=nil)

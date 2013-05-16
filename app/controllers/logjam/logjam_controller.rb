@@ -1,8 +1,8 @@
 module Logjam
 
   class LogjamController < ApplicationController
-    before_filter :redirect_to_clean_url, :except => [:live_stream, :auto_complete_for_controller_action_page]
-    before_filter :verify_app_env
+    before_filter :redirect_to_clean_url, :except => [:live_stream, :auto_complete_for_controller_action_page, :call_relationships]
+    before_filter :verify_app_env, :except => [:call_relationships]
     before_filter :print_params if ::Rails.env=="development"
 
     def auto_complete_for_controller_action_page
@@ -97,16 +97,9 @@ module Logjam
       @page = params[:page]
       @title = "Callers of '#{@page}'"
       @callers = Totals.new(@db, ["callers"], @page).callers
-      transform =
-        case params[:group]
-        when 'module'
-          ->(k){ p = k.split('-'); "#{p[0]}-#{p[1].split(/(::)|#/)[0]}" }
-        when 'application'
-          ->(k){ k.split('-')[0] }
-        else
-          nil
-        end
-      @callers = @callers.each_with_object(Hash.new(0)){|(k,v),h| h[transform.call(k)] += v} if transform
+      if transform = get_transform
+        @callers = @callers.each_with_object(Hash.new(0)){|(k,v),h| h[transform.call(k)] += v}
+      end
       respond_to do |format|
         format.html do
           @callers =
@@ -124,6 +117,44 @@ module Logjam
           target = "#{app}#{page}"
           array = @callers.map{|k,v| {source: k.sub('-','::'), target: target, count: v}}
           render :json => Oj.dump(array, :mode => :compat)
+        end
+      end
+    end
+
+    def get_transform
+      case params[:group]
+      when 'module'
+        ->(k){ p = k.split('-'); "#{p[0]}-#{p[1].split(/(::)|#/)[0]}" }
+      when 'application'
+        ->(k){ k.split('-')[0] }
+      else
+        ->(k){ k }
+      end
+    end
+    private :get_transform
+
+    def call_relationships
+      get_date
+      transform = get_transform
+      databases = Logjam.grep(Logjam.databases, :env => @env, :date => @date)
+      data = Hash.new(0)
+      databases.each do |db_name|
+        stream = Logjam.stream_for(db_name)
+        db = Logjam.connection_for(db_name).db(db_name)
+        relationships = Totals.call_relationships(db, stream.app)
+        relationships.each do |callee, callers|
+          callee = transform.call(callee)
+          callers.each do |caller, count|
+            caller = transform.call(caller)
+            data[[caller, callee]] += count.to_i
+          end
+        end
+      end
+      data = data.map{|p,c| {source: p[0], target: p[1], count: c}}
+      data.sort_by!{|p| [p[:source],p[:target]]}
+      respond_to do |format|
+        format.json do
+          render :json => Oj.dump(data, :mode => :compat)
         end
       end
     end
