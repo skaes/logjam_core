@@ -1,0 +1,38 @@
+<%= render "header" %>
+
+<div id="graph-link">
+  <%= form_tag(params.merge(:format => :csv), :method => :get) do %>
+  <%= hidden_field_tag :app, @app %>
+  <%= hidden_field_tag :env, @env %>
+  <%= hidden_field_tag :page, @page %>
+  <%= hidden_field_tag :group, params[:group] %>
+  <%= hidden_field_tag :sort, params[:sort] %>
+  <%= submit_tag "Download CSV" %>
+  <% end %>
+  <div>
+    <a href="/call_graphs.html">Graph it!</a>
+  </div>
+</div>
+<div id='callers'>
+  <h1><%= h @title %> (<%= @data.size %>)</h1>
+    <%= form_tag(params, :method => :get) do %>
+      <%= hidden_field_tag :app, @app %>
+      <%= hidden_field_tag :env, @env %>
+      <%= hidden_field_tag :page, @page %>
+      <span>Group by:</span>
+      <%= select_tag 'group', options_for_select(callers_grouping_options, params[:group]), :onchange => "form.submit()" %>
+      <span>Sort by:</span>
+      <%= select_tag 'sort', options_for_select(%w(caller callee count), params[:sort]), :onchange => "form.submit()" %>
+    <% end %>
+  <table class='full_stats'>
+    <tr><th>Caller</th><th>Callee</th><th>#Calls</th></tr>
+    <% @data.each do |h| %>
+      <% caller, callee, count = h.values_at(:source, :target, :count) %>
+      <tr class='full_stats'>
+        <td><%= caller %></td>
+        <td><%= callee %></td>
+        <td style='text-align:right;'><%= integer_number(count) %></td>
+      </tr>
+    <% end %>
+  </table>
+</div>

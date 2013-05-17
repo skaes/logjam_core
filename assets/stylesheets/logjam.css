@@ -259,10 +259,19 @@ td.number {text-align: right;}
   margin: 8px;
 }
 
-#caller_link {
-    color: blue;
-    margin-left: 30px;
+#caller_links { margin-left: 20px; }
+.caller_links { font-weight: normal; }
+.caller_links a { color: blue; }
+.caller_links a:hover { font-weight: bold; }
+
+#graph-link {
+    position: absolute;
+    right: 0;
+    padding: 10px;
 }
+
+#graph-link a {color: blue; margin-left: 10px; }
+#graph-link a:hover {font-weight: bold;}
 
 #request-lines {
   margin-top:15px;

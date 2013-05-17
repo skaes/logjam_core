@@ -1,7 +1,7 @@
 <%= render "header" %>
 
 <div id='callers'>
-  <h1><%= h @title %></h1>
+  <h1><%= h @title %> (<%= @callers.size %>)</h1>
     <%= form_tag(params, :method => :get) do %>
       <%= hidden_field_tag :app, @app %>
       <%= hidden_field_tag :env, @env %>
@@ -17,7 +17,7 @@
       <% app, controller = caller.split('-') %>
       <tr class='full_stats'>
         <td><%= app %></td>
-        <td><%= controller %></td>
+        <td><%= link_to(controller, params.merge(:app => app, :page => controller)) %></td>
         <td style='text-align:right;'><%= integer_number(count) %></td>
       </tr>
     <% end %>

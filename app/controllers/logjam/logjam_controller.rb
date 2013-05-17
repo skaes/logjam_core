@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+require 'csv'
 module Logjam
 
   class LogjamController < ApplicationController
@@ -122,13 +124,13 @@ module Logjam
       params[:sort] ||= 'count'
       params[:group] ||= 'module'
       @page = params[:page]
-      @title = "Callers of '#{@page}'"
       @callers = Totals.new(@db, ["callers"], @page).callers
       if transform = get_transform
         @callers = @callers.each_with_object(Hash.new(0)){|(k,v),h| h[transform.call(k)] += v}
       end
       respond_to do |format|
         format.html do
+          @title = "Callers" + (['::', 'all_pages', ''].include?(@page) ? '' : " of '#{@app}-#{@page}'")
           @callers =
             case params[:sort]
             when 'name'
@@ -151,23 +153,25 @@ module Logjam
     def get_transform
       case params[:group]
       when 'module'
-        ->(k)do
-          p = k.split('-')
+        ->(k) do
+          p = k.gsub('∙','.').split('-')
           m = p[1].split(/(::)|#/)[0]
           # TODO: dirty hack
           m = p[0].capitalize if m =~ /Controller\z/
           "#{p[0]}-#{m}"
         end
       when 'application'
-        ->(k){ k.split('-')[0] }
+        ->(k){ k.gsub('∙','.').split('-')[0] }
       else
-        ->(k){ k }
+        ->(k){ k.gsub('∙','.') }
       end
     end
     private :get_transform
 
     def call_relationships
-      get_date
+      prepare_params
+      params[:group] ||= 'module'
+      params[:sort] ||= 'caller'
       transform = get_transform
       databases = Logjam.grep(Logjam.databases, :env => @env, :date => @date)
       data = Hash.new(0)
@@ -183,11 +187,30 @@ module Logjam
           end
         end
       end
-      data = data.map{|p,c| {source: p[0], target: p[1], count: c}}
-      data.sort_by!{|p| [p[:source],p[:target]]}
+      @data = data.map{|p,c| {source: p[0], target: p[1], count: c}}
+      case params[:sort]
+      when 'caller'
+        @data.sort_by!{|p| [p[:source],p[:target]]}
+      when 'callee'
+        @data.sort_by!{|p| [p[:target],p[:source]]}
+      when 'count'
+        @data.sort_by!{|p| -p[:count]}
+      end
       respond_to do |format|
+        format.html do
+          @title = "Call relationships across all aplications"
+        end
         format.json do
-          render :json => Oj.dump(data, :mode => :compat)
+          render :json => Oj.dump(@data, :mode => :compat)
+        end
+        format.csv do
+          str = CSV.generate(:col_sep => ';') do |csv|
+            csv << %w(Caller Callee Calls)
+            @data.each do |p|
+              csv << p.values_at(:source, :target, :count)
+            end
+          end
+          render :text => str
         end
       end
     end

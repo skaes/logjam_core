@@ -30,7 +30,10 @@
                     clean_params(params.slice(:app,:env,:page).merge(:action => "live_stream")),
                     {:target => "_blank"}) %>
         <% end -%>
-        <%= link_to("Show Callers", clean_params(params.merge(:action =>"callers")), {:id => 'caller_link'}) %>
+        <span id="caller_links" class="caller_links">
+          <%= link_to("My Callers", clean_params(params.merge(:action =>"callers"))) %> |
+          <%= link_to("All Callers", clean_params(params.merge(:action =>"call_relationships"))) %>
+        </span>
       </p>
       <%= render :partial => "resource_plot", :locals => {:width => 1440/5*2, :height => 300} %>
     </div>
