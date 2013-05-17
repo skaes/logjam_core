@@ -17,7 +17,7 @@
       <% app, controller = caller.split('-') %>
       <tr class='full_stats'>
         <td><%= app %></td>
-        <td><%= link_to(controller, params.merge(:app => app, :page => controller)) %></td>
+        <td><%= link_to(controller, params.merge(:app => app, :page => controller)) unless controller.blank? %></td>
         <td style='text-align:right;'><%= integer_number(count) %></td>
       </tr>
     <% end %>
