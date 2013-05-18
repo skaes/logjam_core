@@ -1,19 +1,7 @@
 <%= render "header" %>
-<div id="graph-link">
-  <%= form_tag(params.merge(:format => :csv), :method => :get) do %>
-  <%= hidden_field_tag :app, @app %>
-  <%= hidden_field_tag :env, @env %>
-  <%= hidden_field_tag :page, @page %>
-  <%= hidden_field_tag :group, params[:group] %>
-  <%= hidden_field_tag :sort, params[:sort] %>
-  <%= submit_tag "Download CSV" %>
-  <% end %>
-  <div>
-    <a href="/call_graphs.html">Graph it!</a>
-  </div>
-</div>
-<div id='callers'>
+<div id="callers">
   <h1><%= h @title %> (<%= @data.size %>)</h1>
+  <div id="controls">
     <%= form_tag(params, :method => :get) do %>
       <%= hidden_field_tag :app, @app %>
       <%= hidden_field_tag :env, @env %>
@@ -23,8 +11,18 @@
       <span>Sort by:</span>
       <%= select_tag 'sort', options_for_select(%w(caller callee count), params[:sort]), :onchange => "form.submit()" %>
       <span>Filter:</span>
-      <%= text_field_tag 'filter', params[:filter], :size => 30 %>
+      <%= text_field_tag 'filter', params[:filter], :size => 25 %>
     <% end %>
+    <%= form_tag(params.merge(:format => :csv), :method => :get) do %>
+      <%= hidden_field_tag :app, @app %>
+      <%= hidden_field_tag :env, @env %>
+      <%= hidden_field_tag :page, @page %>
+      <%= hidden_field_tag :group, params[:group] %>
+      <%= hidden_field_tag :sort, params[:sort] %>
+      <%= submit_tag "Download CSV", :id => "download-button" %>
+    <% end %>
+    <a href="/call_graphs.html">Graph it!</a>
+  </div>
   <table class='full_stats'>
     <tr><th>Caller</th><th>Callee</th><th>#Calls</th></tr>
     <% @data.each do |h| %>

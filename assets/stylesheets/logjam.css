@@ -54,7 +54,7 @@ input, select {
   background: #cca383;
 }
 
-#filter {
+#header #filter {
   vertical-align: middle;
   padding-left: 5px;
   padding-right: 5px;
@@ -264,16 +264,11 @@ td.number {text-align: right;}
 .caller_links a { color: blue; }
 .caller_links a:hover { font-weight: bold; }
 
-#graph-link {
-    position: absolute;
-    right: 0;
-    padding: 10px;
-}
-
-#graph-link a {color: blue; margin-left: 10px; }
-#graph-link a:hover {font-weight: bold;}
-
-#callers #filter { width: 10em; }
+#controls form { display: inline; }
+#controls a {color: blue; margin-left: 5px; }
+#controls a:hover {font-weight: bold; }
+#controls #download-button { margin-left: 10px; }
+#callers #filter { }
 
 #request-lines {
   margin-top:15px;
