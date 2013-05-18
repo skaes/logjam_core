@@ -247,8 +247,8 @@ function error_url(request_id, time) {
 
 /* add errors to the recent errors list */
 function update_errors(errors) {
-  var table = jQuery('#recent-errors');
-  var list = jQuery('#recent-errors-head');
+  var table = $('#recent-errors');
+  var list = $('#recent-errors-head');
   for (var i = 0, len = errors.length; i < len; ++i) {
     var e = errors[i];
     var severity_value = e["severity"];
@@ -260,11 +260,11 @@ function update_errors(errors) {
     var time = e["time"].slice(11,19);
     var desc = e["description"];
     var url = error_url(e["request_id"], e["time"]);
-    var new_row = jQuery("<tr class='full_stats'><td>" + severity + "</td><td>" + time + "</td><td>" + action + "</td><td>" + desc + "</td></tr>");
+    var new_row = $("<tr class='full_stats'><td>" + severity + "</td><td>" + time + "</td><td>" + action + "</td><td>" + desc + "</td></tr>");
     new_row.hide().addClass("new_error clickable");
     var onclick = (function(u){ return function(){ window.open(u, "_blank"); }})(url);
     new_row.children().click(onclick);
-    var rows = jQuery('#recent-errors tr');
+    var rows = $('#recent-errors tr');
     var l = rows.size() - 20;
     for (j=0; j < l; ++j) {
       rows.last().remove();
@@ -279,7 +279,7 @@ function update_errors(errors) {
 
 /* update chart or error list */
 function update_view(value) {
-  if (jQuery.isArray(value))
+  if ($.isArray(value))
     update_errors(value);
   else
     update_chart(value);
@@ -364,7 +364,7 @@ function change_connection_status(new_status) {
 }
 
 function reconnect(){
-  var button = jQuery('#stream-toggle')
+  var button = $('#stream-toggle')
   if ( button.val() == "pause") {
      change_connection_status("connecting");
      window.setTimeout(connect_chart, 5000);
@@ -423,7 +423,7 @@ function toggle_smoothness(button) {
 }
 
 /* automatically connect to the data stream when the ducoment is ready */
-jQuery(document).ready(connect_chart);
+$(document).ready(connect_chart);
 
   </script>
 

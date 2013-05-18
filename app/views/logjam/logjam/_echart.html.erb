@@ -51,7 +51,7 @@ var line = d3.svg.line()
     .y(function(d) { return y(d[1]); })
 ;
 
-var tooltip = jQuery('<%= "#echart-#{i}" %> svg');
+var tooltip = $('<%= "#echart-#{i}" %> svg');
 var tooltip_text = "";
 var tooltip_formatter = d3.format("3d");
 var tooltip_timeformatter = d3.format("02d");

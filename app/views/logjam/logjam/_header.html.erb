@@ -1,34 +1,34 @@
 <% home_url = url_for(params.merge(:action => :index).except(:interval)) %>
 <script type="text/javascript">
 function go_home() {
-  jQuery('#page-field').val("::");
-  jQuery('#grouping option:selected').val("page");
-  jQuery('#resource option:selected').val("total_time");
-  jQuery('#start-minute').val("");
-  jQuery('#end-minute').val("");
-  jQuery('#interval').val("5");
-  jQuery('#filter-form').attr("action", "<%= home_url %>");
-  jQuery('#filter-form').submit();
+  $('#page-field').val("::");
+  $('#grouping option:selected').val("page");
+  $('#resource option:selected').val("total_time");
+  $('#start-minute').val("");
+  $('#end-minute').val("");
+  $('#interval').val("5");
+  $('#filter-form').attr("action", "<%= home_url %>");
+  $('#filter-form').submit();
 }
 function view_grouping(grouping){
-  jQuery('#grouping option:selected').val(grouping);
-  jQuery('#filter-form').attr("action", "<%= home_url %>");
-  jQuery('#filter-form').submit();
+  $('#grouping option:selected').val(grouping);
+  $('#filter-form').attr("action", "<%= home_url %>");
+  $('#filter-form').submit();
 }
 function view_resource(resource){
-  jQuery('#resource option:selected').val(resource);
-  jQuery('#filter-form').attr("action", "<%= home_url %>");
-  jQuery('#filter-form').submit();
+  $('#resource option:selected').val(resource);
+  $('#filter-form').attr("action", "<%= home_url %>");
+  $('#filter-form').submit();
 }
-jQuery(document).ready(function(){
-  jQuery('#datepicker').jdPicker({date_format:"YYYY-mm-dd", selectable:[<%= raw @days.map{|d| %Q|"#{d}"|}.join(', ') %>], error_out_of_range:"No data for that date."});
+$(document).ready(function(){
+  $('#datepicker').jdPicker({date_format:"YYYY-mm-dd", selectable:[<%= raw @days.map{|d| %Q|"#{d}"|}.join(', ') %>], error_out_of_range:"No data for that date."});
 });
 var initial_page_value = <%= raw Oj.dump(@page) %>;
-jQuery(document).ready(function(){
-  jQuery('#page-field').autocomplete({
+$(document).ready(function(){
+  $('#page-field').autocomplete({
      source: '<%= raw url_for(params.slice(:year, :month, :day, :app, :env).merge(:action => "auto_complete_for_controller_action_page")) %>',
      minLength: 2,
-     close: function(event, ui) { if (initial_page_value != jQuery('#page-field').val() ) jQuery('#filter-form').submit(); }
+     close: function(event, ui) { if (initial_page_value != $('#page-field').val() ) $('#filter-form').submit(); }
   });
 });
 </script>

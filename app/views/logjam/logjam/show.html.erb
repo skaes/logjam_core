@@ -163,9 +163,9 @@
 </div>
 
 <script type="text/javascript">
-jQuery(document).ready(function(){
-  jQuery('.logline').dblclick(function(){
-      var text = jQuery(this).html().replace(/[\u200B]/g ,'');
+$(document).ready(function(){
+  $('.logline').dblclick(function(){
+      var text = $(this).html().replace(/[\u200B]/g ,'');
       var ref = text.match(/http:\/\/[^\s]+/);
       if (ref != null)
         window.prompt ("Extracted Curl Command:", "curl '" + ref + "'");

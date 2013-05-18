@@ -38,9 +38,9 @@ var w = <%= width %>,
     y2     = d3.scale.linear().domain([0, max_request_count]).range([50,0]).nice();
 
 function submit_minutes(start, end, resource) {
-   jQuery('#start-minute').val(""+start);
-   jQuery('#end-minute').val(""+end);
-   jQuery('#grouping option:selected').val("request");
+   $('#start-minute').val(""+start);
+   $('#end-minute').val(""+end);
+   $('#grouping option:selected').val("request");
    submit_resource(resource);
 }
 
@@ -50,9 +50,9 @@ function submit_resource(resource) {
      d3.event.stopPropagation();
    }
    if (resource != "requests/second" && resource != "free slots") {
-     jQuery('#resource option:selected').val(resource.replace(/ /g,'_'));
-     jQuery('#filter-form').attr("action", "<%= url_for(params.merge(:action => :index).except(:interval)) %>");
-     jQuery('#filter-form').submit();
+     $('#resource option:selected').val(resource.replace(/ /g,'_'));
+     $('#filter-form').attr("action", "<%= url_for(params.merge(:action => :index).except(:interval)) %>");
+     $('#filter-form').submit();
    }
 }
 
@@ -63,7 +63,7 @@ function restrict_minutes(p, resource){
 }
 
 function reset_minutes(){
-   submit_minutes(0, 1440, jQuery('#resource option:selected').val());
+   submit_minutes(0, 1440, $('#resource option:selected').val());
 }
 
 
@@ -295,7 +295,7 @@ vis.selectAll(".request_count")
      .attr("class", "request_count")
      .style("fill", "rgba(128,128,128,0.2)")
      .style("cursor", "pointer")
-     .on("click", function(d,i){ restrict_minutes(d3.mouse(this), jQuery('#resource option:selected').val())})
+     .on("click", function(d,i){ restrict_minutes(d3.mouse(this), $('#resource option:selected').val())})
      .on("mouseover", function(d,i){ mouse_over_requests(d, i, this)})
      .on("mousemove", function(d,i){ mouse_over_requests(d, i, this)})
      .on("mouseout", function(d,i){ request_tooltip_text = ""; })
@@ -303,7 +303,7 @@ vis.selectAll(".request_count")
      .style("stroke-width", 1)
      .attr("d", request_area);
 
-jQuery('.request_count').tipsy({
+$('.request_count').tipsy({
   trigger: 'hover',
   follow: 'x',
   offset: 0,
@@ -369,7 +369,7 @@ vis.selectAll(".layer")
      .style("stroke", "none")
      .attr("d", area);
 
-jQuery('.layer').tipsy({
+$('.layer').tipsy({
   trigger: 'hover',
   follow: 'x',
   offset: 0,
@@ -461,8 +461,8 @@ var event_tip_options = {
   title: function() { return event_tooltip_text; }
 };
 
-jQuery('.event').tipsy(event_tip_options);
-jQuery('.eventLine').tipsy(event_tip_options);
+$('.event').tipsy(event_tip_options);
+$('.eventLine').tipsy(event_tip_options);
 
 })();
 </script>

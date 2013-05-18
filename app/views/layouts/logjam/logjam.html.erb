@@ -18,13 +18,12 @@
   <script type="text/javascript" src="/javascripts/jquery-ui-1.8.5.custom.min.js"></script>
   <%= stylesheet_link_tag 'logjam', 'jdpicker.css' %>
   <script type="text/javascript">
-  jQuery.noConflict();
   <%= yield :page_scripts %>
   </script>
 </head>
 <body>
   <script type="text/javascript">
-  if (jQuery.browser.webkit) { jQuery('body').addClass('webkit'); }
+  if ($.browser.webkit) { $('body').addClass('webkit'); }
   </script>
 
 <%= yield %>
