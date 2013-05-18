@@ -1,5 +1,4 @@
 <%= render "header" %>
-
 <div id="graph-link">
   <%= form_tag(params.merge(:format => :csv), :method => :get) do %>
   <%= hidden_field_tag :app, @app %>
@@ -23,16 +22,37 @@
       <%= select_tag 'group', options_for_select(callers_grouping_options, params[:group]), :onchange => "form.submit()" %>
       <span>Sort by:</span>
       <%= select_tag 'sort', options_for_select(%w(caller callee count), params[:sort]), :onchange => "form.submit()" %>
+      <span>Filter:</span>
+      <%= text_field_tag 'filter', params[:filter], :size => 30 %>
     <% end %>
   <table class='full_stats'>
     <tr><th>Caller</th><th>Callee</th><th>#Calls</th></tr>
     <% @data.each do |h| %>
       <% caller, callee, count = h.values_at(:source, :target, :count) %>
       <tr class='full_stats'>
-        <td><%= caller %></td>
-        <td><%= callee %></td>
-        <td style='text-align:right;'><%= integer_number(count) %></td>
+        <td class="name"><%= caller %></td>
+        <td class="name"><%= callee %></td>
+        <td class="number"><%= integer_number(count) %></td>
       </tr>
     <% end %>
   </table>
 </div>
+<script type="text/javascript">
+  var filter = $('#callers #filter');
+  function filter_fun(){
+      var filter_text = filter.val();
+      $('#callers tr.full_stats').each(function(){
+          var caller = $(this).children(":first");
+          var callee = caller.next();
+          var text = caller.html() + "," + callee.html();
+          if (text.indexOf(filter_text) == -1) {
+            $(this).hide();
+          }
+          else {
+            $(this).show();
+          }
+      });
+  };
+  filter.keyup(filter_fun);
+  $(document).ready(filter_fun);
+</script>

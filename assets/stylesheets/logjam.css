@@ -273,6 +273,8 @@ td.number {text-align: right;}
 #graph-link a {color: blue; margin-left: 10px; }
 #graph-link a:hover {font-weight: bold;}
 
+#callers #filter { width: 10em; }
+
 #request-lines {
   margin-top:15px;
   margin-bottom:15px;
