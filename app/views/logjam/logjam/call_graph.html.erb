@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.link {
+  fill: none;
+  stroke-width: 1.5px;
+}
+
+.axis, .node {
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
+#info {
+  position: absolute;
+  z-index: 10000;
+}
+
+.chord {
+  opacity: 0.1;
+}
+.chord:hover {
+  opacity: 1;
+}
+
+.active {
+  opacity: 1;
+}
+.inactive {
+  opacity: 0.1;
+}
+
+svg {
+  font: 11px sans-serif;
+}
+
+aside {
+  position: absolute;
+  right: 0;
+  padding: 10px;
+}
+</style>
+<body>
+
+<aside>
+  <p>Grouping
+    <a href="javascript:void(0)" onclick="loadData('application');">Applications</a>
+    <a href="javascript:void(0)" onclick="loadData('module');">Modules</a>
+    <a href="javascript:void(0)" onclick="loadData('action');">Actions</a>
+</aside>
+
+<p id="info"></p>
+<script type="text/javascript" src="/javascripts/d3.v3.min.js"></script>
+<script type="text/javascript" src="/javascripts/jquery-1.4.2.min.js"></script>
+<script>
+
+var json_urls = {
+  application: '<%= raw url_for(params.slice(:app,:env,:sort,:filter).merge(:action => "call_relationships", :format => :json, :filter_data => 1, :group => "application", :only_path => false)) %>',
+  module:      '<%= raw url_for(params.slice(:app,:env,:sort,:filter).merge(:action => "call_relationships", :format => :json, :filter_data => 1, :group => "module", :only_path => false)) %>',
+  action:      '<%= raw url_for(params.slice(:app,:env,:sort,:filter).merge(:action => "call_relationships", :format => :json, :filter_data => 1, :group => "action", :only_path => false)) %>'
+};
+
+function graphAppData(appCallers) {
+
+
+var r1 = 1200 / 2,
+    r0 = r1 - 120;
+
+var fill = d3.scale.category20c();
+
+var chord = d3.layout.chord()
+    .padding(.02)
+    .sortSubgroups(d3.descending)
+    .sortChords(d3.descending);
+
+var arc = d3.svg.arc()
+    .innerRadius(r0)
+    .outerRadius(r0 + 20);
+
+var svg = d3.select("body").append("svg:svg")
+    .attr("width", 1600)
+    .attr("height", 1600)
+  .append("svg:g")
+    .attr("transform", "translate(" + 700 + "," + 700 + ")");
+
+  // Initialize the info display.
+  var info = d3.select("#info");
+
+  var indexByName = {},
+      nameByIndex = {},
+      appNames = d3.set(),
+      n = 0;
+  var scale =  d3.scale.log().domain(d3.extent(appCallers, function(d){ return d.count;}));
+//d3.scale.linear();
+  function appName(name) {
+    return name;
+    return name.split('-')[0];
+  }
+
+  appCallers.forEach(function(app) {
+    appNames.add(app.source);
+    appNames.add(app.target);
+  });
+  appNames.values().sort().forEach(function(name) {
+    name = appName(name);
+    if (!(name in indexByName)) {
+      nameByIndex[n] = name;
+      indexByName[name] = n++;
+    }
+  });
+
+  var matrix = [];
+  for (var i = 0; i < n; i++) {
+    matrix[i] = [];
+    for (var j = 0; j < n; j++) {
+      matrix[i][j] = 0;
+    }
+  }
+  appCallers.forEach(function(d) {
+    var source = indexByName[appName(d.target)],
+        row = matrix[source];
+    if (!row) {
+     row = matrix[source] = [];
+     for (var i = -1; ++i < n;) row[i] = 0;
+    }
+    row[indexByName[appName(d.source)]] = scale(d.count);
+  });
+
+  chord.matrix(matrix);
+
+  var g = svg.selectAll("g.group")
+    .data(chord.groups)
+      .enter().append("svg:g")
+        .attr("class", "group");
+
+  g.append("svg:path")
+      .style("fill", function(d) { return fill(d.index); })
+      .style("stroke", function(d) { return fill(d.index); })
+      .attr("d", arc)
+      .on("mouseover", function(g, i) {
+        svg.selectAll("path.chord")
+          .filter(function(d) { return d.source.index != i && d.target.index != i; })
+          .classed("active", false);
+        svg.selectAll("path.chord")
+          .filter(function(d) { return d.source.index == i || d.target.index == i; })
+          .classed("active", true);
+      })
+      .on("mouseout", function(d) {
+        // leave the arc selection, hard to read otherwise: svg.selectAll(".active").classed("active", false);
+      });
+
+  g.append("svg:text")
+      .each(function(d) { d.angle = (d.startAngle + d.endAngle) / 2; })
+      .attr("dy", ".35em")
+      .attr("fill", function(d) { return d.value == 0 ? "green" : "black" ;})
+      .attr("text-anchor", function(d) { return d.angle > Math.PI ? "end" : null; })
+      .attr("transform", function(d) {
+        return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
+            + "translate(" + (r0 + 45) + ")"
+            + (d.angle > Math.PI ? "rotate(180)" : "");
+      })
+      .text(function(d) { return nameByIndex[d.index]; })
+      .on("mouseover", function(g, i) {
+        svg.selectAll("path.chord")
+          .filter(function(d) { return d.source.index != i && d.target.index != i; })
+          .classed("active", false);
+        svg.selectAll("path.chord")
+          .filter(function(d) { return d.source.index == i || d.target.index == i; })
+          .classed("active", true);
+      })
+      .on("mouseout", function(d) {
+        // leave the arc selection, hard to read otherwise: svg.selectAll(".active").classed("active", false);
+      });
+
+
+  svg.selectAll("path.chord")
+      .data(chord.chords)
+      .enter().append("svg:path")
+      .attr("class", "chord")
+      .style("stroke", function(d) { return d3.rgb(fill(d.source.index)).darker(); })
+      .style("fill", function(d) { return fill(d.source.index); })
+      .attr("d", d3.svg.chord().radius(r0))
+      .on("mouseover", function(d) {
+        svg.selectAll(".active").classed("active", false);
+// using :hover now instead of:  svg.selectAll("path.chord").classed("active", function(p) { return p === d; });
+        info.html(
+          nameByIndex[d.target.index] + " called " + nameByIndex[d.source.index] + " " + d3.round(scale.invert(matrix[d.source.index][d.source.subindex])) + " times." + "</br>" +
+          nameByIndex[d.source.index] + " called " + nameByIndex[d.target.index] + " " + d3.round(scale.invert(matrix[d.target.index][d.target.subindex])) + " times.");
+      })
+      .on("mouseout", function(d) {
+        svg.selectAll(".active").classed("active", false);
+        info.text("");
+      });
+
+// Returns an event handler for fading a given chord group.
+function fade(opacity) {
+  return function(g, i) {
+    svg.selectAll("path.chord")
+        .filter(function(d) { return d.source.index != i && d.target.index != i; })
+      .transition()
+        .style("opacity", opacity);
+  };
+}
+}
+
+function loadData(group) {
+  d3.selectAll("svg").remove();
+  d3.json(json_urls[group], function(error, appCallers) {
+    graphAppData(appCallers);
+  });
+}
+
+loadData('<%= params[:group] %>');
+
+</script>

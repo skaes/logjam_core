@@ -11,7 +11,15 @@
       <span>Sort by:</span>
       <%= select_tag 'sort', options_for_select(%w(caller callee count), params[:sort]), :onchange => "form.submit()" %>
       <span>Filter:</span>
+    <% end %>
+    <%= form_tag(params.merge(:action => "call_graph"), :method => :get) do %>
       <%= text_field_tag 'filter', params[:filter], :size => 25 %>
+      <%= hidden_field_tag :app, @app %>
+      <%= hidden_field_tag :env, @env %>
+      <%= hidden_field_tag :page, @page %>
+      <%= hidden_field_tag :group, params[:group] %>
+      <%= hidden_field_tag :sort, params[:sort] %>
+      <%= submit_tag "Graph it!", :id => "graph-button" %>
     <% end %>
     <%= form_tag(params.merge(:format => :csv), :method => :get) do %>
       <%= hidden_field_tag :app, @app %>
@@ -21,7 +29,6 @@
       <%= hidden_field_tag :sort, params[:sort] %>
       <%= submit_tag "Download CSV", :id => "download-button" %>
     <% end %>
-    <a href="/call_graphs.html">Graph it!</a>
   </div>
   <table class='full_stats'>
     <tr><th>Caller</th><th>Callee</th><th>#Calls</th></tr>

@@ -3,8 +3,8 @@ require 'csv'
 module Logjam
 
   class LogjamController < ApplicationController
-    before_filter :redirect_to_clean_url, :except => [:live_stream, :auto_complete_for_controller_action_page, :call_relationships]
-    before_filter :verify_app_env, :except => [:call_relationships]
+    before_filter :redirect_to_clean_url, :except => [:live_stream, :auto_complete_for_controller_action_page, :call_relationships, :call_graph]
+    before_filter :verify_app_env, :except => [:call_relationships, :call_graph]
     before_filter :print_params if ::Rails.env=="development"
     # after_filter :allow_cross_domain_ajax
 
@@ -173,6 +173,8 @@ module Logjam
       prepare_params
       params[:group] ||= 'module'
       params[:sort] ||= 'caller'
+      # displaying the graph is an xhr request. only filter there.
+      filter = params[:filter_data].to_s == '1' ? params[:filter].to_s : ''
       transform = get_transform
       databases = Logjam.grep(Logjam.databases, :env => @env, :date => @date)
       data = Hash.new(0)
@@ -184,6 +186,7 @@ module Logjam
           callee = transform.call(callee)
           callers.each do |caller, count|
             caller = transform.call(caller)
+            next unless callee.index(filter) || caller.index(filter)
             data[[caller, callee]] += count.to_i
           end
         end
@@ -214,6 +217,10 @@ module Logjam
           render :text => str
         end
       end
+    end
+
+    def call_graph
+      render :layout => false
     end
 
     def js_exception_types
