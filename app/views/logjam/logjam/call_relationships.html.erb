@@ -1,7 +1,7 @@
 <%= render "header" %>
 <div id="callers">
   <div id="show-json"><%= link_to("show json", params.merge(:format => :json)) %></div>
-  <h1><%= h @title %> (<%= @data.size %>)</h1>
+  <h1><%= h @title %> (<span id="call-count"><%= @data.size %></span>)</h1>
   <div id="controls">
     <%= form_tag(params, :method => :get) do %>
       <%= hidden_field_tag :app, @app %>
@@ -50,17 +50,20 @@
       var filter_text = filter.val();
       $('#callers #graph-filter').val(filter_text);
       var filter_regexp = new RegExp(filter_text, 'i');
+      var visible_count = 0;
       $('#callers tr.full_stats').each(function(){
           var caller = $(this).children(":first");
           var callee = caller.next();
           var text = caller.html() + "," + callee.html();
           if (text.match(filter_regexp)) {
             $(this).show();
+            visible_count += 1;
           }
           else {
             $(this).hide();
           }
       });
+      $('#callers #call-count').text(""+visible_count);
   };
   filter.keyup(filter_fun);
   $(document).ready(filter_fun);
