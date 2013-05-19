@@ -1,5 +1,6 @@
 <%= render "header" %>
 <div id="callers">
+  <div id="show-json"><%= link_to("show json", params.merge(:format => :json)) %></div>
   <h1><%= h @title %> (<%= @data.size %>)</h1>
   <div id="controls">
     <%= form_tag(params, :method => :get) do %>

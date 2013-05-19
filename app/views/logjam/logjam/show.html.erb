@@ -4,6 +4,7 @@
 
 <div id='request' style="margin-bottom:5px;">
 <% if @request.present? %>
+  <div id="show-json"><%= link_to("show json", params.merge(:format => :json)) %></div>
   <b>Request details for</b>
   <%
     page, minute = @request["page"], @request["minute"]

@@ -29,8 +29,15 @@ module Logjam
       logjam_request_id = [@app, @env, params[:id]].join('-')
       @js_exceptions = Logjam::JsExceptions.new(@db).find_by_request(logjam_request_id)
       @request = Requests.new(@db).find(params[:id])
-      unless @request || @js_exceptions.present?
-        render :file => "#{Rails.root}/public/404.html", :status => :not_found
+      respond_to do |format|
+        format.html do
+          unless @request || @js_exceptions.present?
+            render :file => "#{Rails.root}/public/404.html", :status => :not_found
+          end
+        end
+        format.json do
+          render :json => Oj.dump(@request||["NOT FOUND"], :mode => :compat)
+        end
       end
     end
 
