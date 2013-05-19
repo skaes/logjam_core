@@ -175,6 +175,7 @@ module Logjam
       params[:sort] ||= 'caller'
       # displaying the graph is an xhr request. only filter there.
       filter = params[:filter_data].to_s == '1' ? params[:filter].to_s : ''
+      filter_regexp = /#{filter}/i unless filter.blank?
       transform = get_transform
       databases = Logjam.grep(Logjam.databases, :env => @env, :date => @date)
       data = Hash.new(0)
@@ -186,7 +187,7 @@ module Logjam
           callee = transform.call(callee)
           callers.each do |caller, count|
             caller = transform.call(caller)
-            next unless callee.index(filter) || caller.index(filter)
+            next if filter_regexp && "#{caller},#{callee}" !~ filter_regexp
             data[[caller, callee]] += count.to_i
           end
         end

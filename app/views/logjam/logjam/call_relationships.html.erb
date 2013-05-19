@@ -48,15 +48,16 @@
   function filter_fun(){
       var filter_text = filter.val();
       $('#callers #graph-filter').val(filter_text);
+      var filter_regexp = new RegExp(filter_text, 'i');
       $('#callers tr.full_stats').each(function(){
           var caller = $(this).children(":first");
           var callee = caller.next();
           var text = caller.html() + "," + callee.html();
-          if (text.indexOf(filter_text) == -1) {
-            $(this).hide();
+          if (text.match(filter_regexp)) {
+            $(this).show();
           }
           else {
-            $(this).show();
+            $(this).hide();
           }
       });
   };
