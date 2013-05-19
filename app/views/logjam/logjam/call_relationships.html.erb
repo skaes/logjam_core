@@ -11,14 +11,15 @@
       <span>Sort by:</span>
       <%= select_tag 'sort', options_for_select(%w(caller callee count), params[:sort]), :onchange => "form.submit()" %>
       <span>Filter:</span>
+      <%= text_field_tag 'filter', params[:filter], :size => 30 %>
     <% end %>
     <%= form_tag(params.merge(:action => "call_graph"), :method => :get) do %>
-      <%= text_field_tag 'filter', params[:filter], :size => 25 %>
       <%= hidden_field_tag :app, @app %>
       <%= hidden_field_tag :env, @env %>
       <%= hidden_field_tag :page, @page %>
       <%= hidden_field_tag :group, params[:group] %>
       <%= hidden_field_tag :sort, params[:sort] %>
+      <%= hidden_field_tag :filter, params[:filter], :id => "graph-filter" %>
       <%= submit_tag "Graph it!", :id => "graph-button" %>
     <% end %>
     <%= form_tag(params.merge(:format => :csv), :method => :get) do %>
@@ -46,6 +47,7 @@
   var filter = $('#callers #filter');
   function filter_fun(){
       var filter_text = filter.val();
+      $('#callers #graph-filter').val(filter_text);
       $('#callers tr.full_stats').each(function(){
           var caller = $(this).children(":first");
           var callee = caller.next();
