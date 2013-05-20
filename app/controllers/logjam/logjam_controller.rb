@@ -3,7 +3,7 @@ require 'csv'
 module Logjam
 
   class LogjamController < ApplicationController
-    before_filter :redirect_to_clean_url, :except => [:live_stream, :auto_complete_for_controller_action_page, :call_relationships, :call_graph]
+    before_filter :redirect_to_clean_url, :except => [:live_stream, :auto_complete_for_controller_action_page]
     before_filter :verify_app_env, :except => [:call_relationships, :call_graph]
     before_filter :print_params if ::Rails.env=="development"
     # after_filter :allow_cross_domain_ajax
@@ -345,6 +345,7 @@ module Logjam
     end
 
     def redirect_to_clean_url
+      return if request.format.to_s =~ /json/
       get_app_env
       py, pm, pd = params.values_at(:year, :month, :day).map(&:to_i)
       dd = default_date
@@ -360,6 +361,7 @@ module Logjam
           :app => params[:app], :env => params[:env],
           :page => params[:page], :response => params[:response],
           :resource => params[:resource],
+          :sort => params[:sort], :group => params[:group], :filter => params[:filter],
           :offset => params[:offset], :error_type => params[:error_type],
           :grouping => params[:grouping], :grouping_function => params[:grouping_function])
         redirect_to new_params
@@ -368,6 +370,7 @@ module Logjam
 
     def print_params
       p params
+      # p request.format
     end
 
     def verify_app_env
