@@ -282,7 +282,7 @@ module Logjam
         mbuffer = (@minutes_buffer[[p,minute]] ||= Hash.new(0.0))
         tbuffer = (@totals_buffer[p] ||= Hash.new(0.0))
         increments.each do |f,v|
-          mbuffer[f] += v unless f =~ /^callers\./
+          mbuffer[f] += v # unless f =~ /^callers\./
           tbuffer[f] += v
         end
       end
