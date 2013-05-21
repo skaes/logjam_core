@@ -144,11 +144,7 @@ var svg = d3.select("body").append("svg:svg")
       .attr("d", arc)
       .on("mouseover", function(g, i) {
         svg.selectAll("path.chord")
-          .filter(function(d) { return d.source.index != i && d.target.index != i; })
-          .classed("active", false);
-        svg.selectAll("path.chord")
-          .filter(function(d) { return d.source.index == i || d.target.index == i; })
-          .classed("active", true);
+          .classed("active", function(d) { return d.source.index == i || d.target.index == i; });
       })
       .on("mouseout", function(d) {
         // leave the arc selection, hard to read otherwise: svg.selectAll(".active").classed("active", false);
@@ -167,11 +163,7 @@ var svg = d3.select("body").append("svg:svg")
       .text(function(d) { return nameByIndex[d.index]; })
       .on("mouseover", function(g, i) {
         svg.selectAll("path.chord")
-          .filter(function(d) { return d.source.index != i && d.target.index != i; })
-          .classed("active", false);
-        svg.selectAll("path.chord")
-          .filter(function(d) { return d.source.index == i || d.target.index == i; })
-          .classed("active", true);
+          .classed("active", function(d) { return d.source.index == i || d.target.index == i; });
       })
       .on("mouseout", function(d) {
         // leave the arc selection, hard to read otherwise: svg.selectAll(".active").classed("active", false);
