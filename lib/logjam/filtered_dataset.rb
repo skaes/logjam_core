@@ -292,8 +292,7 @@ module Logjam
       if ['::', 'all_pages', ''].include?(page)
         Totals.new(@db, %w(js_exceptions), 'all_pages').js_exception_count
       else
-        'n/a'
-        #totals.js_exception_count
+        totals.js_exception_count
       end
     end
 

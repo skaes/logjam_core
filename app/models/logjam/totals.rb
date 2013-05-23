@@ -109,6 +109,7 @@ module Logjam
       other.severity.each {|x,y| severity[x] = (severity[x]||0) + y}
       other.exceptions.each {|x,y| exceptions[x] = (exceptions[x]||0) + y}
       other.callers.each {|x,y| callers[x] = (callers[x]||0) + y}
+      other.js_exceptions.each {|x,y| js_exceptions[x] = (js_exceptions[x]||0) + y}
     end
 
     def clone
@@ -198,7 +199,7 @@ module Logjam
         begin
           query = "Totals.distinct(:page)"
           ActiveSupport::Notifications.instrument("mongo.logjam", :query => query) do |payload|
-            rows = @collection.distinct(:page)
+            rows = @collection.distinct(:page, :count => {'$gt' => 0})
             payload[:rows] = rows.size
             rows
           end
@@ -319,7 +320,7 @@ module Logjam
       when page_names.include?(pattern) then {:page => pattern}
       when page_names.grep(/^#{pattern}/).size > 0 then {:page => /^#{pattern}/}
       else {:page => /#{pattern}/}
-      end
+      end.merge!(:count => {'$gt' => 0})
     end
 
     def compute
