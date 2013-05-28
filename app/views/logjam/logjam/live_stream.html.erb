@@ -5,6 +5,25 @@
     <input id="smooth-toggle" type="button" onclick="toggle_smoothness(this);" value="smooth updates" />
   </h2>
 
+  <style type="text/css" media="screen">
+    #anomaly-score { display: none; }
+    #anomaly-score-title { font-size: 14px; }
+    #anomaly-score-value { font-weight: bold; font-size: 48px; margin-top: 20px; }
+    #live-stream-chart {float: left; }
+    #recent-errors-title { clear: both; padding-top: 10px; }
+  </style>
+
+  <div id="live-stream-chart"></div>
+  <div id="anomaly-score">
+    <p id="anomaly-score-title">Anomaly Score:</p>
+    <p id="anomaly-score-value"></p>
+  </div>
+
+  <h2 id="recent-errors-title">Recent Warnings/Errors</h2>
+  <table id="recent-errors" class="full_stats">
+  <tr id="recent-errors-head"><th>Severity</th><th>Time</th><th>Action</th><th>Log Excerpt</th></tr>
+  </table>
+
   <script type="text/javascript">
 
 <% color_list = @resources.reverse.map{|r| Logjam::Resource.color(r,0.7)}+["rgba(128,128,128,0.3)"] %>
@@ -30,7 +49,7 @@ function zeros(){ return d3.range(w/slice+2).map(function(){ return 0;}); }
 var data = d3.range(resources.length).map(zeros);
 var request_counts = zeros();
 
-var vis = d3.select("#live-stream")
+var vis = d3.select("#live-stream-chart")
     .append("svg")
      .attr("width", w+70)
      .attr("height", h+70)
@@ -277,10 +296,20 @@ function update_errors(errors) {
   }
 };
 
+function update_anomaly_score(value) {
+   var score = value["score"];
+   var is_anomaly = value["anomaly"];
+   $('#anomaly-score-value').html(d3.format(".2f")(score));
+   $('#anomaly-score-value').css("color", is_anomaly ? "red" : "green");
+   $('#anomaly-score').show();
+};
+
 /* update chart or error list */
 function update_view(value) {
   if ($.isArray(value))
     update_errors(value);
+  else if ("anomaly" in value)
+    update_anomaly_score(value);
   else
     update_chart(value);
 };
@@ -426,10 +455,5 @@ function toggle_smoothness(button) {
 $(document).ready(connect_chart);
 
   </script>
-
-  <h2>Recent Warnings/Errors</h2>
-  <table id="recent-errors" class="full_stats">
-  <tr id="recent-errors-head"><th>Severity</th><th>Time</th><th>Action</th><th>Log Excerpt</th></tr>
-  </table>
 
 </div>
