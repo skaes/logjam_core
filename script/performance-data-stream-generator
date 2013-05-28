@@ -24,10 +24,15 @@ env  = options[:env]
 keys = options[:keys]
 
 context = ZMQ::Context.new(1)
-socket = context.socket(ZMQ::PUSH)
-socket.setsockopt(ZMQ::SNDHWM, 1000)
-socket.setsockopt(ZMQ::LINGER, 100)
-socket.connect("tcp://localhost:9607")
+push_socket = context.socket(ZMQ::PUSH)
+push_socket.setsockopt(ZMQ::SNDHWM, 1000)
+push_socket.setsockopt(ZMQ::LINGER, 100)
+push_socket.connect("tcp://localhost:9607")
+
+pub_socket = context.socket(ZMQ::PUB)
+pub_socket.setsockopt(ZMQ::SNDHWM, 1000)
+pub_socket.setsockopt(ZMQ::LINGER, 100)
+pub_socket.bind("tcp://0.0.0.0:9610")
 
 EM.run do
 
@@ -40,7 +45,7 @@ EM.run do
       encoded_data = Oj.dump(data, :mode => :compat)
       # publish performance data
       msg = ["#{app}-#{env},#{key}", encoded_data]
-      socket.send_strings msg, ZMQ::DONTWAIT
+      push_socket.send_strings msg, ZMQ::DONTWAIT
       puts "KEY: #{key} DATA: #{encoded_data}" if options[:verbose]
     end
   end
@@ -59,12 +64,24 @@ EM.run do
       encoded_errors = Oj.dump(errors, :mode => :compat)
       # publish error data
       msg = ["#{app}-#{env},#{key}", encoded_errors]
-      socket.send_strings msg, ZMQ::DONTWAIT
+      push_socket.send_strings msg, ZMQ::DONTWAIT
       puts "KEY: #{key} ERROR: #{encoded_errors}" if options[:verbose]
+    end
+  end
+  EM.add_periodic_timer(5) do
+    keys.each do |key|
+      score = rand
+      anomaly_data = {anomaly: score > 0.5, score: score}
+      encoded_anomaly_data = Oj.dump(anomaly_data, :mode => :compat)
+      # publish anomaly data
+      msg = ["#{app}-#{env},#{key}", encoded_anomaly_data]
+      pub_socket.send_strings msg, ZMQ::DONTWAIT
+      puts "KEY: #{key} ANOMALY: #{encoded_anomaly_data}" if options[:verbose]
     end
   end
 end
 
-socket.close
+push_socket.close
+pub_socket.close
 context.terminate
 
