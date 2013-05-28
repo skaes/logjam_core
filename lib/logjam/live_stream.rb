@@ -21,5 +21,10 @@ module Logjam
       @host
     end
 
+    def anomalies_host(*args)
+      @anomalies_host = args.first if args.first
+      @anomalies_host || "localhost"
+    end
+
   end
 end

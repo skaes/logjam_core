@@ -24,7 +24,7 @@ rescue => e
 end
 
 def send_to_web_sockets(app_env_key, perf_data)
-  @sockets[app_env_key].each {|s| puts app_env_key; send_perf_data(s, perf_data)}
+  @sockets[app_env_key].each {|s| send_perf_data(s, perf_data)}
 rescue => e
   $stderr.puts "#{e.class}(#{e})"
 end
