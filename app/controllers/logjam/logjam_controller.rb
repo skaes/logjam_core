@@ -158,8 +158,8 @@ module Logjam
       end
     end
 
-    def get_transform
-      case params[:group]
+    def get_transform(group)
+      case group
       when 'module'
         ->(k) do
           p = k.gsub('∙','.').split('-')
@@ -176,16 +176,11 @@ module Logjam
     end
     private :get_transform
 
-    def call_relationships
-      prepare_params
-      params[:group] ||= 'module'
-      params[:sort] ||= 'caller'
-      # displaying the graph is an xhr request. only filter there.
-      filter = params[:filter_data].to_s == '1' ? params[:filter].to_s : ''
+    def get_relationship_data(group=nil, filter=nil, sort=nil)
       filter_regexp = /#{filter}/i unless filter.blank?
-      transform = get_transform
-      databases = Logjam.grep(Logjam.databases, :env => @env, :date => @date)
+      transform = get_transform(group)
       data = Hash.new(0)
+      databases = Logjam.grep(Logjam.databases, :env => @env, :date => @date)
       databases.each do |db_name|
         stream = Logjam.stream_for(db_name)
         db = Logjam.connection_for(db_name).db(db_name)
@@ -199,30 +194,40 @@ module Logjam
           end
         end
       end
-      @data = data.map{|p,c| {source: p[0], target: p[1], count: c}}
-      case params[:sort]
-      when 'caller'
-        @data.sort_by!{|p| [p[:source],p[:target]]}
-      when 'callee'
-        @data.sort_by!{|p| [p[:target],p[:source]]}
-      when 'count'
-        @data.sort_by!{|p| -p[:count]}
+      data = data.map{|p,c| {source: p[0], target: p[1], count: c}}
+      case sort
+      when 'caller' then data.sort_by!{|p| [p[:source],p[:target]]}
+      when 'callee' then data.sort_by!{|p| [p[:target],p[:source]]}
+      when 'count'  then data.sort_by!{|p| -p[:count]}
       end
+      data
+    end
+    private :get_relationship_data
+
+    def call_relationships
+      prepare_params
+      params[:group] ||= 'module'
+      params[:sort] ||= 'caller'
+      # only filter data when explicitly requested
+      filter = params[:filter_data].to_s == '1' ? params[:filter].to_s : ''
+      data = get_relationship_data(params[:group], filter, params[:sort])
+
       respond_to do |format|
         format.html do
           @title = "Call relationships across all aplications"
+          @data = data
         end
         format.json do
-          render :json => Oj.dump(@data, :mode => :compat)
+          render :json => Oj.dump(data, :mode => :compat)
         end
         format.csv do
           str = CSV.generate(:col_sep => ';') do |csv|
             csv << %w(Caller Callee Calls)
-            @data.each do |p|
+            data.each do |p|
               csv << p.values_at(:source, :target, :count)
             end
           end
-          render :text => str
+          render :text => str, :format => :csv
         end
       end
     end
