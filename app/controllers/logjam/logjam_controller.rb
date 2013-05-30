@@ -123,7 +123,7 @@ module Logjam
       prepare_params
       @page = params[:page]
       @title = "Logged Exceptions"
-      @totals = Totals.new(@db, ["exceptions"], @page)
+      @totals = Totals.new(@db, ["exceptions"], @page.blank? ? 'all_pages' : @page)
       @minutes = Minutes.new(@db, ["exceptions"], @page, @totals.page_names, 2)
     end
 
@@ -240,7 +240,7 @@ module Logjam
       prepare_params
       @page = params[:page]
       @title = "Logged JavaScript Exceptions"
-      @totals = Totals.new(@db, ["js_exceptions"], @page)
+      @totals = Totals.new(@db, ["js_exceptions"], @page.blank? ? 'all_pages' : @page)
       @minutes = Minutes.new(@db, ["js_exceptions"], @page, @totals.page_names, 2)
     end
 

@@ -66,7 +66,7 @@ module Logjam
       counter_resources = @resources - compound_resources
       hashed_resources = @resources & compound_resources
       while row = rows.shift
-        count = row["count"]
+        count = row["count"] || 0.0
         slot = row["minute"] / interval
         counts[slot] += count
         sum_sofar = (sums[slot] ||= Hash.new(0.0))

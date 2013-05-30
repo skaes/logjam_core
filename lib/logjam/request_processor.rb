@@ -43,9 +43,14 @@ module Logjam
 
     def add(entry)
       @request_count += 1
-      page = entry["page"] = (entry.delete("action") || "Unknown")
+      page = entry.delete("action")
+      page = "Unknown" if page.blank?
+      entry["page"] = page
+      # ensure that page contains a method name. otherwise totals model code will devliver strange metrics.
       page << "#unknown_method" unless page =~ /#/
       pmodule = "::"
+      # extract a top level name (A::..., A#foo => A)
+      # this will always match, due to code above
       if page =~ /^(.+?)::/ || page =~ /^([^:#]+)#/
         pmodule << $1
         @modules << pmodule
@@ -130,22 +135,31 @@ module Logjam
     end
 
     def add_js_exception(exception)
-      # TODO: fill in the actual controller#action combo for the page once it
-      # is available and also fill in a sensible value for pmodule
-      page = 'fixme#fixme'
-      # pmodule = '::JavaScriptError'
+      pmodule = "::"
+      page = exception["logjam_action"]
+      page = "Unknown" if page.blank?
+      # avoid modifying the stored logjam_action, as this is not a real request
+      page += "#unknown_method" unless page =~ /#/
+      # try to extract a top level name (A::..., A#foo => A)
+      if page =~ /^(.+?)::/ || page =~ /^([^:#]+)#/
+        pmodule << $1
+        @modules << pmodule
+      end
+
       @request_count ||= 0
       db = Logjam.db(Time.parse(exception["started_at"]), @stream.app, @stream.env)
       JsExceptions.new(db).insert(exception)
       key = JsExceptions.key_from_description(exception['description'])
-      # [page, 'all_pages', pmodule].each do |p|
-      [page, 'all_pages'].each do |p|
+      [page, 'all_pages', pmodule].each do |p|
+        # avoid inserting fake totals/minutes entries
+        next if p =~ /(#unknown_method\z)|(\AUnknown)|(\A::\z)/
         tbuffer = (@totals_buffer[p] ||= Hash.new(0.0))
         tbuffer["js_exceptions.#{key}"] += 1
-        tbuffer['count'] = 0.0 unless tbuffer.has_key?('count')
+        tbuffer['count'] += 0
         minute = extract_minute_from_iso8601(exception["started_at"])
         mbuffer = (@minutes_buffer[[p,minute]] ||= Hash.new(0.0))
         mbuffer["js_exceptions.#{key}"] += 1
+        mbuffer['count'] += 0
       end
     end
 

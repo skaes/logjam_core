@@ -25,10 +25,11 @@
     <tr><th>Time</th><th>Action</th><th>Description</th></tr>
     <% @exceptions.each do |r| %>
     <tr class='full_stats'>
-      <% error_link_params = clean_params(params.merge(:action =>"show", :id => Logjam::JsExceptions.request_id_from_exception(r))) %>
+      <% error_link_params = clean_params(params.merge(:action =>"show", :id => Logjam::JsExceptions.request_id_from_exception(r)))%>
+      <% logjam_action_link = r['logjam_action'].to_s.sub(/\A(.+?)::([^#]*)\z/, '\1') %>
       <td><%= link_to(minute_to_human(r["minute"]), error_link_params, :title => "show exception") %></td>
-      <td><%= link_to(("#{r['controller']}##{r['action']}"), clean_params(params.merge(:action => "index", :grouping => "page", :page => r["page"])), :title => "show page stats") %></td>
-      <td><%= link_to(r["description"], params[:js_exception], error_link_params, :title => "show exception")  %></td>
+      <td><%= link_to(r['logjam_action'], clean_params(params.merge(:action => "index", :grouping => "page", :page => logjam_action_link)), :title => "show page stats") %></td>
+      <td><%= r["description"] %></td>
     </tr>
     <% end %>
   </table>
