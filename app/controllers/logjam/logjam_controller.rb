@@ -133,7 +133,7 @@ module Logjam
       params[:group] ||= 'module'
       @page = params[:page]
       @callers = Totals.new(@db, ["callers"], @page).callers
-      if transform = get_transform
+      if transform = get_transform(params[:group])
         @callers = @callers.each_with_object(Hash.new(0)){|(k,v),h| h[transform.call(k)] += v}
       end
       respond_to do |format|
