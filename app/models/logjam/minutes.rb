@@ -24,28 +24,32 @@ module Logjam
     end
 
     def exceptions
-      @exceptions ||= extract_exceptions('exceptions')
+      @exceptions ||= extract_sub_hash('exceptions')
     end
 
     def js_exceptions
-      @js_exceptions ||= extract_exceptions('js_exceptions')
+      @js_exceptions ||= extract_sub_hash('js_exceptions')
+    end
+
+    def callers
+      @callers ||= extract_sub_hash('callers')
     end
 
     private
 
-    # extract either 'exceptions' or 'js_exceptions' from the minutes records
-    def extract_exceptions(key)
-      exceptions = Hash.new{|h,e| h[e] = {}}
+    # extract a field stored as a sub hash of counters from the minutes records
+    def extract_sub_hash(key)
+      hash = Hash.new{|h,e| h[e] = {}}
       @minutes.each do |m,h|
         (h[key]||{}).each do |e,c|
-          exceptions[e][m] = c
+          hash[e][m] = c
         end
       end
-      exceptions
+      hash
     end
 
     def compound_resources
-      %w(apdex exceptions js_exceptions severity)
+      %w(apdex exceptions js_exceptions severity callers)
     end
 
     def compute(interval)

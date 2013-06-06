@@ -146,6 +146,18 @@ module Logjam
             else
               @callers.sort_by{|k,v| -v}
             end
+          totals = Totals.new(@db, ["callers"], @page.blank? ? 'all_pages' : @page)
+          @caller_minutes = Minutes.new(@db, ["callers"], @page, totals.page_names, 2).callers
+          puts @caller_minutes.inspect
+          if transform
+            minutes = Hash.new{|h,k| h[k] = Hash.new(0)}
+            @caller_minutes = @caller_minutes.each_with_object(minutes) do |(k,h),calls|
+              callee = transform.call(k)
+              counts = calls[callee]
+              h.each {|m,c| counts[m] += c}
+            end
+            puts @caller_minutes.inspect
+          end
         end
         format.json do
           page = @page == 'all_pages' ? '::' : @page

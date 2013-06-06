@@ -1,5 +1,15 @@
 <%= render "header" %>
 
+<style type="text/css">
+.xlabel, .ylabel, .legend, .label, .rlabel, .tooltip {
+  font: "8px sans-serif";
+  stroke: none;
+  fill: #000;
+  stroke-width: 0.5;
+  shape-rendering: crispEdges;
+}
+</style>
+
 <div id='callers'>
   <h1><%= h @title %> (<%= @callers.size %>)</h1>
     <%= form_tag(params, :method => :get) do %>
@@ -12,13 +22,17 @@
       <%= select_tag 'sort', options_for_select(callers_sorting_options, params[:sort]), :onchange => "form.submit()" %>
     <% end %>
   <table class='full_stats' style='display-inline'>
-    <tr><th>Application</th><th>Action</th><th>Calls</th></tr>
-    <% @callers.each do |caller, count| %>
+    <tr><th>Application</th><th>Action</th><th>Calls</th><th>Distribution over time (0-24h, 2 minute intervals)</th></tr>
+    <% @callers.each_with_index do |(caller, count), i| %>
       <% app, controller = caller.split('-') %>
+      <% url = url_for(params.merge(:app => app, :page => controller)) unless controller.blank? %>
       <tr class='full_stats'>
         <td><%= app %></td>
-        <td><%= link_to(controller, params.merge(:app => app, :page => controller)) unless controller.blank? %></td>
-        <td style='text-align:right;'><%= integer_number(count) %></td>
+        <td><%= link_to(controller, url) unless controller.blank? %></td>
+        <td class="number"><%= integer_number(count) %></td>
+        <td class='echart' id='<%= "echart-#{i}" %>'>
+          <%= render "echart", :exceptions => @caller_minutes[caller], :i => i, :url => url %>
+        </td>
       </tr>
     <% end %>
   </table>
