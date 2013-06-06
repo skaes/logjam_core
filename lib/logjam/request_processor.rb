@@ -42,6 +42,8 @@ module Logjam
     end
 
     def add(entry)
+      return if @stream.ignored_request?(entry)
+
       @request_count += 1
       page = entry.delete("action")
       page = "Unknown" if page.blank?

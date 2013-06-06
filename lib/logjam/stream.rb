@@ -67,6 +67,10 @@ module Logjam
           request["exceptions"] ||
           request["heap_growth"].to_i > 0
       end
+
+      def ignored_request?(request)
+        false
+      end
     end
 
     include InterestingRequest
