@@ -15,7 +15,7 @@ module Logjam
       @database = db
       @collection = @database["quants"]
       @pattern = pattern
-      @pattern = "all_pages" if @pattern.blank?
+      @pattern = "all_pages" if @pattern.blank? || @pattern == '::'
       @pattern = Regexp.new(/#{@pattern}/) unless @pattern == "all_pages"
       @kind = kind
       @resources = resources
