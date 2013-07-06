@@ -21,7 +21,16 @@ module Logjam
 
     def index
       @dataset = dataset_from_params
-      @resources, @js_data, @js_events, @js_max, @request_counts, @gc_time, @js_zoom = @dataset.plot_data
+      respond_to do |format|
+        format.html do
+          @resources, @js_data, @js_events, @js_max, @request_counts, @gc_time, @js_zoom = @dataset.plot_data
+        end
+        format.json do
+          resources = Resource.all_resources + %w(apdex response severity exceptions js_exceptions)
+          pages = Totals.new(@db, resources, @page).pages(:order => :apdex, :limit => 100_000)
+          render :json => Oj.dump(pages, :mode => :compat)
+        end
+      end
     end
 
     def show

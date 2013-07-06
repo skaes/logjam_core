@@ -127,6 +127,25 @@ module Logjam
       end
       res
     end
+
+    def to_hash
+      {
+        page: page,
+        count: count,
+        apdex: apdex.merge(t: 0.5, score: apdex_score),
+        response_codes: response,
+      }.tap do |h|
+        h[:exceptions] = exceptions unless exceptions.empty?
+        h[:js_exceptions] = js_exceptions unless js_exceptions.empty?
+        h[:log_severities] = severity unless severity.empty?
+        hr = h[:resources] = {}
+        resources.each do |r|
+          unless (s = sum(r)) == 0
+            hr[r] = { sum: s, avg: avg(r), stddev: stddev(r) }
+          end
+        end
+      end
+    end
   end
 
   class Totals
@@ -220,14 +239,19 @@ module Logjam
     end
 
     def pages(options)
-      order = options[:order] || :sum
       limit = options[:limit] || 1000
-      if order.to_sym == :count
-        pages = the_pages.sort_by{|r| -r.count}
-      else
-        raise "unknown sort method" unless order =~ /^(.+)_(sum|avg|stddev)$/
-        resource, function = $1, $2
-        pages = the_pages.sort_by{|r| -r.send(function, resource)}
+      pages = self.the_pages
+      if order = options[:order]
+        case order.to_sym
+        when :count
+          pages.sort_by!{|r| -r.count}
+        when :apdex
+          pages.sort_by!{|r| r.apdex_score}
+        else
+          raise "unknown sort method: #{order}" unless order.to_s =~ /^(.+)_(sum|avg|stddev)$/
+          resource, function = $1, $2
+          pages.sort_by!{|r| -r.send(function, resource)}
+        end
       end
       return pages if pages.size <= limit
       proper, rest = pages[0..limit-2], pages[limit-1..-1]

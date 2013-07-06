@@ -1,5 +1,5 @@
 <%= render "header" %>
-
+<div id="show-json"><%= link_to("show json", params.merge(:format => :json)) %></div>
 <div id='content'>
   <div id='left' class='clear-left'>
     <% if @dataset.empty? -%>
