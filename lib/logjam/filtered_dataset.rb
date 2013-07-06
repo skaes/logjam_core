@@ -69,7 +69,7 @@ module Logjam
     end
 
     def accumulates_time?
-      (Resource.resource_type(resource) == :time) && grouping? && [:sum, :avg, :stddev, :count].include?(grouping_function.to_sym)
+      (Resource.resource_type(resource) == :time) && grouping? && [:sum, :avg, :stddev, :count, :apdex].include?(grouping_function.to_sym)
     end
 
     def intervals_per_day
@@ -112,6 +112,8 @@ module Logjam
         else
           if grouping_function.to_sym == :count
             sort_by = "count"
+          elsif grouping_function.to_sym == :apdex
+            sort_by = "apdex"
           else
             sort_by = "#{resource}_#{grouping_function}"
           end
