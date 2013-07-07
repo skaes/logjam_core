@@ -175,7 +175,7 @@ namespace :logjam do
       service_paths.each do |service|
         next unless service =~ daemon_match
         system("sv force-restart #{service}")
-        sleep (ENV['RESTART_DELAY']||1).to_i
+        sleep((ENV['RESTART_DELAY']||1).to_i)
         break if interrupted
       end
     end

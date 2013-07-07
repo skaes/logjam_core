@@ -1,21 +1,21 @@
 <% pages.each do |page| -%>
-  <tr class='full_stats'>
-    <td class='group-thing'>
+  <tr class="full_stats">
+    <td class="group-thing">
       <%= sometimes_link_grouping_result(page, :page, params.merge(:page => page.page)) %>
     </td>
-    <td class='number'>
+    <td class="number">
       <%= sometimes_link_number_of_requests(page, :page, clean_params(params.merge(:grouping => "request", :page => without_module(page.page)))) %>
     </td>
-    <td class='number'><%= number_with_precision(page.avg(resource), :precision => 0, :delimiter => ',') %></td>
-    <td class='number'><%= sometimes_link_stddev(page, resource) %></td>
-    <td class='number'><%= seconds_to_human(page.sum(resource).to_f / 1000) %></td>
-    <td class='number'><%= number_to_percentage(page.sum(resource).to_f / resource_total * 100, :precision => 2) %></td>
+    <td class="number"><%= number_with_precision(page.avg(resource), :precision => 0, :delimiter => ",") %></td>
+    <td class="number"><%= sometimes_link_stddev(page, resource) %></td>
+    <td class="number"><%= seconds_to_human(page.sum(resource).to_f / 1000) %></td>
+    <td class="number"><%= number_to_percentage(page.sum(resource).to_f / resource_total * 100, :precision => 2) %></td>
     <% if resource == "total_time" -%>
-      <td class='number'><%= number_with_precision(page.apdex_score, :precision => 2) %></td>
-      <td class='number'><%= sometimes_link_errors(page) %></td>
-      <td class='number'><%= sometimes_link_400s(page) %></td>
+      <td class="number"><%= number_with_precision(page.apdex_score, :precision => 2) %></td>
+      <td class="number"><%= sometimes_link_errors(page) %></td>
+      <td class="number"><%= sometimes_link_400s(page) %></td>
     <% else -%>
-      <td class='number'><%= number_to_percentage(page.sum(resource).to_f / total_time * 100, :precision => 2) %></td>
+      <td class="number"><%= number_to_percentage(page.sum(resource).to_f / total_time * 100, :precision => 2) %></td>
     <% end -%>
   </tr>
 <% end -%>

@@ -3,6 +3,42 @@ module Logjam
 
   # Methods added to this helper will be available to all templates in the application.
   module LogjamHelper
+    def home_url
+      url_for(params.merge(:action => :index).except(:interval))
+    end
+
+    def auto_complete_url_for_action_page
+      url_for(params.slice(:year, :month, :day, :app, :env).merge(:action => "auto_complete_for_controller_action_page"))
+    end
+
+    def collected_time_resources
+      Logjam::Resource.time_resources & @collected_resources
+    end
+
+    def collected_call_resources
+      Logjam::Resource.call_resources & @collected_resources
+    end
+
+    def collected_memory_resources
+      Logjam::Resource.memory_resources & @collected_resources
+    end
+
+    def collected_heap_resources
+      Logjam::Resource.heap_resources & @collected_resources
+    end
+
+    def grouping_options
+      options_for_select(Logjam::Resource.grouping_options, params[:grouping])
+    end
+
+    def resource_options
+      options_for_select(Logjam::Resource.resource_options, params[:resource])
+    end
+
+    def grouping_functions
+      options_for_select(Logjam::Resource.grouping_functions, params[:grouping_function])
+    end
+
     def time_number(f)
       number_with_precision(f.to_f, :delimiter => ",", :separator => ".", :precision => 2)
     end
@@ -278,21 +314,15 @@ module Logjam
     end
 
     # try to fix broken string encodings. most of the time the string is latin-1 encoded
-    if RUBY_VERSION >= "1.9"
-      def safe_h(s)
-        h(s)
+    def safe_h(s)
+      h(s)
+    rescue ArgumentError
+      raise unless $!.to_s == "invalid byte sequence in UTF-8"
+      logger.debug "#{$!} during html escaping".upcase
+      begin
+        h(s.force_encoding('ISO-8859-1').encode('UTF-8', :undef => :replace))
       rescue ArgumentError
-        raise unless $!.to_s == "invalid byte sequence in UTF-8"
-        logger.debug "#{$!} during html escaping".upcase
-        begin
-          h(s.force_encoding('ISO-8859-1').encode('UTF-8', :undef => :replace))
-        rescue ArgumentError
-          h(s.force_encoding('ASCII-8BIT').encode('UTF-8', :undef => :replace))
-        end
-      end
-    else
-      def safe_h(s)
-        h(s)
+        h(s.force_encoding('ASCII-8BIT').encode('UTF-8', :undef => :replace))
       end
     end
   end

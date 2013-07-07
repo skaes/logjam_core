@@ -1,131 +1,131 @@
-<% home_url = url_for(params.merge(:action => :index).except(:interval)) %>
 <script type="text/javascript">
 function go_home() {
-  $('#page-field').val("::");
-  $('#grouping option:selected').val("page");
-  $('#resource option:selected').val("total_time");
-  $('#start-minute').val("");
-  $('#end-minute').val("");
-  $('#interval').val("5");
-  $('#filter-form').attr("action", "<%= home_url %>");
-  $('#filter-form').submit();
+  $("#page-field").val("::");
+  $("#grouping option:selected").val("page");
+  $("#resource option:selected").val("total_time");
+  $("#start-minute").val("");
+  $("#end-minute").val("");
+  $("#interval").val("5");
+  $("#filter-form").attr("action", "<%= home_url %>");
+  $("#filter-form").submit();
 }
 function view_grouping(grouping){
-  $('#grouping option:selected').val(grouping);
-  $('#filter-form').attr("action", "<%= home_url %>");
-  $('#filter-form').submit();
+  $("#grouping option:selected").val(grouping);
+  $("#filter-form").attr("action", "<%= home_url %>");
+  $("#filter-form").submit();
 }
 function view_resource(resource){
-  $('#resource option:selected').val(resource);
-  $('#filter-form').attr("action", "<%= home_url %>");
-  $('#filter-form').submit();
+  $("#resource option:selected").val(resource);
+  $("#filter-form").attr("action", "<%= home_url %>");
+  $("#filter-form").submit();
 }
 $(document).ready(function(){
-  $('#datepicker').jdPicker({date_format:"YYYY-mm-dd", selectable:[<%= raw @days.map{|d| %Q|"#{d}"|}.join(', ') %>], error_out_of_range:"No data for that date."});
+  $("#datepicker").jdPicker({
+          date_format: "YYYY-mm-dd",
+          selectable: <%= raw Oj.dump(@days.map(&:to_s)) %>,
+          error_out_of_range: "No data for that date."});
 });
 var initial_page_value = <%= raw Oj.dump(@page) %>;
 $(document).ready(function(){
-  $('#page-field').autocomplete({
-     source: '<%= raw url_for(params.slice(:year, :month, :day, :app, :env).merge(:action => "auto_complete_for_controller_action_page")) %>',
+  $("#page-field").autocomplete({
+     source: "<%= auto_complete_url_for_action_page %>",
      minLength: 2,
-     close: function(event, ui) { if (initial_page_value != $('#page-field').val() ) $('#filter-form').submit(); }
+     close: function(event, ui) { if (initial_page_value != $("#page-field").val() ) $("#filter-form").submit(); }
   });
 });
 </script>
-<div id='header'>
-  <%= form_tag(params.except(:id), :method => :get, :id => 'filter-form', :autocomplete => "off") do -%>
-  <div id='filter'>
-    <input type="button" id='home-button' value="Logjam" onclick="go_home()"/>
+
+<div id="header">
+  <%= form_tag(params.except(:id), :method => :get, :id => "filter-form", :autocomplete => "off") do -%>
+  <div id="filter">
+    <input type="button" id="home-button" value="Logjam" onclick="go_home()"/>
     <% unless @only_one_app %>
-    <p class='filter-widget'>
-      <%= label :filter, 'application' %><br />
-      <%= select_tag 'app', options_for_select(@apps, @app), :onchange => "form.submit()" %>
+    <p class="filter-widget">
+      <%= label :filter, "application" %><br />
+      <%= select_tag "app", options_for_select(@apps, @app), :onchange => "form.submit()" %>
     </p>
     <% end %>
     <% unless @only_one_env %>
-    <p class='filter-widget'>
-      <%= label :filter, 'environment' %><br />
-      <%= select_tag 'env', options_for_select(@envs, @env), :onchange => "form.submit()" %>
+    <p class="filter-widget">
+      <%= label :filter, "environment" %><br />
+      <%= select_tag "env", options_for_select(@envs, @env), :onchange => "form.submit()" %>
     </p>
     <% end %>
-    <p class='filter-widget'>
-      <%= label :filter, 'date' %><br />
+    <p class="filter-widget">
+      <%= label :filter, "date" %><br />
       <input size="11" type="text" name="starts_at" value="<%= @date %>" id="datepicker" onchange="form.submit()" />
     </p>
-    <p class='filter-widget'>
-      <%= label :filter, 'page selector' %><br />
-      <input id="page-field" class="ui-autocomplete-input" name="page" size="45" type="text" value="<%= h @page %>" />
+    <p class="filter-widget">
+      <%= label :filter, "page selector" %><br />
+      <input id="page-field" class="ui-autocomplete-input" name="page" size="45" type="text" value="<%= @page %>" />
     </p>
-    <ul class='filter-widget' id='grouping-widget'>
+    <ul class="filter-widget" id="grouping-widget">
       <li <%= raw html_attributes_for_grouping("page") %>>Pages</li>
       <li <%= raw html_attributes_for_grouping("request") %>>Requests</li>
     </ul>
-    <p class='filter-widget' style="visibility:hidden;display:none;">
-      <%= label :filter, 'Show' %><br />
-      <%= select_tag 'grouping', options_for_select(Logjam::Resource.grouping_options, params['grouping']),
-          :onchange => "form.submit()" %>
+    <p class="filter-widget invisible">
+      <%= label :filter, "Show" %><br />
+      <%= select_tag "grouping", grouping_options, :onchange => "form.submit()" %>
     </p>
-    <div class='menu'>
+    <div class="menu">
       <label style="color:black;">Resource selector</label><br />
-      <ul id='resource-type-widget'>
-        <li><a href='#' <%= raw html_attributes_for_resource_type(:time) %>>Time</a>
+      <ul id="resource-type-widget">
+        <li><a href="#" <%= raw html_attributes_for_resource_type(:time) %>>Time</a>
           <ul>
-            <% (Logjam::Resource.time_resources.reverse & @collected_resources).each do |r| %>
-            <li><a href='#' onclick="view_resource('<%=r%>')"><%= h r.gsub(/_/,' ') %></a></li>
+            <% collected_time_resources.reverse.each do |r| %>
+            <li><a href="#" onclick="view_resource('<%=r%>')"><%= r.gsub(/_/," ") %></a></li>
             <% end %>
           </ul>
         </li>
-        <% unless (Logjam::Resource.call_resources & @collected_resources).empty? %>
-        <li><a href='#' <%= raw html_attributes_for_resource_type(:call) %>>Calls</a>
+        <% unless collected_call_resources.empty? %>
+        <li><a href="#" <%= raw html_attributes_for_resource_type(:call) %>>Calls</a>
           <ul>
-            <% (Logjam::Resource.call_resources.reverse & @collected_resources).each do |r| %>
-            <li><a href='#' onclick="view_resource('<%=r%>')"><%= h r.gsub(/_/,' ') %></a></li>
-            <% end %>
-          </ul>
-        </li>
-        <% end %>
-        <% unless (Logjam::Resource.memory_resources & @collected_resources).empty? %>
-        <li><a href='#' <%= raw html_attributes_for_resource_type(:memory) %>>Allocations</a>
-          <ul>
-            <% (Logjam::Resource.memory_resources.reverse & @collected_resources).each do |r| %>
-            <li><a href='#' onclick="view_resource('<%=r%>')"><%= h r.gsub(/_/,' ') %></a></li>
+            <% collected_call_resources.reverse.each do |r| %>
+            <li><a href="#" onclick="view_resource('<%=r%>')"><%= r.gsub(/_/," ") %></a></li>
             <% end %>
           </ul>
         </li>
         <% end %>
-        <% unless (Logjam::Resource.heap_resources & @collected_resources).empty? %>
-        <li><a href='#' <%= raw html_attributes_for_resource_type(:heap) %>>Heap</a>
+        <% unless collected_memory_resources.empty? %>
+        <li><a href="#" <%= raw html_attributes_for_resource_type(:memory) %>>Allocations</a>
           <ul>
-            <% (Logjam::Resource.heap_resources.reverse & @collected_resources).each do |r| %>
-            <li><a href='#' onclick="view_resource('<%=r%>')"><%= h r.gsub(/_/,' ') %></a></li>
+            <% collected_memory_resources.reverse.each do |r| %>
+            <li><a href="#" onclick="view_resource('<%=r%>')"><%= r.gsub(/_/," ") %></a></li>
+            <% end %>
+          </ul>
+        </li>
+        <% end %>
+        <% unless collected_heap_resources.empty? %>
+        <li><a href="#" <%= raw html_attributes_for_resource_type(:heap) %>>Heap</a>
+          <ul>
+            <% collected_heap_resources.reverse.each do |r| %>
+            <li><a href="#" onclick="view_resource('<%=r%>')"><%= r.gsub(/_/," ") %></a></li>
             <% end %>
           </ul>
         </li>
         <% end %>
       </ul>
     </div>
-    <p class='filter-widget' id='resource-widget' style="visibility:hidden;display:none;">
-      <%= label :filter, 'with resource' %><br />
-      <%= select_tag 'resource', options_for_select(Logjam::Resource.resource_options, params['resource']),
-          :onchange => "form.submit()" %>
+    <p class="filter-widget invisible" id="resource-widget">
+      <%= label :filter, "with resource" %><br />
+      <%= select_tag "resource", resource_options, :onchange => "form.submit()" %>
     </p>
     <%- if params[:grouping] == "page" -%>
-    <p class='filter-widget' id='function-widget' style="visibility:hidden;display:none;">
-      <%= label :filter, 'sorted by' %><br />
-      <%= select_tag 'grouping_function', options_for_select(Logjam::Resource.grouping_functions, params['grouping_function']),
-          :onchange => "form.submit()" %>
+    <p class="filter-widget invisible" id="function-widget">
+      <%= label :filter, "sorted by" %><br />
+      <%= select_tag "grouping_function", grouping_functions, :onchange => "form.submit()" %>
     </p>
     <%- end -%>
     <% if params[:start_minute] %>
-      <input id="start-minute" name="start_minute" type="hidden" value="<%= h(params[:start_minute]) %>" />
+      <input id="start-minute" name="start_minute" type="hidden" value="<%= params[:start_minute] %>" />
     <% end %>
     <% if params[:end_minute] %>
-      <input id="end-minute" name="end_minute" type="hidden" value="<%= h(params[:end_minute]) %>" />
+      <input id="end-minute" name="end_minute" type="hidden" value="<%= params[:end_minute] %>" />
     <% end %>
     <% if params[:interval] %>
-      <input id="interval" name="interval" type="hidden" value="<%= h(params[:interval]) %>" />
+      <input id="interval" name="interval" type="hidden" value="<%= params[:interval] %>" />
     <% end %>
-    <%= check_box_tag 'auto_refresh', "1", params['auto_refresh']=="1", :onchange => "form.submit()" %>Autorefresh
+    <%= check_box_tag "auto_refresh", "1", params[:auto_refresh]=="1", :onchange => "form.submit()" %>Autorefresh
   </div>
   <% end -%>
 </div>

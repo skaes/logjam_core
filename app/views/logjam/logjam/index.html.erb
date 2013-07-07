@@ -1,15 +1,15 @@
 <%= render "header" %>
 <div id="show-json"><%= link_to("show json", params.merge(:format => :json)) %></div>
-<div id='content'>
-  <div id='left' class='clear-left'>
+<div id="content">
+  <div id="left" class="clear-left">
     <% if @dataset.empty? -%>
-    <p class='warning'>Dataset is empty.</p>
+    <p class="warning">Dataset is empty.</p>
     <% else -%>
-    <div id='graph-counts' class='clear-left'>
-      <p class='stats'>
+    <div id="graph-counts" class="clear-left">
+      <p class="stats">
         showing
         <%= number_with_delimiter @dataset.count_requests %> of <%= number_with_delimiter @dataset.count %> requests
-        <% if params[:interval].to_s == '5' %>
+        <% if params[:interval].to_s == "5" %>
           <%= link_to(image_tag("zoom_in.png", :alt => "zoom in", :title => "zoom in"),
                       clean_params(params.merge(:page => without_module(@page), :action => "index", :interval => 1))) %>
         <% else %>
@@ -17,7 +17,7 @@
                       clean_params(params.merge(:page => without_module(@page), :action => "index", :interval => 5))) %>
         <% end %>
         <% if [:time, :memory].include?(@dataset.plot_kind) %>
-          <% scatter_title = "#{distribution_kind(@dataset.resource).to_s.gsub(/_/,' ')} plot" %>
+          <% scatter_title = "#{distribution_kind(@dataset.resource).to_s.gsub(/_/," ")} plot" %>
           <%= link_to(image_tag("scatter_plot.jpg", :alt => scatter_title, :title => scatter_title),
                       clean_params(params.merge(:page => without_module(@page),
                       :action => distribution_kind(@dataset.resource)))) %>
@@ -37,15 +37,15 @@
       </p>
       <%= render :partial => "resource_plot", :locals => {:width => 1440/5*2, :height => 300} %>
     </div>
-    <div id='plot-details' class='stats'>
-      <div id='plot-details-col1'>
+    <div id="plot-details" class="stats">
+      <div id="plot-details-col1">
         <%= render "graph_stats" %>
         <%= render "apdex" %>
       </div>
-      <div id='plot-details-col2'>
+      <div id="plot-details-col2">
         <%= render "response_codes" %>
       </div>
-      <div id='plot-details-col3'>
+      <div id="plot-details-col3">
         <%= render "errors" %>
       </div>
     </div>
@@ -53,8 +53,8 @@
   </div>
 
   <% unless @dataset.empty? -%>
-  <div id='column-right'>
-    <div id='pagetimes'>
+  <div id="column-right">
+    <div id="pagetimes">
       <h3><%= @dataset.description %>
         <%- if params[:grouping] == "request" -%>
         between <%= h(minute_to_human(@dataset.start_minute)) %>
@@ -62,15 +62,15 @@
         <%- end -%>
       </h3>
       <%= render "page_times" %>
-      <% if params[:grouping] == 'page' && @dataset.single_page? -%>
-      <div id='performance-break-down'>
+      <% if params[:grouping] == "page" && @dataset.single_page? -%>
+      <div id="performance-break-down">
         <h4>Performance breakdown</h4>
         <%= render "breakdown" %>
       </div>
       <% end -%>
-      <% if params[:grouping] == 'page' && !@dataset.single_page? && @dataset.do_the_query.size <= 20 && params[:grouping_function] != 'apdex' -%>
+      <% if params[:grouping] == "page" && !@dataset.single_page? && @dataset.do_the_query.size <= 20 && params[:grouping_function] != "apdex" -%>
          <h4>Performance breakdown (percentages of <%= @dataset.short_description %>)</h4>
-         <div id='performance-pie'>
+         <div id="performance-pie">
            <%= render "page_pie" %>
          </div>
       <% end -%>

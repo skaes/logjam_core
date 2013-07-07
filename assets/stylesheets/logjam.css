@@ -224,6 +224,8 @@ td.number {text-align: right;}
 
 .new_error td{ background-color:pink; }
 
+.invisible { visibility:hidden; display:none; }
+
 .error {color:red;}
 .error a {color:red;}
 .warn {color:brown;}

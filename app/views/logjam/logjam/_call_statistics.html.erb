@@ -1,13 +1,13 @@
 <% pages.each do |page| -%>
-  <tr class='full_stats'>
-    <td class='group-thing'><%= sometimes_link_grouping_result(page, :page, params.merge(:page => page.page)) %></td>
-    <td class='number'>
+  <tr class="full_stats">
+    <td class="group-thing"><%= sometimes_link_grouping_result(page, :page, params.merge(:page => page.page)) %></td>
+    <td class="number">
       <%= sometimes_link_number_of_requests(page, :page,
           clean_params(params.merge(:grouping => "request", :action => distribution_kind(resource), :page => without_module(page.page)))) %>
     </td>
-    <td class='number'><%= number_with_precision(page.avg(resource), :precision => 1, :delimiter => ',') %></td>
-    <td class='number'><%= number_with_precision(page.stddev(resource), :precision => 1 , :delimiter => ',') %></td>
-    <td class='number'><%= number_with_delimiter(page.sum(resource).to_i) %></td>
+    <td class="number"><%= number_with_precision(page.avg(resource), :precision => 1, :delimiter => ",") %></td>
+    <td class="number"><%= number_with_precision(page.stddev(resource), :precision => 1 , :delimiter => ",") %></td>
+    <td class="number"><%= number_with_delimiter(page.sum(resource).to_i) %></td>
   </tr>
 <% end -%>
 
