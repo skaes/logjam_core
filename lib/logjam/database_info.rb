@@ -47,5 +47,10 @@ module Logjam
     def db_exists?(date, app, env)
       ((@info[app]||{})[env]||[]).include?(Logjam.sanitize_date(date))
     end
+
+    def to_hash
+      info = @databases.map{|s| s =~ /\Alogjam-(.+?)-(.+?)-(.+)\z/ && {:app => $1, :env => $2, :date => $3} }.compact
+      { :databases => info }
+    end
   end
 end
