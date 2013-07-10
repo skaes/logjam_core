@@ -2,6 +2,9 @@ module Logjam
   class Stream
     attr_reader :name, :app, :env
 
+    cattr_accessor :frontend_page
+    self.frontend_page = ->(s){true}
+
     def initialize(name, &block)
       @name = name
       @tag = "development"
@@ -35,6 +38,11 @@ module Logjam
       @database || "default"
     end
 
+    def frontend_page(*args)
+      @frontend_page = args.first if args.first
+      @frontend_page || self.class.frontend_page
+    end
+
     module Thresholds
       def import_threshold(*args)
         @import_threshold = args.first.to_i if args.first
@@ -56,7 +64,6 @@ module Logjam
         @database_flush_interval ||= Logjam.database_flush_interval
       end
     end
-
     include Thresholds
 
     module InterestingRequest
@@ -72,7 +79,6 @@ module Logjam
         false
       end
     end
-
     include InterestingRequest
 
     private
@@ -101,6 +107,7 @@ module Logjam
 
     class Importer < Context
       def initialize
+        super
         hosts    "localhost"
         exchange "request-stream"
         queue    "logjam3-importer-queue"

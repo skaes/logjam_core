@@ -27,7 +27,17 @@ module Logjam
         end
         format.json do
           resources = Resource.all_resources + %w(apdex response severity exceptions js_exceptions)
-          pages = Totals.new(@db, resources, @page).pages(:order => :apdex, :limit => 100_000)
+          stream = Logjam.streams["#{@app}-#{@env}"]
+          filter = stream.frontend_page if params[:frontend_only] == "1"
+          pages = Totals.new(@db, resources, @page).pages(:order => :apdex, :limit => 100_000, :filter => filter)
+          if pages.size > 0 && params[:summary] == "1"
+            summary = pages.shift
+            summary.page = "__summary__"
+            while p = pages.shift
+              summary.add(p)
+            end
+            pages = [summary]
+          end
           render :json => Oj.dump(pages, :mode => :compat)
         end
       end

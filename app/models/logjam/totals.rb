@@ -240,7 +240,9 @@ module Logjam
 
     def pages(options)
       limit = options[:limit] || 1000
+      filter = options[:filter]
       pages = self.the_pages
+      pages.reject!{|p| !filter.call(p.page)} if filter
       if order = options[:order]
         case order.to_sym
         when :count
