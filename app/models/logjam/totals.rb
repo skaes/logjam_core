@@ -137,7 +137,7 @@ module Logjam
       }.tap do |h|
         h[:exceptions] = exceptions unless exceptions.empty?
         h[:js_exceptions] = js_exceptions unless js_exceptions.empty?
-        h[:log_severities] = severity unless severity.empty?
+        h[:log_severities] = human_severities(severity) unless severity.empty?
         hr = h[:resources] = {}
         resources.each do |r|
           unless (s = sum(r)) == 0
@@ -145,6 +145,13 @@ module Logjam
           end
         end
       end
+    end
+
+    private
+    SEVERITY_LABELS = %w(debug info warn error fatal)
+    def human_severities(severities)
+      puts severities.inspect
+      severities.each_with_object({}){|(l,c),h| h[SEVERITY_LABELS[l.to_i]] = c}
     end
   end
 
