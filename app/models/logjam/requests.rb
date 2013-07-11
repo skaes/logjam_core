@@ -121,7 +121,7 @@ module Logjam
 
       query_opts = {
         :fields => fields,
-        :sort => @old_format || INDEXED_FIELDS.include?(@resource) ?  [@resource, -1] : ["metrics.v", -1],
+        :sort => @old_format || INDEXED_FIELDS.include?(@resource) ?  [@resource, -1] : [["metrics.n", 1], ["metrics.v", -1]],
         :limit => @options[:limit] || 32,
         :skip => @options[:skip]
       }
