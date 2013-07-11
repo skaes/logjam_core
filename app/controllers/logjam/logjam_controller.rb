@@ -425,11 +425,19 @@ module Logjam
     def verify_app_env
       get_app_env
       unless @apps.include?(@app)
-        render :text => "Application '#{@app}' doesn't exist."
+        msg = "Application '#{@app}' doesn't exist."
+        respond_to do |format|
+          format.html { render :text => msg, :status => 404 }
+          format.json { render :json => {:error => msg}, :status => 404 }
+        end
         return
       end
       unless @envs.include?(@env)
-        render :text => "Environment '#{@env}' doesn't exist for Application '#{@app}'."
+        msg = "Environment '#{@env}' doesn't exist for Application '#{@app}'."
+        respond_to do |format|
+          format.html { render :text => msg, :status => 404 }
+          format.json { render :json => {:error => msg}, :status => 404 }
+        end
         return
       end
     end

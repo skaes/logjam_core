@@ -21,15 +21,15 @@ module Logjam
     end
 
     def envs(app)
-      @info[app].keys.sort.reverse
+      @info[app].keys.sort.reverse rescue []
     end
 
     def days(app, env)
-      @info[app][env].sort.reverse
+      @info[app][env].sort.reverse rescue []
     end
 
     def only_one_env?(app)
-      @info[app].size == 1
+      @info[app].size == 1 rescue false
     end
 
     def only_one_app?
@@ -41,11 +41,11 @@ module Logjam
     end
 
     def default_env(app)
-      envs(app).select{|e| e=="production"}.first || envs(app).first
+      envs(app).select{|e| e=="production"}.first || envs(app).first || "production"
     end
 
     def db_exists?(date, app, env)
-      ((@info[app]||{})[env]||[]).include?(Logjam.sanitize_date(date))
+      @info[app][env].include?(Logjam.sanitize_date(date)) rescue false
     end
 
     def to_hash
