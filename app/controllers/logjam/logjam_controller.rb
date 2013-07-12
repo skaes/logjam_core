@@ -38,7 +38,8 @@ module Logjam
             end
             pages = [summary]
           end
-          render :json => Oj.dump(pages, :mode => :compat)
+          events = Events.new(@db).events.map{|e| {:label => e['label'], :time => e['started_at']}}
+          render :json => Oj.dump({:pages => pages, :events => events}, :mode => :compat)
         end
       end
     end
