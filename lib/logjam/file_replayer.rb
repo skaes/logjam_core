@@ -1,5 +1,5 @@
 require 'fileutils'
-require 'eventmachine'
+require 'logjam/eventmachine'
 require 'amqp'
 require 'oj'
 

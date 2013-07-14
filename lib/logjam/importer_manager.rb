@@ -1,3 +1,4 @@
+require 'logjam/eventmachine'
 require 'em-zeromq'
 
 module Logjam
@@ -63,8 +64,11 @@ module Logjam
 
     def flush_buffers
       if @proxy
-        states = @proxy.reset_state
-        @importer.process(states)
+        ms = Benchmark.ms do
+          states = @proxy.reset_state
+          @importer.process(states)
+        end
+        log_info("flushtime %4d ms" % [ms.to_i])
       end
     end
 

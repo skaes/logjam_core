@@ -35,7 +35,7 @@ module Logjam
     end
 
     def flush_buffers_and_publish
-      log_info "flushing #{@request_count} requests"
+      log_info("flushing %5d requests" % [@request_count])
       @import_buffers.each_value do |buffer|
         buffer.flush_and_publish
       end

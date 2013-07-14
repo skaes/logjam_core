@@ -1,5 +1,6 @@
 require 'amqp'
 require 'amqp/extensions/rabbitmq'
+require 'logjam/eventmachine'
 require 'date'
 require 'oj'
 

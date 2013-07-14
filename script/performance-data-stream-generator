@@ -3,7 +3,7 @@
 require_relative '../../../config/boot'
 require 'optparse'
 require 'ffi-rzmq'
-require 'eventmachine'
+require 'logjam/eventmachine'
 require 'oj'
 require 'active_support'
 
