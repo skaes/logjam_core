@@ -150,7 +150,7 @@ module Logjam
     private
     SEVERITY_LABELS = %w(debug info warn error fatal)
     def human_severities(severities)
-      puts severities.inspect
+      # puts severities.inspect
       severities.each_with_object({}){|(l,c),h| h[SEVERITY_LABELS[l.to_i]] = c}
     end
   end
@@ -176,7 +176,7 @@ module Logjam
           severities["severity.#{severity}"] = num_requests if num_requests > 0
         end
         unless severities.empty?
-          puts "#{page}, #{severities.inspect}"
+          # puts "#{page}, #{severities.inspect}"
           totals.update({:page => page}, {'$set' => severities}, {:upsert => false, :multi => false})
         end
       end

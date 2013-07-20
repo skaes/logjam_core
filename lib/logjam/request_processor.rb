@@ -168,6 +168,7 @@ module Logjam
     private
 
     def store_request(entry)
+      # puts entry.keys.inspect
       if request_id = entry.delete("request_id")
         l = request_id.length
         if l == 32
