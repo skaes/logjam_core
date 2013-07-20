@@ -203,6 +203,7 @@ module Logjam
       metrics = []
       Requests::FIELDS.each do |f|
         if v = entry.delete(f)
+          v = v.to_f if v.is_a?(BigDecimal)
           metrics << {"n" => f, "v" => v} if v != 0
         end
       end
