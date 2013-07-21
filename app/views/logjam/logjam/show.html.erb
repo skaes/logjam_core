@@ -165,6 +165,7 @@
 
 <script type="text/javascript">
 $(document).ready(function(){
+  install_logjam_lines_filter();
   $('.logline').dblclick(function(){
       var text = $(this).html().replace(/[\u200B]/g ,'');
       var ref = text.match(/http:\/\/[^\s]+/);

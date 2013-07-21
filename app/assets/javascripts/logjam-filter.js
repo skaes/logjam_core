@@ -7,8 +7,7 @@
  */
 
 
-(function () {
-
+function install_logjam_lines_filter() {
 
   var
     global = this,
@@ -19,12 +18,10 @@
     CLASSNAME_LOGJAM_TAGS_FILTER_ROOT = "logjam-tags-filter-root"
   ;
 
-
   // GUARD
   if ((typeof $ != "function") || (typeof $.attr != "function")) {
     return;
   }
-
 
   var
     ALIAS_DATA_LOGJAM_TAGS = ["data-", DATA_NAME_SORTABLE_LOGJAM_TAGS].join(""),
@@ -32,9 +29,7 @@
     ATTRIBUTE_SELECTOR_LOGJAM_TAGS = ["[", ALIAS_DATA_LOGJAM_TAGS, "]"].join(""),
     CLASSNAME_SELECTOR_LOGJAM_TAGS_FILTER_ROOT = [".", CLASSNAME_LOGJAM_TAGS_FILTER_ROOT].join(""),
 
-
     regXWhiteSpaceSequence = (/\s+/),
-
 
     getSortableItemsRoot = function () {
       return $("#single-request").find("#request-lines")[0];
@@ -42,7 +37,6 @@
     getSortableItemListFromRoot = function ($itemsRoot) {
       return $itemsRoot.find(ATTRIBUTE_SELECTOR_LOGJAM_TAGS).toArray();
     },
-
 
     createTagNameListFromItems = function (itemList) {
       var tagNameTable = {};
@@ -90,7 +84,6 @@
         $(this).remove();
       });
     },
-
 
     addTagNameToAllListItems = function (listItems, tagName) {
       listItems.forEach(function (item/*, idx, list*/) {
@@ -191,8 +184,6 @@
     }
   ;
 
-
   initialize();
 
-
-}).call(null);
+}

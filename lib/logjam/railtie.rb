@@ -10,7 +10,6 @@ module Logjam
     end
 
     config.autoload_once_paths << File.join(Logjam::BaseDir, "lib")
-    # config.assets.paths << File.join(Logjam::GemDir, "assets")
 
     config.to_prepare do
       ApplicationController.helper(Logjam::LogjamHelper)

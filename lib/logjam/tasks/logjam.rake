@@ -12,24 +12,6 @@ namespace :logjam do
     "#{app_dir}/vendor/logjam"
   end
 
-  namespace :assets do
-    desc "create symbolic links for logjam assets in the public directory"
-    task :link do
-      system("find #{public_dir} -type l | xargs rm")
-
-      images = Dir.glob("#{logjam_dir}/assets/images/*.{jpg,png,gif}")
-      FileUtils.ln_s images, "#{public_dir}/images/"
-
-      javascripts = Dir.glob("#{logjam_dir}/assets/javascripts/*.js")
-      FileUtils.ln_s javascripts, "#{public_dir}/javascripts/"
-
-      stylesheets = Dir.glob("#{logjam_dir}/assets/stylesheets/*.css")
-      FileUtils.ln_s stylesheets, "#{public_dir}/stylesheets/"
-
-      FileUtils.ln_s "#{logjam_dir}/assets/stylesheets/smoothness", "#{public_dir}/stylesheets/"
-    end
-  end
-
   namespace :db do
     desc "ensure indexes"
     task :reindex => :environment do
