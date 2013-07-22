@@ -3,8 +3,11 @@ require 'oj'
 module Logjam
 
   class MongoImportBuffer
+    include Logjam::Helpers
 
     def initialize(dbname, publisher)
+      @db_date = Logjam.db_date(dbname)
+      @old_buffer = @db_date && @db_date < Date.today
       database = Logjam.connection_for(dbname).db(dbname)
       Logjam.ensure_known_database(dbname)
       @totals  = Totals.ensure_indexes(database["totals"])
@@ -32,12 +35,23 @@ module Logjam
     end
 
     def flush_and_publish
-      @publisher.publish(@state[:modules], @state[:totals], @state[:errors])
+      publish_unless_old_buffer
       flush_totals_buffer(@state[:totals])
       flush_minutes_buffer(@state[:minutes])
       flush_quants_buffer(@state[:quants])
     ensure
       @state = nil
+    end
+
+    # dirty hack to avoid publishing request data from the previous day
+    # this would better be handled in class MongoImporter
+    def publish_unless_old_buffer
+      if @old_buffer
+        log_info "skipping publishing old data"
+      else
+        # log_info "publishing fresh data"
+        @publisher.publish(@state[:modules], @state[:totals], @state[:errors])
+      end
     end
 
     private
