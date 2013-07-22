@@ -1,7 +1,11 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<style>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+  <%= javascript_include_tag "application" %>
+<style>
 .link {
   fill: none;
   stroke-width: 1.5px;
@@ -45,6 +49,7 @@ aside {
   padding: 10px;
 }
 </style>
+</head>
 <body>
 
 <aside>
@@ -55,10 +60,7 @@ aside {
 </aside>
 
 <p id="info"></p>
-<script type="text/javascript" src="/javascripts/d3.v3.min.js"></script>
-<script type="text/javascript" src="/javascripts/jquery-1.4.2.min.js"></script>
 <script>
-
 var json_urls = {
   application: '<%= raw url_for(params.slice(:app,:env,:sort,:filter).merge(:action => "call_relationships", :format => :json, :filter_data => 1, :group => "application", :only_path => false)) %>',
   module:      '<%= raw url_for(params.slice(:app,:env,:sort,:filter).merge(:action => "call_relationships", :format => :json, :filter_data => 1, :group => "module", :only_path => false)) %>',
