@@ -20,12 +20,12 @@
 	width:210px
 }
 
-.jdpicker_w .date_selector table{
+.jdpicker_w .date_selector table {
 	width:210px;
 	margin-left:3px;
 }
 
-.jdpicker_w .date_clearer{
+.jdpicker_w .date_clearer {
 	color: #a00;
 	padding-left:3px;
 	cursor:pointer;
@@ -40,7 +40,7 @@
 	display: none;
 }
 
-.jdpicker_w .error_msg{
+.jdpicker_w .error_msg {
 	display:none;
 	text-align:center;
 	font-size:0.8em;
@@ -81,7 +81,7 @@
 	border:1px solid #ccc;
 	position:relative;
 	top:2px
-}  
+}
 
 .jdpicker_w .date_selector .month_name, .jdpicker_w .date_selector .year_name {
 	font-weight: bold;
@@ -132,14 +132,14 @@
 	color: black;
 }
 
-.jdpicker_w .date_selector th.week_label{
+.jdpicker_w .date_selector th.week_label {
 	font-weight:normal;
 	font-style:italic;
 	font-size:80%;
 	width:25px
 }
 
-.jdpicker_w .date_selector .week_num, .jdpicker_w .date_selector .hover .week_num, .jdpicker_w .date_selector .selected .week_num{
+.jdpicker_w .date_selector .week_num, .jdpicker_w .date_selector .hover .week_num, .jdpicker_w .date_selector .selected .week_num {
 	font-style:italic;
 	color:#333 !important;
 	vertical-align:bottom !important;
@@ -170,7 +170,7 @@
 	border:1px solid #aaa;
 	color:#333
 }
-.jdpicker_w .date_selector td.selected, .jdpicker_w .date_selector tr.selected  td{
+.jdpicker_w .date_selector td.selected, .jdpicker_w .date_selector tr.selected  td {
 	background: image-url('bg_selected.png');
 	font-weight: bold;
 }
