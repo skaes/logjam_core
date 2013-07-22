@@ -10,4 +10,10 @@
 // WARNING: THE FIRST BLANK LINE MARKS THE END OF WHAT'S TO BE PROCESSED, ANY BLANK LINE SHOULD
 // GO AFTER THE REQUIRES BELOW.
 //
-//= require_tree .
+//= require d3.v3.min
+//= require jquery-1.10.2.min
+//= require jquery-migrate-1.2.1.min
+//= require jquery-ui-1.8.5.custom.min
+//= require jquery.jdpicker
+//= require jquery.tipsy
+//= require logjam-filter

@@ -148,26 +148,31 @@
 
     function move(event) {
       var tipsy = get(this);
+      var tip = $(tipsy.$tip);
+      // with 1.10.2, outerWidth seems broken (or this code is)
+      var tow = tip.width()+10;
+      var toh = tip.height()+10;
       tipsy.hoverState = 'in';
       tipsy.setTitle(tipsy.getTitle());
       if (options.follow == 'x') {
         var arrow = $(tipsy.$tip).children('.tipsy-arrow');
+        var aow = $(arrow).width()+10;
         if (/^[^w]w$/.test(options.gravity) && arrow.position() != null) {
-          var x = event.pageX - ($(arrow).position().left+($(arrow).outerWidth()/2));
+          var x = event.pageX - ($(arrow).position().left+(aow/2));
         } else if (/^[^e]e$/.test(options.gravity) && arrow.position() != null) {
-          var x = event.pageX - ($(arrow).position().left+($(arrow).outerWidth()/2));
+          var x = event.pageX - ($(arrow).position().left+(aow/2));
         } else {
           if ('w' == options.gravity) {
             var x = event.pageX;
           } else {
-            var x = event.pageX - ($(tipsy.$tip).outerWidth()/2);
+            var x = event.pageX - (tow/2);
           }
         }
         $(tipsy.$tip).css('left', x+options.offsetX);
-        $(tipsy.$tip).css('top', event.pageY-($(tipsy.$tip).outerHeight()/2)+options.offsetY);
+        $(tipsy.$tip).css('top', event.pageY-(toh/2)+options.offsetY);
       } else if (options.follow == 'y') {
         if (/^w|^e/.test(options.gravity) ) {
-          $(tipsy.$tip).css('top', event.pageY-($(tipsy.$tip).outerHeight()/2));
+          $(tipsy.$tip).css('top', event.pageY-(toh/2));
         }
       }
 
@@ -186,12 +191,11 @@
     if (!options.live) this.each(function() { get(this); });
 
     if (options.trigger != 'manual') {
-      var binder   = options.live ? 'live' : 'bind',
+      var binder   = options.live ? 'on' : 'bind',
           eventIn  = options.trigger == 'hover' ? 'mouseenter' : 'focus',
           eventOut = options.trigger == 'hover' ? 'mouseleave' : 'blur',
           eventMove = 'mousemove';
       this[binder](eventIn, enter)[binder](eventOut, leave)[binder](eventMove, move);
-
     }
 
     return this;
