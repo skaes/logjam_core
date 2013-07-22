@@ -28,10 +28,10 @@ $(document).ready(function(){
 var initial_page_value = <%= raw Oj.dump(@page) %>;
 $(document).ready(function(){
   $("#page-field").autocomplete({
-     source: "<%= auto_complete_url_for_action_page %>",
-     minLength: 2,
-     close: function(event, ui) { if (initial_page_value != $("#page-field").val() ) $("#filter-form").submit(); }
-  });
+     serviceUrl: "<%= auto_complete_url_for_action_page %>",
+     minChars: 2,
+     onSelect: function(value, data){ $("#filter-form").submit(); }
+   });
 });
 </script>
 
@@ -57,7 +57,7 @@ $(document).ready(function(){
     </p>
     <p class="filter-widget">
       <%= label :filter, "page selector" %><br />
-      <input id="page-field" class="ui-autocomplete-input" name="page" size="45" type="text" value="<%= @page %>" />
+      <input id="page-field" class="autocomplete" name="page" size="45" type="text" value="<%= @page %>" onchange="form.submit()" />
     </p>
     <ul class="filter-widget" id="grouping-widget">
       <li <%= raw html_attributes_for_grouping("page") %>>Pages</li>

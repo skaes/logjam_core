@@ -9,14 +9,14 @@ module Logjam
     # after_filter :allow_cross_domain_ajax
 
     def auto_complete_for_controller_action_page
-      params[:page] = params.delete(:term)
+      query = params[:page] = params.delete(:query)
       prepare_params
       show_modules = [":", "::"].include?(@page)
       re = show_modules ? /^::/ : /#{@page}/i
       pages = Totals.new(@db).page_names.select {|name| name =~ re}
       pages.collect!{|p| p.gsub(/^::/,'')} unless show_modules
       completions = pages.sort[0..34]
-      render :json => completions
+      render :json => {query: query, suggestions: completions}
     end
 
     def index

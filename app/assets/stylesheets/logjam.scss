@@ -482,3 +482,18 @@ td.number {text-align: right;}
 .ui-menu {
     padding: 0px;
 }
+
+.autocomplete-suggestions {
+  border:1px solid #999;
+  background:#FFF;
+  cursor:default;
+  text-align:left;
+  max-height:350px;
+  overflow:auto;
+  padding: 2px;
+//  margin:-6px 6px 6px -6px;
+}
+.autocomplete-selected { background: #d0d0d0; }
+.autocomplete-suggestion div { padding:2px 5px; white-space:nowrap; overflow:hidden; }
+.autocomplete-suggestion strong { font-weight:normal; color:#3399FF; }
+.autocomplete-suggestions { background: #ffffff; }
