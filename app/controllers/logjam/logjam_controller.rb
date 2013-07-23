@@ -13,9 +13,9 @@ module Logjam
       prepare_params
       show_modules = [":", "::"].include?(@page)
       re = show_modules ? /^::/ : /#{@page}/i
-      pages = Totals.new(@db).page_names.select {|name| name =~ re}
+      pages = Totals.new(@db).page_names.select {|name| name =~ re && name != 'all_pages'}
       pages.collect!{|p| p.gsub(/^::/,'')} unless show_modules
-      completions = pages.sort[0..34]
+      completions = pages.sort  # [0..34]
       render :json => {query: query, suggestions: completions}
     end
 
