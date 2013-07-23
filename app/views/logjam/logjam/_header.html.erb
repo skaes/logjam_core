@@ -29,7 +29,8 @@ var initial_page_value = <%= raw Oj.dump(@page) %>;
 $(document).ready(function(){
   $("#page-field").autocomplete({
      serviceUrl: "<%= auto_complete_url_for_action_page %>",
-     minChars: 2,
+     minChars: 1,
+     maxHeight: 600,
      onSelect: function(value, data){ $("#filter-form").submit(); }
    });
 });
