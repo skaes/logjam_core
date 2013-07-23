@@ -5,7 +5,7 @@ module Logjam
   class LogjamController < ApplicationController
     before_filter :redirect_to_clean_url, :except => [:live_stream, :auto_complete_for_controller_action_page]
     before_filter :verify_app_env, :except => [:call_relationships, :call_graph]
-    before_filter :print_params if ::Rails.env=="development"
+    before_filter :print_params if Rails.env=="development"
     # after_filter :allow_cross_domain_ajax
 
     def auto_complete_for_controller_action_page
@@ -404,9 +404,9 @@ module Logjam
       get_app_env
       py, pm, pd = params.values_at(:year, :month, :day).map(&:to_i)
       dd = default_date
-      params[:starts_at] = dd.to_s(:db) if params[:auto_refresh] == "1" && (dd.year != py || dd.month != pm || dd.day != pd)
-      params[:starts_at] ||= dd.to_s(:db) unless (params[:year] && params[:month] && params[:day])
-      if params[:starts_at] =~ /^(\d\d\d\d)-(\d\d)-(\d\d)$/
+      selected_date = dd.to_s(:db) if params[:auto_refresh] == "1" && (dd.year != py || dd.month != pm || dd.day != pd)
+      selected_date ||= dd.to_s(:db) unless (params[:year] && params[:month] && params[:day])
+      if selected_date.to_s =~ /\A(\d\d\d\d)-(\d\d)-(\d\d)\z/
         new_params = FilteredDataset.clean_url_params(
           :auto_refresh => params[:auto_refresh] == "1" ? "1" : nil,
           :default_app => @default_app, :default_env => @default_env,

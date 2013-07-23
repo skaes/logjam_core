@@ -3,8 +3,12 @@ module Logjam
 
   # Methods added to this helper will be available to all templates in the application.
   module LogjamHelper
+    def default_header_parameters
+      FilteredDataset::DEFAULTS
+    end
+
     def home_url
-      url_for(params.merge(:action => :index).except(:interval))
+      url_for(params.merge(:action => ''))
     end
 
     def auto_complete_url_for_action_page
@@ -190,7 +194,7 @@ module Logjam
       if code.to_i < 400
         h(text)
       else
-        parameters = params.merge(:app => @app, :env => @env, :action => "response_codes", :response_code => code, :page => (@page||'').gsub(/^::/,''))
+        parameters = params.merge(:app => @app, :env => @env, :action => "response_codes", :response_code => code, :page => (@page||'::'))
 
         link_to(text, clean_params(parameters), :class => "error")
       end

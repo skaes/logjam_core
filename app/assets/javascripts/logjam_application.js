@@ -17,3 +17,4 @@
 //= require jquery.autocomplete
 //= require jquery.tipsy
 //= require logjam-filter
+//= require uri
