@@ -424,7 +424,7 @@ module Logjam
     end
 
     def print_params
-      p params
+      # p params
       # p request.format
     end
 
