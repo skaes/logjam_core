@@ -28,10 +28,5 @@ module Logjam
         _EVA_
     end
 
-    # make sure we subscribe!
-    config.to_prepare do
-      Logjam::MongoLogSubscriber
-    end
-
   end
 end

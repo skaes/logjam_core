@@ -1,46 +1,21 @@
 module Logjam
-  module MongoTimeConsumer
-    extend self
+  class MongoTimeConsumer < TimeBandits::TimeConsumers::BaseConsumer
+    prefix :db
+    fields :time, :calls
+    format  "Mongo: %.3fms(%d)", :time, :calls
 
-    def info
-      Thread.current[:mongo_database_info] ||= [0.0, 0]
-    end
+    class Subscriber < ActiveSupport::LogSubscriber
+      def mongo(event)
+        i = MongoTimeConsumer.instance
+        i.time += event.duration
+        i.calls += 1
 
-    def info=(info)
-      Thread.current[:mongo_database_info] = info
-    end
+        return unless logger.debug?
 
-    def reset
-      reset_stats
-      self.info = [0.0, 0]
-    end
-
-    def consumed
-      time, calls = reset_stats
-      i = self.info
-      i[1] += calls
-      i[0] += time
-    end
-
-    def runtime
-      time, calls = *info
-      sprintf "Mongo: %.3fms(%d)", time*1000, calls
-    end
-
-    def metrics
-      {
-        :db_time => info[0]*1000,
-        :db_calls => info[1],
-      }
-    end
-
-    private
-
-    def reset_stats
-      s = MongoLogSubscriber
-      calls = s.reset_call_count
-      time  = s.reset_runtime
-      [time.to_f/1000, calls]
+        p = event.payload
+        debug "MONGO %s returned %d rows (%.1fms)" % [p[:query], p[:rows], event.duration]
+      end
+      Subscriber.attach_to :logjam
     end
   end
 end
