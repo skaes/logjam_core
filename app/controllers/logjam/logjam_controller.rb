@@ -21,7 +21,7 @@ module Logjam
 
     def index
       @dataset = dataset_from_params
-      if @dataset.empty? && !(['::', '', 'all_pages'].include?(@page)) && !request.referer.include?("app=#{@app}")
+      if @dataset.empty? && !(['::', '', 'all_pages'].include?(@page)) && !request.referer.to_s.include?("app=#{@app}")
         new_params = FilteredDataset.clean_url_params(params.merge(:page => '::',  :default_app => @default_app, :default_env => @default_env))
         redirect_to new_params
         return
