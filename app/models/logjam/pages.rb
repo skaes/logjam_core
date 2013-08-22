@@ -1,3 +1,0 @@
-module Pages
-  
-end
