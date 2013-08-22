@@ -155,7 +155,7 @@ module Logjam
     end
   end
 
-  class Totals
+  class Totals < MongoModel
 
     def self.ensure_indexes(collection)
       ms = Benchmark.ms do
@@ -182,25 +182,10 @@ module Logjam
       end
     end
 
-    def self.call_relationships(db, app)
-      totals = db["totals"]
-      rows = []
-      ActiveSupport::Notifications.instrument("mongo.logjam", :query => "Totals.call_relationships()") do |payload|
-        rows = totals.find({:page => /#/}, :fields => %w(page callers)).to_a
-        payload[:rows] = rows.size
-      end
-      rows.each_with_object({}) do |r,o|
-        callers = r['callers']
-        page = r['page']
-        o["#{app}-#{page}"] = callers unless callers.blank? || page !~ /#/
-      end
-    end
-
     attr_reader :resources, :pattern, :pages
 
     def initialize(db, resources=[], pattern='', page_name_list=nil)
-      @database = db
-      @collection = @database["totals"]
+      super(db, "totals")
       @resources = resources.dup
       @apdex = @resources.delete("apdex")
       @response = @resources.delete("response")
@@ -224,7 +209,7 @@ module Logjam
       @page_names ||=
         begin
           query = "Totals.distinct(:page)"
-          ActiveSupport::Notifications.instrument("mongo.logjam", :query => query) do |payload|
+          with_conditional_caching(query) do |payload|
             rows = @collection.distinct(:page, :count => {'$gt' => 0})
             payload[:rows] = rows.size
             rows
@@ -235,12 +220,13 @@ module Logjam
     def collected_resources
       @collected_resources ||=
         begin
-          query = "Totals.find({page:'all_pages'})"
-          row = nil
-          ActiveSupport::Notifications.instrument("mongo.logjam", :query => query) do |payload|
-            payload[:rows] = 1
-            row = @collection.find_one({:page => 'all_pages'},{})
-          end
+          query = "Totals.find({page:'all_pages'},{})"
+          row = with_conditional_caching(query) do |payload|
+                  r = @collection.find_one({:page => 'all_pages'},{})
+                  payload[:rows] = r ? 0 : 1
+                  r.delete("_id")
+                  r
+                end
           row ? row.keys & Requests::FIELDS : Requests::FIELDS
         end
     end
@@ -275,7 +261,7 @@ module Logjam
       @request_count ||=
         begin
           query = "Totals.request_count"
-          ActiveSupport::Notifications.instrument("mongo.logjam", :query => query) do |payload|
+          with_conditional_caching(query) do |payload|
             rows = @collection.find({:page=>"all_pages"},{:fields=>["count"]}).to_a
             payload[:rows] = rows.size
             rows.first["count"].to_i
@@ -345,6 +331,21 @@ module Logjam
       @js_exception_count ||= js_exceptions.values.inject(0){|s,v| s += v}
     end
 
+    def call_relationships(app)
+      query = "Totals.call_relationships()"
+      rows = with_conditional_caching(query) do |payload|
+        rs = @collection.find({:page => /#/}, :fields => %w(page callers)).to_a
+        payload[:rows] = rs.size
+        rs.each{|r| r.delete("_id")}
+        rs
+      end
+      rows.each_with_object({}) do |r,o|
+        callers = r['callers']
+        page = r['page']
+        o["#{app}-#{page}"] = callers unless callers.blank? || page !~ /#/
+      end
+    end
+
     protected
 
     def selector
@@ -361,11 +362,12 @@ module Logjam
       sq_fields = @resources.map{|r| "#{r}_sq"}
       fields = {:fields => all_fields.concat(sq_fields)}
 
-      rows = nil
       query = "Totals.find(#{selector.inspect},#{fields.inspect})"
-      ActiveSupport::Notifications.instrument("mongo.logjam", :query => query) do |payload|
-        rows = @collection.find(selector, fields.clone).to_a
-        payload[:rows] = rows.size
+      rows = with_conditional_caching(query) do |payload|
+        rs = @collection.find(selector, fields.clone).to_a
+        payload[:rows] = rs.size
+        rs.each{|r| r.delete("_id")}
+        rs
       end
 
       result = []
@@ -382,12 +384,5 @@ module Logjam
       combined
     end
 
-    def logger
-      self.class.logger
-    end
-
-    def self.logger
-      Rails.logger
-    end
   end
 end

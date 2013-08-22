@@ -1,6 +1,6 @@
 module Logjam
 
-  class Requests
+  class Requests < MongoModel
 
     GENERIC_FIELDS = %w(page host ip user_id started_at process_id minute session_id new_session response_code app env severity exceptions callers)
 
@@ -50,8 +50,7 @@ module Logjam
     attr_reader :resource, :pattern
 
     def initialize(db, resource=nil, pattern='', options={})
-      @database = db
-      @collection = @database["requests"]
+      super(db, "requests")
       @old_format = self.class.indexed_fields(@collection).include?("total_time")
       @resource = resource
       @pattern = pattern.to_s.sub(/^::/,'')
@@ -64,7 +63,7 @@ module Logjam
       @page_names ||=
         begin
           query = "Totals.distinct(:page)"
-          ActiveSupport::Notifications.instrument("mongo.logjam", :query => query) do |payload|
+          with_conditional_caching(query) do |payload|
             rows = @database["totals"].distinct(:page)
             payload[:rows] = rows.size
             rows
@@ -127,13 +126,17 @@ module Logjam
       }
 
       query = "Requests.find(#{selector.inspect},#{query_opts.inspect})"
-      rows = nil
-      ActiveSupport::Notifications.instrument("mongo.logjam", :query => query) do |payload|
+      rows = with_conditional_caching(query) do |payload|
         # explain = @collection.find(selector, query_opts.dup).explain
         # logger.debug explain.inspect
-        rows = @collection.find(selector, query_opts.dup).to_a
-        rows.each{|row| convert_metrics(row)}
-        payload[:rows] = rows.size
+        rs = []
+        @collection.find(selector, query_opts.dup).each do |row|
+          (id = row["_id"]) && row["_id"] = id.to_s
+          rs << row
+          convert_metrics(row)
+        end
+        payload[:rows] = rs.size
+        rs
       end
       rows
     end
@@ -141,19 +144,27 @@ module Logjam
     def count(options={})
       selector = selector(options)
       query = "Requests.count(#{selector.inspect})"
-      ActiveSupport::Notifications.instrument("mongo.logjam", :query => query, :rows => 1) do
+      with_conditional_caching(query) do |payload|
+        payload[:rows] = 1
         @collection.find(selector).count
       end
     end
 
     def find(id)
       selector = {"_id" => primary_key(id)}
-      query = "Requests.find_one(#{selector.inspect})"
-      ActiveSupport::Notifications.instrument("mongo.logjam", :query => query, :rows => 1) do
-        row = @collection.find_one(selector)
-        convert_metrics(row) if row
-        row
+      query = "Requests.find_one(#{id})"
+      rows = with_conditional_caching(query) do |payload|
+        if row = @collection.find_one(selector)
+          (id = row["_id"]) && row["_id"] = id.to_s
+          convert_metrics(row)
+          payload[:rows] = 1
+          [row]
+        else
+          payload[:rows] = 0
+          []
+        end
       end
+      rows.first
     end
 
     def convert_metrics(row)
@@ -173,13 +184,6 @@ module Logjam
       end
     end
 
-    def logger
-      self.class.logger
-    end
-
-    def self.logger
-      Rails.logger
-    end
   end
 
 end

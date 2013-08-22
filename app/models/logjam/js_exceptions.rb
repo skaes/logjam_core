@@ -1,5 +1,5 @@
 module Logjam
-  class JsExceptions
+  class JsExceptions < MongoModel
 
     include Helpers
 
@@ -8,35 +8,38 @@ module Logjam
     end
 
     def self.key_from_description(description)
-      key = URI.escape(description, /[.$]/)
+      URI.escape(description, /[.$]/)
     end
 
     def self.description_from_key(mongo_key)
-      key = URI.unescape(mongo_key)
+      URI.unescape(mongo_key)
     end
 
     def initialize(db)
-      @database   = db
-      @collection = db.collection("js_exceptions")
+      super(db, "js_exceptions")
       @collection.ensure_index('logjam_request_id')
       @collection.ensure_index('description')
     end
 
     def all
-      @collection.find.to_a
+      get_rows
     end
 
     def count(options = {})
-      @collection.find(options[:selector]).count()
+      selector = options[:selector]
+      with_conditional_caching("JsExceptions.count(#{selector})") do |payload|
+        payload[:rows] = 1
+        @collection.find(selector).count()
+      end
     end
 
     def find(options = {})
       selector = options.delete(:selector)
-      @collection.find(selector, options).to_a
+      get_rows(selector, options)
     end
 
     def find_by_request(request_id)
-      @collection.find('logjam_request_id' => request_id).to_a
+      get_rows({'logjam_request_id' => request_id})
     end
 
     def insert(exception)
@@ -44,23 +47,21 @@ module Logjam
     end
 
     def exceptions
-      @exceptions ||= compute
+      @exceptions ||= get_rows
     end
 
     private
 
-    def compute
-      rows = []
-      selector = ["minute", "label"]
-      query = "#{self.class}.find.each"
-      ActiveSupport::Notifications.instrument("mongo.logjam", :query => query) do |payload|
-        @collection.find.each do |row|
+    def get_rows(selector, options={})
+      with_conditional_caching("JsExceptions.get_rows(#{selector},#{options})") do |payload|
+        rows = []
+        @collection.find(selector, options).each do |row|
+          (id = row["_id"]) && row["_id"] = id.to_s
           rows << row
         end
         payload[:rows] = rows.size
+        rows
       end
-      rows
     end
-
   end
 end

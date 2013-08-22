@@ -1,11 +1,10 @@
 module Logjam
-  class Events
+  class Events < MongoModel
 
     include Helpers
 
     def initialize(db)
-      @database   = db
-      @collection = db.collection("events")
+      super(db, "events")
     end
 
     def insert(event)
@@ -18,21 +17,17 @@ module Logjam
 
     private
 
-    def db
-      Logjam.db
-    end
-
     def compute
-      rows = []
-      selector = ["minute", "label"]
       query = "#{self.class}.find.each"
-      ActiveSupport::Notifications.instrument("mongo.logjam", :query => query) do |payload|
+      with_conditional_caching(query) do |payload|
+        rows = []
         @collection.find.each do |row|
+          row.delete("_id")
           rows << row
         end
         payload[:rows] = rows.size
+        rows
       end
-      rows
     end
 
   end

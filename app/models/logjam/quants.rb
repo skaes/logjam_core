@@ -1,6 +1,6 @@
 module Logjam
 
-  class Quants
+  class Quants < MongoModel
 
     def self.ensure_indexes(collection)
       ms = Benchmark.ms do
@@ -12,8 +12,7 @@ module Logjam
     end
 
     def initialize(db, resources, pattern, kind)
-      @database = db
-      @collection = @database["quants"]
+      super(db, "quants")
       @pattern = pattern
       @pattern = "all_pages" if @pattern.blank? || @pattern == '::'
       @pattern = Regexp.new(/#{@pattern}/) unless @pattern == "all_pages"
@@ -30,10 +29,14 @@ module Logjam
       selector = {:page => @pattern, :kind => @kind}
       fields = {:fields => ["quant"].concat(@resources)}
       query = "Quants.find(#{selector.inspect},#{fields.inspect})"
-      rows = nil
-      ActiveSupport::Notifications.instrument("mongo.logjam", :query => query) do |payload|
-        rows = @collection.find(selector, fields.clone).to_a
-        payload[:rows] = rows.size
+      rows = with_conditional_caching(query) do |payload|
+        rs = []
+        @collection.find(selector, fields.clone).each do |row|
+          row.delete("_id")
+          rs << row
+        end
+        payload[:rows] = rs.size
+        rs
       end
 
       quants = @quants = {}
@@ -45,14 +48,6 @@ module Logjam
           end
         end
       end
-    end
-
-    def logger
-      self.class.logger
-    end
-
-    def self.logger
-      Rails.logger
     end
 
   end

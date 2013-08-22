@@ -221,7 +221,7 @@ module Logjam
       databases.each do |db_name|
         stream = Logjam.stream_for(db_name)
         db = Logjam.connection_for(db_name).db(db_name)
-        relationships = Totals.call_relationships(db, stream.app)
+        relationships = Totals.new(db).call_relationships(stream.app)
         relationships.each do |callee, callers|
           callee = transform.call(callee)
           callers.each do |caller, count|
