@@ -67,6 +67,7 @@ module Logjam
           end
         end
         format.json do
+          prepare_params
           page = @page
           page = 'all_pages' if @page == '' || @page == '::'
           resources = %w(total_time apdex severity exceptions)
