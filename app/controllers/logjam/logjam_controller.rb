@@ -31,20 +31,67 @@ module Logjam
           @resources, @js_data, @js_events, @js_max, @request_counts, @gc_time, @js_zoom = @dataset.plot_data
         end
         format.json do
-          resources = Resource.all_resources + %w(apdex response severity exceptions js_exceptions)
-          stream = Logjam.streams["#{@app}-#{@env}"]
-          filter = stream.frontend_page if params[:frontend_only] == "1"
-          pages = Totals.new(@db, resources, @page).pages(:order => :apdex, :limit => 100_000, :filter => filter)
-          if pages.size > 0 && params[:summary] == "1"
-            summary = pages.shift
-            summary.page = "__summary__"
-            while p = pages.shift
-              summary.add(p)
-            end
-            pages = [summary]
-          end
-          events = Events.new(@db).events.map{|e| {:label => e['label'], :time => e['started_at']}}
+          pages, events = fetch_json_data(@db, @page)
           render :json => Oj.dump({:pages => pages, :events => events}, :mode => :compat)
+        end
+      end
+    end
+
+    def fetch_json_data(db, page, options = params)
+      resources = Resource.all_resources + %w(apdex response severity exceptions js_exceptions)
+      stream = Logjam.streams["#{@app}-#{@env}"]
+      filter = stream.frontend_page if options[:frontend_only] == "1"
+      pages = Totals.new(db, resources, page).pages(:order => :apdex, :limit => 100_000, :filter => filter)
+      if pages.size > 0 && options[:summary] == "1"
+        summary = pages.shift
+        summary.page = "__summary__"
+        while p = pages.shift
+          summary.add(p)
+        end
+        pages = [summary]
+      end
+      events = Events.new(db).events.map{|e| {:label => e['label'], :time => e['started_at']}}
+      [pages, events]
+    end
+    private :fetch_json_data
+
+    def history
+      respond_to do |format|
+        format.html do
+          @dataset = dataset_from_params
+          if @dataset.empty? && !(['::', '', 'all_pages'].include?(@page)) && !request.referer.to_s.include?("app=#{@app}")
+            new_params = FilteredDataset.clean_url_params(params.merge(:page => '::',
+                                                                       :default_app => @default_app,
+                                                                       :default_env => @default_env))
+            redirect_to new_params
+          end
+        end
+        format.json do
+          page = @page
+          page = 'all_pages' if @page == '' || @page == '::'
+          resources = %w(total_time apdex severity exceptions)
+          databases = Logjam.grep(Logjam.databases, :app => @app, :env => @env)
+          data = []
+          today = Date.today
+          databases.each do |db_name|
+            date_str = Logjam.iso_date_string(db_name)
+            date = Date.parse(date_str)
+            next if date == today
+            db = Logjam.connection_for(db_name).db(db_name)
+            summary = Totals.new(db, resources, page).pages(:limit => 1).first
+            next unless summary
+            data << {
+              :date => date_str,
+              :request_count => summary.count,
+              :errors => summary.error_count,
+              :warnings => summary.warning_count,
+              :exceptions => summary.exception_count,
+              :apdex_score => summary.apdex_score,
+              :total_time => summary.avg("total_time")
+            }
+          end
+          # logger.debug @data.inspect
+          render :json => Oj.dump(data, :mode => :compat)
         end
       end
     end
@@ -373,6 +420,7 @@ module Logjam
       params[:resource] ||= FilteredDataset::DEFAULTS[:resource]
       params[:grouping] ||= FilteredDataset::DEFAULTS[:grouping]
       params[:grouping_function] ||= FilteredDataset::DEFAULTS[:grouping_function]
+      params[:time_range] ||= 'date'
       @plot_kind = Resource.resource_type(params[:resource])
       @attributes = Resource.resources_for_type(@plot_kind)
       @collected_resources = Totals.new(@db).collected_resources

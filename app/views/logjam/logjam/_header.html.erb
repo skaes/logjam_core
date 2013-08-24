@@ -16,6 +16,7 @@ function submit_filter_form() {
   uri.search(x);
   uri.removeSearch("utf8")
      .removeSearch("resource", parameter_defaults.resource)
+     .removeSearch("time_range", parameter_defaults.time_range)
      .removeSearch("grouping", parameter_defaults.grouping)
      .removeSearch("grouping_function", parameter_defaults.grouping_function)
      .removeSearch("start_minute", parameter_defaults.start_minute)
@@ -31,17 +32,37 @@ function go_home() {
   $("#start-minute").val(parameter_defaults.start_minute);
   $("#end-minute").val(parameter_defaults.end_minute);
   $("#interval").val(parameter_defaults.interval);
+  $("#time-range").val(parameter_defaults.time_range);
   $("#filter-form").attr("action", "<%= home_url %>");
+  $("#filter-form").submit();
+}
+function view_selected_pages(){
+  <% if params[:time_range] == "date" %>
+    $("#filter-form").attr("action", "<%= home_url %>");
+  <% else %>
+    $("#filter-form").attr("action", "<%= history_url %>");
+  <% end %>
   $("#filter-form").submit();
 }
 function view_grouping(grouping){
   $("#grouping option:selected").val(grouping);
+  $("#time-range").val(parameter_defaults.time_range);
   $("#filter-form").attr("action", "<%= home_url %>");
   $("#filter-form").submit();
 }
 function view_resource(resource){
   $("#resource option:selected").val(resource);
+  $("#time-range").val(parameter_defaults.time_range);
   $("#filter-form").attr("action", "<%= home_url %>");
+  $("#filter-form").submit();
+}
+function view_time_range(time_range){
+  $("#time-range").val(time_range);
+  if (time_range == "date") {
+    $("#filter-form").attr("action", "<%= home_url %>");
+  } else {
+    $("#filter-form").attr("action", "<%= history_url %>");
+  }
   $("#filter-form").submit();
 }
 $(document).ready(function(){
@@ -49,10 +70,12 @@ $(document).ready(function(){
       event.preventDefault();
       submit_filter_form();
       });
+  <% if params[:time_range] == "date" %>
   $("#datepicker").jdPicker({
           date_format: "YYYY-mm-dd",
           selectable: <%= raw Oj.dump(@days.map(&:to_s)) %>,
           error_out_of_range: "No data for that date."});
+  <% end %>
   $("#page-field").autocomplete({
      serviceUrl: "<%= auto_complete_url_for_action_page %>",
      minChars: 1,
@@ -69,22 +92,30 @@ $(document).ready(function(){
     <% unless @only_one_app %>
     <p class="filter-widget">
       <%= label :filter, "application" %><br />
-      <%= select_tag "app", options_for_select(@apps, @app), :onchange => "submit_filter_form()" %>
+      <%= select_tag "app", options_for_select(@apps, @app), :onchange => "view_selected_pages()" %>
     </p>
     <% end %>
     <% unless @only_one_env %>
     <p class="filter-widget">
       <%= label :filter, "environment" %><br />
-      <%= select_tag "env", options_for_select(@envs, @env), :onchange => "submit_filter_form()" %>
+      <%= select_tag "env", options_for_select(@envs, @env), :onchange => "view_selected_pages()" %>
     </p>
     <% end %>
-    <p class="filter-widget">
-      <%= label :filter, "date" %><br />
+    <div class="filter-widget" id="time-range-widget">
+      <ul>
+        <li <%= raw html_attributes_for_time_range("date") %>>Date</li>
+        <li <%= raw html_attributes_for_time_range("history") %>>History</li>
+      </ul>
+      <input id="time-range" type="hidden" name="time_range" value="<%= params[:time_range] %>" />
+      <% if params[:time_range] == "date" %>
       <input size="11" type="text" value="<%= @date %>" id="datepicker" onchange="submit_filter_form()" />
-    </p>
+      <% else %>
+      <div><input size="11" type="text" value="<%= @date %>" id="datepicker" readonly="readonly" /></div>
+      <% end %>
+    </div>
     <p class="filter-widget">
       <%= label :filter, "page selector" %><br />
-      <input id="page-field" class="autocomplete" name="page" size="45" type="text" value="<%= @page %>" onchange="submit_filter_form()" />
+      <input id="page-field" class="autocomplete" name="page" size="45" type="text" value="<%= @page %>" onchange="view_selected_pages()" />
     </p>
     <ul class="filter-widget" id="grouping-widget">
       <li <%= raw html_attributes_for_grouping("page") %>>Pages</li>

@@ -97,6 +97,27 @@ input, select {
 .filter-float-right {float:right; padding-right: 20px;}
 #description.filter-widget {font-style: italic; margin: 0 0 0 5px; font-size: 90%;}
 
+#time-range-widget {
+  display: inline-block;
+  font-weight: bold;
+  font-size: 13px;
+  list-style-type: none;
+  margin: 0px;
+  ul {
+      margin: 0px;
+      padding: 0px;
+      display: inline;
+      li {
+          display: inline;
+          -moz-border-radius: 2px;
+          border-radius: 2px;
+          text-align: center;
+          font-size: 80%;
+          padding: 2px;
+      }
+  }
+}
+
 #grouping-widget {
   display: inline-block;
   font-weight: bold;

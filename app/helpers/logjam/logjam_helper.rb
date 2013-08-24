@@ -4,11 +4,15 @@ module Logjam
   # Methods added to this helper will be available to all templates in the application.
   module LogjamHelper
     def default_header_parameters
-      FilteredDataset::DEFAULTS
+      FilteredDataset::DEFAULTS.merge(:time_range => 'date')
     end
 
     def home_url
       url_for(params.merge(:action => ''))
+    end
+
+    def history_url
+      url_for(params.merge(:action => 'history'))
     end
 
     def auto_complete_url_for_action_page
@@ -218,6 +222,14 @@ module Logjam
         "class='active'"
       else
         "class='inactive' onclick=\"view_grouping('#{grouping}')\""
+      end
+    end
+
+    def html_attributes_for_time_range(time_range)
+      if params[:time_range] == time_range
+        "class='active'"
+      else
+        "class='inactive' onclick=\"view_time_range('#{time_range}')\""
       end
     end
 
