@@ -1,30 +1,52 @@
 <%= render "header" %>
 <style>
-
-body {
+#request-history {
+  clear: both;
+  margin-top:  10px;
+  margin-left: 50px;
+}
+#request-history div {
   font: 10px sans-serif;
 }
-
+.title {
+  font: 14px san-serif;
+}
 .axis path,
 .axis line {
   fill: none;
   stroke: #000;
   shape-rendering: crispEdges;
 }
-
-.bar {
+.weekday {
   fill: steelblue;
 }
-
-.x.axis path {
-//  display: none;
+.weekend {
+  fill: #90B4D2;
 }
-#spinner { font: 20px sans-serif; }
+.x.axis path {
+  // display: none;
+}
+#spinner {
+    font: 20px sans-serif;
+    margin: 20px;
+}
+#perf-title {
+    font: 20px sans-serif;
+    font-weight: bold;
+    margin-left: 400px;
+    margin-top: 10px;
+}
 </style>
+
+<div id="perf-title">Performance History</div>
+
 <div id="show-json"><%= link_to("show json", params.merge(:format => :json)) %></div>
 
-<div class="clear-left" id="request-history" style="margin-left:50px">
-  <p id="spinner">Please stand by while we fetch your data ...</p>
+<p id="spinner">Please stand by while we fetch your data ...
+<%= image_tag("spinner24.gif") %>
+</p>
+
+<div id="request-history">
   <div id="apdex_score"></div>
   <div id="total_time"></div>
   <div id="request_count"></div>
@@ -34,11 +56,22 @@ body {
 </div>
 
 <script type="text/javascript">
+function bar_class(date) {
+  var day = date.getDay();
+  if (day == 0 || day == 6)
+    return "bar weekend";
+  else
+    return "bar weekday";
+}
+
 function bar_chart(data, metric, format) {
 
 var margin = {top: 20, right: 20, bottom: 50, left: 100},
     width = 960 - margin.left - margin.right,
-    height = 150 - margin.top - margin.bottom;
+    height = 150 - margin.top - margin.bottom,
+
+    data_min = d3.min(data, function(d){return d[metric]}),
+    data_max = d3.max(data, function(d){return d[metric]});
 
 var formatter = d3.format(format);
 
@@ -64,8 +97,8 @@ var svg = d3.select("#request-history #" + metric).append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  x.domain([ new Date(data[0].date), new Date(data[data.length-1].date) ]);
-  y.domain([d3.min(data, function(d){return d[metric]}), d3.max(data, function(d){return d[metric]})]);
+  x.domain([data[0].date, data[data.length-1].date]);
+  y.domain([data_min*0.95, data_max]).nice();
 
 svg.append("g")
       .attr("class", "x axis")
@@ -76,24 +109,28 @@ svg.append("g")
       .attr("class", "y axis")
       .call(yAxis)
     .append("text")
+      .attr("class", "title")
       // .attr("transform", "rotate(-90)")
       .attr("y", -20)
-      .attr("x", 450)
+      .attr("x", 1)
       .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text(metric);
+      .style("text-anchor", "begin")
+      .text(metric.replace(/_/,' '));
 
   svg.selectAll(".bar")
       .data(data)
     .enter().append("rect")
-      .attr("class", "bar")
-      .attr("x", function(d) { return x(new Date(d.date)); })
+      .attr("class", function(d) { return bar_class(d.date); })
+      .attr("x", function(d) { return x(d.date); })
       .attr("width", width/data.length)
       .attr("y", function(d) { return y(d[metric]); })
-      .attr("height", function(d) { return height - y(d[metric]); });
+      .attr("height", function(d) { return height - y(d[metric]); })
+      .attr("cursor", "pointer")
+      .on("click", function(d) { view_date(d.date); });
 };
 
 $.getJSON("<%= url_for(params.merge(:format => :json)) %>", function(data){
+  data.forEach(function(d){d.date = new Date(d.date);})
   bar_chart(data, "apdex_score", ".3r");
   bar_chart(data, "request_count", ",.0");
   bar_chart(data, "total_time", ".0");

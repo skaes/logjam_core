@@ -65,6 +65,11 @@ function view_time_range(time_range){
   }
   $("#filter-form").submit();
 }
+function view_date(date) {
+  $("#datepicker").val(date.toJSON().substr(0,10));
+  $("#time-range").val("date");
+  submit_filter_form();
+}
 $(document).ready(function(){
   $("#filter-form").on("submit", function(event) {
       event.preventDefault();
