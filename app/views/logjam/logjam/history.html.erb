@@ -98,7 +98,7 @@ var svg = d3.select("#request-history #" + metric).append("svg")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   x.domain([data[0].date, data[data.length-1].date]);
-  y.domain([data_min*0.95, data_max]).nice();
+  y.domain([data_min, data_max]).nice();
 
 svg.append("g")
       .attr("class", "x axis")
