@@ -492,7 +492,7 @@
             // -2px to account for suggestions border.
             if (that.options.width === 'auto') {
                 width = that.el.outerWidth() - 2;
-                container.width(width > 0 ? width : 300);
+                container.css("min-width", width > 0 ? width : 300);
             }
 
             container.html(html).show();
