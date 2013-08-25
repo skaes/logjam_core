@@ -69,6 +69,7 @@ module Logjam
         format.json do
           prepare_params
           page = @page
+          page = "::#{page}" if Totals.new(@db).page_names.include?("::#{page}")
           page = 'all_pages' if @page == '' || @page == '::'
           resources = %w(total_time apdex severity exceptions)
           databases = Logjam.grep(Logjam.databases, :app => @app, :env => @env)
