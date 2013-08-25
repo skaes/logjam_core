@@ -91,7 +91,8 @@ $(document).ready(function(){
 </script>
 
 <div id="header">
-  <%= form_tag(params.except(:id).merge(:action => ''), :method => :get, :id => "filter-form", :autocomplete => "off") do -%>
+  <% action = params[:time_range] == "history" ? "history" : "" %>
+  <%= form_tag(params.except(:id).merge(:action => action), :method => :get, :id => "filter-form", :autocomplete => "off") do -%>
   <div id="filter">
     <input type="button" id="home-button" value="Logjam" onclick="go_home()"/>
     <% unless @only_one_app %>
