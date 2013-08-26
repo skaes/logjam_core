@@ -71,7 +71,7 @@ module Logjam
           page = @page
           page = "::#{page}" if Totals.new(@db).page_names.include?("::#{page}")
           page = 'all_pages' if @page == '' || @page == '::'
-          resources = %w(total_time apdex severity exceptions)
+          resources = %w(apdex severity exceptions total_time) + (Resource.all_resources - %w(total_time))
           databases = Logjam.grep(Logjam.databases, :app => @app, :env => @env)
           data = []
           today = Date.today
@@ -82,18 +82,34 @@ module Logjam
             db = Logjam.connection_for(db_name).db(db_name)
             summary = Totals.new(db, resources, page).pages(:limit => 1).first
             next unless summary
-            data << {
+            hash = {
               :date => date_str,
               :request_count => summary.count,
               :errors => summary.error_count,
               :warnings => summary.warning_count,
               :exceptions => summary.exception_count,
-              :apdex_score => summary.apdex_score,
-              :total_time => summary.avg("total_time")
+              :apdex_score => summary.apdex_score
             }
+            Resource.all_resources.each do |r|
+              if (v = summary.avg(r)) != 0
+                hash[r.to_sym] = v
+              end
+            end
+            data << hash
           end
+          collected_resources = data.inject(Set.new){|s,d| s.union(d.keys)}
+          resources.reject!{|r| !collected_resources.include?(r.to_sym)}
           # logger.debug @data.inspect
-          render :json => Oj.dump(data, :mode => :compat)
+          json_hash = {
+            :resources => {
+              :time => Resource.time_resources.reverse & resources,
+              :calls => Resource.call_resources.reverse & resources,
+              :memory => Resource.memory_resources & resources,
+              :heap => Resource.heap_resources & resources
+            },
+            :data => data
+          }
+          render :json => Oj.dump(json_hash, :mode => :compat)
         end
       end
     end

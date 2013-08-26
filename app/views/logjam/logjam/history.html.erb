@@ -53,6 +53,10 @@
   <div id="errors"></div>
   <div id="warnings"></div>
   <div id="exceptions"></div>
+  <div id="time"></div>
+  <div id="calls"></div>
+  <div id="memory"></div>
+  <div id="heap"></div>
 </div>
 
 <script type="text/javascript">
@@ -115,7 +119,7 @@ svg.append("g")
       .attr("x", 1)
       .attr("dy", ".71em")
       .style("text-anchor", "begin")
-      .text(metric.replace(/_/,' '));
+      .text(metric.replace(/_/g,' '));
 
   svg.selectAll(".bar")
       .data(data)
@@ -129,14 +133,22 @@ svg.append("g")
       .on("click", function(d) { view_date(d.date); });
 };
 
-$.getJSON("<%= url_for(params.merge(:format => :json)) %>", function(data){
-  data.forEach(function(d){d.date = new Date(d.date);})
-  bar_chart(data, "apdex_score", ".3r");
-  bar_chart(data, "request_count", ",.0");
-  bar_chart(data, "total_time", ".0");
-  bar_chart(data, "errors", ",.0");
-  bar_chart(data, "warnings", ",.0");
-  bar_chart(data, "exceptions", ",.0");
+$.getJSON("<%= url_for(params.merge(:format => :json)) %>", function(response){
+  response.data.forEach(function(d){d.date = new Date(d.date);})
+  bar_chart(response.data, "apdex_score", ".3r");
+  bar_chart(response.data, "request_count", ",.0");
+  bar_chart(response.data, "total_time", ".0");
+  bar_chart(response.data, "errors", ",.0");
+  bar_chart(response.data, "warnings", ",.0");
+  bar_chart(response.data, "exceptions", ",.0");
+  for (g in response.resources) {
+    response.resources[g].forEach(function(m){
+       if (m != "total_time") {
+         $("#" + g).append("<div id='" + m + "'></div>");
+         bar_chart(response.data, m, ",.0");
+       }
+    });
+  }
   $("#spinner").hide();
 });
 

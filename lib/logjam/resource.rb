@@ -58,7 +58,7 @@ module Logjam
       end
 
       def colors_with_transparency(transparency)
-        colors.inject({}){|h,(r,c)| h[r] = color(r,transparency); h}
+        @colors_with_transparency ||= colors.keys.each_with_object({}){|r,h| h[r] = color(r, transparency) }
       end
 
       def resource_name(resource)
@@ -99,17 +99,19 @@ module Logjam
       end
 
       def groupings
-        ['page', 'request']
+        %w(page request)
       end
 
       def humanname_for_grouping
-        {:response_code => 'response codes',
+        {
+          :response_code => 'response codes',
           :host => 'servers',
           :session_id => 'sessions',
           :page => 'pages',
           :user_id => 'users',
           :minute1 => 'minutes',
-          :request => 'requests'}
+          :request => 'requests'
+        }
       end
 
       def grouping_options
