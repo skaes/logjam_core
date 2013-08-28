@@ -249,6 +249,7 @@ module Logjam
         end
       end
       return pages if pages.size <= limit
+      return combine_pages(pages) if limit == 1
       proper, rest = pages[0..limit-2], pages[limit-1..-1]
       proper << combine_pages(rest)
     end
