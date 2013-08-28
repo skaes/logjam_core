@@ -512,3 +512,8 @@ td.number {text-align: right;}
 div.autocomplete-suggestion { padding:1px 2px; white-space:nowrap; overflow:hidden; }
 .autocomplete-suggestion strong { font-weight:normal; color:#3399FF; }
 .autocomplete-suggestions { background: #ffffff; }
+
+input[type="text"]:disabled
+{
+  color:#ccc;
+}

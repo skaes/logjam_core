@@ -2,8 +2,8 @@
 <style>
 #request-history {
   clear: both;
-  margin-top:  10px;
-  margin-left: 50px;
+  margin-top:  0px;
+  margin-left: 0px;
 }
 #request-history div {
   font: 10px sans-serif;
@@ -23,8 +23,8 @@
 .weekend {
   fill: #90B4D2;
 }
-.x.axis path {
-  // display: none;
+.x.axis path, .y.axis path {
+   // display: none;
 }
 #spinner {
     font: 20px sans-serif;
@@ -68,43 +68,43 @@ function bar_class(date) {
     return "bar weekday";
 }
 
-function bar_chart(data, metric, format) {
+function bar_chart(data, metric) {
 
-var margin = {top: 20, right: 20, bottom: 50, left: 100},
-    width = 960 - margin.left - margin.right,
-    height = 150 - margin.top - margin.bottom,
+  var margin = {top: 20, right: 20, bottom: 50, left: 150},
+      width = 960 - margin.left - margin.right,
+      height = 150 - margin.top - margin.bottom,
 
-    data_min = d3.min(data, function(d){return d[metric]}),
-    data_max = d3.max(data, function(d){return d[metric]});
+      data_min = d3.min(data, function(d){return d[metric]}),
+      data_max = d3.max(data, function(d){return d[metric]});
 
-var formatter = d3.format(format);
+  var formatter = d3.format(",.r");
 
-var x = d3.time.scale()
-    .range([0, width]);
+  var x = d3.time.scale()
+      .range([0, width]);
 
-var y = d3.scale.linear()
-    .range([height, 0]);
+  var y = d3.scale.linear()
+      .range([height, 0]);
 
-var xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom");
+  var xAxis = d3.svg.axis()
+      .scale(x)
+      .orient("bottom");
 
-var yAxis = d3.svg.axis()
-    .scale(y)
-    .orient("left")
-    .ticks(5)
-    .tickFormat(formatter);
+  var yAxis = d3.svg.axis()
+      .scale(y)
+      .orient("left")
+      .ticks(5)
+      .tickFormat(formatter);
 
-var svg = d3.select("#request-history #" + metric).append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  var svg = d3.select("#request-history #" + metric).append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   x.domain([data[0].date, data[data.length-1].date]);
-  y.domain([data_min, data_max]).nice();
+  y.domain([data_min, data_max]).nice(5);
 
-svg.append("g")
+  svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis);
@@ -135,17 +135,17 @@ svg.append("g")
 
 $.getJSON("<%= url_for(params.merge(:format => :json)) %>", function(response){
   response.data.forEach(function(d){d.date = new Date(d.date);})
-  bar_chart(response.data, "apdex_score", ".3r");
-  bar_chart(response.data, "request_count", ",.0");
-  bar_chart(response.data, "total_time", ".0");
-  bar_chart(response.data, "errors", ",.0");
-  bar_chart(response.data, "warnings", ",.0");
-  bar_chart(response.data, "exceptions", ",.0");
+  bar_chart(response.data, "apdex_score");
+  bar_chart(response.data, "request_count");
+  bar_chart(response.data, "total_time");
+  bar_chart(response.data, "errors");
+  bar_chart(response.data, "warnings");
+  bar_chart(response.data, "exceptions");
   for (g in response.resources) {
     response.resources[g].forEach(function(m){
        if (m != "total_time") {
          $("#" + g).append("<div id='" + m + "'></div>");
-         bar_chart(response.data, m, ",.0");
+         bar_chart(response.data, m);
        }
     });
   }

@@ -117,7 +117,7 @@ $(document).ready(function(){
       <% if params[:time_range] == "date" %>
       <input size="11" type="text" value="<%= @date %>" id="datepicker" onchange="submit_filter_form()" />
       <% else %>
-      <div><input size="11" type="text" value="<%= @date %>" id="datepicker" readonly="readonly" /></div>
+      <div><input size="11" type="text" value="<%= @date %>" id="datepicker" readonly="readonly" disabled="disabled" /></div>
       <% end %>
     </div>
     <p class="filter-widget">
