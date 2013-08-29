@@ -183,6 +183,10 @@ module Logjam
             total = 0
             plot_resources.each do |r|
               v = r == "free_slots" ? row["heap_size"] - row["live_data_set_size"] : row[r]
+              if v.is_a?(Float) && v.nan?
+                Rails.logger.error("found NaN for resource #{r} minute #{i}")
+                v = 0.0
+              end
               total += v unless r == "gc_time"
               results[r][i] = v
             end
