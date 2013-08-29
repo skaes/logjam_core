@@ -17,7 +17,7 @@
   stroke: #000;
   shape-rendering: crispEdges;
 }
-.weekday {
+.bar, .weekday {
   fill: steelblue;
 }
 .weekend {
@@ -60,12 +60,20 @@
 </div>
 
 <script type="text/javascript">
-function bar_class(date) {
+var week_end_colors = <%= raw Logjam::Resource.colors_with_transparency(0.6).except("total_time").to_json %>;
+var week_day_colors = <%= raw Logjam::Resource.colors_with_transparency(0.9).except("total_time").to_json %>;
+
+function week_day(date) {
   var day = date.getDay();
-  if (day == 0 || day == 6)
-    return "bar weekend";
-  else
-    return "bar weekday";
+  return (day > 0 && day < 6);
+}
+
+function bar_color(date, metric) {
+  return (week_day(date) ? week_day_colors[metric] : week_end_colors[metric]);
+}
+
+function bar_class(date) {
+  return (week_day(date) ? "bar weekday" : "bar weekend");
 }
 
 function bar_chart(data, metric) {
@@ -124,12 +132,13 @@ function bar_chart(data, metric) {
   svg.selectAll(".bar")
       .data(data)
     .enter().append("rect")
-      .attr("class", function(d) { return bar_class(d.date); })
+      .attr("class", function(d){ return bar_class(d.date); })
       .attr("x", function(d) { return x(d.date); })
       .attr("width", width/data.length)
       .attr("y", function(d) { return y(d[metric]); })
       .attr("height", function(d) { return height - y(d[metric]); })
       .attr("cursor", "pointer")
+      .style("fill", function(d) { return bar_color(d.date, metric); })
       .on("click", function(d) { view_date(d.date); });
 };
 

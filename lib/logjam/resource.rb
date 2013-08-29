@@ -58,7 +58,7 @@ module Logjam
       end
 
       def colors_with_transparency(transparency)
-        @colors_with_transparency ||= colors.keys.each_with_object({}){|r,h| h[r] = color(r, transparency) }
+        (@colors_with_transparency ||= {})[transparency] ||= colors.keys.each_with_object({}){|r,h| h[r] = color(r, transparency) }
       end
 
       def resource_name(resource)
