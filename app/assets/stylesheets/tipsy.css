@@ -6,7 +6,7 @@
 .tipsy-inner { -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; min-width: 2em; }
 
 /* Uncomment for shadow */
-/*.tipsy-inner { box-shadow: 0 0 5px #000000; -webkit-box-shadow: 0 0 5px #000000; -moz-box-shadow: 0 0 5px #000000; }*/
+.tipsy-inner { -webkit-box-shadow: 0 0 3px #555; -moz-box-shadow: 0 0 3px #555; box-shadow: 0 0 3px #555; }
 
 .tipsy-arrow { position: absolute; width: 0; height: 0; line-height: 0; border: 5px dashed #fff; }
 
