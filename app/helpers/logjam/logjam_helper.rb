@@ -118,7 +118,7 @@ module Logjam
       if grouping.to_sym == :page && ppage !~ /\AOthers/ && (ppage != @page || ppage =~ /^::/)
         params = params.merge(grouping => value)
         params[:page] = without_module(ppage) unless @page == "::"
-        link_to(h(value), clean_params(params), :title => "filter with #{h(value)}")
+        link_to(h(value), clean_params(params), :title => "view summary")
       else
         content_tag(:span, value, :class => 'dead-link')
       end
@@ -139,7 +139,7 @@ module Logjam
       if stddev > 0 && page.page != "Others..."
         parameters = params.merge(:app => @app, :env => @env, :page => without_module(page.page), :action => distribution_kind(resource))
 
-        link_to(n, clean_params(parameters), :title => distribution_kind(resource).to_s.gsub(/_/,''))
+        link_to(n, clean_params(parameters), :title => distribution_kind(resource).to_s.gsub(/_/,' '))
       else
         n
       end
@@ -157,7 +157,7 @@ module Logjam
       app, env, oid = request_id.split('-')
       if @database_info.db_exists?(@date, app, env) && Requests.exists?(@date, app, env, oid)
         parameters = params.merge(:app => app, :env => env, :action => "show", :id => oid)
-        link_to(request_id, clean_params(parameters))
+        link_to(request_id, clean_params(parameters), :title => "show request")
       else
         request_id
       end
@@ -174,9 +174,9 @@ module Logjam
       else
         parameters = params.merge(:app => @app, :env => @env, :action => "errors", :page => without_module(page.page))
         errors = error_count == 0 ? error_count :
-          link_to(error_count, clean_params(parameters.merge(:error_type => "logged_error")), :class => "error")
+          link_to(error_count, clean_params(parameters.merge(:error_type => "logged_error")), :class => "error", :title => "show errors")
         warnings = warning_count == 0 ? warning_count :
-          link_to(warning_count, clean_params(parameters.merge(:error_type => "logged_warning")), :class => "warn")
+          link_to(warning_count, clean_params(parameters.merge(:error_type => "logged_warning")), :class => "warn", :title => "show warnings")
         raw "#{errors}/#{warnings}"
       end
     end
@@ -189,7 +189,7 @@ module Logjam
         n
       else
         parameters = params.merge(:app => @app, :env => @env, :action => "response_codes", :above => 400, :page => without_module(page.page))
-        link_to(n, clean_params(parameters), :class => "warn")
+        link_to(n, clean_params(parameters), :class => "warn", :title => "show 400s")
       end
     end
 
@@ -200,14 +200,31 @@ module Logjam
       else
         parameters = params.merge(:app => @app, :env => @env, :action => "response_codes", :response_code => code, :page => (@page||'::'))
 
-        link_to(text, clean_params(parameters), :class => "error")
+        link_to(text, clean_params(parameters), :class => "error", :title => "show requests with response #{code}")
       end
+    end
+
+    def link_error_list(n, error_type, html_options={})
+      page = (@page||'').gsub(/^::/,'')
+      parameters = params.merge(:page => page, :action => "errors", :error_type => error_type)
+      link_to(n, clean_params(parameters), html_options)
+    end
+
+    def link_exception_list(n, html_options={})
+      page = (@page||'').gsub(/^::/,'')
+      parameters = params.merge(:page => page, :action => "exceptions")
+      link_to(n, clean_params(parameters), html_options)
+    end
+
+    def link_js_exception_list(n, html_options={})
+      page = (@page||'').gsub(/^::/,'')
+      parameters = params.merge(:page => page, :action => "js_exception_types")
+      link_to(n, clean_params(parameters), html_options)
     end
 
     def without_module(page)
       page.blank? ? page : page.sub(/^::(.)/){$1}
     end
-
 
     def html_attributes_for_grouping_function(gf, title)
       if gf.to_sym == @dataset.grouping_function
@@ -235,11 +252,7 @@ module Logjam
 
     def html_attributes_for_resource_type(resource_type)
       resource = Resource.default_resource(resource_type)
-      if Resource.resource_type(params[:resource]) == resource_type.to_sym
-        "class='active' title='analyzing #{resource_type} resources' onclick=\"view_resource('#{resource}')\""
-      else
-        "class='inactive' title='analyze #{resource_type} resources' onclick=\"view_resource('#{resource}')\""
-      end
+      "class='inactive' onclick=\"view_resource('#{resource}')\""
     end
 
     SEVERITY_LABELS = %w(DEBUG INFO WARN ERROR FATAL)

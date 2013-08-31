@@ -18,7 +18,7 @@
   </tr>
   <tr><td></td><td></td></tr>
   <tr>
-    <td><%= link_to "apdex score", "http://www.apdex.org/overview.html" %></td>
+    <td><%= link_to "apdex score", "http://www.apdex.org/overview.html", :title => "show definition" %></td>
     <td class="number"><%= "%.2f" % @dataset.apdex %></td>
   </tr>
 </table>

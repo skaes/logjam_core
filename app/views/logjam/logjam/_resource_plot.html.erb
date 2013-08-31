@@ -76,8 +76,7 @@ var vis = d3.select("#resource-plot")
      .style("strokeWidth", 1.0)
      .on("click", update_y_scale)
      .append("g")
-       .attr("transform", "translate(40,10)")
-       .attr("title", "click to toggle zoom mode");
+       .attr("transform", "translate(40,10)");
 
 /* X-label */
 vis.append("svg:text")

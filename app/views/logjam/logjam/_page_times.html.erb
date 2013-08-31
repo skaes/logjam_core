@@ -23,7 +23,7 @@ function sort_by(order){
           <% options.merge!(:total_time => @dataset.sum("total_time")) -%>
           <th>% of<br/>total time</th>
         <% else %>
-          <th <%= raw html_attributes_for_grouping_function("apdex", "application index") %>>apdex</th>
+          <th <%= raw html_attributes_for_grouping_function("apdex", "apdex score") %>>apdex</th>
           <th>errors/<br/>warnings</th>
           <th>400s</th>
         <% end -%>
