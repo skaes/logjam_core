@@ -347,6 +347,42 @@ module Logjam
       end
     end
 
+    def happy_count
+      apdex["happy"].to_i
+    end
+
+    def happy
+      happy_count / count.to_f
+    end
+
+    def satisfied_count
+      apdex["satisfied"].to_i
+    end
+
+    def satisfied
+      satisfied_count / count.to_f
+    end
+
+    def tolerating_count
+      apdex["tolerating"].to_i
+    end
+
+    def tolerating
+      tolerating_count / count.to_f
+    end
+
+    def frustrated_count
+      apdex["frustrated"].to_i
+    end
+
+    def frustrated
+      frustrated_count / count.to_f
+    end
+
+    def apdex_score
+      satisfied + tolerating / 2.0
+    end
+
     protected
 
     def selector

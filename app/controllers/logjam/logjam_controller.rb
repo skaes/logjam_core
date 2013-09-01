@@ -209,6 +209,33 @@ module Logjam
       render "errors"
     end
 
+    def error_overview
+      prepare_params
+      @page = params[:page]
+      @title = "Logged Errors/Warnings/Exceptions"
+      @resources = %w(exceptions js_exceptions severity response)
+      @totals = Totals.new(@db, @resources, @page.blank? ? 'all_pages' : @page)
+      @minutes = Minutes.new(@db, @resources, @page, @totals.page_names, 2)
+    end
+
+    def response_code_overview
+      prepare_params
+      @page = params[:page]
+      @title = "Response Code Overview"
+      @resources = %w(response)
+      @totals = Totals.new(@db, @resources, @page.blank? ? 'all_pages' : @page)
+      @minutes = Minutes.new(@db, @resources, @page, @totals.page_names, 2)
+    end
+
+    def apdex_overview
+      prepare_params
+      @page = params[:page]
+      @title = "Apdex Overview"
+      @resources = %w(apdex)
+      @totals = Totals.new(@db, @resources, @page.blank? ? 'all_pages' : @page)
+      @minutes = Minutes.new(@db, @resources, @page, @totals.page_names, 2)
+    end
+
     def exceptions
       prepare_params
       @page = params[:page]

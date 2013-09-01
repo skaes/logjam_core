@@ -16,6 +16,7 @@ module Logjam
       super(db, "minutes")
       @resources = resources
       @pattern = pattern
+      @interval = interval
       @pattern = "all_pages" if @pattern.blank? || @pattern == "::"
       @pattern = "^::#{@pattern}" if page_names.include?("::#{pattern}")
       @pattern = Regexp.new(/#{@pattern}/) unless @pattern == "all_pages" || page_names.include?(@pattern)
@@ -34,11 +35,37 @@ module Logjam
       @callers ||= extract_sub_hash('callers')
     end
 
+    def response
+      @response_codes ||= extract_sub_hash('response')
+    end
+
+    def severity
+      @severity ||= extract_sub_hash('severity')
+    end
+
+    def exception_summary
+      @excpetion_summary ||= exceptions.each_with_object(Hash.new(0)){|(_,h),s| h.each{|m,c| s[m] += c}}
+    end
+
+    def js_exception_summary
+      @js_exception_summary ||= js_exceptions.each_with_object(Hash.new(0)){|(_,h),s| h.each{|m,c| s[m] += c}}
+    end
+
+    def apdex
+      @apdex ||= extract_sub_hash('apdex')
+    end
+
+    def apdex_score
+      @apdex_score ||= @minutes.keys.each_with_object(Hash.new(0)) do |m,h|
+        h[m] = ((apdex["satisfied"][m] + apdex["tolerating"][m]/2.0) / counts[m])/@interval.to_f
+      end
+    end
+
     private
 
     # extract a field stored as a sub hash of counters from the minutes records
     def extract_sub_hash(key)
-      hash = Hash.new{|h,e| h[e] = {}}
+      hash = Hash.new{|h,e| h[e] = Hash.new(0)}
       @minutes.each do |m,h|
         (h[key]||{}).each do |e,c|
           hash[e][m] = c
@@ -48,7 +75,7 @@ module Logjam
     end
 
     def compound_resources
-      %w(apdex exceptions js_exceptions severity callers)
+      %w(apdex exceptions js_exceptions severity callers response)
     end
 
     def compute(interval)

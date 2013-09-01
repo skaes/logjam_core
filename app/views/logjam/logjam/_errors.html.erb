@@ -1,39 +1,45 @@
-<table id='error-table'>
-  <tr><th colspan="2">errors/warnings/exceptions</th></tr>
+<table id="error-table">
+  <tr>
+    <th colspan="2">errors/warnings/exceptions
+      <%= link_to(image_tag("small_triangle_right.png"),
+          clean_params(params.merge(:action => "error_overview")),
+          :title => "show error overview") %>
+    </th>
+  </tr>
   <tr>
     <td>internal</td>
     <td class="number error">
-      <%= link_error_list(@dataset.error_count, "internal", :title => "show internal server errors") %>
+      <%= link_error_list(integer_number(@dataset.error_count), "internal", :title => "show internal server errors") %>
     </td>
   </tr>
   <tr>
     <td>fatals</td>
     <td class="number error">
-      <%= link_error_list(@dataset.logged_error_count(4), "logged_fatal", :title => "show logged fatals") %>
+      <%= link_error_list(integer_number(@dataset.logged_error_count(4)), "logged_fatal", :title => "show logged fatals") %>
     </td>
   </tr>
   <tr>
     <td>errors</td>
     <td class="number error">
-      <%= link_error_list(@dataset.logged_error_count(3),"logged_error", :title => "show logged errors")%>
+      <%= link_error_list(integer_number(@dataset.logged_error_count(3)),"logged_error", :title => "show logged errors")%>
     </td>
   </tr>
   <tr>
     <td>warnings</td>
     <td class="number warn">
-      <%= link_error_list(@dataset.logged_error_count(2), "logged_warning", :title => "show logged warnings") %>
+      <%= link_error_list(integer_number(@dataset.logged_error_count(2)), "logged_warning", :title => "show logged warnings") %>
     </td>
   </tr>
   <tr>
     <td>logged exceptions</td>
     <td class="number error">
-      <%= link_exception_list(@dataset.exception_count, :title => "show exceptions") %>
+      <%= link_exception_list(integer_number(@dataset.exception_count), :title => "show exceptions") %>
     </td>
   </tr>
   <tr>
     <td>javascript exceptions</td>
     <td class="number error">
-      <%= link_js_exception_list(@dataset.js_exception_count, :title => "show javascript errors") %>
+      <%= link_js_exception_list(integer_number(@dataset.js_exception_count), :title => "show javascript errors") %>
     </td>
   </tr>
 </table>

@@ -18,7 +18,7 @@
     <tr class='full_stats'>
       <% url = url_for(clean_params(params.merge(:action => "errors", :error_type => "exceptions", :exception => e))) %>
       <td><%= link_to e, url %></td>
-      <td class='number'><%= link_to c, url %></td>
+      <td class='number'><%= link_to integer_number(c), url %></td>
       <td class='echart' id='<%= "echart-#{i}" %>'>
         <%= render "echart", exceptions: @minutes.exceptions[e], i: i, url: url%>
       </td>

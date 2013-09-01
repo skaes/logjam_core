@@ -1,32 +1,32 @@
 <script type="text/javascript">
 (function() {
 <%
-    max_x = exceptions.keys.max || 0
-    max_y = exceptions.values.max || 0
+    max_x = apdex_score.keys.max || 0
+    max_y = apdex_score.values.max || 0
+    min_y = (apdex_score.values + [0.9]).min || 0
 %>
-var data = <%= raw Oj.dump((0..max_x).each_with_object({}){|i,h|h[i]=-1}.merge!(exceptions).map{|k,v| [k,v]}) %>;
-var url = '<%= url %>';
+var data = <%= raw Oj.dump((0..max_x).each_with_object({}){|i,h|h[i]=-1}.merge!(apdex_score).map{|k,v| [k,v]}) %>;
 var max_y = <%= max_y %>;
 var max_x = <%= max_x %>;
-var h = <%= height rescue 15 %>;
+var min_y = <%= min_y %>;
+var h = <%= height %>;
 var w = 1440/2;
 var x = d3.scale.linear().domain([0, w]).range([0, w]);
-var y = d3.scale.linear().domain([0, max_y]).range([h, 0]).nice();
+var y = d3.scale.linear().domain([min_y, 1.0]).range([h, 0]).nice();
 
-var tooltip_formatter = d3.format(",3d");
+var tooltip_formatter = d3.format(",.3r");
 var tooltip_timeformatter = d3.format("02d");
 
-var vis = d3.select('<%= "#echart-#{i}" %>')
+var vis = d3.select('<%= "#apdex-chart-#{i}" %>')
      .append("svg")
      .attr("width", w)
      .attr("height", h)
      .style("stroke", "lightsteelblue")
      .style("strokeWidth", 1.0)
+     .style("fill", "steelblue")
      .on("mouseover", mouse_over_event)
      .on("mousemove", mouse_over_event)
      .on("mouseout",  mouse_over_out)
-     .style("cursor", function(){ return (url == '' ? "arrow" : "pointer"); })
-     .on("click", function(){ if (url != '') document.location = url;})
 ;
 
 var xaxis = vis.append("svg:line")
@@ -38,25 +38,20 @@ var xaxis = vis.append("svg:line")
     .attr("y2", h)
 ;
 
-vis.selectAll(".rlabel")
-    .data([20])
-    .enter()
-    .append("text")
-    .attr("class", "rlabel")
-    .style("font", "8px sans-serif")
-    .attr("text-anchor", "end")
-    .attr("dy", ".75em")
-    .attr("x", w-1)
-    .text(tooltip_formatter(max_y))
+var goal = d3.svg.line()
+    .x(function(d,i) { return x(d[0]); })
+    .y(function(){ return y(0.94); })
 ;
 
-var line = d3.svg.line()
+var area = d3.svg.area()
     .interpolate("cardinal")
     .x(function(d,i) { return x(d[0]); })
-    .y(function(d) { return y(d[1]); })
+    .y0(function(d) { return y(0); })
+    .y1(function(d) { return y(d[1]); })
 ;
 
-var tooltip = $('<%= "#echart-#{i}" %> svg');
+
+var tooltip = $('<%= "#apdex-chart-#{i}" %> svg');
 var tooltip_text = "";
 
 tooltip.tipsy({
@@ -90,9 +85,27 @@ function mouse_over_out() {
 }
 
 vis.append("svg:path")
-  .attr("d", line(data))
+  .attr("d", area(data))
   .style("stroke", "steelblue")
+  .style("fill", "lightsteelblue")
+;
+
+vis.append("svg:path")
+  .attr("d", goal(data))
+  .style("stroke", "red")
   .style("fill", "none")
+;
+
+vis.selectAll(".rlabel")
+    .data([20])
+    .enter()
+    .append("text")
+    .attr("class", "rlabel")
+    .style("font", "8px sans-serif")
+    .attr("text-anchor", "end")
+    .attr("dy", ".75em")
+    .attr("x", w-1)
+    .text(tooltip_formatter(max_y))
 ;
 
 })();

@@ -50,6 +50,7 @@ module Logjam
     def time_number(f)
       number_with_precision(f.to_f, :delimiter => ",", :separator => ".", :precision => 2)
     end
+    alias_method :float_number, :time_number
 
     def memory_number(f)
       number_with_precision(f.floor, :delimiter => ",", :separator => ".", :precision => 0)

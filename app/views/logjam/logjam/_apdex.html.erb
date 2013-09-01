@@ -1,5 +1,11 @@
 <table id="apdex-table">
-  <tr><th colspan="2">apdex</th></tr>
+  <tr>
+    <th colspan="2">apdex
+      <%= link_to(image_tag("small_triangle_right.png"),
+          clean_params(params.merge(:action => "apdex_overview")),
+          :title => "show apdex overview") %>
+    </th>
+  </tr>
   <tr>
     <td>happy (t &lt; 0.1s)</td>
     <td class="number" title="<%= @dataset.happy_count %>"><%= "%.2f" % (100.0 * @dataset.happy) %>%</td>

@@ -1,6 +1,10 @@
 <table id="response-code-stats">
   <tr>
-    <th colspan="2">response codes</th>
+    <th colspan="2">response codes
+      <%= link_to(image_tag("small_triangle_right.png"),
+                  clean_params(params.merge(:action => "response_code_overview")),
+                  :title => "show response code timeline") %>
+    </th>
   </tr>
   <% @dataset.response_codes.keys.sort.each do |rc| %>
   <tr>

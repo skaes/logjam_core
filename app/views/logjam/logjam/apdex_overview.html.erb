@@ -1,0 +1,54 @@
+<%= render "header" %>
+
+<style type="text/css">
+.xlabel, .ylabel, .legend, .label, .rlabel, .tooltip {
+  font: "8px sans-serif";
+  stroke: none;
+  fill: #000;
+  stroke-width: 0.5;
+  shape-rendering: crispEdges;
+}
+</style>
+
+<div id='exceptions'>
+  <h1><%= h @title %> <%= h @page %></h1>
+  <table class='full_stats'>
+    <tr><th>Apdex</th><th>Value</th><th>Distribution over time (0-24h, 2 minute intervals)</th></tr>
+    <% i = 0 %>
+    <tr class='full_stats'>
+      <td>Score</td>
+      <td class='number'><%= float_number(@totals.apdex_score) %></td>
+      <td class='echart' id='<%= "apdex-chart-#{i+=1}" %>'>
+        <%= render "apdex_chart", apdex_score: @minutes.apdex_score, i: i, height: 100 %>
+      </td>
+    </tr>
+    <tr class='full_stats'>
+      <td>Happy</br>(t &lt; 0.1s)</td>
+      <td class='number'><%= integer_number(@totals.apdex["happy"]) %></td>
+      <td class='echart' id='<%= "echart-#{i+=1}" %>'>
+        <%= render "echart", exceptions: @minutes.apdex["happy"], i: i, url: nil, height: 90 %>
+      </td>
+    </tr>
+    <tr class='full_stats'>
+      <td>Satisfied</br>(t &lt; 0.5s)</td>
+      <td class='number'><%= integer_number(@totals.apdex["satisfied"]) %></td>
+      <td class='echart' id='<%= "echart-#{i+=1}" %>'>
+        <%= render "echart", exceptions: @minutes.apdex["satisfied"], i: i, url: nil, height: 90 %>
+      </td>
+    </tr>
+    <tr class='full_stats'>
+      <td>Tolerating</br>(0.5s &le; t &lt; 2s)</td>
+      <td class='number'><%= integer_number(@totals.apdex["tolerating"]) %></td>
+      <td class='echart' id='<%= "echart-#{i+=1}" %>'>
+        <%= render "echart", exceptions: @minutes.apdex["tolerating"], i: i, url: nil, height: 90 %>
+      </td>
+    </tr>
+    <tr class='full_stats'>
+      <td>Frustrated</br>(t &ge; 2s)</td>
+      <td class='number'><%= integer_number(@totals.apdex["frustrated"]) %></td>
+      <td class='echart' id='<%= "echart-#{i+=1}" %>'>
+        <%= render "echart", exceptions: @minutes.apdex["frustrated"], i: i, url: nil, height: 90 %>
+      </td>
+    </tr>
+  </table>
+</div>
