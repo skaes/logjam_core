@@ -40,7 +40,7 @@
       </td>
     </tr>
     <tr class='full_stats'>
-      <% url = url_for(clean_params(params.merge(:action => "errors", :error_type => "logged_error"))) %>
+      <% url = url_for(clean_params(params.merge(:action => "errors", :error_type => "logged_warning"))) %>
       <td><%= link_to "Logged Warnings", url %></td>
       <td class='number'><%= link_to integer_number(@totals.severities[2]), url %></td>
       <td class='echart' id='<%= "echart-#{i+=1}" %>'>
