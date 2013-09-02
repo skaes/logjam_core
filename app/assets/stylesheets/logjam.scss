@@ -162,7 +162,7 @@ img {
 
 #column-right {
     position: absolute;
-    left: 625px;
+    left: 630px;
 }
 
 #column-right { min-width: 500px; max-width: 800px; }
@@ -255,10 +255,10 @@ td.number {text-align: right;}
 
 .plot-details { width:616px; }
 #plot-details-col1 { float:left; }
-#plot-details-col2 { float:left; margin-left:15px;}
-#plot-details-col3 { float:left; margin-left:15px;}
+#plot-details-col2 { float:left; margin-left:10px;}
+#plot-details-col3 { float:left; margin-left:10px;}
 .stats {
-  margin: 2px 0 2px 40px;
+  margin: 2px 0 2px 20px;
 }
 .stats th { font-size: 12px; }
 .stats td { font-size: 12px; padding: 0 8px; }
@@ -267,6 +267,7 @@ td.number {text-align: right;}
 #resource-plot { float:left; margin-top:-3px; }
 
 #apdex-table, #error-table {float:left;}
+#apdex-table { margin-top: 5px; }
 #apdex-table td, #error-table td {font-size: 90%; line-height: 100%; white-space: nowrap;}
 #apdex-table th, #error-table th {font-size: 90%; white-space: nowrap;}
 
