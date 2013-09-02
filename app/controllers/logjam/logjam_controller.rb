@@ -20,14 +20,9 @@ module Logjam
     end
 
     def index
-      @dataset = dataset_from_params
-      if @dataset.empty? && !(['::', '', 'all_pages'].include?(@page)) && !request.referer.to_s.include?("app=#{@app}")
-        new_params = FilteredDataset.clean_url_params(params.merge(:page => '::',  :default_app => @default_app, :default_env => @default_env))
-        redirect_to new_params
-        return
-      end
       respond_to do |format|
         format.html do
+          redirect_on_empty_dataset and return
           @resources, @js_data, @js_events, @js_max, @request_counts, @gc_time, @js_zoom = @dataset.plot_data
         end
         format.json do
@@ -58,13 +53,7 @@ module Logjam
     def history
       respond_to do |format|
         format.html do
-          @dataset = dataset_from_params
-          if @dataset.empty? && !(['::', '', 'all_pages'].include?(@page)) && !request.referer.to_s.include?("app=#{@app}")
-            new_params = FilteredDataset.clean_url_params(params.merge(:page => '::',
-                                                                       :default_app => @default_app,
-                                                                       :default_env => @default_env))
-            redirect_to new_params
-          end
+          redirect_on_empty_dataset and return
         end
         format.json do
           prepare_params
@@ -132,26 +121,25 @@ module Logjam
     end
 
     def errors
-      prepare_params
+      redirect_on_empty_dataset and return
       @page_size = 25
-      @page = params[:page]
       case params[:error_type]
-        when "internal"
-          @title = "Internal Server Errors"
-          q = Requests.new(@db, "minute", @page, :response_code => 500, :limit => @page_size, :skip => params[:offset].to_i)
-        when "exceptions"
-          @title = "Requests with '#{params[:exception]}'"
-          q = Requests.new(@db, "minute", @page, :exceptions => params[:exception], :limit => @page_size, :skip => params[:offset].to_i)
-        else
-          severity = case params[:error_type]
-                     when "logged_warning"; then 2
-                     when "logged_error"; then 3
-                     when "logged_fatal"; then 4
-                     else 5
-                     end
-          @title = severity == 2 ? "Logged Warnings" : "Logged Errors"
-          q = Requests.new(@db, "minute", @page, :severity => severity, :limit => @page_size, :skip => params[:offset].to_i)
-        end
+      when "internal"
+        @title = "Internal Server Errors"
+        q = Requests.new(@db, "minute", @page, :response_code => 500, :limit => @page_size, :skip => params[:offset].to_i)
+      when "exceptions"
+        @title = "Requests with '#{params[:exception]}'"
+        q = Requests.new(@db, "minute", @page, :exceptions => params[:exception], :limit => @page_size, :skip => params[:offset].to_i)
+      else
+        severity = case params[:error_type]
+                   when "logged_warning"; then 2
+                   when "logged_error"; then 3
+                   when "logged_fatal"; then 4
+                   else 5
+                   end
+        @title = severity == 2 ? "Logged Warnings" : "Logged Errors"
+        q = Requests.new(@db, "minute", @page, :severity => severity, :limit => @page_size, :skip => params[:offset].to_i)
+      end
       @error_count = q.count
       @requests = q.all
       offset = params[:offset].to_i
@@ -164,7 +152,7 @@ module Logjam
     end
 
     def js_exceptions
-      prepare_params
+      redirect_on_empty_dataset and return
       @page_size = 25
       offset = params[:offset].to_i
 
@@ -187,7 +175,7 @@ module Logjam
     end
 
     def response_codes
-      prepare_params
+      redirect_on_empty_dataset and return
       @page_size = 25
       @page = params[:page]
       if (@response_code = params[:above].to_i) >= 400
@@ -210,8 +198,7 @@ module Logjam
     end
 
     def error_overview
-      prepare_params
-      @page = params[:page]
+      redirect_on_empty_dataset and return
       @title = "Logged Errors/Warnings/Exceptions"
       @resources = %w(exceptions js_exceptions severity response)
       @totals = Totals.new(@db, @resources, @page.blank? ? 'all_pages' : @page)
@@ -219,8 +206,7 @@ module Logjam
     end
 
     def response_code_overview
-      prepare_params
-      @page = params[:page]
+      redirect_on_empty_dataset and return
       @title = "Response Code Overview"
       @resources = %w(response)
       @totals = Totals.new(@db, @resources, @page.blank? ? 'all_pages' : @page)
@@ -228,8 +214,7 @@ module Logjam
     end
 
     def apdex_overview
-      prepare_params
-      @page = params[:page]
+      redirect_on_empty_dataset and return
       @title = "Apdex Overview"
       @resources = %w(apdex)
       @totals = Totals.new(@db, @resources, @page.blank? ? 'all_pages' : @page)
@@ -237,8 +222,7 @@ module Logjam
     end
 
     def exceptions
-      prepare_params
-      @page = params[:page]
+      redirect_on_empty_dataset and return
       @title = "Logged Exceptions"
       @totals = Totals.new(@db, ["exceptions"], @page.blank? ? 'all_pages' : @page)
       @minutes = Minutes.new(@db, ["exceptions"], @page, @totals.page_names, 2)
@@ -248,7 +232,6 @@ module Logjam
       prepare_params
       params[:sort] ||= 'count'
       params[:group] ||= 'module'
-      @page = params[:page]
       @callers = Totals.new(@db, ["callers"], @page).callers
       if transform = get_transform(params[:group])
         @callers = @callers.each_with_object(Hash.new(0)){|(k,v),h| h[transform.call(k)] += v}
@@ -366,21 +349,20 @@ module Logjam
     end
 
     def js_exception_types
-      prepare_params
-      @page = params[:page]
+      redirect_on_empty_dataset and return
       @title = "Logged JavaScript Exceptions"
       @totals = Totals.new(@db, ["js_exceptions"], @page.blank? ? 'all_pages' : @page)
       @minutes = Minutes.new(@db, ["js_exceptions"], @page, @totals.page_names, 2)
     end
 
     def enlarged_plot
-      @dataset = dataset_from_params
+      redirect_on_empty_dataset and return
       @resources, @js_data, @js_events, @js_max, @request_counts, @gc_time, @js_zoom = @dataset.plot_data
     end
 
     def request_time_distribution
+      redirect_on_empty_dataset and return
       @resources = Logjam::Resource.time_resources
-      @dataset = dataset_from_params
       @dataset.get_data_for_distribution_plot(:request_time)
       @xmin = 100
       @xlabel = "Request time"
@@ -388,8 +370,8 @@ module Logjam
     end
 
     def allocated_objects_distribution
+      redirect_on_empty_dataset and return
       @resources = Logjam::Resource.memory_resources
-      @dataset = dataset_from_params
       @dataset.get_data_for_distribution_plot(:allocated_objects)
       @xmin = 10000
       @xlabel = "Allocated objects"
@@ -397,8 +379,8 @@ module Logjam
     end
 
     def allocated_size_distribution
+      redirect_on_empty_dataset and return
       @resources = Logjam::Resource.memory_resources
-      @dataset = dataset_from_params
       @dataset.get_data_for_distribution_plot(:allocated_bytes)
       @xmin = 100000
       @xlabel = "Allocated memory (bytes)"
@@ -474,10 +456,9 @@ module Logjam
 
     def dataset_from_params
       prepare_params
-      params[:page] = @page
       params[:interval] ||= FilteredDataset::DEFAULTS[:interval]
 
-      FilteredDataset.new(
+      @dataset = FilteredDataset.new(
         :date => @date,
         :app => @app,
         :env => @env,
@@ -490,6 +471,19 @@ module Logjam
         :grouping_function => (params[:grouping_function] || :avg).to_sym,
         :start_minute => params[:start_minute].to_i,
         :end_minute => params[:end_minute].to_i)
+    end
+
+    def redirect_on_empty_dataset
+      dataset_from_params
+      if @dataset.empty? && !(['::', '', 'all_pages'].include?(@page)) && !request.referer.to_s.include?("app=#{@app}")
+        new_params = FilteredDataset.clean_url_params(params.merge(:page => '::',
+                                                                   :default_app => @default_app,
+                                                                   :default_env => @default_env))
+        redirect_to new_params
+        return true
+      else
+        return false
+      end
     end
 
     def redirect_to_clean_url

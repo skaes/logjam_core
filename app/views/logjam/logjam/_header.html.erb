@@ -38,7 +38,7 @@ function go_home() {
 }
 function view_selected_pages(){
   <% if params[:time_range] == "date" %>
-    $("#filter-form").attr("action", "<%= home_url %>");
+    $("#filter-form").attr("action", "<%= self_url %>");
   <% else %>
     $("#filter-form").attr("action", "<%= history_url %>");
   <% end %>
@@ -68,7 +68,7 @@ function view_time_range(time_range){
 function view_date(date) {
   $("#datepicker").val(date.toJSON().substr(0,10));
   $("#time-range").val("date");
-  $("#filter-form").attr("action", "<%= home_url %>");
+  $("#filter-form").attr("action", "<%= self_url %>");
   submit_filter_form();
 }
 $(document).ready(function(){
@@ -92,7 +92,7 @@ $(document).ready(function(){
 </script>
 
 <div id="header">
-  <% action = params[:time_range] == "history" ? "history" : "" %>
+  <% action = action_name == "index" ? "" : action_name %>
   <%= form_tag(params.except(:id).merge(:action => action), :method => :get, :id => "filter-form", :autocomplete => "off") do -%>
   <div id="filter">
     <input type="button" id="home-button" value="Logjam" onclick="go_home()"/>

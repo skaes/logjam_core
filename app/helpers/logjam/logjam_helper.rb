@@ -15,6 +15,10 @@ module Logjam
       url_for(params.merge(:action => 'history'))
     end
 
+    def self_url
+      url_for(params.merge(:action => (action_name == "index" ? "" : action_name)))
+    end
+
     def auto_complete_url_for_action_page
       url_for(params.slice(:year, :month, :day, :app, :env).merge(:action => "auto_complete_for_controller_action_page"))
     end
