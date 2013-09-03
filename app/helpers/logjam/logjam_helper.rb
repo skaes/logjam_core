@@ -257,7 +257,11 @@ module Logjam
 
     def html_attributes_for_resource_type(resource_type)
       resource = Resource.default_resource(resource_type)
-      "class='inactive' onclick=\"view_resource('#{resource}')\""
+      if Resource.resource_type(params[:resource]) == resource_type.to_sym
+        "class='active' onclick=\"view_resource('#{resource}')\""
+      else
+        "class='inactive' onclick=\"view_resource('#{resource}')\""
+      end
     end
 
     SEVERITY_LABELS = %w(DEBUG INFO WARN ERROR FATAL)
