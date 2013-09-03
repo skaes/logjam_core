@@ -224,7 +224,7 @@ module Logjam
           row = with_conditional_caching(query) do |payload|
                   r = @collection.find_one({:page => 'all_pages'},{})
                   payload[:rows] = r ? 0 : 1
-                  r.delete("_id")
+                  r.delete("_id") if r
                   r
                 end
           row ? row.keys & Requests::FIELDS : Requests::FIELDS
