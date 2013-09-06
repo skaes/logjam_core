@@ -69,7 +69,7 @@ module Logjam
             date = Date.parse(date_str)
             next if date == today
             db = Logjam.connection_for(db_name).db(db_name)
-            summary = Totals.new(db, resources, page).pages(:limit => 1).first
+            summary = Totals.new(db, resources, page).pages(:limit => 1).try(:first)
             next unless summary
             hash = {
               :date => date_str,
