@@ -1,95 +1,13 @@
-<script type="text/javascript">
-var parameter_defaults = <%= raw default_header_parameters.to_json %>;
-function submit_filter_form() {
-  var selected_date = $("#datepicker").val().replace(/-/g,'/');
-  if (selected_date.match(/\d\d\d\d\/\d\d\/\d\d/)) {
-    var action = $("#filter-form").attr("action");
-    var old_date = action.match(/\d\d\d\d\/\d\d\/\d\d/);
-    if (old_date) {
-      $("#filter-form").attr("action", action.replace(old_date[0], selected_date));
-    }
-  }
-  var action = new URI ($("#filter-form").attr("action"));
-  var x = $("#filter-form").serialize();
-  var uri = new URI();
-  uri.pathname(action.pathname());
-  uri.search(x);
-  uri.removeSearch("utf8")
-     .removeSearch("resource", parameter_defaults.resource)
-     .removeSearch("time_range", parameter_defaults.time_range)
-     .removeSearch("grouping", parameter_defaults.grouping)
-     .removeSearch("grouping_function", parameter_defaults.grouping_function)
-     .removeSearch("start_minute", parameter_defaults.start_minute)
-     .removeSearch("end_minute", parameter_defaults.end_minute)
-     .removeSearch("interval", parameter_defaults.interval);
-  document.location.href = uri.toString();
-}
-function go_home() {
-  $("#page-field").val("::");
-  $("#grouping option:selected").val(parameter_defaults.grouping);
-  $("#resource option:selected").val(parameter_defaults.resource);
-  $("#grouping_function").val(parameter_defaults.grouping_function);
-  $("#start-minute").val(parameter_defaults.start_minute);
-  $("#end-minute").val(parameter_defaults.end_minute);
-  $("#interval").val(parameter_defaults.interval);
-  $("#time-range").val(parameter_defaults.time_range);
-  $("#filter-form").attr("action", "<%= home_url %>");
-  $("#filter-form").submit();
-}
-function view_selected_pages(){
-  <% if params[:time_range] == "date" %>
-    $("#filter-form").attr("action", "<%= self_url %>");
-  <% else %>
-    $("#filter-form").attr("action", "<%= history_url %>");
-  <% end %>
-  $("#filter-form").submit();
-}
-function view_grouping(grouping){
-  $("#grouping option:selected").val(grouping);
-  $("#time-range").val(parameter_defaults.time_range);
-  $("#filter-form").attr("action", "<%= home_url %>");
-  $("#filter-form").submit();
-}
-function view_resource(resource){
-  $("#resource option:selected").val(resource);
-  $("#time-range").val(parameter_defaults.time_range);
-  $("#filter-form").attr("action", "<%= home_url %>");
-  $("#filter-form").submit();
-}
-function view_time_range(time_range){
-  $("#time-range").val(time_range);
-  if (time_range == "date") {
-    $("#filter-form").attr("action", "<%= home_url %>");
-  } else {
-    $("#filter-form").attr("action", "<%= history_url %>");
-  }
-  $("#filter-form").submit();
-}
-function view_date(date) {
-  $("#datepicker").val(date.toJSON().substr(0,10));
-  $("#time-range").val("date");
-  $("#filter-form").attr("action", "<%= home_url %>");
-  submit_filter_form();
-}
-$(document).ready(function(){
-  $("#filter-form").on("submit", function(event) {
-      event.preventDefault();
-      submit_filter_form();
-      });
-  <% if params[:time_range] == "date" %>
-  $("#datepicker").jdPicker({
-          date_format: "YYYY-mm-dd",
-          selectable: <%= raw Oj.dump(@days.map(&:to_s)) %>,
-          error_out_of_range: "No data for that date."});
-  <% end %>
-  $("#page-field").autocomplete({
-     serviceUrl: "<%= auto_complete_url_for_action_page %>",
-     minChars: 1,
-     maxHeight: 600,
-     onSelect: function(value, data){ submit_filter_form(); }
-   });
-});
-</script>
+<%= content_for(:page_scripts) do %>
+var parameters = <%= raw Oj.dump(params) %>;
+var parameter_defaults = <%= raw Oj.dump(default_header_parameters) %>;
+var self_url = '<%= raw self_url %>';
+var home_url = '<%= raw home_url %>';
+var history_url = '<%= raw history_url %>';
+var selectable_days = <%= raw Oj.dump(@days.map(&:to_s)) %>;
+var auto_complete_url = '<%= raw auto_complete_url_for_action_page %>';
+$(document).ready(initialize_header);
+<% end %>
 
 <div id="header">
   <% action = action_name == "index" ? "" : action_name %>
@@ -138,7 +56,7 @@ $(document).ready(function(){
         <li><a href="#" <%= raw html_attributes_for_resource_type(:time) %>>Time</a>
           <ul>
             <% collected_time_resources.reverse.each do |r| %>
-            <li><a href="#" onclick="view_resource('<%=r%>')"><%= r.gsub(/_/," ") %></a></li>
+            <li><a href="#" onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
             <% end %>
           </ul>
         </li>
@@ -146,7 +64,7 @@ $(document).ready(function(){
         <li><a href="#" <%= raw html_attributes_for_resource_type(:call) %>>Calls</a>
           <ul>
             <% collected_call_resources.reverse.each do |r| %>
-            <li><a href="#" onclick="view_resource('<%=r%>')"><%= r.gsub(/_/," ") %></a></li>
+            <li><a href="#" onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
             <% end %>
           </ul>
         </li>
@@ -155,7 +73,7 @@ $(document).ready(function(){
         <li><a href="#" <%= raw html_attributes_for_resource_type(:memory) %>>Allocations</a>
           <ul>
             <% collected_memory_resources.reverse.each do |r| %>
-            <li><a href="#" onclick="view_resource('<%=r%>')"><%= r.gsub(/_/," ") %></a></li>
+            <li><a href="#" onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
             <% end %>
           </ul>
         </li>
@@ -164,7 +82,7 @@ $(document).ready(function(){
         <li><a href="#" <%= raw html_attributes_for_resource_type(:heap) %>>Heap</a>
           <ul>
             <% collected_heap_resources.reverse.each do |r| %>
-            <li><a href="#" onclick="view_resource('<%=r%>')"><%= r.gsub(/_/," ") %></a></li>
+            <li><a href="#" onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
             <% end %>
           </ul>
         </li>
@@ -192,5 +110,5 @@ $(document).ready(function(){
     <% end %>
     <%= check_box_tag "auto_refresh", "1", params[:auto_refresh]=="1", :onchange => "submit_filter_form()" %>Autorefresh
   </div>
-  <% end -%>
+  <% end %>
 </div>

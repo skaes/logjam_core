@@ -10,17 +10,14 @@
   <title>Logjam</title>
   <%= javascript_include_tag "application" %>
   <%= stylesheet_link_tag "application" %>
-  <script type="text/javascript">
-  <%= yield :page_scripts %>
-  </script>
 </head>
 <body>
   <script type="text/javascript">
   if ($.browser.webkit) { $('body').addClass('webkit'); }
   </script>
   <%= yield %>
+  <script type="text/javascript">
+  <%= yield :page_scripts %>
+  </script>
 </body>
 </html>
-<script type="text/javascript">
-  $('*[title]').tipsy({gravity:'nw', opacity:0.9, offset:10, delayIn:250, delayOut:0, fade:false})
-</script>

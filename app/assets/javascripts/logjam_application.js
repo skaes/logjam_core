@@ -18,3 +18,4 @@
 //= require jquery.tipsy
 //= require logjam-filter
 //= require uri
+//= require logjam-header
