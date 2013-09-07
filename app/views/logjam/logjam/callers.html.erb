@@ -1,15 +1,5 @@
 <%= render "header" %>
 
-<style type="text/css">
-.xlabel, .ylabel, .legend, .label, .rlabel, .tooltip {
-  font: "8px sans-serif";
-  stroke: none;
-  fill: #000;
-  stroke-width: 0.5;
-  shape-rendering: crispEdges;
-}
-</style>
-
 <div id='callers'>
   <h1><%= h @title %> (<%= @callers.size %>)</h1>
     <%= form_tag(params, :method => :get) do %>

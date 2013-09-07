@@ -5,62 +5,27 @@
 <head>
   <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
   <%= javascript_include_tag "application" %>
-<style>
-.link {
-  fill: none;
-  stroke-width: 1.5px;
-}
-
-.axis, .node {
-  stroke: #000;
-  stroke-width: 1.5px;
-}
-
-#info {
-  position: fixed;
-  z-index: 10000;
-}
-
-.chord {
-  opacity: 0.1;
-}
-.chord:hover {
-  opacity: 1;
-}
-
-.active {
-  opacity: 1;
-}
-.inactive {
-  opacity: 0.1;
-}
-
-svg {
-  font: 11px sans-serif;
-}
-
-body {
-    font-family: sans-serif;
-}
-
-aside {
-  position: fixed;
-  right: 0;
-  padding: 10px;
-}
-</style>
+  <%= stylesheet_link_tag "application" %>
 </head>
 <body>
 
 <aside>
-  <p>Grouping
-    <a href="javascript:void(0)" onclick="loadData('application');">Applications</a>
-    <a href="javascript:void(0)" onclick="loadData('module');">Modules</a>
-    <a href="javascript:void(0)" onclick="loadData('action');">Actions</a>
+  <label>Grouping:</label>
+  <ul>
+    <li><a href="javascript:void(0)" onclick="loadData('application');">Applications</a></li>
+    <li><a href="javascript:void(0)" onclick="loadData('module');">Modules</a></li>
+    <li><a href="javascript:void(0)" onclick="loadData('action');">Actions</a></li>
+  </ul>
 </aside>
 
-<p id="info"></p>
-<script>
+<p id="spinner">Please stand by while we fetch your data ...
+<%= image_tag("spinner24.gif") %>
+</p>
+<p id="call-graph-info"></p>
+<p id="call-graph-display"></p>
+
+<script type="text/javascript">
+
 var json_urls = {
   application: '<%= raw url_for(params.slice(:app,:env,:sort,:filter).merge(:action => "call_relationships", :format => :json, :filter_data => 1, :group => "application", :only_path => false)) %>',
   module:      '<%= raw url_for(params.slice(:app,:env,:sort,:filter).merge(:action => "call_relationships", :format => :json, :filter_data => 1, :group => "module", :only_path => false)) %>',
@@ -69,9 +34,12 @@ var json_urls = {
 
 function graphAppData(appCallers) {
 
-
-var r1 = 1200 / 2,
-    r0 = r1 - 120;
+var r1 = 800 / 2,
+    r0 = r1 - 120,
+    w = 1400,
+    h = w,
+    cw = 700,
+    ch = 420;
 
 var fill = d3.scale.category20c();
 
@@ -84,14 +52,14 @@ var arc = d3.svg.arc()
     .innerRadius(r0)
     .outerRadius(r0 + 20);
 
-var svg = d3.select("body").append("svg:svg")
-    .attr("width", 1600)
-    .attr("height", 1600)
+var svg = d3.select("#call-graph-display").append("svg:svg")
+    .attr("width", w)
+    .attr("height", h)
   .append("svg:g")
-    .attr("transform", "translate(" + 700 + "," + 700 + ")");
+    .attr("transform", "translate(" + cw + "," + ch + ")");
 
   // Initialize the info display.
-  var info = d3.select("#info");
+  var info = d3.select("#call-graph-info");
 
   var indexByName = {},
       nameByIndex = {},
@@ -171,6 +139,7 @@ var svg = d3.select("body").append("svg:svg")
         // leave the arc selection, hard to read otherwise: svg.selectAll(".active").classed("active", false);
       });
 
+  var formatter = d3.format(",.0f");
 
   svg.selectAll("path.chord")
       .data(chord.chords)
@@ -183,8 +152,8 @@ var svg = d3.select("body").append("svg:svg")
         svg.selectAll(".active").classed("active", false);
 // using :hover now instead of:  svg.selectAll("path.chord").classed("active", function(p) { return p === d; });
         info.html(
-          nameByIndex[d.target.index] + " called " + nameByIndex[d.source.index] + " " + d3.round(scale.invert(matrix[d.source.index][d.source.subindex])) + " times." + "</br>" +
-          nameByIndex[d.source.index] + " called " + nameByIndex[d.target.index] + " " + d3.round(scale.invert(matrix[d.target.index][d.target.subindex])) + " times.");
+          nameByIndex[d.target.index] + " called " + nameByIndex[d.source.index] + " " + formatter(scale.invert(matrix[d.source.index][d.source.subindex])) + " times." + "</br>" +
+          nameByIndex[d.source.index] + " called " + nameByIndex[d.target.index] + " " + formatter(scale.invert(matrix[d.target.index][d.target.subindex])) + " times.");
       })
       .on("mouseout", function(d) {
         svg.selectAll(".active").classed("active", false);
@@ -206,6 +175,7 @@ function loadData(group) {
   d3.selectAll("svg").remove();
   d3.json(json_urls[group], function(error, appCallers) {
     graphAppData(appCallers);
+    $("#spinner").hide();
   });
 }
 

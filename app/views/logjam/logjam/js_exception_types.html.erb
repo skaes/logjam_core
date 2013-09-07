@@ -1,15 +1,5 @@
 <%= render "header" %>
 
-<style type="text/css">
-.xlabel, .ylabel, .legend, .label, .rlabel, .tooltip {
-  font: "8px sans-serif";
-  stroke: none;
-  fill: #000;
-  stroke-width: 0.5;
-  shape-rendering: crispEdges;
-}
-</style>
-
 <div id='exceptions'>
   <h1><%= h @title %> <%= h @page %> (<%= @totals.js_exception_count %> total)</h1>
   <table class='full_stats'>

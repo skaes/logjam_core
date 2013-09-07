@@ -1,0 +1,39 @@
+#call-graph-info {
+  position: fixed;
+  z-index: 10000;
+  left: 10px;
+}
+
+#call-graph-display {
+  font: 11px sans-serif;
+
+  .link {
+      fill: none;
+      stroke-width: 1.5px;
+  }
+  .axis, .node {
+      stroke: #000;
+      stroke-width: 1.5px;
+  }
+  .chord {
+      opacity: 0.1;
+  }
+  .chord:hover {
+      opacity: 1;
+  }
+  .active {
+      opacity: 1;
+  }
+  .inactive {
+      opacity: 0.1;
+  }
+}
+
+aside {
+  position: fixed;
+  right: 10px;
+  ul { padding:0; }
+  li { list-style: none; }
+  a { color: blue; }
+  a:hover { color: blue; }
+}
