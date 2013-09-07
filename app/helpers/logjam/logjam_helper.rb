@@ -335,7 +335,7 @@ module Logjam
 
     # human resource name (escaped)
     def hrn(s)
-      h(s.gsub(/_/, ' ').gsub('∙','.'))
+      s.gsub(/_/, ' ').gsub('∙','.')
     end
 
     def format_hash(hash)
