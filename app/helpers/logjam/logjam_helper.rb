@@ -175,13 +175,13 @@ module Logjam
       if n == 0
         ""
       elsif page.page == "Others..."
-        "#{error_count}/#{warning_count}"
+        "#{integer_number(error_count)}/#{integer_number(warning_count)}"
       else
         parameters = params.merge(:app => @app, :env => @env, :action => "errors", :page => without_module(page.page))
         errors = error_count == 0 ? error_count :
-          link_to(error_count, clean_params(parameters.merge(:error_type => "logged_error")), :class => "error", :title => "show errors")
+          link_to(integer_number(error_count), clean_params(parameters.merge(:error_type => "logged_error")), :class => "error", :title => "show errors")
         warnings = warning_count == 0 ? warning_count :
-          link_to(warning_count, clean_params(parameters.merge(:error_type => "logged_warning")), :class => "warn", :title => "show warnings")
+          link_to(integer_number(warning_count), clean_params(parameters.merge(:error_type => "logged_warning")), :class => "warn", :title => "show warnings")
         raw "#{errors}/#{warnings}"
       end
     end
@@ -191,10 +191,10 @@ module Logjam
       if n == 0
         ""
       elsif page.page == "Others..."
-        n
+        integer_number(n)
       else
         parameters = params.merge(:app => @app, :env => @env, :action => "response_codes", :above => 400, :page => without_module(page.page))
-        link_to(n, clean_params(parameters), :class => "warn", :title => "show 400s")
+        link_to(integer_number(n), clean_params(parameters), :class => "warn", :title => "show 400s")
       end
     end
 
