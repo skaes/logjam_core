@@ -1,7 +1,7 @@
 <%= render "header" %>
 
 <div id='callers'>
-  <h1><%= h @title %> (<%= @callers.size %>)</h1>
+  <h1><%= @title %> (<%= @callers.size %>)</h1>
     <%= form_tag(params, :method => :get) do %>
       <%= hidden_field_tag :app, @app %>
       <%= hidden_field_tag :env, @env %>

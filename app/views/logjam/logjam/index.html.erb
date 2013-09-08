@@ -57,8 +57,8 @@
     <div id="pagetimes">
       <h3><%= @dataset.description %>
         <%- if params[:grouping] == "request" -%>
-        between <%= h(minute_to_human(@dataset.start_minute)) %>
-        and <%= h(minute_to_human(@dataset.end_minute)) %>
+        between <%= minute_to_human(@dataset.start_minute) %>
+        and <%= minute_to_human(@dataset.end_minute) %>
         <%- end -%>
       </h3>
       <%= render "page_times" %>
