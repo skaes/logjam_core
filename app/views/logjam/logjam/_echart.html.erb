@@ -1,99 +1,13 @@
-<script type="text/javascript">
-(function() {
 <%
-    max_x = exceptions.keys.max || 0
-    max_y = exceptions.values.max || 0
+   js_params = {
+     parent: "#echart-#{i}",
+     max_x: exceptions.keys.max || 0,
+     max_y: exceptions.values.max || 0,
+     url: url,
+     height: (height rescue 15)
+   }
+   js_params[:data] = (0..js_params[:max_x]).each_with_object({}){|i,h|h[i]=-1}.merge!(exceptions).map{|k,v| [k,v]}
 %>
-var data = <%= raw Oj.dump((0..max_x).each_with_object({}){|i,h|h[i]=-1}.merge!(exceptions).map{|k,v| [k,v]}) %>;
-var url = '<%= url %>';
-var max_y = <%= max_y %>;
-var max_x = <%= max_x %>;
-var h = <%= height rescue 15 %>;
-var w = 1440/2;
-var x = d3.scale.linear().domain([0, w]).range([0, w]);
-var y = d3.scale.linear().domain([0, max_y]).range([h, 0]).nice();
-
-var tooltip_formatter = d3.format(",3d");
-var tooltip_timeformatter = d3.format("02d");
-
-var vis = d3.select('<%= "#echart-#{i}" %>')
-     .append("svg")
-     .attr("width", w)
-     .attr("height", h)
-     .style("stroke", "lightsteelblue")
-     .style("strokeWidth", 1.0)
-     .on("mouseover", mouse_over_event)
-     .on("mousemove", mouse_over_event)
-     .on("mouseout",  mouse_over_out)
-     .style("cursor", function(){ return (url == '' ? "arrow" : "pointer"); })
-     .on("click", function(){ if (url != '') document.location = url;})
-;
-
-var xaxis = vis.append("svg:line")
-    .style("fill", "#999")
-    .style("stroke", "#999")
-    .attr("x1", 0)
-    .attr("y1", h)
-    .attr("x2", w)
-    .attr("y2", h)
-;
-
-vis.selectAll(".rlabel")
-    .data([20])
-    .enter()
-    .append("text")
-    .attr("class", "rlabel")
-    .style("font", "8px sans-serif")
-    .attr("text-anchor", "end")
-    .attr("dy", ".75em")
-    .attr("x", w-1)
-    .text(tooltip_formatter(max_y))
-;
-
-var line = d3.svg.line()
-    .interpolate("cardinal")
-    .x(function(d,i) { return x(d[0]); })
-    .y(function(d) { return y(d[1]); })
-;
-
-var tooltip = $('<%= "#echart-#{i}" %> svg');
-var tooltip_text = "";
-
-tooltip.tipsy({
-  trigger: 'hover',
-  follow: 'x',
-  offsetY: -20,
-  gravity: 's',
-  html: false,
-  opacity: 0.8,
-  title: function() { return tooltip_text; }
-});
-
-function mouse_over_event(d, i) {
-  var p = d3.mouse(this);
-  var di = Math.ceil(x.invert(p[0]))-1;
-  if (di<0) di=0;
-  var xc = data[di];
-  var n = 0;
-  var m = 2*di;
-  var hour = tooltip_timeformatter(Math.floor(m / 60));
-  var minute1 = tooltip_timeformatter(Math.floor(m % 60));
-  var minute2 = tooltip_timeformatter(Math.floor((m % 60)+1));
-  if (xc) {
-    n = xc[1];
-  }
-  tooltip_text = tooltip_formatter((n <= 0) ? 0 : n) + " ~ " + hour + ":" + minute1 + "-" + minute2 ;
-}
-
-function mouse_over_out() {
-  tooltip_text = "";
-}
-
-vis.append("svg:path")
-  .attr("d", line(data))
-  .style("stroke", "steelblue")
-  .style("fill", "none")
-;
-
-})();
+<script type="text/javascript">
+logjam_echart(<%=raw Oj.dump(js_params)%>);
 </script>

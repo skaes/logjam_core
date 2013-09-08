@@ -146,11 +146,11 @@
   <div id="request_info">
     <fieldset class="resource-fields">
       <legend>Additional Request Info</legend>
-      <table id='request-info' class="filter-widget">
+      <table id="request-info" class="filter-widget">
         <% %w(url method query_parameters body_parameters headers).each do |name| -%>
         <% next if (value = info[name]).blank?  -%>
         <tr>
-          <td class='resource_name'><%= hrn name %></td>
+          <td class="resource_name"><%= hrn name %></td>
           <td><%= raw(value.is_a?(Hash) ? format_hash(value) : h(value)) %></td>
         </tr>
         <% end -%>
@@ -163,14 +163,14 @@
 
 </div>
 
-<script type="text/javascript">
+<%= content_for(:page_scripts) do %>
 $(document).ready(function(){
   install_logjam_lines_filter();
-  $('.logline').dblclick(function(){
+  $(".logline").dblclick(function(){
       var text = $(this).html().replace(/[\u200B]/g ,'');
       var ref = text.match(/http:\/\/[^\s]+/);
       if (ref != null)
         window.prompt ("Extracted Curl Command:", "curl '" + ref + "'");
-   })
+   });
 });
-</script>
+<% end %>

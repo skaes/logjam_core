@@ -19,3 +19,12 @@
 //= require logjam-filter
 //= require uri
 //= require logjam-header
+//= require logjam-echart
+//= require logjam-apdex-chart
+//= require logjam-page-pie
+//= require logjam-simple-pie
+//= require logjam-resource-plot
+//= require logjam-quants-plot
+//= require logjam-history-bar-chart
+//= require logjam-livestream
+//= require logjam-call-graph
