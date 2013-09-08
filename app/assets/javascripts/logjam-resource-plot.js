@@ -7,7 +7,7 @@ function logjam_resource_plot(params) {
   var legend   = params.legend;
   var request_counts = params.request_counts;
   var gc_time = params.gc_time;
-  var max_y = params.max_x;
+  var max_y = params.max_y;
   var zoomed_max_y = params.zoomed_max_y;
   var selected_slice = params.selected_slice;
   var selected_slice_width = params.selected_slice_width;
@@ -99,7 +99,7 @@ function logjam_resource_plot(params) {
   /* Y-axis and ticks. */
 
   function draw_grid() {
-    vgrid = vis.selectAll(".xrule").data(y.ticks(10));
+    var vgrid = vis.selectAll(".xrule").data(y.ticks(10));
     vgrid.enter()
       .append("line")
       .attr("class", "xrule")
@@ -110,7 +110,7 @@ function logjam_resource_plot(params) {
       .attr("x2", w);
     vgrid.exit().remove();
 
-    vlabels = vis.selectAll(".ylabel").data(y.ticks(10));
+    var vlabels = vis.selectAll(".ylabel").data(y.ticks(10));
     vlabels.enter().append("text")
       .attr("class", "ylabel")
       .attr("x", 0)
@@ -339,7 +339,7 @@ function logjam_resource_plot(params) {
           .y(function(d){ return y(d[1]); })
           .interpolate("cardinal");
 
-    gl = vis.append("g")
+    var gl = vis.append("g")
       .data([gc_time]);
 
     var da_gc_line = gl.append("path")
@@ -370,12 +370,6 @@ function logjam_resource_plot(params) {
       da_gc_line.transition()
         .duration(zoom_interval)
         .attr("d", gc_line);
-    };
-
-    if (heap_size != null) {
-      da_heap_size_line.transition()
-        .duration(zoom_interval)
-        .attr("d", heap_size_line);
     };
   }
 
