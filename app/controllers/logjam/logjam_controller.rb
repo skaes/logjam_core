@@ -26,13 +26,13 @@ module Logjam
           @resources, @js_data, @js_events, @js_max, @request_counts, @gc_time, @js_zoom = @dataset.plot_data
         end
         format.json do
-          pages, events = fetch_json_data(@db, @page)
+          pages, events = fetch_json_data_for_index(@db, @page)
           render :json => Oj.dump({:pages => pages, :events => events}, :mode => :compat)
         end
       end
     end
 
-    def fetch_json_data(db, page, options = params)
+    def fetch_json_data_for_index(db, page, options = params)
       resources = Resource.all_resources + %w(apdex response severity exceptions js_exceptions)
       stream = Logjam.streams["#{@app}-#{@env}"]
       filter = stream.frontend_page if options[:frontend_only] == "1"
@@ -48,7 +48,7 @@ module Logjam
       events = Events.new(db).events.map{|e| {:label => e['label'], :time => e['started_at']}}
       [pages, events]
     end
-    private :fetch_json_data
+    private :fetch_json_data_for_index
 
     def history
       respond_to do |format|
