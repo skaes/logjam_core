@@ -1,8 +1,7 @@
 Rails.application.routes.draw do
 
-  controller "logjam/logjam" do
-    scope "#{Logjam.base_url}" do
-
+  scope "#{Logjam.base_url}" do
+    controller "logjam/logjam" do
       get "/live_stream" => :live_stream
 
       get "/call_relationships" => :call_relationships
@@ -14,7 +13,10 @@ Rails.application.routes.draw do
       get "/:year/:month/:day(/:action(/:id))", :year => /\d\d\d\d/, :month => /\d\d/, :day => /\d\d/
 
       get "/" => :index, :page => "::"
+    end
 
+    controller "logjam/admin" do
+      get "/admin/storage" => :index
     end
   end
 end

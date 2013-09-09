@@ -86,7 +86,7 @@ module Logjam
 
   def connections
     establish_connections
-    @@mongo_connections.values
+    @@mongo_connections
   end
 
   def connection_for(db_name)
@@ -111,6 +111,10 @@ module Logjam
 
   def db_date(db_name)
     db_name =~ db_name_format && Date.parse($3)
+  end
+
+  def extract_db_params(db_name)
+    db_name =~ db_name_format && [$1, $2, $3, $4]
   end
 
   def self.stream_for(db_name)
@@ -150,7 +154,7 @@ module Logjam
 
   def update_known_databases
     all_known_databases = []
-    connections.each do |connection|
+    connections.each do |_,connection|
       names = connection.database_names
       known_databases = grep(names).sort
       meta_collection(connection).create_index("name")
@@ -162,7 +166,7 @@ module Logjam
 
   def get_known_databases
     all_known_databases = []
-    connections.each do |connection|
+    connections.each do |_,connection|
       rows = []
       ActiveSupport::Notifications.instrument("mongo.logjam", :query => "load database names") do |payload|
         rows = meta_collection(connection).find({:name => "databases"},{:fields => ["value"]}).to_a
