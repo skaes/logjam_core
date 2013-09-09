@@ -316,8 +316,15 @@ td.number {text-align: right;}
     position: absolute;
     right: 10px;
     top: 2px;
+    a { color: green; }
 }
-#show-json a { color: green; }
+
+#admin {
+    position: absolute;
+    right: 10px;
+    top: 25px;
+    a:hover { background: #cca383; }
+}
 
 .warning {
   font-size: 200%;

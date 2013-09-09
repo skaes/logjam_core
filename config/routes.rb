@@ -16,7 +16,7 @@ Rails.application.routes.draw do
     end
 
     controller "logjam/admin" do
-      get "/admin/storage" => :index
+      get "/admin/storage" => :index, :as => "admin_storage"
     end
   end
 end
