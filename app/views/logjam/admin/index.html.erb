@@ -1,16 +1,23 @@
-<table id="database-info">
-  <tr><td colspan="5"><h1>Storage space used on database servers</h1></td>
-  <tr>
-    <th>Host</th><th>Application</th><th>Environment</th><th>Date</th><th>Size (G)</th>
-  </tr>
-  <% @sorted_database_info.each do |host,db,size| %>
-  <tr>
-    <% app, env, date = Logjam.extract_db_params(db) %>
-    <td><%= host.split('.').first %></td>
-    <td><%= app %></td>
-    <td><%= env %></td>
-    <td><%= date %></td>
-    <td class="number"><%= float_number(size.to_f/(1024*1024*1024)) %></td>
-  </tr>
-  <% end %>
-</table>
+<div class="container">
+  <h1 class="controls">Storage space used on database servers:
+    ~ <%= integer_number(@total_bytes/(1024*1024*1024)) %>G
+    <%= form_tag(params.merge(:format => :csv), :method => :get) do %>
+    <%= submit_tag "Download CSV", :id => "download-button", :name => nil %>
+    <% end %>
+  </h1>
+  <table id="database-info" class="zebra">
+    <tr>
+      <th>Host</th><th>Application</th><th>Environment</th><th>Date</th><th>Size (G)</th>
+    </tr>
+    <% @sorted_database_info.each do |host,db,size| %>
+    <tr>
+      <% app, env, date = Logjam.extract_db_params(db) %>
+      <td><%= host.split('.').first %></td>
+      <td><%= app %></td>
+      <td><%= env %></td>
+      <td><%= date %></td>
+      <td class="number"><%= float_number(size.to_f/(1024*1024*1024)) %></td>
+    </tr>
+    <% end %>
+  </table>
+</div>

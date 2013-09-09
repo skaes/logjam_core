@@ -2,7 +2,7 @@
 <div id="callers">
   <div id="show-json"><%= link_to("show json", params.merge(:format => :json)) %></div>
   <h1><%= @title %> (<span id="call-count"><%= @data.size %></span>)</h1>
-  <div id="controls">
+  <div class="controls">
     <%= form_tag(params, :method => :get) do %>
       <%= hidden_field_tag :app, @app %>
       <%= hidden_field_tag :env, @env %>

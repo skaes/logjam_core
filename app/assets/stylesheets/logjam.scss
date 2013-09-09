@@ -296,10 +296,10 @@ td.number {text-align: right;}
 .caller_links a { color: blue; }
 .caller_links a:hover { font-weight: bold; }
 
-#controls form { display: inline; }
-#controls a {color: blue; margin-left: 5px; }
-#controls a:hover {font-weight: bold; }
-#controls #download-button { margin-left: 10px; }
+.controls form { display: inline; }
+.controls a {color: blue; margin-left: 5px; }
+.controls a:hover {font-weight: bold; }
+#download-button { margin-left: 10px; }
 #callers #filter { }
 
 #request-lines {
@@ -571,4 +571,13 @@ input[type="text"]:disabled
     margin-left: 400px;
     margin-top: 10px;
 }
-
+div.container {
+    margin: 10px;
+}
+table.zebra {
+    margin: 3px;
+    tr:nth-child(2n+1) { background: #ddd; }
+    tr:nth-child(1)    { background: #ccc; }
+    td, th { padding: 2px 5px 2px 5px; }
+    border-spacing: 0px;
+}
