@@ -31,11 +31,11 @@ function logjam_graph_app_data(appCallers) {
       nameByIndex = {},
       appNames = d3.set(),
       n = 0;
+
   var scale =  d3.scale.log().domain(d3.extent(appCallers, function(d){ return d.count;}));
-  //d3.scale.linear();
+
   function appName(name) {
     return name;
-    return name.split('-')[0];
   }
 
   appCallers.forEach(function(app) {
@@ -50,24 +50,48 @@ function logjam_graph_app_data(appCallers) {
     }
   });
 
-  var matrix = [];
+  var matrix = [], scaled_matrix = [];
   for (var i = 0; i < n; i++) {
     matrix[i] = [];
+    scaled_matrix[i] = [];
     for (var j = 0; j < n; j++) {
       matrix[i][j] = 0;
+      scaled_matrix[i][j] = 0;
     }
   }
   appCallers.forEach(function(d) {
     var source = indexByName[appName(d.target)],
-        row = matrix[source];
+        row = matrix[source],
+        scaled_row = scaled_matrix[source],
+        index = indexByName[appName(d.source)];
     if (!row) {
       row = matrix[source] = [];
       for (var i = -1; ++i < n;) row[i] = 0;
     }
-    row[indexByName[appName(d.source)]] = scale(d.count);
+    row[index] = d.count;
+    if (!scaled_row) {
+      scaled_row = scaled_matrix[source] = [];
+      for (var j = -1; ++j < n;) scaled_row[j] = 0;
+    }
+    scaled_row[index] = scale(d.count);
   });
 
-  chord.matrix(matrix);
+  function call_info_text(d) {
+    var ti = d.target.index,
+        si = d.source.index,
+        caller = nameByIndex[ti],
+        callee = nameByIndex[si],
+        n = matrix[si][d.source.subindex],
+        m = matrix[ti][d.target.subindex];
+
+    var text = caller + " called " + callee + " " + formatter(n) + " times.";
+    if (m>0) {
+      text += "</br>" + callee + " called " + caller + " " + formatter(m) + " times.";
+    }
+    return text;
+  }
+
+  chord.matrix(scaled_matrix);
 
   var g = svg.selectAll("g.group")
         .data(chord.groups)
@@ -117,9 +141,7 @@ function logjam_graph_app_data(appCallers) {
     .on("mouseover", function(d) {
       svg.selectAll(".active").classed("active", false);
       // using :hover now instead of:  svg.selectAll("path.chord").classed("active", function(p) { return p === d; });
-      info.html(
-        nameByIndex[d.target.index] + " called " + nameByIndex[d.source.index] + " " + formatter(scale.invert(matrix[d.source.index][d.source.subindex])) + " times." + "</br>" +
-          nameByIndex[d.source.index] + " called " + nameByIndex[d.target.index] + " " + formatter(scale.invert(matrix[d.target.index][d.target.subindex])) + " times.");
+      info.html(call_info_text(d));
     })
     .on("mouseout", function(d) {
       svg.selectAll(".active").classed("active", false);
