@@ -265,6 +265,21 @@ module Logjam
     update_known_databases if dropped > 0
   end
 
+  def drop_empty_databases(delay = 60)
+    dropped = 0
+    databases_sorted_by_date.each do |db_name|
+      conn = connection_for(db_name)
+      db = conn.db(db_name)
+      if db.stats["fileSize"] == 0
+        puts "dropping empty database: #{db_name}"
+        conn.drop_database(db_name)
+        sleep delay
+        dropped += 1
+      end
+    end
+    update_known_databases if dropped > 0
+  end
+
   def drop_applications(apps)
     databases = get_known_databases
     apps.each do |app|
