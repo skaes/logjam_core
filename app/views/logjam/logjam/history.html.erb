@@ -32,20 +32,25 @@
 $.getJSON("<%= url_for(params.merge(:format => :json)) %>", function(response){
   var js_params = <%= raw Oj.dump(js_params) %>;
   response.data.forEach(function(d){ d.date = new Date(d.date); })
-  logjam_history_bar_chart(response.data, "apdex_score", js_params);
-  logjam_history_bar_chart(response.data, "request_count", js_params);
-  logjam_history_bar_chart(response.data, "total_time", js_params);
-  logjam_history_bar_chart(response.data, "errors", js_params);
-  logjam_history_bar_chart(response.data, "warnings", js_params);
-  logjam_history_bar_chart(response.data, "exceptions", js_params);
-  for (g in response.resources) {
-    response.resources[g].forEach(function(m){
-       if (m != "total_time") {
-         $("#" + g).append("<div id='" + m + "'></div>");
-         logjam_history_bar_chart(response.data, m, js_params);
-       }
-    });
+  if (response.data.length == 1) {
+    $("#spinner").text("You have only on day of history. This view requires at least two days of data.");
   }
-  $("#spinner").hide();
+  else {
+    logjam_history_bar_chart(response.data, "apdex_score", js_params);
+    logjam_history_bar_chart(response.data, "request_count", js_params);
+    logjam_history_bar_chart(response.data, "total_time", js_params);
+    logjam_history_bar_chart(response.data, "errors", js_params);
+    logjam_history_bar_chart(response.data, "warnings", js_params);
+    logjam_history_bar_chart(response.data, "exceptions", js_params);
+    for (g in response.resources) {
+      response.resources[g].forEach(function(m){
+         if (m != "total_time") {
+           $("#" + g).append("<div id='" + m + "'></div>");
+           logjam_history_bar_chart(response.data, m, js_params);
+         }
+      });
+    }
+    $("#spinner").hide();
+  }
 });
 </script>

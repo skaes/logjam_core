@@ -17,11 +17,16 @@ function logjam_history_bar_chart(data, metric, params) {
   }
 
   var margin = {top: 20, right: 20, bottom: 50, left: 150},
-      width = 960 - margin.left - margin.right,
-      height = 150 - margin.top - margin.bottom,
+      width = 1100 - margin.left - margin.right,
+      height = 150 - margin.top - margin.bottom;
 
-      data_min = d3.min(data, function(d){ return d[metric]; }),
-      data_max = d3.max(data, function(d){ return d[metric]; });
+  var date_min = d3.min(data, function(d){ return d.date; }),
+      date_max = d3.max(data, function(d){ return d.date; });
+
+  var relevant_data = data.filter(function(d){ return (metric in d); });
+
+  var data_min = d3.min(relevant_data, function(d){ return d[metric]; }),
+      data_max = d3.max(relevant_data, function(d){ return d[metric]; });
 
   var formatter = d3.format(",.r");
 
@@ -47,7 +52,7 @@ function logjam_history_bar_chart(data, metric, params) {
     .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  x.domain([data[0].date, data[data.length-1].date]);
+  x.domain([date_min, date_max]);
   y.domain([data_min, data_max]).nice(5);
 
   svg.append("g")
@@ -75,7 +80,7 @@ function logjam_history_bar_chart(data, metric, params) {
   }
 
   svg.selectAll(".bar")
-      .data(data)
+      .data(relevant_data)
     .enter().append("rect")
       .attr("class", function(d){ return bar_class(d.date); })
       .attr("x", function(d) { return x(d.date); })

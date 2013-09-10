@@ -58,7 +58,9 @@ module Logjam
         format.json do
           prepare_params
           page = @page
-          page = "::#{page}" if Totals.new(@db).page_names.include?("::#{page}")
+          page_names = Totals.new(@db).page_names
+          page = /^#{page}$/ if @page =~ /\A::/ && page_names.include?(page)
+          page = /^::#{page}$/ if @page !~ /\A::/ && page_names.include?("::#{page}")
           page = 'all_pages' if @page == '' || @page == '::'
           resources = %w(apdex severity exceptions total_time) + (Resource.all_resources - %w(total_time))
           databases = Logjam.grep(Logjam.databases, :app => @app, :env => @env)
@@ -69,23 +71,26 @@ module Logjam
             date = Date.parse(date_str)
             next if date == today
             db = Logjam.connection_for(db_name).db(db_name)
-            summary = Totals.new(db, resources, page).pages(:limit => 1).try(:first)
-            next unless summary
-            hash = {
-              :date => date_str,
-              :request_count => summary.count,
-              :errors => summary.error_count,
-              :warnings => summary.warning_count,
-              :exceptions => summary.exception_count,
-              :apdex_score => summary.apdex_score
-            }
-            Resource.all_resources.each do |r|
-              if (v = summary.avg(r)) != 0
-                hash[r.to_sym] = v
+            if summary = Totals.new(db, resources, page).pages(:limit => 1).try(:first)
+              hash = {
+                :date => date_str,
+                :request_count => summary.count,
+                :errors => summary.error_count,
+                :warnings => summary.warning_count,
+                :exceptions => summary.exception_count,
+                :apdex_score => summary.apdex_score
+              }
+              Resource.all_resources.each do |r|
+                if (v = summary.avg(r)) != 0
+                  hash[r.to_sym] = v
+                end
               end
+            else
+              hash = { :date => date_str }
             end
             data << hash
           end
+          data = data.sort_by{|d| d[:date]}  # .drop_while{|d| !d.has_key?(:request_count)}
           collected_resources = data.inject(Set.new){|s,d| s.union(d.keys)}
           resources.reject!{|r| !collected_resources.include?(r.to_sym)}
           # logger.debug @data.inspect
