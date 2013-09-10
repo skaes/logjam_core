@@ -5,7 +5,7 @@ module Logjam
 
     attr_accessor :interval, :page, :response_code,
     :plot_kind, :resource, :grouping, :grouping_function,
-    :start_minute, :end_minute, :date
+    :start_minute, :end_minute, :date, :limit
 
     DEFAULTS = {:plot_kind => :time, :interval => '5',
       :grouping => 'page', :resource => 'total_time', :grouping_function => 'sum',
@@ -46,6 +46,7 @@ module Logjam
       @start_minute = (options[:start_minute] || DEFAULTS[:start_minute]).to_i
       @end_minute = (options[:end_minute] || DEFAULTS[:end_minute]).to_i
       @collected_resources = options[:collected_resources]
+      @limit = options[:limit] || 20
     end
 
     def page_description
@@ -117,7 +118,7 @@ module Logjam
           else
             sort_by = "#{resource}_#{grouping_function}"
           end
-          totals.pages(:order => sort_by, :limit => 20)
+          totals.pages(:order => sort_by, :limit => limit)
         end
     end
 

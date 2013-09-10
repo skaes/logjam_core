@@ -60,6 +60,7 @@
         between <%= minute_to_human(@dataset.start_minute) %>
         and <%= minute_to_human(@dataset.end_minute) %>
         <%- end -%>
+        <%= sometimes_link_all_pages %>
       </h3>
       <%= render "page_times" %>
       <% if params[:grouping] == "page" && @dataset.single_page? -%>

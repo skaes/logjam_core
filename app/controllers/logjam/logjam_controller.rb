@@ -202,6 +202,11 @@ module Logjam
       render "errors"
     end
 
+    def totals_overview
+      redirect_on_empty_dataset and return
+      @dataset.limit = 100_000
+    end
+
     def error_overview
       redirect_on_empty_dataset and return
       @title = "Logged Errors/Warnings/Exceptions"

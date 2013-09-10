@@ -238,7 +238,15 @@ tr.full_stats a, tr.full_stats .dead-link {
   padding: 0 2px;
 }
 
-td.group-thing {max-width: 32em; overflow: hidden; font-size: 90%;}
+td.group-thing { font-size: 90%; }
+#column-right td.group-thing { max-width: 32em; overflow: hidden; }
+
+/*
+#all-pages table.full_stats {
+    tr:nth-child(2n+1) { background: #ddd; }
+    tr:nth-child(1)    { background: #ccc; }
+}
+*/
 
 td {padding: 0 8px;}
 td.number {text-align: right;}
@@ -287,7 +295,7 @@ td.number {text-align: right;}
 #graph-counts {font-size: 90%; margin-bottom: 10px; white-space: nowrap;}
 #graph-counts p {font-weight: bold; white-space: nowrap;}
 
-#requests, #single-request, #exceptions, #callers {
+#requests, #single-request, #exceptions, #callers, #all-pages {
   margin: 8px;
 }
 

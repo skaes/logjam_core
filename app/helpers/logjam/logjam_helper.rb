@@ -123,6 +123,7 @@ module Logjam
       if grouping.to_sym == :page && ppage !~ /\AOthers/ && (ppage != @page || ppage =~ /^::/)
         params = params.merge(grouping => value)
         params[:page] = without_module(ppage) unless @page == "::"
+        params[:action] = "index"
         link_to(h(value), clean_params(params), :title => "view summary")
       else
         content_tag(:span, value, :class => 'dead-link')
@@ -132,7 +133,7 @@ module Logjam
     def sometimes_link_number_of_requests(result, grouping, options)
       n = number_with_delimiter(result.count.to_i)
       if :page == grouping.to_sym && result.page != "Others..."
-        link_to n, options, :title => "show requests"
+        link_to n, options.merge(:action => "index"), :title => "show requests"
       else
         n
       end
@@ -147,6 +148,15 @@ module Logjam
         link_to(n, clean_params(parameters), :title => distribution_kind(resource).to_s.gsub(/_/,' '))
       else
         n
+      end
+    end
+
+    def sometimes_link_all_pages
+      if params[:grouping] == "page"
+        page = @page.sub(/\A::/,'')
+        link_to(image_tag("small_triangle_right.png"),
+                clean_params(params.merge(:action => "totals_overview", :page => page)),
+                :title => "show all pages")
       end
     end
 

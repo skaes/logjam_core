@@ -56,7 +56,9 @@ function view_grouping(grouping){
 function view_resource(resource){
   $("#resource option:selected").val(resource);
   $("#time-range").val(parameter_defaults.time_range);
-  $("#filter-form").attr("action", home_url);
+  if (parameters.action != "totals_overview") {
+    $("#filter-form").attr("action", home_url);
+  }
   $("#filter-form").submit();
 }
 
@@ -96,7 +98,7 @@ function submit_resource(resource) {
    }
    if (resource != "requests/second" && resource != "free slots") {
      $('#resource option:selected').val(resource.replace(/ /g,'_'));
-     $('#filter-form').attr("action", "<%= home_url %>");
+     $('#filter-form').attr("action", home_url);
      submit_filter_form();
    }
 }
