@@ -10,8 +10,33 @@ filter form p {
   margin: 0px;
 }
 
+.logline {
+    width: 100%;
+    background-color: #eee;
+    margin: 1px;
+}
+.bg {
+    position: relative;
+    left:0;
+    top:0;
+    display: inline-block;
+    width: 100%;
+}
+.ct {
+    display: inline-block;
+    position: relative;
+    padding: 2px;
+}
+.box {
+    position: absolute;
+    left:0;
+    top: -2px;
+    background-color: rgba(255,0,0,0.4);
+    width: 0px;
+    height: 3px;
+}
+
 pre {
-  background-color: #eee;
   margin: 1px 0!important;
   padding: 5px!important;
   font-size: 11px;

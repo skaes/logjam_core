@@ -106,8 +106,14 @@
 
   <% unless (lines = @request["lines"]).blank? -%>
   <div id='request-lines' class="filter-widget">
-  <% lines.each do |line| -%>
-  <span class="logline" data-logjam-tags="<%= line_tags(line) %>"><pre><%= raw format_log_line(line) %></pre></span>
+  <% ltimes = line_times(lines) %>
+  <% lines.each_with_index do |line,i| -%>
+  <div class="logline" data-logjam-tags="<%= line_tags(line) %>">
+    <div class="bg">
+      <pre class="ct"><%= raw format_log_line(line) %></pre>
+      <div class="box" style="width:<%= (1000 * ltimes[i]).to_i %>px"></div>
+    </div>
+  </div>
   <% end -%>
   </div>
   <% end %>

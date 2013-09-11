@@ -347,6 +347,20 @@ module Logjam
       "#{format_log_level(level)} #{format_timestamp(timestamp.to_s)} #{colored_line}"
     end
 
+    def line_times(lines)
+      last, *rest = lines.map{|l| Time.parse(l[1])}
+      relative_times = [0]
+      while current = rest.shift
+        relative_times << current - last
+        last = current
+      end
+      max = relative_times.max
+      factor = 1.0 / max
+      relative_times.map{|t| t * factor}
+    rescue
+      lines.map{0}
+    end
+
     # human resource name (escaped)
     def hrn(s)
       s.gsub(/_/, ' ').gsub('∙','.')
