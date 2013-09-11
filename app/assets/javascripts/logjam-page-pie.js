@@ -22,7 +22,10 @@ function logjam_page_pie(params) {
     }
   }
 
-  var cursorf = function(d,i){ return legend[i] != "Others..." ? "pointer" : "arrow"; };
+  var tooltip_text = "";
+  function mouse_over(d,i) { tooltip_text = legend[i] != "Others..." ? ("view " + legend[i]) : ""; }
+  function mouse_out(d,i) { tooltip_text = ""; }
+  function cursorf(d,i){ return legend[i] != "Others..." ? "pointer" : "arrow"; };
 
   var
   color = d3.scale.category20(),
@@ -37,10 +40,13 @@ function logjam_page_pie(params) {
         .attr("transform", "translate(" + r + "," + r + ")");
 
   arcs.append("path")
+    .attr("d", arc)
     .style("cursor", cursorf)
     .on("click", function(d,i){ goto_page(legend[i]); })
     .attr("fill", function(d,i){ return color(i); })
-    .attr("d", arc);
+    .on("mouseover", mouse_over)
+    .on("mousemove", mouse_over)
+    .on("mouseout", mouse_out);
 
   arcs.append("text")
     .style("cursor", cursorf)
@@ -49,8 +55,10 @@ function logjam_page_pie(params) {
     .attr("dy", ".35em")
     .attr("text-anchor", "middle")
     .attr("display", function(d) { return d.value/s > .05 ? null : "none"; })
-  //    .attr("title", function(d,i){ return legend[i];})
-    .text(function(d,i){ return (100*d.value/s).toFixed()+"%"; });
+    .text(function(d,i){ return (100*d.value/s).toFixed()+"%"; })
+    .on("mouseover", mouse_over)
+    .on("mousemove", mouse_over)
+    .on("mouseout", mouse_out);
 
   /* Legend. */
   vis.selectAll(".legend")
@@ -62,6 +70,8 @@ function logjam_page_pie(params) {
     .attr("x", w+40)
     .attr("y", function(d,i){ return 20+16*i; })
     .style("cursor", cursorf)
+    .on("mouseover", mouse_over)
+    .on("mouseout", mouse_out)
     .style("font", "12px sans-serif")
     .text(String);
 
@@ -69,6 +79,8 @@ function logjam_page_pie(params) {
     .data(legend)
     .enter().append("svg:path")
     .style("cursor", cursorf)
+    .on("mouseover", mouse_over)
+    .on("mouseout", mouse_out)
     .on("click", function(d,i){ goto_page(legend[i]); })
     .attr("class", "legendmark")
     .attr("display", function(d,i) { return data[i]/s > .05 ? null : "none"; })
@@ -76,4 +88,27 @@ function logjam_page_pie(params) {
     .attr("d", function(d,i){ return d3.svg.symbol().type("circle").size(48).call(); })
     .style("stroke", function(d,i){ return color(i); })
     .style("fill", function(d,i){ return color(i); });
+
+  $('.legend, .legendmark').tipsy({
+    gravity:"nw",
+    opacity:0.9,
+    offset:10,
+    delayIn:250,
+    delayOut:0,
+    fade:false,
+    title: function() { return tooltip_text; }
+  });
+
+  $('.arc path, .arc text').tipsy({
+    trigger: 'hover',
+    follow: 'x',
+    offset: 0,
+    offsetX: 0,
+    offsetY: -20,
+    gravity: 's',
+    html: false,
+    opacity: 0.7,
+    title: function() { return tooltip_text; }
+  });
+
 }
