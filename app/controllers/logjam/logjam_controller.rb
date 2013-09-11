@@ -207,6 +207,22 @@ module Logjam
       @dataset.limit = 100_000
     end
 
+    def request_overview
+      redirect_on_empty_dataset and return
+      @page_size = 32
+      offset = params[:offset].to_i
+      @dataset.limit = @page_size
+      @dataset.offset = offset
+      @requests = @dataset.do_the_query
+      @request_count = @dataset.count_requests
+      @page_count = @request_count/@page_size + 1
+      @current_page = offset/@page_size + 1
+      @last_page = @page_count
+      @last_page_offset = @request_count/@page_size*@page_size
+      @next_page_offset = offset + @page_size
+      @previous_page_offset = [offset - @page_size, 0].max
+    end
+
     def error_overview
       redirect_on_empty_dataset and return
       @title = "Logged Errors/Warnings/Exceptions"

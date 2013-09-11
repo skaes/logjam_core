@@ -1,0 +1,33 @@
+<%= render "header" %>
+<% resource = @dataset.resource
+   resource_type = Logjam::Resource.resource_type(@dataset.resource)
+   resource_name = hrn(resource)
+   options = {:resource => resource}
+-%>
+<div id='requests'>
+  <h3> Requests
+    between <%= minute_to_human(@dataset.start_minute) %>
+    and <%= minute_to_human(@dataset.end_minute) %>,
+    sorted by <%= resource_name %>
+  </h3>
+  <% if @page_count > 1 %>
+  <div id='error_page_navigator'>
+    Page <%= @current_page %>
+    <ul>
+    <% unless @current_page == @last_page %>
+    | <li><%= link_to("next page", clean_params(params.merge(:offset => @next_page_offset))) %></li>
+    <% end %>
+    <% unless @current_page == 1 %>
+    | <li><%= link_to("previous page", clean_params(params.merge(:offset => @previous_page_offset))) %></li>
+    <% end %>
+    <% unless @current_page == 1 %>
+    | <li><%= link_to("first page", clean_params(params.merge(:offset => 0))) %></li>
+    <% end %>
+    </ul>
+  </div>
+  <% end %>
+  <table class='full_stats'>
+    <tr><th>minute</th><th>page</th><th class="sorted"><%= resource_name %></th></tr>
+    <%= render "request_statistics", options.merge(:requests => @requests) %>
+  </table>
+</div>

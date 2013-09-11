@@ -157,6 +157,10 @@ module Logjam
         link_to(image_tag("small_triangle_right.png"),
                 clean_params(params.merge(:action => "totals_overview", :page => page)),
                 :title => "show all pages")
+      elsif params[:grouping] == "request"
+        link_to(image_tag("small_triangle_right.png"),
+                clean_params(params.merge(:action => "request_overview", :page => @page)),
+                :title => "browse requests")
       end
     end
 
