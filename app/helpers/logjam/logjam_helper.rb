@@ -348,15 +348,19 @@ module Logjam
     end
 
     def line_times(lines)
+      return [] if lines.empty?
       last, *rest = lines.map{|l| Time.parse(l[1])}
       relative_times = [0]
       while current = rest.shift
         relative_times << current - last
         last = current
       end
-      max = relative_times.max
-      factor = 1.0 / max
-      relative_times.map{|t| t * factor}
+      if (max = relative_times.max) == 0
+        relative_times
+      else
+        factor = 1.0 / max
+        relative_times.map{|t| t * factor}
+      end
     rescue
       lines.map{0}
     end
