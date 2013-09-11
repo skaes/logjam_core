@@ -84,35 +84,6 @@ function sort_by(order){
   $('#filter-form').submit();
 }
 
-function submit_minutes(start, end, resource) {
-   $('#start-minute').val(""+start);
-   $('#end-minute').val(""+end);
-   $('#grouping option:selected').val("request");
-   submit_resource(resource);
-}
-
-function submit_resource(resource) {
-   if (d3.event) {
-     d3.event.preventDefault();
-     d3.event.stopPropagation();
-   }
-   if (resource != "requests/second" && resource != "free slots") {
-     $('#resource option:selected').val(resource.replace(/ /g,'_'));
-     $('#filter-form').attr("action", home_url);
-     submit_filter_form();
-   }
-}
-
-function restrict_minutes(p, resource){
-   start = Math.max(0, Math.floor(x.invert(p[0]))*interval-interval);
-   end = start+interval;
-   submit_minutes(start, end, resource);
-}
-
-function reset_minutes(){
-   submit_minutes(0, 1440, $('#resource option:selected').val());
-}
-
 function initialize_header() {
   $("#filter-form").on("submit", function(event) {
       event.preventDefault();

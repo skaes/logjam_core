@@ -24,6 +24,35 @@ function logjam_resource_plot(params) {
       y      = d3.scale.linear().domain([0, zoomed_max_y]).range([h, 0]).nice(),
       y2     = d3.scale.linear().domain([0, max_request_count]).range([50,0]).nice();
 
+  function submit_minutes(start, end, resource) {
+    $('#start-minute').val(""+start);
+    $('#end-minute').val(""+end);
+    $('#grouping option:selected').val("request");
+    submit_resource(resource);
+  }
+
+  function submit_resource(resource) {
+    if (d3.event) {
+      d3.event.preventDefault();
+      d3.event.stopPropagation();
+    }
+    if (resource != "requests/second" && resource != "free slots") {
+      $('#resource option:selected').val(resource.replace(/ /g,'_'));
+      $('#filter-form').attr("action", home_url);
+      submit_filter_form();
+    }
+  }
+
+  function restrict_minutes(p, resource){
+    var start = Math.max(0, Math.floor(x.invert(p[0]))*interval-interval);
+    var end = start+interval;
+    submit_minutes(start, end, resource);
+  }
+
+  function reset_minutes(){
+    submit_minutes(0, 1440, $('#resource option:selected').val());
+  }
+
   /* The root panel. */
   var vis = d3.select(params.container)
         .append("svg")
