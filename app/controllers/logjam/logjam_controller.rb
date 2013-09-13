@@ -255,7 +255,7 @@ module Logjam
     end
 
     def callers
-      prepare_params
+      redirect_on_empty_dataset and return
       params[:sort] ||= 'count'
       params[:group] ||= 'module'
       @callers = Totals.new(@db, ["callers"], @page).callers
