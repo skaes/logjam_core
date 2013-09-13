@@ -215,6 +215,10 @@ module Logjam
       data
     end
 
+    def has_distribution_plot?
+      [:time, :memory].include?(plot_kind)
+    end
+
     def get_data_for_distribution_plot(what_to_plot)
       case what_to_plot
       when :request_time

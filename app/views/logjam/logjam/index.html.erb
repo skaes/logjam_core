@@ -16,7 +16,7 @@
           <%= link_to(image_tag("zoom_out.png", :title => "zoom out"),
                       clean_params(params.merge(:page => without_module(@page), :action => "index", :interval => 5))) %>
         <% end %>
-        <% if [:time, :memory].include?(@dataset.plot_kind) %>
+        <% if @dataset.has_distribution_plot? %>
           <% scatter_title = "show #{distribution_kind(@dataset.resource).to_s.gsub(/_/," ")} plot" %>
           <%= link_to(image_tag("scatter_plot.jpg", :title => scatter_title),
                       clean_params(params.merge(:page => without_module(@page),
@@ -30,10 +30,6 @@
                     clean_params(params.slice(:app,:env,:page).merge(:action => "live_stream")),
                     {:target => "_blank"}) %>
         <% end -%>
-        <span id="caller_links" class="caller_links">
-          <%= link_to("My Callers", clean_params(params.merge(:action =>"callers"))) %> |
-          <%= link_to("All Callers", clean_params(params.merge(:action =>"call_relationships"))) %>
-        </span>
       </p>
       <%= render :partial => "resource_plot", :locals => {:width => 1440/5*2, :height => 300} %>
     </div>
