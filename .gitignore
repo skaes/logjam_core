@@ -1,2 +1,4 @@
 .DS_Store
 .sass-cache
+app/assets/javascripts/d3.v3.js
+app/assets/javascripts/jquery-migrate-1.2.1.js
