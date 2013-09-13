@@ -108,7 +108,7 @@ $(document).ready(initialize_header);
     <% if params[:interval] %>
       <input id="interval" name="interval" type="hidden" value="<%= params[:interval] %>" />
     <% end %>
-    <%= check_box_tag "auto_refresh", "1", params[:auto_refresh]=="1", :onchange => "submit_filter_form()" %>Autorefresh
+    <%= check_box_tag "auto_refresh", "1", params[:auto_refresh]=="1", :onchange => "submit_filter_form()", :id => "auto-refresh" %>Autorefresh
   </div>
   <% end %>
 </div>

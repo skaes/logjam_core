@@ -11,7 +11,7 @@
       <span>Sort by:</span>
       <%= select_tag 'sort', options_for_select(callers_sorting_options, params[:sort]), :onchange => "form.submit()" %>
     <% end %>
-  <table class='full_stats' style='display-inline'>
+  <table class='full_stats'>
     <tr><th>Application</th><th>Action</th><th>Calls</th><th>Distribution over time (0-24h, 2 minute intervals)</th></tr>
     <% @callers.each_with_index do |(caller, count), i| %>
       <% app, controller = caller.split('-') %>

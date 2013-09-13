@@ -40,11 +40,7 @@ pre {
   margin: 1px 0!important;
   padding: 5px!important;
   font-size: 11px;
-  white-space: pre-wrap; /* css-3 */
-  white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */
-  white-space: -pre-wrap; /* Opera 4-6 */
-  white-space: -o-pre-wrap; /* Opera 7 */
-  word-wrap: break-word; /* Internet Explorer 5.5+ */
+  white-space: pre-wrap;
 }
 pre img { vertical-align: top; }
 pre a, #request-details a { color: blue; }
@@ -97,12 +93,16 @@ input, select {
 }
 
 #home-button {
+    height: 50px;
     background: #CCA383;
     border: 0;
     cursor: pointer;
-    margin-top: 7px;
+    margin-top: 0px;
+    margin-bottom: 0px;
     margin-right: 10px;
     margin-left: -10px;
+    padding-top: 3px;
+    padding-bottom: 3px;
     line-height: 45px;
     font-weight: bold;
     font-size: 200%;
@@ -111,8 +111,8 @@ input, select {
     clear: left;
 }
 
-.webkit #home-button {
-    margin-top: 0px;
+#auto-refresh {
+    margin-left: 15px;
 }
 
 .clear-left {clear:left; float:left;}
@@ -134,7 +134,6 @@ input, select {
       display: inline;
       li {
           display: inline;
-          -moz-border-radius: 2px;
           border-radius: 2px;
           text-align: center;
           font-size: 80%;
@@ -156,7 +155,6 @@ input, select {
 }
 
 #grouping-widget li {
-  -moz-border-radius: 2px;
   border-radius: 2px;
   text-align: center;
   height: 18px;
@@ -216,12 +214,8 @@ div#pagetimes h4 {
 
 .full_stats {
   margin-left: 0px;
-  margin-top: 3px;
-  border-collapse: collapse;
-}
-
-.webkit .full_stats {
   margin-top: 10px;
+  border-collapse: collapse;
 }
 
 .full_stats th {
@@ -300,7 +294,7 @@ td.number {text-align: right;}
 #resource-plot { float:left; margin-top:-3px; }
 
 .xlabel, .ylabel, .legend, .label, .rlabel, .tooltip {
-  font: "8px sans-serif";
+  font: 8px sans-serif;
   stroke: none;
   fill: #000;
   stroke-width: 0.5;
@@ -485,14 +479,12 @@ td.number {text-align: right;}
     color: black;
 }
 .menu li li a{
-    -moz-border-radius: 0px;
     border-radius: 0px;
     line-height: 20px;
     font-weight: normal;
     font-size: 12px;
 }
 .menu li a{
-    -moz-border-radius: 2px;
     border-radius: 2px;
     display:block;
     font-weight:bold;

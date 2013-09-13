@@ -12,9 +12,6 @@
   <%= javascript_include_tag "application" %>
 </head>
 <body>
-  <script type="text/javascript">
-  if ($.browser.webkit) { $('body').addClass('webkit'); }
-  </script>
   <%= yield %>
   <script type="text/javascript">
   <%= yield :page_scripts %>
