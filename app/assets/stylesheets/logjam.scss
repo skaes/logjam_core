@@ -1,4 +1,13 @@
-body { background-color: #fff; color: #333; margin: 0px; padding: 0px; }
+$menu-active-bg-color: rgba(230,230,230, 0.9);
+$menu-inactive-bg-color: rgba(200,200,200, 0.4);
+$menu-hover-color: #fff;
+
+body {
+    background-color: #fff;
+    color: #333;
+    margin: 0px;
+    padding: 0px;
+}
 
 body, p, ol, ul, td {
   font-family: verdana, arial, helvetica, sans-serif;
@@ -77,10 +86,10 @@ input, select {
 
 #header #filter {
   vertical-align: middle;
-  padding-left: 5px;
+  padding-left: 0px;
   padding-right: 5px;
   min-width: 1000px;
-  margin-left: 10px;
+  margin-left: 5px;
 }
 
 #content {
@@ -92,35 +101,22 @@ input, select {
   margin-top: 5px;
 }
 
-#home-button {
-    height: 50px;
-    background: #CCA383;
-    border: 0;
-    cursor: pointer;
-    margin-top: 0px;
-    margin-bottom: 0px;
-    margin-right: 10px;
-    margin-left: -10px;
-    padding-top: 3px;
-    padding-bottom: 3px;
-    line-height: 45px;
-    font-weight: bold;
-    font-size: 200%;
-    display: block;
-    float: left;
-    clear: left;
-}
-
 #auto-refresh {
-    margin-left: 15px;
+    margin-top: 3px;
+    margin-left: 30px;
 }
 
 .clear-left {clear:left; float:left;}
 .filter-widget-inline { display:inline-block; }
-.filter-widget {float:left; padding-right: 20px; margin: 0px;}
 .filter-widget-last, .float-left {float:left;}
 .filter-float-right {float:right; padding-right: 20px;}
 #description.filter-widget {font-style: italic; margin: 0 0 0 5px; font-size: 90%;}
+.filter-widget {
+    float:left;
+    padding-right: 20px;
+    margin: 0px;
+    input, select { margin-left: 0px; }
+}
 
 #time-range-widget {
   display: inline-block;
@@ -139,13 +135,22 @@ input, select {
           font-size: 80%;
           padding: 2px;
       }
+      li.active {
+          background-color: $menu-active-bg-color;
+      }
+      li.inactive {
+          background-color: $menu-inactive-bg-color;
+      }
+      li:hover {
+          background-color: $menu-hover-color;
+      }
   }
 }
 
 #grouping-widget {
   display: inline-block;
   font-weight: bold;
-  font-size: 13px;
+  font-size: 12px;
   list-style-type: none;
   height: 50px;
   margin: 0px;
@@ -155,15 +160,50 @@ input, select {
 }
 
 #navigation-widget {
-  margin-left: 10px;
+  height: 50px;
+  border: 0;
+  margin: 0px 10px 8px 0px;
+  float: left;
+  cursor: pointer;
+}
+#navigation-widget.menu {
+  margin: 2px 10px 2px 2px;
+  pading: 0;
 }
 
-#grouping-widget li {
-  border-radius: 2px;
-  text-align: center;
-  height: 18px;
-  margin: 2px;
-  padding: 2px 10px 2px 10px;
+#navigation-widget > ul > li > a {
+    margin-top: 4px;
+    font-size: 200%;
+    padding-top: 6px;
+    padding-bottom: 2px;
+    vertical-align: middle;
+    line-height: 26px;
+    &:after {
+        font-size: 12px;
+    }
+}
+#navigation-widget li li a {
+    font-size: 110%;
+    line-height: 30px;
+}
+
+#grouping-widget {
+  li {
+      border-radius: 2px;
+      text-align: center;
+      height: 18px;
+      margin: 2px;
+      padding: 2px 10px 2px 10px;
+  }
+  li.active {
+      background-color: $menu-active-bg-color;
+  }
+  li.inactive {
+      background-color: $menu-inactive-bg-color;
+  }
+  li:hover {
+      background-color: $menu-hover-color;
+  }
 }
 
 #resource-type-widget {
@@ -458,6 +498,17 @@ td.number {text-align: right;}
     position:relative;
     z-index: 100;
 }
+.menu > ul > li > a:after {
+    content: '▼';
+    display: inline-block;
+    font-size: 8px;
+    margin: 0px 0px 0px 2px;
+    padding-left: 2px;
+    text-align: center;
+}
+.menu > ul > li {
+    margin-right: 5px;
+}
 .menu li .separator {
     height: 1px;
     margin: 1px;
@@ -466,7 +517,7 @@ td.number {text-align: right;}
 .menu ul {
     height:25px;
     list-style:none;
-    margin:0;
+    margin:0px 0px;
     padding:0;
 }
 .menu li {
@@ -475,11 +526,11 @@ td.number {text-align: right;}
 }
 
 .menu li a.active {
-    background-color:#ccc;
+    background-color: $menu-active-bg-color;
     color: black;
 }
 .menu li a.inactive {
-    background-color:#cca383;
+    background-color: $menu-inactive-bg-color;
     color: black;
 }
 .menu li li a {
@@ -492,12 +543,15 @@ td.number {text-align: right;}
     border-radius: 2px;
     display:block;
     font-weight:bold;
-    font-size: 13px;
+    font-size: 12px;
     line-height:20px;
     margin:0px;
-    padding:0px 7px;
+    padding:0px 4px 0px 4px;
     text-align:center;
     text-decoration:none;
+}
+.menu > ul > li > a {
+    padding-right: 5px;
 }
 .menu li a:hover, .menu ul li:hover a {
     background: white;
@@ -512,7 +566,7 @@ td.number {text-align: right;}
     margin:0px;
     border:1px solid #ccc;
 }
-.menu li:hover ul{
+.menu li:hover ul {
     display:block;
 }
 .menu li li {
@@ -523,25 +577,23 @@ td.number {text-align: right;}
     padding:0px;
     z-index: 110;
 }
-.menu li:hover li a{
+.menu li:hover li a {
     background:none;
-
 }
-.menu li ul a{
+.menu li ul a {
     white-space: nowrap;
     display:block;
-    height:20px;
     font-style:normal;
     margin:0px;
     padding:0px 10px 0px 15px;
     text-align:left;
 }
-.menu li ul a:hover, .menu li ul li:hover a{
+.menu li ul a:hover, .menu li ul li:hover a {
     background:#ccc image-url('small_triangle_right.png') center left no-repeat;
     border:0px;
     text-decoration:none;
 }
-.menu p{
+.menu p {
     clear:left;
 }
 
