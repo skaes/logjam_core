@@ -154,11 +154,11 @@ module Logjam
     def sometimes_link_all_pages
       if params[:grouping] == "page"
         page = @page.sub(/\A::/,'')
-        link_to(image_tag("small_triangle_right.png"),
+        link_to(triangle_right,
                 clean_params(params.merge(:action => "totals_overview", :page => page)),
                 :title => "show all pages")
       elsif params[:grouping] == "request"
-        link_to(image_tag("small_triangle_right.png"),
+        link_to(triangle_right,
                 clean_params(params.merge(:action => "request_overview", :page => @page)),
                 :title => "browse requests")
       end
@@ -276,6 +276,10 @@ module Logjam
       else
         "class='inactive' onclick=\"view_resource('#{resource}')\""
       end
+    end
+
+    def triangle_right
+      '<span class="triangle">▶</span>'.html_safe
     end
 
     SEVERITY_LABELS = %w(DEBUG INFO WARN ERROR FATAL)

@@ -168,7 +168,7 @@ input, select {
 }
 #navigation-widget.menu {
   margin: 2px 10px 2px 2px;
-  pading: 0;
+  padding: 0;
 }
 
 #navigation-widget > ul > li > a {
@@ -179,7 +179,7 @@ input, select {
     vertical-align: middle;
     line-height: 26px;
     &:after {
-        font-size: 12px;
+        font-size: 14px;
     }
 }
 #navigation-widget li li a {
@@ -488,6 +488,9 @@ td.number {text-align: right;}
   width: 15em;
 }
 
+.triangle {
+    color: orange;
+}
 .menu {
     display: inline-block;
     border:none;
@@ -497,6 +500,16 @@ td.number {text-align: right;}
     font-weight:bold;
     position:relative;
     z-index: 100;
+}
+.menu li li a:before {
+    content: '▶';
+    visibility: hidden;
+    padding:0px 5px 0px 0px;
+    color: orange;
+    font-size: 11px;
+}
+.menu li li:hover a:before {
+    visibility: visible;
 }
 .menu > ul > li > a:after {
     content: '▼';
@@ -585,11 +598,11 @@ td.number {text-align: right;}
     display:block;
     font-style:normal;
     margin:0px;
-    padding:0px 10px 0px 15px;
+    padding:0px 15px 0px 0px;
     text-align:left;
 }
 .menu li ul a:hover, .menu li ul li:hover a {
-    background:#ccc image-url('small_triangle_right.png') center left no-repeat;
+    background:#ccc;
     border:0px;
     text-decoration:none;
 }
