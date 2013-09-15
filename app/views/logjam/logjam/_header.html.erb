@@ -14,8 +14,9 @@ $(document).ready(initialize_header);
   <%= form_tag(params.except(:id).merge(:action => action), :method => :get, :id => "filter-form", :autocomplete => "off") do -%>
   <div id="filter">
     <div id="navigation-widget" class="menu">
-      <ul>
-        <li><a href="#" onclick="go_home();">Logjam</a>
+      <%= label :filter, "logjam", :onclick => "go_home()" %><br />
+      <ul onclick="go_home()" >
+        <li><a><%= fa_icon("eye-open")%></a>
           <ul>
             <% if @dataset.try(:live_stream?) -%>
             <li>
@@ -42,6 +43,7 @@ $(document).ready(initialize_header);
             <li><%= link_to("Call Relationships", clean_params(params.merge(:action =>"call_relationships"))) %></li>
           </ul>
         </li>
+        <li><a id="home-button" href="#" onclick="go_home();"><%= fa_icon("home")%></a>
       </ul>
     </div>
     <% unless @only_one_app %>
