@@ -80,12 +80,13 @@ input, select {
   right: 0;
   width: 100%;
   min-width: 1000px;
-  height: 50px;
+  height: 54px;
   background: #cca383;
 }
 
 #header #filter {
   vertical-align: middle;
+  padding-top: 2px;
   padding-left: 0px;
   padding-right: 5px;
   min-width: 1000px;
@@ -179,12 +180,20 @@ input, select {
     vertical-align: middle;
     line-height: 26px;
     &:after {
-        font-size: 14px;
+        margin: 0px 0px 0px 2px;
+        font-size: 12px;
     }
 }
 #navigation-widget li li a {
     font-size: 110%;
     line-height: 30px;
+}
+
+#navicons {
+    display:inline-block;
+    font-size: 16px;
+    margin: 0;
+    a { color: rgba(120, 120, 120, 0.8); margin-right: 2px; }
 }
 
 #grouping-widget {
