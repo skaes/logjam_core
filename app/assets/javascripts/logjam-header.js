@@ -25,9 +25,9 @@ function submit_filter_form() {
 
 function go_home() {
   $("#page-field").val("::");
-  $("#grouping option:selected").val(parameter_defaults.grouping);
-  $("#resource option:selected").val(parameter_defaults.resource);
-  $("#grouping_function").val(parameter_defaults.grouping_function);
+  $("#grouping").val(parameter_defaults.grouping);
+  $("#resource").val(parameter_defaults.resource);
+  $("#grouping-function").val(parameter_defaults.grouping_function);
   $("#start-minute").val(parameter_defaults.start_minute);
   $("#end-minute").val(parameter_defaults.end_minute);
   $("#interval").val(parameter_defaults.interval);
@@ -47,14 +47,14 @@ function view_selected_pages(){
 }
 
 function view_grouping(grouping){
-  $("#grouping option:selected").val(grouping);
+  $("#grouping").val(grouping);
   $("#time-range").val(parameter_defaults.time_range);
   $("#filter-form").attr("action", home_url);
   $("#filter-form").submit();
 }
 
 function view_resource(resource){
-  $("#resource option:selected").val(resource);
+  $("#resource").val(resource);
   $("#time-range").val(parameter_defaults.time_range);
   if (parameters.action != "totals_overview") {
     $("#filter-form").attr("action", home_url);
@@ -80,7 +80,7 @@ function view_date(date) {
 }
 
 function sort_by(order){
-  $('#grouping_function option:selected').val(order);
+  $('#grouping-function').val(order);
   $('#filter-form').submit();
 }
 

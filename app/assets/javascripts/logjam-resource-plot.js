@@ -27,7 +27,7 @@ function logjam_resource_plot(params) {
   function submit_minutes(start, end, resource) {
     $('#start-minute').val(""+start);
     $('#end-minute').val(""+end);
-    $('#grouping option:selected').val("request");
+    $('#grouping').val("request");
     submit_resource(resource);
   }
 
@@ -37,7 +37,7 @@ function logjam_resource_plot(params) {
       d3.event.stopPropagation();
     }
     if (resource != "requests/second" && resource != "free slots") {
-      $('#resource option:selected').val(resource.replace(/ /g,'_'));
+      $('#resource').val(resource.replace(/ /g,'_'));
       $('#filter-form').attr("action", home_url);
       submit_filter_form();
     }
@@ -50,7 +50,7 @@ function logjam_resource_plot(params) {
   }
 
   function reset_minutes(){
-    submit_minutes(0, 1440, $('#resource option:selected').val());
+    submit_minutes(0, 1440, $('#resource').val());
   }
 
   /* The root panel. */
@@ -275,7 +275,7 @@ function logjam_resource_plot(params) {
     .attr("class", "request_count")
     .style("fill", "rgba(128,128,128,0.2)")
     .style("cursor", "pointer")
-    .on("click", function(d,i){ restrict_minutes(d3.mouse(this), $('#resource option:selected').val());})
+    .on("click", function(d,i){ restrict_minutes(d3.mouse(this), $('#resource').val());})
     .on("mouseover", function(d,i){ mouse_over_requests(d, i, this);})
     .on("mousemove", function(d,i){ mouse_over_requests(d, i, this);})
     .on("mouseout", function(d,i){ request_tooltip_text = ""; })

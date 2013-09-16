@@ -63,7 +63,6 @@ $(document).ready(initialize_header);
         <li <%= raw html_attributes_for_time_range("date") %>>Date</li>
         <li <%= raw html_attributes_for_time_range("history") %>>History</li>
       </ul>
-      <input id="time-range" type="hidden" name="time_range" value="<%= params[:time_range] %>" />
       <% if params[:time_range] == "date" %>
       <input size="11" type="text" value="<%= @date %>" id="datepicker" onchange="submit_filter_form()" />
       <% else %>
@@ -78,10 +77,6 @@ $(document).ready(initialize_header);
       <li <%= raw html_attributes_for_grouping("page") %>>Pages</li>
       <li <%= raw html_attributes_for_grouping("request") %>>Requests</li>
     </ul>
-    <p class="filter-widget invisible">
-      <%= label :filter, "Show" %><br />
-      <%= select_tag "grouping", grouping_options, :onchange => "submit_filter_form()" %>
-    </p>
     <div class="menu filter-widget">
       <%= label :filter, "resource selector" %><br />
       <ul id="resource-type-widget">
@@ -121,25 +116,13 @@ $(document).ready(initialize_header);
         <% end %>
       </ul>
     </div>
-    <p class="filter-widget invisible" id="resource-widget">
-      <%= label :filter, "with resource" %><br />
-      <%= select_tag "resource", resource_options, :onchange => "submit_filter_form())" %>
-    </p>
-    <%- if params[:grouping] == "page" -%>
-    <p class="filter-widget invisible" id="function-widget">
-      <%= label :filter, "sorted by" %><br />
-      <%= select_tag "grouping_function", grouping_functions, :onchange => "submit_filter_form()" %>
-    </p>
-    <%- end -%>
-    <% if params[:start_minute] %>
-      <input id="start-minute" name="start_minute" type="hidden" value="<%= params[:start_minute] %>" />
-    <% end %>
-    <% if params[:end_minute] %>
-      <input id="end-minute" name="end_minute" type="hidden" value="<%= params[:end_minute] %>" />
-    <% end %>
-    <% if params[:interval] %>
-      <input id="interval" name="interval" type="hidden" value="<%= params[:interval] %>" />
-    <% end %>
+    <input type="hidden" id="time-range" name="time_range" value="<%= params[:time_range] %>" />
+    <input type="hidden" id="grouping" name="grouping" value="<%= params[:grouping]%>" />
+    <input type="hidden" id="resource" name="resource" value="<%= params[:resource] %>" />
+    <input type="hidden" id="grouping-function" name="grouping_function" value="<%= params[:grouping_function] %>" />
+    <input type="hidden" id="start-minute" name="start_minute" value="<%= params[:start_minute] %>" />
+    <input type="hidden" id="end-minute" name="end_minute" value="<%= params[:end_minute] %>" />
+    <input type="hidden" id="interval" name="interval" value="<%= params[:interval] %>" />
     <p class="filter-widget" id="auto-refresh">
     <%= check_box_tag "auto_refresh", "1", params[:auto_refresh]=="1", :onchange => "submit_filter_form()" %>Autorefresh
     </p>
