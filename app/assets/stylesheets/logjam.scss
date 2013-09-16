@@ -94,11 +94,6 @@ input, select {
 }
 
 #content {
-  position: relative;
-  left: 0px;
-  right: 0px;
-  min-width: 1000px;
-  margin: 0px;
   margin-top: 5px;
 }
 
@@ -214,7 +209,7 @@ input, select {
 }
 
 #resource-type-widget {
-  margin-top:3px;
+  margin-top:2px;
 }
 
 .active {
@@ -233,29 +228,28 @@ input, select {
 img {
   border: 0 none;
 }
-
+#column-left {
+    position: absolute;
+    left: 0px;
+    width: 626px;
+}
 #column-right {
     position: absolute;
-    left: 625px;
-    min-width: 500px;
-    max-width: 800px;
+    left: 635px;
 }
-
 div#pagetimes {
-  margin: -20px 0 0 10px;
-}
-
-div#pagetimes h3 {
-  font-size: 12px;
-  margin-left: 0px;
-  margin-top: 24px;
-  margin-bottom: 5px;
-}
-
-div#pagetimes h4 {
-  font-size: 12px;
-  margin-top: 7px;
-  margin-bottom: 3px;
+    h3 {
+        font-size: 12px;
+        margin: 6px 0px 4px 0px;
+    }
+    h4 {
+        font-size: 12px;
+        margin-top: 7px;
+        margin-bottom: 3px;
+    }
+    table.full_stats {
+        margin-top: 8px;
+    }
 }
 
 #performance-pie {
@@ -331,13 +325,10 @@ td.number {text-align: right;}
 .warn a {color:brown;}
 .timestamp {font-weight:bold;}
 
-.plot-details { width:616px; }
 #plot-details-col1 { float:left; }
 #plot-details-col2 { float:left; margin-left:10px;}
 #plot-details-col3 { float:left; margin-left:10px;}
-.stats {
-  margin: 2px 0 2px 20px;
-}
+.stats { margin: 2px 0 2px 20px; }
 .stats th { font-size: 12px; }
 .stats td { font-size: 12px; padding: 0 8px; }
 .table-heading { font-weight: bold; padding-top: 10px; }

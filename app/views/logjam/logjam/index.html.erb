@@ -1,7 +1,7 @@
 <%= render "header" %>
 <div id="show-json"><%= link_to("show json", params.merge(:format => :json)) %></div>
 <div id="content">
-  <div id="left" class="clear-left">
+  <div id="column-left" class="clear-left">
     <% if @dataset.empty? -%>
     <p class="warning">Dataset is empty.</p>
     <% else -%>
@@ -36,7 +36,7 @@
       </p>
       <%= render :partial => "resource_plot", :locals => {:width => 1440/5*2, :height => 300} %>
     </div>
-    <div id="plot-details" class="stats">
+    <div id="plot-details" class="stats clear-left">
       <div id="plot-details-col1">
         <%= render "graph_stats" %>
         <%= render "apdex" %>
