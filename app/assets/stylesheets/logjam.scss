@@ -597,9 +597,10 @@ svg {
   line-height: 18px;
   position: relative;
   top: 6px;
-  label { font-size: 18px; }
+  label { font-size: 18px; cursor: pointer; }
   div {
       height: 22px;
+      cursor: pointer;
       & > ul {
           position:relative;
           top: 2px;
