@@ -339,9 +339,12 @@ jdPicker.prototype = {
   },
   
   insideSelector: function(event) {
-    var offset = this.dateSelector.position();
+    // var offset = this.dateSelector.position();
+    var offset = this.input.offset()
+    console.log(event);
     offset.right = offset.left + this.dateSelector.outerWidth();
     offset.bottom = offset.top + this.dateSelector.outerHeight();
+    console.log(offset);
     
     return event.pageY < offset.bottom &&
            event.pageY > offset.top &&
@@ -410,7 +413,7 @@ jdPicker.prototype = {
     var offset = this.input.offset();
     this.rootLayers.css({
       top: offset.top + this.input.outerHeight(),
-      left: offset.left
+      left: 0 // offset.left
     });
     
     if (this.ieframe) {
