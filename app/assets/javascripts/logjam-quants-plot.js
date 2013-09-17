@@ -6,7 +6,8 @@ var
     y = d3.scale.log().domain([1, params.max_y]).range([0, h]).nice(),
     legend = params.legend,
     colors = d3.scale.ordinal().range(params.colors),
-    shapes = params.shapes ;
+    shapes = params.shapes,
+    formatter = d3.format(",r");
 
 /* The root panel. */
 var vis = d3.select("#distribution-plot")
@@ -42,27 +43,27 @@ var xaxis = vis.append("svg:line")
     .attr("y2", h);
 
 vis.selectAll(".xtick")
-     .data(x.ticks())
-   .enter().append("line")
-     .attr("class", "xtick")
-     .attr("x1", x)
-     .attr("x2", x)
-     .attr("y1", h)
-     .attr("y2", function(d,i){ return (i % 9 == 0 || i % 9 == 4) ? h + 10 : h + 5; })
-     .style("fill", "#999")
-     .style("stroke", "#999");
+    .data(x.ticks())
+    .enter().append("line")
+    .attr("class", "xtick")
+    .attr("x1", x)
+    .attr("x2", x)
+    .attr("y1", h)
+    .attr("y2", function(d,i){ return (i % 9 == 0 || i % 9 == 4) ? h + 10 : h + 5; })
+    .style("fill", "#999")
+    .style("stroke", "#999");
 
 vis.selectAll(".xlabel")
-      .data(x.ticks())
+    .data(x.ticks())
     .enter().append("text")
-      .attr("class", "xlabel")
-      .attr("x", x)
-      .attr("y", h)
-      .attr("dy", function(d, i) { return (i % 9 == 0 || i % 9 == 4 ) ? 20 : 15; })
-      .attr("text-anchor", "middle")
-      .attr("display", function(d,i){ return (i % 9 == 0 || i % 9 == 4) ? null : "none"; })
-      .style("font", "8px sans-serif")
-      .text(String);
+    .attr("class", "xlabel")
+    .attr("x", x)
+    .attr("y", h)
+    .attr("dy", function(d, i) { return (i % 9 == 0 || i % 9 == 4 ) ? 20 : 15; })
+    .attr("text-anchor", "middle")
+    .attr("display", function(d,i){ return (i % 9 == 0 || i % 9 == 4) ? null : "none"; })
+    .style("font", "8px sans-serif")
+    .text(formatter);
 
 
 /* Y-label */
@@ -82,35 +83,35 @@ var yaxis = vis.append("svg:line")
     .attr("x2", 0)
     .attr("y2", 0);
 
-vis.selectAll(".ytick")
-     .data(y.ticks())
-   .enter().append("line")
-     .attr("class", "ytick")
-     .attr("x1", 0)
-     .attr("x2", function(d,i){ return (i % 9 == 0 || i % 9 == 4) ? -10 : -5; })
-     .attr("y1", y)
-     .attr("y2", y)
-     .style("fill", "#999")
-     .style("stroke", "#999");
+  vis.selectAll(".ytick")
+    .data(y.ticks())
+    .enter().append("line")
+    .attr("class", "ytick")
+    .attr("x1", 0)
+    .attr("x2", function(d,i){ return (i % 9 == 0 || i % 9 == 4) ? -10 : -5; })
+    .attr("y1", y)
+    .attr("y2", y)
+    .style("fill", "#999")
+    .style("stroke", "#999");
 
-vis.selectAll(".ylabel")
-      .data(y.ticks())
+  vis.selectAll(".ylabel")
+    .data(y.ticks())
     .enter().append("text")
-      .attr("class", "ylabel")
-      .attr("x", 0)
-      .attr("y", function(d){ return h-y(d); })
-      .attr("dx", function(d, i) { return (i % 9 == 0 || i % 9 == 4 ) ? -20 : -15; })
-      .attr("text-anchor", "middle")
-      .attr("display", function(d,i){ return (i % 9 == 0 || i % 9 == 4) ? null : "none"; })
-      .style("font", "8px sana-serif")
-      .text(String);
+    .attr("class", "ylabel")
+    .attr("x", 0)
+    .attr("y", function(d){ return h-y(d); })
+    .attr("dx", function(d, i) { return (i % 9 == 0 || i % 9 == 4 ) ? -20 : -15; })
+    .attr("text-anchor", "middle")
+    .attr("display", function(d,i){ return (i % 9 == 0 || i % 9 == 4) ? null : "none"; })
+    .style("font", "8px sana-serif")
+    .text(formatter);
 
 
 params.resources.forEach(function(r,i){
   var klazz = "shape" + i;
   vis.selectAll("."+klazz)
     .data(params.data[r])
-  .enter().append("svg:path")
+    .enter().append("svg:path")
     .attr("class", klazz)
     .attr("transform", function(d) { return "translate(" + x(d[0]) + "," + (h-y(d[1])) + ")"; })
     .attr("d", d3.svg.symbol().type(shapes[i]).size(24))
@@ -121,16 +122,16 @@ params.resources.forEach(function(r,i){
 /* Legend. */
 vis.selectAll(".legend")
     .data(legend)
-  .enter().append("svg:text")
+    .enter().append("svg:text")
     .attr("class", "legend")
     .attr("x", w-60)
     .attr("y", function(d,i){return 20+14*i})
     .style("font", "12px sans-serif")
     .text(String);
 
-vis.selectAll(".legendmark")
+  vis.selectAll(".legendmark")
     .data(legend)
-  .enter().append("svg:path")
+    .enter().append("svg:path")
     .attr("class", "legendmark")
     .attr("transform", function(d,i){ return "translate(" + (w-70) + "," + (17+14*i) + ")"; })
     .attr("d", function(d,i){ return d3.svg.symbol().type(shapes[i]).size(48).call(); })
