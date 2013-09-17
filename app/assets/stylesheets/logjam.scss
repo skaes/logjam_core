@@ -1,6 +1,8 @@
 $menu-active-bg-color: rgba(230,230,230, 0.9);
 $menu-inactive-bg-color: rgba(200,200,200, 0.4);
 $menu-hover-color: #fff;
+$header-bg-color: #cca383;
+$header-height: 54px;
 
 body {
     background-color: #fff;
@@ -15,9 +17,7 @@ body, p, ol, ul, td {
   line-height: 18px;
 }
 
-filter form p {
-  margin: 0px;
-}
+.clear-left {clear:left; float:left;}
 
 .logline {
     width: 100%;
@@ -73,39 +73,11 @@ input, select {
   margin-bottom: 5px;
 }
 
-#header {
-  position: relative;
-  top: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  min-width: 1000px;
-  height: 54px;
-  background: #cca383;
-}
-
-#header #filter {
-  vertical-align: middle;
-  padding-top: 2px;
-  padding-left: 0px;
-  padding-right: 5px;
-  min-width: 1000px;
-  margin-left: 5px;
-}
-
 #content {
   margin-top: 5px;
 }
 
-#auto-refresh {
-    margin-top: 3px;
-    margin-left: 30px;
-}
 
-.clear-left {clear:left; float:left;}
-.filter-widget-inline { display:inline-block; }
-.filter-widget-last, .float-left {float:left;}
-.filter-float-right {float:right; padding-right: 20px;}
 #description.filter-widget {font-style: italic; margin: 0 0 0 5px; font-size: 90%;}
 .filter-widget {
     float:left;
@@ -114,102 +86,12 @@ input, select {
     input, select { margin-left: 0px; }
 }
 
-#time-range-widget {
-  display: inline-block;
-  font-weight: bold;
-  font-size: 13px;
-  list-style-type: none;
-  margin: 0px;
-  ul {
-      margin: 0px;
-      padding: 0px;
-      display: inline;
-      li {
-          display: inline;
-          border-radius: 2px;
-          text-align: center;
-          font-size: 80%;
-          padding: 2px;
-      }
-      li.active {
-          background-color: $menu-active-bg-color;
-      }
-      li.inactive {
-          background-color: $menu-inactive-bg-color;
-      }
-      li:hover {
-          background-color: $menu-hover-color;
-      }
-  }
-}
-
-#grouping-widget {
-  display: inline-block;
-  font-weight: bold;
-  font-size: 12px;
-  list-style-type: none;
-  height: 50px;
-  margin: 0px;
-  margin-left: 0px;
-  margin-right: 15px;
-  padding: 0px;
-}
-
-#navigation-widget {
-  height: 50px;
-  border: 0;
-  margin: 0px 10px 8px 0px;
-  float: left;
-  label { font-size: 150%; margin-bottom: 0px; }
-}
-#navigation-widget.menu {
-  margin: 2px 20px 2px 0px;
-  padding: 0;
-  label { cursor: pointer };
-}
-
-#navigation-widget > ul > li > a {
-    margin-top: 5px;
-    font-size: 175%;
-    padding-top: 0px;
-    padding-bottom: 0px;
-    vertical-align: middle;
-    line-height: 25px;
-    &:after {
-        margin: 0px 0px 0px 0px;
-        font-size: 12px;
-        content: '';
-    }
-}
 
 #navicons {
     display:inline-block;
     font-size: 16px;
     margin: 0;
     a { color: rgba(120, 120, 120, 0.8); margin-right: 2px; }
-}
-
-#grouping-widget {
-  li {
-      border-radius: 2px;
-      text-align: center;
-      height: 18px;
-      margin: 2px;
-      padding: 2px 10px 2px 10px;
-  }
-  li.active {
-      background-color: $menu-active-bg-color;
-  }
-  li.inactive {
-      background-color: $menu-inactive-bg-color;
-  }
-  li:hover {
-      background-color: $menu-hover-color;
-  }
-}
-
-#resource-type-widget {
-  margin-top:2px;
 }
 
 .active {
@@ -376,19 +258,6 @@ td.number {text-align: right;}
 }
 
 /* #request, #callers { position: relative; } */
-#show-json {
-    position: absolute;
-    right: 10px;
-    top: 2px;
-    a { color: green; }
-}
-
-#admin {
-    position: absolute;
-    right: 50px;
-    top: 25px;
-    a:hover { background: #cca383; }
-}
 
 .warning {
   font-size: 200%;
@@ -489,124 +358,6 @@ td.number {text-align: right;}
 .triangle {
     color: orange;
 }
-.menu {
-    display: inline-block;
-    border:none;
-    border:0px;
-    margin:0px;
-    padding:0px;
-    font-weight:bold;
-    position:relative;
-    z-index: 100;
-}
-.menu li li a:before {
-    content: '▶';
-    visibility: hidden;
-    padding:0px 5px 0px 0px;
-    color: orange;
-    font-size: 11px;
-}
-.menu li li:hover a:before {
-    visibility: visible;
-}
-.menu > ul > li > a:after {
-    content: '▼';
-    display: inline-block;
-    font-size: 8px;
-    margin: 0px 0px 0px 2px;
-    padding-left: 2px;
-    text-align: center;
-}
-.menu > ul > li {
-    margin-right: 5px;
-}
-.menu li .separator {
-    height: 1px;
-    margin: 1px;
-    background-color: #ccc;
-}
-.menu ul {
-    height:25px;
-    list-style:none;
-    margin:0px 0px;
-    padding:0;
-}
-.menu li {
-    float:left;
-    padding:0px;
-}
-
-.menu li a.active {
-    background-color: $menu-active-bg-color;
-    color: black;
-}
-.menu li a.inactive {
-    background-color: $menu-inactive-bg-color;
-    color: black;
-}
-.menu li li a {
-    border-radius: 0px;
-    line-height: 20px;
-    font-weight: normal;
-    font-size: 12px;
-}
-.menu li a {
-    border-radius: 2px;
-    display:block;
-    font-weight:bold;
-    font-size: 12px;
-    line-height:20px;
-    margin:0px;
-    padding:0px 4px 0px 4px;
-    text-align:center;
-    text-decoration:none;
-}
-.menu > ul > li > a {
-    padding-right: 5px;
-}
-.menu li a:hover, .menu ul li:hover a {
-    background: white;
-    text-decoration:none;
-}
-.menu li ul {
-    position: absolute;
-    background:#fff;
-    display:none;
-    height:auto;
-    padding:0px;
-    margin:0px;
-    border:1px solid #ccc;
-}
-.menu li:hover ul {
-    display:block;
-}
-.menu li li {
-    position: relative;
-    display:block;
-    float:none;
-    margin:0px;
-    padding:0px;
-    z-index: 110;
-}
-.menu li:hover li a {
-    background:none;
-}
-.menu li ul a {
-    white-space: nowrap;
-    display:block;
-    font-style:normal;
-    margin:0px;
-    padding:0px 15px 0px 0px;
-    text-align:left;
-}
-.menu li ul a:hover, .menu li ul li:hover a {
-    background:#ccc;
-    border:0px;
-    text-decoration:none;
-}
-.menu p {
-    clear:left;
-}
 
 .autocomplete-suggestions {
   border:1px solid #999;
@@ -686,4 +437,263 @@ svg {
     -moz-user-select: none; /* mozilla browsers */
     -khtml-user-select: none; /* webkit (konqueror) browsers */
     -ms-user-select: none; /* IE10+ */
+}
+
+.header {
+  height: $header-height;
+  background: $header-bg-color;
+  ul {
+      list-style: none;
+      background-color: $header-bg-color;
+  }
+  input, select { margin: 0px; }
+  label { font-size: 10px; }
+}
+
+.header > ul {
+    font-size: 0;
+    white-space: nowrap;
+    margin: 0px;
+    padding: 0px;
+    position: absolute;
+    top: 0px;
+    &:last-child {
+        clear: both;
+    }
+    &.left {
+        left: 0;
+        z-index: 200;
+    }
+    &.right {
+        right: 0;
+        z-index: 100;
+    }
+}
+
+.header > ul > li {
+    font-size: 12px;
+    position: relative;
+    top: -2px;
+    display: inline-block;
+    margin: -2px 10px 2px 10px;
+    padding: 0px;
+    &:last-child {
+        clear:left;
+    }
+    & > div {
+        height: 23px;
+    }
+}
+
+.menu {
+    display: block;
+    border: 0px;
+    margin: 0px;
+    padding: 0px;
+    font-weight: bold;
+    position:relative;
+    z-index: 1000;
+}
+.menu > ul {
+    display: inline-block;
+    margin: 0px 0px;
+    padding: 0px;
+}
+.menu > ul > li {
+    display: inline-block;
+    padding: 0px;
+    margin-right: 0px;
+}
+.menu li li a:before {
+    content: '▶';
+    visibility: hidden;
+    padding: 0px 5px 0px 0px;
+    color: orange;
+    font-size: 11px;
+}
+.menu li li:hover a:before {
+    visibility: visible;
+}
+.menu > ul > li > a:after {
+    content: '▼';
+    display: inline-block;
+    font-size: 8px;
+    margin: 0px 0px 0px 2px;
+    padding-left: 2px;
+    text-align: center;
+}
+.menu li .separator {
+    height: 1px;
+    margin: 1px;
+    background-color: #ccc;
+}
+.menu li a.active {
+    background-color: $menu-active-bg-color;
+    color: black;
+}
+.menu li a.inactive {
+    background-color: $menu-inactive-bg-color;
+    color: black;
+}
+.menu li li a {
+    border-radius: 0px;
+    line-height: 20px;
+    font-weight: normal;
+    font-size: 12px;
+}
+.menu li a {
+    border-radius: 2px;
+    display: block;
+    font-weight: bold;
+    font-size: 12px;
+    line-height: 20px;
+    margin: 0px;
+    padding: 0px 4px;
+    text-align:center;
+    text-decoration:none;
+}
+.menu > ul > li > a {
+    padding-right: 5px;
+}
+.menu li a:hover, .menu ul li:hover a {
+    background: white;
+    text-decoration:none;
+}
+.menu li ul {
+    position: absolute;
+    background: #fff;
+    display: none;
+    height: auto;
+    padding: 0px;
+    margin: 0px;
+    border: 1px solid #ccc;
+}
+.menu li:hover ul {
+    display:block;
+}
+.menu li li {
+    position: relative;
+    display: block;
+    margin: 0px;
+    padding: 0px;
+    z-index: 110;
+}
+.menu li ul a {
+    display: block;
+    font-style: normal;
+    margin: 0px;
+    padding: 0px 15px 0px 0px;
+    text-align:left;
+}
+.menu li ul a:hover, .menu li ul li:hover a {
+    background:#ccc;
+    border:0px;
+    text-decoration:none;
+}
+
+#navigation-widget {
+  margin-right: 10px;
+  margin-left: 5px;
+  line-height: 18px;
+  position: relative;
+  top: 6px;
+  label { font-size: 18px; }
+  div {
+      height: 22px;
+      & > ul {
+          position:relative;
+          top: 2px;
+      }
+  }
+}
+#navigation-widget > div > ul > li {
+    margin-right: 2px;
+    & > a {
+        padding: 0px 1px 0px 3px;
+        font-size: 21px;
+        &:after {
+            padding: 0px;
+            content: '';
+        }
+    }
+}
+
+#app-widget {
+}
+
+#time-range-widget {
+  ul {
+      position: relative;
+      top: 0px;
+      display: inline;
+      li {
+          display: inline;
+          border-radius: 2px;
+          text-align: center;
+          div { display: inline-block; margin-top: 3px; }
+          font-size: 80%;
+          padding: 2px;
+          margin: 0px;
+      }
+      li.active {
+          background-color: $menu-active-bg-color;
+      }
+      li.inactive {
+          background-color: $menu-inactive-bg-color;
+      }
+      li:hover {
+          background-color: $menu-hover-color;
+      }
+  }
+}
+
+#grouping-widget {
+  font-weight: bold;
+  height: 50px;
+  ul {
+      padding: 0px;
+  }
+  li {
+      border-radius: 2px;
+      text-align: center;
+      height: 18px;
+      margin: 2px;
+      padding: 2px 10px 2px 10px;
+  }
+  div { position: relative; top: 6px; }
+  li.active {
+      background-color: $menu-active-bg-color;
+  }
+  li.inactive {
+      background-color: $menu-inactive-bg-color;
+  }
+  li:hover {
+      background-color: $menu-hover-color;
+  }
+}
+
+#resource-type-widget, #page-widget {
+    label { margin-top: 3px; }
+}
+#app-widget, #env-widget {
+    label { margin-top: 2px; }
+}
+
+#auto-refresh {
+    position: relative;
+    top: -21px;
+}
+
+#show-json {
+    position: absolute;
+    right: 10px;
+    top: 2px;
+    a { color: green; }
+}
+
+#admin {
+    position: absolute;
+    right: 45px;
+    top: 29px;
+    a:hover { background: #cca383; }
 }

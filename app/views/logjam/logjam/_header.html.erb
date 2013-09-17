@@ -9,126 +9,148 @@ var auto_complete_url = '<%= raw auto_complete_url_for_action_page %>';
 $(document).ready(initialize_header);
 <% end %>
 
-<div id="header">
-  <% action = action_name == "index" ? "" : action_name %>
-  <%= form_tag(params.except(:id).merge(:action => action), :method => :get, :id => "filter-form", :autocomplete => "off") do -%>
-  <div id="filter">
-    <div id="navigation-widget" class="menu">
-      <%= label :filter, "logjam", :onclick => "go_home()" %><br />
-      <ul onclick="go_home()" >
-        <li><a><%= fa_icon("eye-open")%></a>
-          <ul>
-            <% if @dataset.try(:live_stream?) -%>
-            <li>
-              <%= link_to("Live Stream", clean_params(params.slice(:app,:env,:page).merge(:action => "live_stream")), {:target => "_blank"}) %>
-            </li>
-            <li class="separator"></li>
-            <% end %>
-            <li><%= link_to("Apdex Overview", clean_params(params.merge(:action => "apdex_overview"))) %></li>
-            <li><%= link_to("Response Code Overview", clean_params(params.merge(:action => "response_code_overview"))) %></li>
-            <li><%= link_to("Problem Overview", clean_params(params.merge(:action => "error_overview"))) %></li>
-            <li class="separator"></li>
-            <li>
-              <%= link_to("Enlarged Resource Plot", clean_params(params.merge(:page =>
-                          without_module(@page), :action => "enlarged_plot", :interval => 1))) %>
-            </li>
-            <% if @dataset.try(:has_distribution_plot?) %>
-            <li>
-              <%= link_to("Resource Distribution Plot", clean_params(params.merge(:page =>
-                          without_module(@page), :action => distribution_kind(@dataset.resource)))) %>
-            </li>
-            <% end %>
-            <li class="separator"></li>
-            <li><%= link_to("My Callers", clean_params(params.merge(:action =>"callers"))) %></li>
-            <li><%= link_to("Call Relationships", clean_params(params.merge(:action =>"call_relationships"))) %></li>
-          </ul>
+<% action = action_name == "index" ? "" : action_name %>
+<%= form_tag(params.except(:id).merge(:action => action), :method => :get, :id => "filter-form", :autocomplete => "off") do -%>
+
+<div class="header">
+  <ul class="left">
+    <li id="navigation-widget">
+      <div><%= label :filter, "logjam", :onclick => "go_home()" %></div>
+      <div class="menu">
+        <ul>
+          <li><a><%= fa_icon("eye-open")%></a>
+            <ul>
+              <% if @dataset.try(:live_stream?) -%>
+                <li>
+                  <%= link_to("Live Stream", clean_params(params.slice(:app,:env,:page).merge(:action => "live_stream")), {:target => "_blank"}) %>
+                  </li>
+                <li class="separator"></li>
+              <% end %>
+              <li><%= link_to("Apdex Overview", clean_params(params.merge(:action => "apdex_overview"))) %></li>
+              <li><%= link_to("Response Code Overview", clean_params(params.merge(:action => "response_code_overview"))) %></li>
+              <li><%= link_to("Problem Overview", clean_params(params.merge(:action => "error_overview"))) %></li>
+              <li class="separator"></li>
+              <li>
+                <%= link_to("Enlarged Resource Plot", clean_params(params.merge(:page =>
+                                                                                without_module(@page), :action => "enlarged_plot", :interval => 1))) %>
+              </li>
+              <% if @dataset.try(:has_distribution_plot?) %>
+                <li>
+                  <%= link_to("Resource Distribution Plot", clean_params(params.merge(:page =>
+                                                                                      without_module(@page), :action => distribution_kind(@dataset.resource)))) %>
+                </li>
+              <% end %>
+              <li class="separator"></li>
+              <li><%= link_to("My Callers", clean_params(params.merge(:action =>"callers"))) %></li>
+              <li><%= link_to("Call Relationships", clean_params(params.merge(:action =>"call_relationships"))) %></li>
+            </ul>
+          </li>
+          <li><a id="home-button" href="#" onclick="go_home();"><%= fa_icon("home")%></a>
+        </ul>
+      </div>
+      </li>
+      <% unless @only_one_app %>
+        <li id="app-widget">
+          <div><%= label :filter, "application" %></div>
+          <div><%= select_tag "app", options_for_select(@apps, @app), :onchange => "view_selected_pages()" %></div>
         </li>
-        <li><a id="home-button" href="#" onclick="go_home();"><%= fa_icon("home")%></a>
-      </ul>
-    </div>
-    <% unless @only_one_app %>
-    <p class="filter-widget">
-      <%= label :filter, "application" %><br />
-      <%= select_tag "app", options_for_select(@apps, @app), :onchange => "view_selected_pages()" %>
-    </p>
-    <% end %>
-    <% unless @only_one_env %>
-    <p class="filter-widget">
-      <%= label :filter, "environment" %><br />
-      <%= select_tag "env", options_for_select(@envs, @env), :onchange => "view_selected_pages()" %>
-    </p>
-    <% end %>
-    <div class="filter-widget" id="time-range-widget">
-      <ul>
-        <li <%= raw html_attributes_for_time_range("date") %>>Date</li>
-        <li <%= raw html_attributes_for_time_range("history") %>>History</li>
-      </ul>
-      <% if params[:time_range] == "date" %>
-      <input size="11" type="text" value="<%= @date %>" id="datepicker" onchange="submit_filter_form()" />
-      <% else %>
-      <div><input size="11" type="text" value="<%= @date %>" id="datepicker" readonly="readonly" disabled="disabled" /></div>
       <% end %>
-    </div>
-    <p class="filter-widget">
-      <%= label :filter, "page selector" %><br />
-      <input id="page-field" class="autocomplete" name="page" size="45" type="text" value="<%= @page %>" onchange="view_selected_pages()" />
-    </p>
-    <ul class="filter-widget" id="grouping-widget">
-      <li <%= raw html_attributes_for_grouping("page") %>>Pages</li>
-      <li <%= raw html_attributes_for_grouping("request") %>>Requests</li>
-    </ul>
-    <div class="menu filter-widget">
-      <%= label :filter, "resource selector" %><br />
-      <ul id="resource-type-widget">
-        <li><a href="#" <%= raw html_attributes_for_resource_type(:time) %>>Time</a>
+      <% unless @only_one_env %>
+        <li id="env-widget">
+          <div><%= label :filter, "environment" %></div>
+          <div><%= select_tag "env", options_for_select(@envs, @env), :onchange => "view_selected_pages()" %></div>
+        </li>
+      <% end %>
+      <li id="time-range-widget">
+        <div class="menu">
           <ul>
-            <% collected_time_resources.reverse.each do |r| %>
-            <li><a href="#" onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
+            <li <%= raw html_attributes_for_time_range("date") %>><div>Date</div></li>
+            <li <%= raw html_attributes_for_time_range("history") %>><div>History</div></li>
+          </ul>
+        </div>
+        <div>
+          <% if params[:time_range] == "date" %>
+            <input size="11" type="text" value="<%= @date %>" id="datepicker" onchange="submit_filter_form()" />
+          <% else %>
+            <input size="11" type="text" value="<%= @date %>" id="datepicker" readonly="readonly" disabled="disabled" />
+          <% end %>
+        </div>
+      </li>
+      <li id="page-widget">
+        <div><%= label :filter, "page selector" %></div>
+        <div>
+          <input id="page-field" class="autocomplete" name="page" size="45" type="text" value="<%= @page %>" onchange="view_selected_pages()" />
+        </div>
+      </li>
+      <li id="grouping-widget">
+        <div>
+          <ul>
+            <li <%= raw html_attributes_for_grouping("page") %>>Pages</li>
+            <li <%= raw html_attributes_for_grouping("request") %>>Requests</li>
+          </ul>
+        </div>
+      </li>
+      <li id="resource-type-widget">
+        <div><%= label :filter, "resource selector" %></div>
+        <div class="menu">
+          <ul>
+            <li><a href="#" <%= raw html_attributes_for_resource_type(:time) %>>Time</a>
+              <ul>
+                <% collected_time_resources.reverse.each do |r| %>
+                  <li><a href="#" onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
+                <% end %>
+              </ul>
+            </li>
+            <% unless collected_call_resources.empty? %>
+              <li><a href="#" <%= raw html_attributes_for_resource_type(:call) %>>Calls</a>
+                <ul>
+                  <% collected_call_resources.reverse.each do |r| %>
+                    <li><a href="#" onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
+                  <% end %>
+                </ul>
+              </li>
+            <% end %>
+            <% unless collected_memory_resources.empty? %>
+              <li><a href="#" <%= raw html_attributes_for_resource_type(:memory) %>>Allocations</a>
+                <ul>
+                  <% collected_memory_resources.reverse.each do |r| %>
+                    <li><a href="#" onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
+                  <% end %>
+                </ul>
+              </li>
+            <% end %>
+            <% unless collected_heap_resources.empty? %>
+              <li><a href="#" <%= raw html_attributes_for_resource_type(:heap) %>>Heap</a>
+                <ul>
+                  <% collected_heap_resources.reverse.each do |r| %>
+                    <li><a href="#" onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
+                  <% end %>
+                </ul>
+              </li>
             <% end %>
           </ul>
-        </li>
-        <% unless collected_call_resources.empty? %>
-        <li><a href="#" <%= raw html_attributes_for_resource_type(:call) %>>Calls</a>
-          <ul>
-            <% collected_call_resources.reverse.each do |r| %>
-            <li><a href="#" onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
-            <% end %>
-          </ul>
-        </li>
-        <% end %>
-        <% unless collected_memory_resources.empty? %>
-        <li><a href="#" <%= raw html_attributes_for_resource_type(:memory) %>>Allocations</a>
-          <ul>
-            <% collected_memory_resources.reverse.each do |r| %>
-            <li><a href="#" onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
-            <% end %>
-          </ul>
-        </li>
-        <% end %>
-        <% unless collected_heap_resources.empty? %>
-        <li><a href="#" <%= raw html_attributes_for_resource_type(:heap) %>>Heap</a>
-          <ul>
-            <% collected_heap_resources.reverse.each do |r| %>
-            <li><a href="#" onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
-            <% end %>
-          </ul>
-        </li>
-        <% end %>
-      </ul>
-    </div>
-    <input type="hidden" id="time-range" name="time_range" value="<%= params[:time_range] %>" />
-    <input type="hidden" id="grouping" name="grouping" value="<%= params[:grouping]%>" />
-    <input type="hidden" id="resource" name="resource" value="<%= params[:resource] %>" />
-    <input type="hidden" id="grouping-function" name="grouping_function" value="<%= params[:grouping_function] %>" />
-    <input type="hidden" id="start-minute" name="start_minute" value="<%= params[:start_minute] %>" />
-    <input type="hidden" id="end-minute" name="end_minute" value="<%= params[:end_minute] %>" />
-    <input type="hidden" id="interval" name="interval" value="<%= params[:interval] %>" />
-    <p class="filter-widget" id="auto-refresh">
-    <%= check_box_tag "auto_refresh", "1", params[:auto_refresh]=="1", :onchange => "submit_filter_form()" %>Autorefresh
-    </p>
-  </div>
-  <% end %>
+        </div>
+      </li>
+      <input type="hidden" id="time-range" name="time_range" value="<%= params[:time_range] %>" />
+      <input type="hidden" id="grouping" name="grouping" value="<%= params[:grouping]%>" />
+      <input type="hidden" id="resource" name="resource" value="<%= params[:resource] %>" />
+      <input type="hidden" id="grouping-function" name="grouping_function" value="<%= params[:grouping_function] %>" />
+      <input type="hidden" id="start-minute" name="start_minute" value="<%= params[:start_minute] %>" />
+      <input type="hidden" id="end-minute" name="end_minute" value="<%= params[:end_minute] %>" />
+      <input type="hidden" id="interval" name="interval" value="<%= params[:interval] %>" />
+      <li>
+        <div id="auto-refresh">
+          <%= check_box_tag "auto_refresh", "1", params[:auto_refresh]=="1", :onchange => "submit_filter_form()" %> Autorefresh
+        </div>
+      </li>
+  </ul>
+  <ul class="right">
+    <li>
+      <div id="admin">
+        <%= link_to(image_tag("database.svg", :size => "16x16"), admin_storage_path, :title => "admin stuff") %>
+      </div>
+    </li>
+  </ul>
 </div>
-<div id="admin">
-  <%= link_to(image_tag("database.svg", :size => "16x16"), admin_storage_path, :title => "admin stuff") %>
-</div>
+
+<% end %>
