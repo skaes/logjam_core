@@ -55,9 +55,15 @@ pre img { vertical-align: top; }
 pre a, #request-details a { color: blue; }
 pre a:hover, #request-details a:hover { color: blue; }
 
-a { color: #000; }
-a:hover { color: #000; background-color:#fff; }
-a { text-decoration: none; }
+a {
+    text-decoration: none;
+    cursor: pointer;
+    color: #000;
+    &:hover {
+        color: #000;
+        background-color:#fff;
+    }
+}
 
 label {
     font-weight: bold;

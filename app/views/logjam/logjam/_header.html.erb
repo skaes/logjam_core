@@ -43,7 +43,7 @@ $(document).ready(initialize_header);
               <li><%= clean_link_to("Call Relationships", :action =>"call_relationships") %></li>
             </ul>
           </li>
-          <li><a id="home-button" href="#" onclick="go_home();"><%= fa_icon("home")%></a>
+          <li><a id="home-button" onclick="go_home();"><%= fa_icon("home")%></a>
         </ul>
       </div>
       </li>
@@ -92,36 +92,36 @@ $(document).ready(initialize_header);
         <div><%= label :filter, "resource selector" %></div>
         <div class="menu">
           <ul>
-            <li><a href="#" <%= raw html_attributes_for_resource_type(:time) %>>Time</a>
+            <li><a <%= raw html_attributes_for_resource_type(:time) %>>Time</a>
               <ul>
                 <% collected_time_resources.reverse.each do |r| %>
-                  <li><a href="#" onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
+                  <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
                 <% end %>
               </ul>
             </li>
             <% unless collected_call_resources.empty? %>
-              <li><a href="#" <%= raw html_attributes_for_resource_type(:call) %>>Calls</a>
+              <li><a <%= raw html_attributes_for_resource_type(:call) %>>Calls</a>
                 <ul>
                   <% collected_call_resources.reverse.each do |r| %>
-                    <li><a href="#" onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
+                    <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
                   <% end %>
                 </ul>
               </li>
             <% end %>
             <% unless collected_memory_resources.empty? %>
-              <li><a href="#" <%= raw html_attributes_for_resource_type(:memory) %>>Allocations</a>
+              <li><a <%= raw html_attributes_for_resource_type(:memory) %>>Allocations</a>
                 <ul>
                   <% collected_memory_resources.reverse.each do |r| %>
-                    <li><a href="#" onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
+                    <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
                   <% end %>
                 </ul>
               </li>
             <% end %>
             <% unless collected_heap_resources.empty? %>
-              <li><a href="#" <%= raw html_attributes_for_resource_type(:heap) %>>Heap</a>
+              <li><a <%= raw html_attributes_for_resource_type(:heap) %>>Heap</a>
                 <ul>
                   <% collected_heap_resources.reverse.each do |r| %>
-                    <li><a href="#" onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
+                    <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
                   <% end %>
                 </ul>
               </li>
