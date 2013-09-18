@@ -195,10 +195,21 @@ div#pagetimes {
 
 th.sortable:hover {
     background: #fff image-url('table_sort_desc.png') top right no-repeat;
+    background-size: 16px 12px;
 }
-
+@media only screen and (-webkit-min-device-pixel-ratio: 2) {
+    th.sortable:hover {
+        background-image: image-url('table_sort_desc2x.png');
+    }
+}
 th.sorted {
     background: #eee image-url('table_sorted_desc.png') top right no-repeat;
+    background-size: 16px 12px;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2) {
+    th.sorted {
+        background-image: image-url('table_sorted_desc2x.png');
+    }
 }
 
 tr.full_stats:hover {
