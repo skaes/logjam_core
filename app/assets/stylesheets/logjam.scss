@@ -341,15 +341,14 @@ td.number {text-align: right;}
     display: inline;
 }
 
-
-#stream-title {
-}
-#stream-control {
+#stream-title, #stream-control {
+    margin: 0px;
+    padding: 3px 10px;
 }
 #stream-toggle {
 }
 #live-stream {
-    margin: 8px;
+    margin: 10px;
 }
 
 #request-details {

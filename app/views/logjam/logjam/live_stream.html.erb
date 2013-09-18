@@ -1,10 +1,13 @@
-<div id="live-stream">
-  <h2 id="stream-title">Live Performance Data Stream for <%= @app %>-<%= @env %>: <%= @key %>
+<div class="header">
+  <h3 id="stream-title">Live Stream for <%= @app %>-<%= @env %>: <%= @key %></h2>
+  <div id="stream-control">
     <input id="stream-toggle" type="button" value="pause" />
     <input id="warnin-toggle" type="button" value="show warnings" />
     <input id="smooth-toggle" type="button" value="smooth updates" />
-  </h2>
+  </div>
+</div>
 
+<div id="live-stream">
   <div id="live-stream-chart"></div>
   <div id="anomaly-score">
     <p id="anomaly-score-title">Anomaly Score:</p>
