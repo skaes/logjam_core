@@ -23,7 +23,6 @@
      legend: (@resources.reverse+%w(requests/second)).map{|r| r.gsub(/_/,' ')},
      socket_url: @socket_url,
      socket_greeting: "#{@app}-#{@env},#{@key}",
-     base_url: Logjam.base_url,
      app_env: "app=#{@app}&env=#{@env}"
    }
 %>

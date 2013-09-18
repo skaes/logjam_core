@@ -233,7 +233,7 @@ function logjam_live_stream_chart(params){
 
   function error_url(request_id, time) {
     var date = time.slice(0,10).replace(/-/g,'/');
-    return (params.base_url +'/' + date + '/show/' + request_id + '?' + params.app_env);
+    return ('/' + date + '/show/' + request_id + '?' + params.app_env);
   };
 
   /* add errors to the recent errors list */
