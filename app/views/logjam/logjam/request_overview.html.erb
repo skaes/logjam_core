@@ -15,13 +15,13 @@
     Page <%= @current_page %>
     <ul>
     <% unless @current_page == @last_page %>
-    | <li><%= link_to("next page", clean_params(params.merge(:offset => @next_page_offset))) %></li>
+    | <li><%= clean_link_to("next page", :offset => @next_page_offset) %></li>
     <% end %>
     <% unless @current_page == 1 %>
-    | <li><%= link_to("previous page", clean_params(params.merge(:offset => @previous_page_offset))) %></li>
+    | <li><%= clean_link_to("previous page", :offset => @previous_page_offset) %></li>
     <% end %>
     <% unless @current_page == 1 %>
-    | <li><%= link_to("first page", clean_params(params.merge(:offset => 0))) %></li>
+    | <li><%= clean_link_to("first page", :offset => 0) %></li>
     <% end %>
     </ul>
   </div>

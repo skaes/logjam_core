@@ -6,7 +6,7 @@
     <tr><th>Exception</th><th>Count</th><th>Distribution over time (0-24h, 2 minute intervals)</th></tr>
     <% @totals.js_exceptions.to_a.sort.each_with_index do |(e,c),i| %>
     <tr class='full_stats'>
-      <% url = url_for(clean_params(params.merge(:action => "js_exceptions", :js_exception => e))) %>
+      <% url = clean_url_for(:action => "js_exceptions", :js_exception => e) %>
       <td><%= link_to Logjam::JsExceptions.description_from_key(e), url %></td>
       <td class='number'><%= link_to integer_number(c), url %>
       <td class='echart' id='<%= "echart-#{i}" %>'>

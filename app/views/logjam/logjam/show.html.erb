@@ -8,7 +8,7 @@
   <b>Request details for</b>
   <%
     page, minute = @request["page"], @request["minute"]
-    _params = clean_params(params.except(:utf8, :id, :action).merge(:page => page))
+    _params = params.except(:utf8, :id, :action).merge(:page => page)
     page_params = clean_params(_params.merge(:grouping => "page"))
     request_params = clean_params(_params.merge(:grouping => "request", :start_minute => minute, :end_minute => minute))
   -%>

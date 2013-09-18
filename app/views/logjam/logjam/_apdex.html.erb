@@ -1,7 +1,7 @@
 <table id="apdex-table">
   <tr>
     <th colspan="2">apdex
-      <%= link_to(triangle_right, clean_params(params.merge(:action => "apdex_overview")), :title => "show apdex overview") %>
+      <%= clean_link_to(triangle_right, {:action => "apdex_overview"}, :title => "show apdex overview") %>
     </th>
   </tr>
   <tr>

@@ -1,18 +1,17 @@
 <% resource_type = Logjam::Resource.resource_type(resource) -%>
 <% requests.each do |request| -%>
-  <tr class='full_stats'>
-    <td><%= link_to_request(minute_to_human(request["minute"]), clean_params(params.merge(:action => "show", :id => request['_id'])), request["response_code"]) %></td>
-    <td><%= link_to(h(request["page"]), clean_params(params.merge(:grouping => "page", :page => request["page"])), :title => "view summary") %></td>
+  <tr class="full_stats">
+    <td><%= link_to_request(minute_to_human(request["minute"]), {:action => "show", :id => request["_id"]}, request["response_code"]) %></td>
+    <td><%= clean_link_to(request["page"], {:grouping => "page", :page => request["page"]}, :title => "view summary") %></td>
     <% case resource_type
        when :time -%>
-    <td class='number'><%= seconds_to_human((request[resource]||0) / 1000.0) %></td>
+    <td class="number"><%= seconds_to_human((request[resource]||0) / 1000.0) %></td>
     <% when :call -%>
-    <td class='number'><%= number_with_delimiter(request[resource].to_i) %></td>
+    <td class="number"><%= number_with_delimiter(request[resource].to_i) %></td>
     <% when :memory -%>
-    <td class='number'><%= memory_number(request[resource]) %></td>
+    <td class="number"><%= memory_number(request[resource]) %></td>
     <% else -%>
-    <td class='number'><%= number_with_delimiter(request[resource].to_i) %></td>
+    <td class="number"><%= number_with_delimiter(request[resource].to_i) %></td>
     <% end -%>
   </tr>
 <% end -%>
-

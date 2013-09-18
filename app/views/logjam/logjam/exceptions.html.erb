@@ -6,7 +6,7 @@
     <tr><th>Exception</th><th>Count</th><th>Distribution over time (0-24h, 2 minute intervals)</th></tr>
     <% @totals.exceptions.to_a.sort.each_with_index do |(e,c),i| %>
     <tr class='full_stats'>
-      <% url = url_for(clean_params(params.merge(:action => "errors", :error_type => "exceptions", :exception => e))) %>
+      <% url = clean_url_for(:action => "errors", :error_type => "exceptions", :exception => e) %>
       <td><%= link_to e, url %></td>
       <td class='number'><%= link_to integer_number(c), url %></td>
       <td class='echart' id='<%= "echart-#{i}" %>'>

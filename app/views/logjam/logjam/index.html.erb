@@ -9,24 +9,22 @@
       <p class="stats graph-counts-title">
         showing
         <%= number_with_delimiter @dataset.count_requests %> of <%= number_with_delimiter @dataset.count %> requests
-        <%= link_to(triangle_right,
-                    clean_params(params.merge(:page => without_module(@page),
-                    :action => "enlarged_plot", :interval => 1)),
-                    :title => "show enlarged plot") %>
+        <%= clean_link_to(triangle_right,
+                          { :page => without_module(@page), :action => "enlarged_plot", :interval => 1 },
+                          :title => "show enlarged plot") %>
       </p>
       <p class="navicons">
         <% if params[:interval].to_s == "5" %>
-          <%= link_to(fa_icon("zoom-in", :title => "zoom in"),
-                      clean_params(params.merge(:page => without_module(@page), :action => "index", :interval => 1))) %>
+          <%= clean_link_to(fa_icon("zoom-in", :title => "zoom in"),
+                            :page => without_module(@page), :action => "index", :interval => 1) %>
         <% else %>
-          <%= link_to(fa_icon("zoom-out", :title => "zoom out"),
-                      clean_params(params.merge(:page => without_module(@page), :action => "index", :interval => 5))) %>
+          <%= clean_link_to(fa_icon("zoom-out", :title => "zoom out"),
+                            :page => without_module(@page), :action => "index", :interval => 5) %>
         <% end %>
         <% if @dataset.has_distribution_plot? %>
           <% scatter_title = "show #{distribution_kind(@dataset.resource).to_s.gsub(/_/," ")} plot" %>
-          <%= link_to(fa_icon("signal flip-horizontal", :title => scatter_title),
-                      clean_params(params.merge(:page => without_module(@page),
-                      :action => distribution_kind(@dataset.resource)))) %>
+          <%= clean_link_to(fa_icon("signal flip-horizontal", :title => scatter_title),
+                            :page => without_module(@page), :action => distribution_kind(@dataset.resource)) %>
         <% end %>
         <% if @dataset.live_stream? -%>
         <%= link_to(fa_icon("facetime-video", :title => "show live stream"),

@@ -117,6 +117,14 @@ module Logjam
       FilteredDataset.clean_url_params(params.merge :default_app => @default_app, :default_env => @default_app)
     end
 
+    def clean_link_to(name, options, html_options = {})
+      link_to(name, clean_params(params.merge(options)), html_options)
+    end
+
+    def clean_url_for(options)
+      url_for(clean_params(params.merge(options)))
+    end
+
     def sometimes_link_grouping_result(result, grouping, params)
       value = result.send(grouping)
       ppage = params[:page]
@@ -124,16 +132,16 @@ module Logjam
         params = params.merge(grouping => value)
         params[:page] = without_module(ppage) unless @page == "::"
         params[:action] = "index"
-        link_to(h(value), clean_params(params), :title => "view summary")
+        clean_link_to(value, params, :title => "view summary")
       else
         content_tag(:span, value, :class => 'dead-link')
       end
     end
 
-    def sometimes_link_number_of_requests(result, grouping, options)
+    def sometimes_link_requests(result, grouping, options)
       n = number_with_delimiter(result.count.to_i)
       if :page == grouping.to_sym && result.page != "Others..."
-        link_to n, options.merge(:action => "index"), :title => "show requests"
+        clean_link_to(n, options.merge(:action => "index"), :title => "show requests")
       else
         n
       end
@@ -143,9 +151,8 @@ module Logjam
       stddev = page.stddev(resource)
       n = number_with_precision(stddev, :precision => 0 , :delimiter => ',')
       if stddev > 0 && page.page != "Others..."
-        parameters = params.merge(:app => @app, :env => @env, :page => without_module(page.page), :action => distribution_kind(resource))
-
-        link_to(n, clean_params(parameters), :title => distribution_kind(resource).to_s.gsub(/_/,' '))
+        params = { :app => @app, :env => @env, :page => without_module(page.page), :action => distribution_kind(resource) }
+        clean_link_to(n, params, :title => distribution_kind(resource).to_s.gsub(/_/,' '))
       else
         n
       end
@@ -154,29 +161,25 @@ module Logjam
     def sometimes_link_all_pages
       if params[:grouping] == "page"
         page = @page.sub(/\A::/,'')
-        link_to(triangle_right,
-                clean_params(params.merge(:action => "totals_overview", :page => page)),
-                :title => "show all pages")
+        clean_link_to(triangle_right, { :action => "totals_overview", :page => page }, :title => "show all pages")
       elsif params[:grouping] == "request"
-        link_to(triangle_right,
-                clean_params(params.merge(:action => "request_overview", :page => @page)),
-                :title => "browse requests")
+        clean_link_to(triangle_right, { :action => "request_overview", :page => @page }, :title => "browse requests")
       end
     end
 
     def link_to_request(text, options, response_code = 200)
       if response_code == 500
-        link_to(text, options, :title => "show request", :class => "error")
+        clean_link_to(text, options, :title => "show request", :class => "error")
       else
-        link_to(text, options, :title => "show request")
+        clean_link_to(text, options, :title => "show request")
       end
     end
 
     def sometimes_link_to_request(request_id)
       app, env, oid = request_id.split('-')
       if @database_info.db_exists?(@date, app, env) && Requests.exists?(@date, app, env, oid)
-        parameters = params.merge(:app => app, :env => env, :action => "show", :id => oid)
-        link_to(request_id, clean_params(parameters), :title => "show request")
+        params = { :app => app, :env => env, :action => "show", :id => oid }
+        clean_link_to(request_id, params, :title => "show request")
       else
         request_id
       end
@@ -191,11 +194,11 @@ module Logjam
       elsif page.page == "Others..."
         "#{integer_number(error_count)}/#{integer_number(warning_count)}"
       else
-        parameters = params.merge(:app => @app, :env => @env, :action => "errors", :page => without_module(page.page))
+        params = { :app => @app, :env => @env, :action => "errors", :page => without_module(page.page) }
         errors = error_count == 0 ? error_count :
-          link_to(integer_number(error_count), clean_params(parameters.merge(:error_type => "logged_error")), :class => "error", :title => "show errors")
+          clean_link_to(integer_number(error_count), params.merge(:error_type => "logged_error"), :class => "error", :title => "show errors")
         warnings = warning_count == 0 ? warning_count :
-          link_to(integer_number(warning_count), clean_params(parameters.merge(:error_type => "logged_warning")), :class => "warn", :title => "show warnings")
+          clean_link_to(integer_number(warning_count), params.merge(:error_type => "logged_warning"), :class => "warn", :title => "show warnings")
         raw "#{errors}/#{warnings}"
       end
     end
@@ -207,8 +210,8 @@ module Logjam
       elsif page.page == "Others..."
         integer_number(n)
       else
-        parameters = params.merge(:app => @app, :env => @env, :action => "response_codes", :above => 400, :page => without_module(page.page))
-        link_to(integer_number(n), clean_params(parameters), :class => "warn", :title => "show 400s")
+        params = { :app => @app, :env => @env, :action => "response_codes", :above => 400, :page => without_module(page.page) }
+        link_to(integer_number(n), params, :class => "warn", :title => "show 400s")
       end
     end
 
@@ -217,28 +220,27 @@ module Logjam
       if code.to_i < 400
         h(text)
       else
-        parameters = params.merge(:app => @app, :env => @env, :action => "response_codes", :response_code => code, :page => (@page||'::'))
-
-        link_to(text, clean_params(parameters), :class => "error", :title => "show requests with response #{code}")
+        params = { :app => @app, :env => @env, :action => "response_codes", :response_code => code, :page => (@page||'::') }
+        clean_link_to(text, params, :class => "error", :title => "show requests with response #{code}")
       end
     end
 
     def link_error_list(n, error_type, html_options={})
       page = (@page||'').gsub(/^::/,'')
-      parameters = params.merge(:page => page, :action => "errors", :error_type => error_type)
-      link_to(n, clean_params(parameters), html_options)
+      params = { :page => page, :action => "errors", :error_type => error_type }
+      clean_link_to(n, params, html_options)
     end
 
     def link_exception_list(n, html_options={})
       page = (@page||'').gsub(/^::/,'')
-      parameters = params.merge(:page => page, :action => "exceptions")
-      link_to(n, clean_params(parameters), html_options)
+      params = { :page => page, :action => "exceptions" }
+      clean_link_to(n, params, html_options)
     end
 
     def link_js_exception_list(n, html_options={})
       page = (@page||'').gsub(/^::/,'')
-      parameters = params.merge(:page => page, :action => "js_exception_types")
-      link_to(n, clean_params(parameters), html_options)
+      params = { :page => page, :action => "js_exception_types" }
+      clean_link_to(n, params, html_options)
     end
 
     def without_module(page)

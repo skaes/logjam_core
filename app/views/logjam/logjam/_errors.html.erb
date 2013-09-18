@@ -1,9 +1,7 @@
 <table id="error-table">
   <tr>
     <th colspan="2">errors/warnings/exceptions
-      <%= link_to(triangle_right,
-          clean_params(params.merge(:action => "error_overview")),
-          :title => "show error overview") %>
+      <%= clean_link_to(triangle_right, {:action => "error_overview"}, :title => "show error overview") %>
     </th>
   </tr>
   <tr>
