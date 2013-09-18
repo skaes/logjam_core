@@ -6,15 +6,15 @@
     <p class="warning">Dataset is empty.</p>
     <% else -%>
     <div id="graph-counts" class="clear-left">
-      <p class="stats" style="display:inline-block; width:390px; margin-top:6px;">
+      <p class="stats graph-counts-title">
         showing
         <%= number_with_delimiter @dataset.count_requests %> of <%= number_with_delimiter @dataset.count %> requests
         <%= link_to(triangle_right,
                     clean_params(params.merge(:page => without_module(@page),
                     :action => "enlarged_plot", :interval => 1)),
-                   :title => "show enlarged plot") %>
+                    :title => "show enlarged plot") %>
       </p>
-      <p id="navicons">
+      <p class="navicons">
         <% if params[:interval].to_s == "5" %>
           <%= link_to(fa_icon("zoom-in", :title => "zoom in"),
                       clean_params(params.merge(:page => without_module(@page), :action => "index", :interval => 1))) %>

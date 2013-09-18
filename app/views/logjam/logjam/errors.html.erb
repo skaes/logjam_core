@@ -1,9 +1,9 @@
 <%= render "header" %>
 
-<div id='requests'>
+<div id="requests">
   <h1><%= @title %> <%= @page %> (<%= @error_count %> total)</h1>
   <% if @page_count > 1 %>
-  <div id='error_page_navigator'>
+    <div id="error_page_navigator">
     Page <%= @current_page %> of <%= @page_count %> pages
     <ul>
     <% unless @current_page == @last_page %>
@@ -19,16 +19,16 @@
     | <li><%= link_to("last page", clean_params(params.merge(:offset => @last_page_offset))) %></li>
     <% end %>
     </ul>
-  </div>
+    </div>
   <% end %>
-  <table class='full_stats'>
+  <table class="full_stats">
     <tr><th>Severity</th><th>Time</th><th>Action</th><th>Log Excerpt</th></tr>
     <% @requests.each do |r| %>
-    <tr class='full_stats'>
-      <td style="text-align:center"><%= severity_icon(r["severity"]) %></td>
+    <tr class="full_stats">
+      <td class="ctext"><%= severity_icon(r["severity"]) %></td>
       <% error_link_params = clean_params(params.merge(:action =>"show", :id => r["_id"])) %>
       <td><%= link_to(minute_to_human(r["minute"]), error_link_params, :title => "show request") %></td>
-      <td><%= link_to(h(r["page"]), clean_params(params.merge(:action => "index", :grouping => "page", :page => r["page"])), :title => "view summary") %></td>
+      <td><%= link_to(r["page"], clean_params(params.merge(:action => "index", :grouping => "page", :page => r["page"])), :title => "view summary") %></td>
       <td><%= link_to(extract_error(r["lines"]||[], params[:exception]), error_link_params, :title => "show request")  %></td>
     </tr>
     <% end %>
