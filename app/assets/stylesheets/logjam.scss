@@ -205,6 +205,7 @@ div#pagetimes {
     font-size: 12px;
     line-height: 13px;
     padding: 3px 5px;
+    vertical-align: bottom;
 }
 
 .sortable, .clickable {
@@ -268,7 +269,6 @@ td.number {text-align: right;}
 .stats th { font-size: 12px; }
 .stats td { font-size: 12px; padding: 0 8px; }
 .table-heading { font-weight: bold; padding-top: 10px; }
-.ctext { text-align: center; }
 
 #resource-plot { float:left; margin-top:-3px; }
 
