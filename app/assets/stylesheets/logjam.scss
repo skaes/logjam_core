@@ -120,8 +120,11 @@ input, select {
     margin: 0;
     a {
         color: rgba(120, 120, 120, 0.8);
-        margin-right: 2px;
+        margin: 0px 5px;
     }
+    border: 1px solid rgba(120, 120, 120, 0.1);
+    padding: 2px;
+    border-radius: 3px;
 }
 
 .active {
@@ -289,7 +292,7 @@ td.number {text-align: right;}
 #graph-stats th {font-size: 90%; white-space: nowrap;}
 #graph-counts {font-size: 90%; margin-bottom: 10px; white-space: nowrap;}
 #graph-counts p {font-weight: bold; white-space: nowrap;}
-.graph-counts-title { display:inline-block; width:390px; margin-top:6px; }
+.graph-counts-title { display:inline-block; width:394px; margin-top:6px; }
 
 #requests, #single-request, #exceptions, #callers, #all-pages {
     margin: 8px;

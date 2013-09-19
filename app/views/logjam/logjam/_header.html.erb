@@ -39,7 +39,9 @@ $(document).ready(initialize_header);
                 </li>
               <% end %>
               <li class="separator"></li>
+              <% if @dataset && @dataset.has_callers? -%>
               <li><%= clean_link_to("My Callers", :action =>"callers") %></li>
+              <% end %>
               <li><%= clean_link_to("Call Relationships", :action =>"call_relationships") %></li>
             </ul>
           </li>

@@ -140,7 +140,7 @@ module Logjam
       @summary ||=
         begin
           all_resources = Resource.time_resources + Resource.call_resources + Resource.memory_resources + Resource.heap_resources
-          resources = (all_resources & @collected_resources) - %w(heap_growth) + %w(apdex response)
+          resources = (all_resources & @collected_resources) - %w(heap_growth) + %w(apdex response callers)
           Totals.new(@db, resources, page, totals.page_names)
         end
     end
@@ -151,6 +151,10 @@ module Logjam
 
     YLABELS = { :time => 'Response time (ms)', :call => '# of calls',
                 :memory => 'Allocations (bytes)', :heap => 'Heap size (slots)'}
+
+    def has_callers?
+      summary.callers_count > 0
+    end
 
     def ylabel
       YLABELS[plot_kind] || ""
