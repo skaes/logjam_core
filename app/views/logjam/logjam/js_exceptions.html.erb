@@ -1,7 +1,7 @@
 <%= render "header" %>
 
 <div id='requests'>
-  <h1><%= @title %> <%= @page %> (<%= @error_count %> total)</h1>
+  <h1><%= @title %> <%= @page %> (<%= integer_number(@error_count) %> total)</h1>
   <% if @page_count > 1 %>
   <div id='error_page_navigator'>
     Page <%= @current_page %> of <%= @page_count %> pages
