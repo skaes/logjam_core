@@ -50,7 +50,7 @@ function install_logjam_lines_filter() {
 
       }, []).reduce(function (collector, tagName) {
 
-          if (tagNameTable[tagName] !== tagName) {
+          if (tagNameTable[tagName] !== tagName && tagName != "") {
             collector.push(tagNameTable[tagName] = tagName);
           }
           return collector;
@@ -70,7 +70,6 @@ function install_logjam_lines_filter() {
 
         '<div class="' + CLASSNAME_LOGJAM_TAGS_FILTER_ROOT + '">',
         '  <select size="1">',
-      //'    <option value="all">show all</option>',
         '  </select>',
         '</div>'
 
@@ -93,7 +92,7 @@ function install_logjam_lines_filter() {
           tagNameList = $item.attr(ALIAS_DATA_LOGJAM_TAGS).split(regXWhiteSpaceSequence)
         ;
         if (tagNameList.indexOf(tagName) < 0) {
-          tagNameList.push(tagName)
+          tagNameList.push(tagName);
           $item.attr(ALIAS_DATA_LOGJAM_TAGS, tagNameList.join(" "));
         }
       });
