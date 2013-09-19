@@ -5,6 +5,7 @@ function logjam_live_stream_chart(params){
   var legend = params.legend;
   var warning_level = 3;
   var update_interval = 1;
+  var transparent_ico_path = params.transparent_ico_path;
 
   /* Sizing and scales. */
   var w = 600,
@@ -223,13 +224,19 @@ function logjam_live_stream_chart(params){
   /* severity labels */
   function severity_label(i) {
     switch(i) {
-    case 1: return "INFO";
-    case 2: return "WARN";
-    case 3: return "ERROR";
-    case 4: return "FATAL";
-    default: return "UNKNOWN";
+    case 0: return "debug";
+    case 1: return "info";
+    case 2: return "warn";
+    case 3: return "error";
+    case 4: return "fatal";
+    default: return "unknown";
     }
   };
+
+  function severity_image(i) {
+    var label = severity_label(i);
+    return "<img src ='" + transparent_ico_path  + "' class='bg" + label + "' /> " + label.toUpperCase();
+  }
 
   function error_url(request_id, time) {
     var date = time.slice(0,10).replace(/-/g,'/');
@@ -246,7 +253,7 @@ function logjam_live_stream_chart(params){
       if (severity_value < warning_level) {
         continue;
       }
-      var severity = severity_label(severity_value);
+      var severity = severity_image(severity_value);
       var action = e["action"];
       var time = e["time"].slice(11,19);
       var desc = e["description"];

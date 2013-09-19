@@ -55,6 +55,21 @@ img.lj-ico { vertical-align: top; width: 16px; height:16px }
 pre a, #request-details a { color: blue; }
 pre a:hover, #request-details a:hover { color: blue; }
 
+@mixin bgimg {
+    vertical-align: bottom;
+    width: 16px;
+    height:16px;
+    background-size: 16px 16px;
+    background-position: top right;
+    repeat: no-repeat;
+}
+.bgdebug   { @include bgimg; background-image: image-url('debug.svg')   ;  }
+.bginfo    { @include bgimg; background-image: image-url('info.svg')    ;  }
+.bgwarn    { @include bgimg; background-image: image-url('warn.svg')    ;  }
+.bgerror   { @include bgimg; background-image: image-url('error.svg')   ;  }
+.bgfatal   { @include bgimg; background-image: image-url('fatal.svg')   ;  }
+.bgunknown { @include bgimg; background-image: image-url('unknown.svg') ;  }
+
 a {
     text-decoration: none;
     cursor: pointer;
