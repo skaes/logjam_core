@@ -447,10 +447,15 @@ module Logjam
     end
 
     def get_app_env
-      @default_app ||= database_info.default_app
-      @app ||= (params[:app] ||= (session[:last_app] || @default_app))
-      session[:last_app] = @app
       @apps ||= database_info.apps
+      @default_app ||= database_info.default_app
+      last_app = session[:last_app]
+      if last_app && @apps.include?(last_app) && !params[:app]
+        @app = params[:app] = last_app
+      else
+        @app ||= (params[:app] || @default_app)
+      end
+      session[:last_app] = @app
       @default_env ||= database_info.default_env(@app)
       @env ||= (params[:env] ||= @default_env)
       @envs ||= database_info.envs(@app)
