@@ -25,7 +25,8 @@
     <tr><th>Severity</th><th>Time</th><th>Action</th><th>Log Excerpt</th></tr>
     <% @requests.each do |r| %>
     <tr class="full_stats">
-      <td class="ctext"><%= severity_icon(r["severity"]) %></td>
+      <% severity = r["severity"] %>
+      <td class="ctext"><%= severity_icon(severity) %> <%= format_severity(severity) %></td>
       <%- error_link_params = { :action =>"show", :id => r["_id"] } -%>
       <%- error_text = extract_error(r["lines"]||[], params[:exception]) -%>
       <td><%= clean_link_to(minute_to_human(r["minute"]), error_link_params, :title => "show request") %></td>
