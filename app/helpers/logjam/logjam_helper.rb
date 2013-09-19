@@ -292,7 +292,7 @@ module Logjam
 
     def severity_icon(severity)
       img = format_severity(severity).downcase
-      image_tag("#{img}.png", :alt => "severity: #{img}", :title => "severity: #{img}")
+      image_tag("#{img}.svg", :class => "lj-ico", :title => "log severity: #{img}")
     end
 
     def extract_error(log_lines, exception)

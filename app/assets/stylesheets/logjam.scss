@@ -47,11 +47,11 @@ body, p, ol, ul, td {
 
 pre {
     margin: 1px 0!important;
-    padding: 5px!important;
+    padding: 4px!important;
     font-size: 11px;
     white-space: pre-wrap;
 }
-pre img { vertical-align: top; }
+img.lj-ico { vertical-align: top; width: 16px; height:16px }
 pre a, #request-details a { color: blue; }
 pre a:hover, #request-details a:hover { color: blue; }
 
