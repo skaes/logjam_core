@@ -303,7 +303,7 @@ td.number {text-align: right;}
 #graph-stats th {font-size: 90%; white-space: nowrap;}
 #graph-counts {font-size: 90%; margin-bottom: 10px; white-space: nowrap;}
 #graph-counts p {font-weight: bold; white-space: nowrap;}
-.graph-counts-title { display:inline-block; width:394px; margin-top:6px; }
+.graph-counts-title { display:inline-block; width:376px; margin-top:6px; }
 
 #requests, #single-request, #exceptions, #callers, #all-pages {
     margin: 8px;
@@ -538,7 +538,7 @@ svg {
 .menu > ul > li > a:after {
     content: '▼';
     display: inline-block;
-    font-size: 8px;
+    font-size: 6px;
     margin: 0px 0px 0px 2px;
     padding-left: 2px;
     text-align: center;
