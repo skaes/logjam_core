@@ -18,7 +18,7 @@ module Logjam
 
     def with_conditional_caching(query, &block)
       if @perform_caching
-        key = "#{@database.name}-#{query}"
+        key = cache_key(query)
         Rails.cache.fetch(key) do
           instrument(query, &block)
         end
@@ -27,5 +27,14 @@ module Logjam
       end
     end
 
+    if Rails.env.production?
+      def cache_key(query)
+        "#{@database.name}-#{query}"
+      end
+    else
+      def cache_key(query)
+        "#{Rails.env}-#{@database.name}-#{query}"
+      end
+    end
   end
 end
