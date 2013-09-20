@@ -10,22 +10,7 @@
     and <%= minute_to_human(@dataset.end_minute) %>,
     sorted by <%= resource_name %>
   </h3>
-  <% if @page_count > 1 %>
-  <div id='error_page_navigator'>
-    Page <%= @current_page %>
-    <ul>
-    <% unless @current_page == @last_page %>
-    | <li><%= clean_link_to("next page", :offset => @next_page_offset) %></li>
-    <% end %>
-    <% unless @current_page == 1 %>
-    | <li><%= clean_link_to("previous page", :offset => @previous_page_offset) %></li>
-    <% end %>
-    <% unless @current_page == 1 %>
-    | <li><%= clean_link_to("first page", :offset => 0) %></li>
-    <% end %>
-    </ul>
-  </div>
-  <% end %>
+  <%= render "result_navigator" %>
   <table class='full_stats'>
     <tr><th>minute</th><th>page</th><th class="sorted"><%= resource_name %></th></tr>
     <%= render "request_statistics", options.merge(:requests => @requests) %>

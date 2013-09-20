@@ -122,7 +122,14 @@ input, select {
         color: rgba(120, 120, 120, 0.8);
         margin: 0px 5px;
     }
-    border: 1px solid rgba(120, 120, 120, 0.1);
+    a.sensitive {
+        color: rgba(120, 120, 120, 0.8);
+    }
+    a.insensitive {
+        color: rgba(120, 120, 120, 0.3);
+        cursor: default;
+    }
+    border: 1px solid rgba(120, 120, 120, 0.2);
     padding: 2px;
     border-radius: 3px;
 }
@@ -357,17 +364,27 @@ td.number {text-align: right;}
     list-style: square;
 }
 
-#error_page_navigator {
-    margin-top: -5px;
+#result-navigator {
+    margin-top: 0px;
     margin-bottom: 5px;
+    ul {
+        list-style-type: none;
+        display: inline;
+    }
+    li {
+        display: inline;
+        vertical-align: bottom;
+    }
+    li + li:before {
+        content: ' ';
+    }
+    .navtext {
+        display: inline-block;
+        width: 107px;
+    }
 }
-#error_page_navigator ul {
-    list-style-type: none;
-    display: inline;
-    padding-left: 10px;
-}
-#error_page_navigator li {
-    display: inline;
+.normal {
+    font-weight: normal;
 }
 
 #stream-title, #stream-control {

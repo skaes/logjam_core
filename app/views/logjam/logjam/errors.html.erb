@@ -2,25 +2,7 @@
 
 <div id="requests">
   <h1><%= @title %> <%= @page %> (<%= integer_number(@error_count) %> total)</h1>
-  <% if @page_count > 1 %>
-    <div id="error_page_navigator">
-    Page <%= @current_page %> of <%= @page_count %> pages
-    <ul>
-    <% unless @current_page == @last_page %>
-    | <li><%= clean_link_to("next page", :offset => @next_page_offset) %></li>
-    <% end %>
-    <% unless @current_page == 1 %>
-    | <li><%= clean_link_to("previous page", :offset => @previous_page_offset) %></li>
-    <% end %>
-    <% unless @current_page == 1 %>
-    | <li><%= clean_link_to("first page", :offset => 0) %></li>
-    <% end %>
-    <% unless @current_page == @last_page %>
-    | <li><%= clean_link_to("last page", :offset => @last_page_offset) %></li>
-    <% end %>
-    </ul>
-    </div>
-  <% end %>
+  <%= render "result_navigator" %>
   <table class="full_stats">
     <tr><th>Severity</th><th>Time</th><th>Action</th><th>Log Excerpt</th></tr>
     <% @requests.each do |r| %>

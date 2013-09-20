@@ -1,0 +1,37 @@
+<% if @page_count > 1 %>
+<div id="result-navigator">
+  <div class="navtext">Page <%= @current_page %> of <%= @page_count %></div>
+  <ul class="navicons">
+    <li>
+      <% if @current_page > 1 %>
+        <%= clean_link_to(fa_icon("fast-backward", :class => "sensitive", :title => "first page"), :offset => 0) %>
+      <% else %>
+        <a class="insensitive"><%= fa_icon("fast-backward") %></a>
+      <% end %>
+    </li>
+    <li>
+      <% if @current_page > 1 %>
+        <%= clean_link_to(fa_icon("backward", :class => "sensitive", :title => "previous page"), :offset => @previous_page_offset) %>
+      <% else %>
+        <a class="insensitive"><%= fa_icon("backward") %></a>
+      <% end %>
+    </li>
+    <li>
+      <% if @current_page != @last_page %>
+        <%= clean_link_to(fa_icon("forward", :class => "sensitive", :title =>"next page"), :offset => @next_page_offset) %>
+      <% else %>
+        <a class="insensitive"><%= fa_icon("forward") %></a>
+      <% end %>
+    </li>
+    <% unless @skip_last %>
+      <li>
+        <% if @current_page != @last_page && @last_page > 1 %>
+          <%= clean_link_to(fa_icon("fast-forward", :class => "sensitive", :title => "last page"), :offset => @last_page_offset) %>
+        <% else %>
+          <a class="insensitive"><%= fa_icon("fast-forward") %></a>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+</div>
+<% end %>
