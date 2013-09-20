@@ -376,6 +376,25 @@ module Logjam
       s.gsub(/_/, ' ').gsub('∙','.')
     end
 
+    def page_type
+      if @dataset.namespace?
+        "namespace"
+      elsif @dataset.action?
+        "action"
+      else
+        "actions matching"
+      end
+    end
+
+    # human page name (for, of)
+    def hpn(prefix)
+      if @dataset.top_level?
+        ""
+      else
+        "#{prefix} #{page_type} «#{@page.sub(/\A::/,'')}»"
+      end
+    end
+
     def format_hash(hash)
       contents = hash.keys.sort.map do |k|
         val = hash[k]

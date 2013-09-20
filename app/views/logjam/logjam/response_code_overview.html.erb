@@ -1,7 +1,7 @@
 <%= render "header" %>
 
 <div id='exceptions'>
-  <h1><%= @title %> <%= @page %></h1>
+  <h3><%= @title %> <%= hpn("for") %></h3>
   <table class='full_stats'>
     <tr><th>Type</th><th>Count</th><th>Distribution over time (0-24h, 2 minute intervals)</th></tr>
     <% @totals.response_codes.keys.sort.each_with_index do |rc,i| %>

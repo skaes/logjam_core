@@ -51,7 +51,7 @@ module Logjam
     end
 
     def page_description
-      page == "::" ? "all pages" : page
+      page == "::" ? "all actions" : page
     end
 
     def description
@@ -134,6 +134,18 @@ module Logjam
 
     def totals
       @totals ||= Totals.new(@db, %w(apdex response severity exceptions js_exceptions) + resource_fields, page)
+    end
+
+    def namespace?
+      totals.page_names.include?("::#{page.sub(/\A::/,'')}")
+    end
+
+    def action?
+      totals.page_names.include?(page)
+    end
+
+    def top_level?
+      ['', 'all_pages', '::'].include?(page)
     end
 
     def summary

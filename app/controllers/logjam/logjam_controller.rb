@@ -133,16 +133,15 @@ module Logjam
         @title = "Internal Server Errors"
         q = Requests.new(@db, "minute", @page, :response_code => 500, :limit => @page_size, :skip => params[:offset].to_i)
       when "exceptions"
-        @title = "Requests with '#{params[:exception]}'"
+        @title = "Requests with exception «#{params[:exception]}»"
         q = Requests.new(@db, "minute", @page, :exceptions => params[:exception], :limit => @page_size, :skip => params[:offset].to_i)
       else
-        severity = case params[:error_type]
-                   when "logged_warning"; then 2
-                   when "logged_error"; then 3
-                   when "logged_fatal"; then 4
-                   else 5
+        severity, @title = case params[:error_type]
+                   when "logged_warning"; then [2, "Logged Warnings"]
+                   when "logged_error"; then [3, "Logged Errors"]
+                   when "logged_fatal"; then [4, "Logged Fatal Errors"]
+                   else [3, "Logged Errors"]
                    end
-        @title = severity == 2 ? "Logged Warnings" : "Logged Errors"
         q = Requests.new(@db, "minute", @page, :severity => severity, :limit => @page_size, :skip => params[:offset].to_i)
       end
       @error_count = q.count
@@ -221,11 +220,12 @@ module Logjam
       @last_page_offset = @request_count/@page_size*@page_size
       @next_page_offset = offset + @page_size
       @previous_page_offset = [offset - @page_size, 0].max
+      @skip_last = true
     end
 
     def error_overview
       redirect_on_empty_dataset and return
-      @title = "Logged Errors/Warnings/Exceptions"
+      @title = "Problem Overview"
       @resources = %w(exceptions js_exceptions severity response)
       @totals = Totals.new(@db, @resources, @page.blank? ? 'all_pages' : @page)
       @minutes = Minutes.new(@db, @resources, @page, @totals.page_names, 2)
@@ -264,7 +264,7 @@ module Logjam
       end
       respond_to do |format|
         format.html do
-          @title = "Callers" + (['::', 'all_pages', ''].include?(@page) ? '' : " of '#{@app}-#{@page}'")
+          @title = "Callers"
           @callers =
             case params[:sort]
             when 'name'

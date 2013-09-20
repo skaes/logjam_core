@@ -27,10 +27,11 @@
                             :page => without_module(@page), :action => distribution_kind(@dataset.resource)) %>
         <% end %>
         <% if @dataset.live_stream? -%>
-        <%= link_to(fa_icon("facetime-video", :title => "live stream"),
+        <%= link_to(fa_icon("facetime-video", :title => "view live stream"),
                     clean_params(params.slice(:app,:env,:page).merge(:action => "live_stream")),
-                    {:target => "_blank"}) %>
+                    :target => "_blank") %>
         <% end -%>
+        <%= image_tag "t.png" %>
         <% if @dataset.has_callers? -%>
         <%= clean_link_to(fa_icon("phone", :title => "view callers"), :action => "callers") %>
         <% end -%>

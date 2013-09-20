@@ -1,7 +1,7 @@
 <%= render "header" %>
 
 <div id='requests'>
-  <h1><%= @title %> <%= @page %> (<%= integer_number(@error_count) %> total)</h1>
+  <h3><%= @title %> <%= hpn("for") %> (<%= integer_number(@error_count) %>)</h3>
   <%= render "result_navigator" %>
   <table class='full_stats'>
     <tr><th>Time</th><th>Action</th><th>Description</th></tr>

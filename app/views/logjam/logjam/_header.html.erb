@@ -77,7 +77,7 @@ $(document).ready(initialize_header);
         </div>
       </li>
       <li id="page-widget">
-        <div><%= label :filter, "page selector" %></div>
+        <div><label>Namespace / Action</label></div>
         <div>
           <input id="page-field" class="autocomplete" name="page" size="45" type="text" value="<%= @page %>" onchange="view_selected_pages()" />
         </div>
@@ -85,13 +85,13 @@ $(document).ready(initialize_header);
       <li id="grouping-widget">
         <div>
           <ul>
-            <li <%= raw html_attributes_for_grouping("page") %>>Pages</li>
+            <li <%= raw html_attributes_for_grouping("page") %>>Actions</li>
             <li <%= raw html_attributes_for_grouping("request") %>>Requests</li>
           </ul>
         </div>
       </li>
       <li id="resource-type-widget">
-        <div><%= label :filter, "resource selector" %></div>
+        <div><label>Resource</label></div>
         <div class="menu">
           <ul>
             <li><a <%= raw html_attributes_for_resource_type(:time) %>>Time</a>

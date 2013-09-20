@@ -107,7 +107,7 @@ module Logjam
           :response_code => 'response codes',
           :host => 'servers',
           :session_id => 'sessions',
-          :page => 'pages',
+          :page => 'actions',
           :user_id => 'users',
           :minute1 => 'minutes',
           :request => 'requests'
