@@ -257,7 +257,7 @@ module Logjam
 
     def html_attributes_for_grouping(grouping)
       if params[:grouping] == grouping
-        "class='active'"
+        "class='active' onclick=\"view_grouping('#{grouping}')\""
       else
         "class='inactive' onclick=\"view_grouping('#{grouping}')\""
       end
