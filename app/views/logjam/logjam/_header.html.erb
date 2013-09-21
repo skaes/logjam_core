@@ -63,9 +63,9 @@ $(document).ready(initialize_header);
       <% end %>
       <li id="time-range-widget">
         <div class="menu">
-          <ul>
-            <li <%= raw html_attributes_for_time_range("date") %>><div>Date</div></li>
-            <li <%= raw html_attributes_for_time_range("history") %>><div>History</div></li>
+          <ul class="radio horizontal">
+            <li><a <%= raw html_attributes_for_time_range("date") %>>Date</a></li>
+            <li><a <%= raw html_attributes_for_time_range("history") %>>History</a></li>
           </ul>
         </div>
         <div>
@@ -83,18 +83,18 @@ $(document).ready(initialize_header);
         </div>
       </li>
       <li id="grouping-widget">
-        <div>
-          <ul>
-            <li <%= raw html_attributes_for_grouping("page") %>>Actions</li>
-            <li <%= raw html_attributes_for_grouping("request") %>>Requests</li>
+        <div class="menu">
+          <ul class="radio vertical">
+            <li><a <%= raw html_attributes_for_grouping("page") %>>Actions</a></li>
+            <li><a <%= raw html_attributes_for_grouping("request") %>>Requests</a></li>
           </ul>
         </div>
       </li>
       <li id="resource-type-widget">
         <div><label>Resource</label></div>
         <div class="menu">
-          <ul>
-            <li><a <%= raw html_attributes_for_resource_type(:time) %>>Time</a>
+          <ul class="radio horizontal">
+            <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:time) %>>Time</a>
               <ul>
                 <% collected_time_resources.reverse.each do |r| %>
                   <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
@@ -102,7 +102,7 @@ $(document).ready(initialize_header);
               </ul>
             </li>
             <% unless collected_call_resources.empty? %>
-              <li><a <%= raw html_attributes_for_resource_type(:call) %>>Calls</a>
+              <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:call) %>>Calls</a>
                 <ul>
                   <% collected_call_resources.reverse.each do |r| %>
                     <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
@@ -111,7 +111,7 @@ $(document).ready(initialize_header);
               </li>
             <% end %>
             <% unless collected_memory_resources.empty? %>
-              <li><a <%= raw html_attributes_for_resource_type(:memory) %>>Allocations</a>
+              <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:memory) %>>Allocations</a>
                 <ul>
                   <% collected_memory_resources.reverse.each do |r| %>
                     <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
@@ -120,7 +120,7 @@ $(document).ready(initialize_header);
               </li>
             <% end %>
             <% unless collected_heap_resources.empty? %>
-              <li><a <%= raw html_attributes_for_resource_type(:heap) %>>Heap</a>
+              <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:heap) %>>Heap</a>
                 <ul>
                   <% collected_heap_resources.reverse.each do |r| %>
                     <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>

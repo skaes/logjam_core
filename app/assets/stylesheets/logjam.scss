@@ -1,8 +1,9 @@
-$menu-active-bg-color: rgba(230,230,230, 0.9);
-$menu-inactive-bg-color: rgba(200,200,200, 0.4);
-$menu-hover-color: #fff;
 $header-bg-color: #cca383;
-$header-height: 54px;
+$header-height: 53px;
+$menu-hover-color: #fff;
+$menu-border-color: #ccc; //  rgba(230,230,230, 0.9);
+$menu-active-bg-color: rgba(230,230,230, 0.9);
+$menu-inactive-bg-color: $header-bg-color;
 
 body {
     background-color: #fff;
@@ -76,7 +77,7 @@ a {
     color: #000;
     &:hover {
         color: #000;
-        background-color:#fff;
+        background-color: #fff;
     }
 }
 
@@ -144,7 +145,7 @@ input, select {
 
 .inactive:hover, .active:hover {
     color: #000;
-    background-color:#fff;
+    background-color: #fff;
     cursor: pointer;
 }
 
@@ -348,7 +349,7 @@ td.number {text-align: right;}
     }
     .navtext {
         display: inline-block;
-        width: 107px;
+        width: 115px;
     }
 }
 .normal {
@@ -479,8 +480,8 @@ svg {
         list-style: none;
         background-color: $header-bg-color;
     }
-    input, select { margin: 0px; }
-    label { font-size: 10px; }
+    input, select { margin: 0px; position: relative; top: 3px; }
+    label { font-size: 10px; position: relative; top: 3px; }
 }
 
 .header > ul {
@@ -498,12 +499,12 @@ svg {
 .header > ul > li {
     font-size: 12px;
     position: relative;
-    top: -2px;
+    top: 0px;
     display: inline-block;
     margin: -2px 10px 2px 10px;
     padding: 0px;
     &:last-child { clear:left; }
-    & > div { height: 23px; }
+    & > div { height: 25px; }
 }
 
 .menu {
@@ -520,33 +521,36 @@ svg {
     margin: 0px 0px;
     padding: 0px;
 }
+.menu > ul.radio.vertical > li {
+    display: block;
+}
 .menu > ul > li {
     display: inline-block;
     padding: 0px;
     margin-right: 0px;
 }
 .menu li li a:before {
-    content: '▶';
+    font-family: 'FontAwesome';
+    content: "\f0da";
     visibility: hidden;
-    padding: 0px 5px 0px 0px;
+    padding: 2px 5px 0px 0px;
     color: orange;
-    font-size: 11px;
+    vertical-align: -10%;
+    font-size: 1.5em;
 }
 .menu li li:hover a:before {
     visibility: visible;
 }
-.menu > ul > li > a:after {
-    content: '▼';
+.menu > ul.horizontal > li.dropdown > a:after {
+    font-family: 'FontAwesome';
+    content: "\f0d7";
+    padding-left: 4px;
     display: inline-block;
-    font-size: 6px;
-    margin: 0px 0px 0px 2px;
-    padding-left: 2px;
-    text-align: center;
 }
 .menu li .separator {
     height: 1px;
     margin: 1px;
-    background-color: #ccc;
+    background-color: $menu-border-color;
 }
 .menu li a.active {
     background-color: $menu-active-bg-color;
@@ -576,9 +580,15 @@ svg {
 .menu > ul > li > a {
     padding-right: 5px;
 }
-.menu li a:hover, .menu ul li:hover a {
-    background: white;
+.menu li > a:hover {
     text-decoration:none;
+}
+.menu > ul > li:hover, ul.radio.horizontal > li:hover {
+    & > a {
+        background: #fff;
+        text-decoration:none;
+    }
+    border-bottom-left-radius: 0px;
 }
 .menu li ul {
     position: absolute;
@@ -587,7 +597,8 @@ svg {
     height: auto;
     padding: 0px;
     margin: 0px;
-    border: 1px solid #ccc;
+    // border: 1px solid #fff;
+    box-shadow: 0px 0px 8px #888;
 }
 .menu li:hover ul {
     display:block;
@@ -607,9 +618,54 @@ svg {
     text-align:left;
 }
 .menu li ul a:hover, .menu li ul li:hover a {
-    background:#ccc;
+    background-color: $menu-border-color;
     border:0px;
-    text-decoration:none;
+    // text-decoration:none;
+}
+ul.radio {
+    font-size: 0px;
+}
+ul.radio.horizontal > li {
+    & > a {
+        border-radius: 0px;
+        border: 1px solid $menu-border-color;
+        border-right: none;
+        padding-left: 8px;
+        padding-right: 10px;
+        /* &:hover { */
+        /*      border-color: red; */
+        /*  } */
+    }
+    &:first-child > a {
+        border-radius:3px 0px 0px 3px;
+    }
+    &:last-child > a {
+        border-radius:0px 3px 3px 0px;
+        border-right: 1px solid $menu-border-color;
+    }
+}
+ul.radio.vertical > li {
+    & > a {
+        border-radius: 0px;
+        border: 1px solid $menu-border-color;
+        border-bottom: none;
+        padding-left: 10px;
+        padding-right: 10px;
+        &:hover {
+            // border-color: $menu-hover-color;
+        }
+    }
+    &:first-child > a {
+        border-radius:3px 3px 0px 0px;
+    }
+    &:last-child > a {
+        border-radius:0px 0px 3px 3px;
+        border-bottom: 1px solid $menu-border-color;
+    }
+}
+
+ul.radio > li+li {
+    // margin-left: 5px;
 }
 
 #navigation-widget {
@@ -617,7 +673,7 @@ svg {
     margin-left: 5px;
     line-height: 18px;
     position: relative;
-    top: 6px;
+    top: 2px;
     label {
         font-size: 18px;
         cursor: pointer;
@@ -627,7 +683,7 @@ svg {
         cursor: pointer;
         & > ul {
             position:relative;
-            top: 2px;
+            top: 5px;
         }
     }
 }
@@ -646,58 +702,47 @@ svg {
 #app-widget { }
 
 #time-range-widget {
-    ul {
-        position: relative;
-        top: 0px;
-        display: inline;
-        li {
-            display: inline;
-            border-radius: 2px;
-            text-align: center;
-            div {
-                display: inline-block;
-                margin-top: 3px;
-            }
-            font-size: 80%;
-            padding: 2px;
-            margin: 0px;
-        }
-        li.active { background-color: $menu-active-bg-color; }
-        li.inactive { background-color: $menu-inactive-bg-color; }
-        li:hover { background-color: $menu-hover-color; }
+    .menu {
+        postion: relative;
+        top: 4px;
+    }
+    .menu > ul > li > a {
+        font-size: 10px;
+        padding: 0px 2px;
     }
 }
 
 #grouping-widget {
     font-weight: bold;
-    height: 50px;
+    height: 48px;
     ul { padding: 0px; }
-    li {
-        border-radius: 2px;
-        text-align: center;
-        height: 18px;
-        margin: 2px;
-        padding: 2px 10px 2px 10px;
-    }
     div {
         position: relative;
-        top: 6px;
+        top: 3px;
     }
-    li.active   { background-color: $menu-active-bg-color; }
-    li.inactive { background-color: $menu-inactive-bg-color; }
-    li:hover    { background-color: $menu-hover-color; }
 }
 
-#resource-type-widget, #page-widget {
+#page-widget {
     label { margin-top: 3px; }
+}
+#resource-type-widget {
+    label { margin-top: 4px; }
+    .menu {
+        position: relative;
+        top: 3px;
+    }
 }
 #app-widget, #env-widget {
     label { margin-top: 2px; }
 }
 
 #auto-refresh {
+    margin-left: 25px;
     position: relative;
     top: -21px;
+    input {
+       top:0px;
+    }
 }
 
 #show-json {
