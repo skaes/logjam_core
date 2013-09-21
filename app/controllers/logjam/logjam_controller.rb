@@ -132,19 +132,20 @@ module Logjam
       when "internal"
         @title = "Internal Server Errors"
         q = Requests.new(@db, "minute", @page, :response_code => 500, :limit => @page_size, :skip => params[:offset].to_i)
+        @error_count = @dataset.response_codes[500]
       when "exceptions"
         @title = "Requests with exception «#{params[:exception]}»"
         q = Requests.new(@db, "minute", @page, :exceptions => params[:exception], :limit => @page_size, :skip => params[:offset].to_i)
+        @error_count = @dataset.exceptions[params[:exception]]
       else
-        severity, @title = case params[:error_type]
-                   when "logged_warning"; then [2, "Logged Warnings"]
-                   when "logged_error"; then [3, "Logged Errors"]
-                   when "logged_fatal"; then [4, "Logged Fatal Errors"]
-                   else [3, "Logged Errors"]
+        severity, @title, @error_count = case params[:error_type]
+                   when "logged_warning"; then [2, "Logged Warnings", @dataset.logged_error_count(2)]
+                   when "logged_error"; then [3, "Logged Errors", @dataset.logged_error_count_above(3)]
+                   when "logged_fatal"; then [4, "Logged Fatal Errors", @dataset.logged_error_count_above(4)]
+                   else [3, "Logged Errors", @dataset.logged_error_count_above(3)]
                    end
         q = Requests.new(@db, "minute", @page, :severity => severity, :limit => @page_size, :skip => params[:offset].to_i)
       end
-      @error_count = q.count
       @requests = q.all
       offset = params[:offset].to_i
       @page_count = @error_count/@page_size + 1

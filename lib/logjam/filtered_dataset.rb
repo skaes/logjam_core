@@ -305,8 +305,12 @@ module Logjam
       severities[level] || 0
     end
 
+    def logged_error_count_above(level)
+      (level..5).to_a.map{|l| logged_error_count(l) }.sum
+    end
+
     def exceptions
-      totals
+      totals.exceptions
     end
 
     def exception_count
