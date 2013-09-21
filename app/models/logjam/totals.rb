@@ -223,7 +223,7 @@ module Logjam
           query = "Totals.find({page:'all_pages'},{})"
           row = with_conditional_caching(query) do |payload|
                   r = @collection.find_one({:page => 'all_pages'},{})
-                  payload[:rows] = r ? 0 : 1
+                  payload[:rows] = r ? 1 : 0
                   r.delete("_id") if r
                   r
                 end
