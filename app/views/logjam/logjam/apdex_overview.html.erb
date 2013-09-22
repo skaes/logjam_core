@@ -1,7 +1,13 @@
 <%= render "header" %>
 
 <div id='exceptions'>
-  <h3><%= @title %> <%= hpn("for") %></h3>
+  <h3>
+    <%= @title %> <%= hpn("for") %>
+    <%= clean_link_to(triangle_right,
+                      { :page => without_module(@page), :action => "totals_overview",
+                        :grouping => "page", :grouping_function => "apdex" },
+                      :title => "action overview by apdex score") %>
+  </h3>
   <table class='full_stats'>
     <tr><th>Apdex</th><th>Value/Request Count</th><th>Distribution over time (0-24h, 2 minute intervals)</th></tr>
     <% i = 0; rating = apdex_rating(@totals.apdex_score) %>
