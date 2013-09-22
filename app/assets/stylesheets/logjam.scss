@@ -52,7 +52,7 @@ pre {
     font-size: 11px;
     white-space: pre-wrap;
 }
-img.lj-ico { vertical-align: top; width: 16px; height:16px }
+img.lj-ico { vertical-align: top; width: 16px; height:16px; }
 pre a, #request-details a { color: blue; }
 pre a:hover, #request-details a:hover { color: blue; }
 
@@ -217,7 +217,11 @@ div#pagetimes {
     font-size: 12px;
     line-height: 13px;
     padding: 3px 5px;
-    vertical-align: bottom;
+    vertical-align: middle;
+    img.lj-ico {
+        position: relative;
+        top: -2px;
+    }
 }
 
 .sortable, .clickable {
