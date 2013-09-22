@@ -5,7 +5,7 @@
    options = {:resource => resource}
 -%>
 <div id='requests'>
-  <h3> Requests
+  <h3> Requests <%= hpn("for") %>
     between <%= minute_to_human(@dataset.start_minute) %>
     and <%= minute_to_human(@dataset.end_minute) %>,
     sorted by <%= resource_name %>

@@ -1,10 +1,9 @@
 <%= render "header" %>
 <div id="all-pages">
-  <h3><%= @dataset.description %>
-    <%- if params[:grouping] == "request" -%>
-    between <%= minute_to_human(@dataset.start_minute) %>
-    and <%= minute_to_human(@dataset.end_minute) %>
-    <%- end -%>
+  <h3>
+    Actions <%= hpn("for") %> sorted by
+    <%= Logjam::Resource.grouping_function_description(params[:resource], params[:grouping_function]) %>
+    (<%= integer_number(@dataset.do_the_query.size) %>)
   </h3>
   <%= render "page_times" %>
 </div>

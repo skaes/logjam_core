@@ -126,6 +126,22 @@ module Logjam
         grouping.to_sym != :request
       end
 
+      def grouping_function_description(resource, grouping_function)
+        name = resource_name(resource).sub('sql query ', '')
+        case grouping_function.to_sym
+        when :sum
+          "overall #{name}"
+        when :avg
+          "average #{name}"
+        when :stddev
+          "standard deviation of #{name}"
+        when :count
+          "number of requests"
+        when :apdex
+          "apdex score"
+        end
+      end
+
       def description(resource, grouping, grouping_function)
         name = resource_name(resource).sub('sql query ', '')
         type = resource_type(resource)
@@ -142,22 +158,7 @@ module Logjam
         return 'nonsensical sort order' if grouping.to_sym == :request && resource.to_sym == :requests
 
         if grouping?(grouping)
-          case grouping_function.to_sym
-          when :sum
-            "#{worst} #{human_grouping} by overall #{name}"
-          when :avg
-            "#{worst} #{human_grouping} by average #{name}"
-          when :stddev
-            "#{worst} #{human_grouping} by standard deviation of #{name}"
-          when :count
-            "#{worst} #{human_grouping} by number of requests"
-          when :apdex
-            "#{worst} #{human_grouping} by apdex"
-          when :min
-            "#{human_grouping} with requests with min #{name}"
-          when :max
-            "#{human_grouping} with requests with max #{name}"
-          end
+          "#{worst} #{human_grouping} by #{grouping_function_description(resource, grouping_function)}"
         else
           "#{human_grouping} with the most #{name}"
         end
