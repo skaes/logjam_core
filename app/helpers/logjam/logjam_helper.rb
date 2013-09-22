@@ -280,6 +280,16 @@ module Logjam
       end
     end
 
+    def apdex_rating(v)
+      case
+      when v > 0.94 then "excellent"
+      when v > 0.85 then "good"
+      when v > 0.7  then "fair"
+      when v > 0.5  then "poor"
+      else "unacceptable"
+      end
+    end
+
     def triangle_right
       '<span class="triangle">▶</span>'.html_safe
     end

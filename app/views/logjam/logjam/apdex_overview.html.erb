@@ -3,37 +3,37 @@
 <div id='exceptions'>
   <h3><%= @title %> <%= hpn("for") %></h3>
   <table class='full_stats'>
-    <tr><th>Apdex</th><th>Value</th><th>Distribution over time (0-24h, 2 minute intervals)</th></tr>
-    <% i = 0 %>
-    <tr class='full_stats'>
-      <td><b>Score<br />Goal</b></td>
-      <td class='number'><b><%= float_number(@totals.apdex_score) %></b><br /><b><span class="red">0.94</span></b></td>
+    <tr><th>Apdex</th><th>Value/Request Count</th><th>Distribution over time (0-24h, 2 minute intervals)</th></tr>
+    <% i = 0; rating = apdex_rating(@totals.apdex_score) %>
+    <tr class='full_stats apdex <%= rating %> '>
+      <td><b>Score<br /><br />Goal<br /><br />Rating</b></td>
+      <td class='number'><%= float_number(@totals.apdex_score) %><br /><br />0.94<br /><br /><%= rating %></td>
       <td class='echart' id='<%= "apdex-chart-#{i+=1}" %>'>
         <%= render "apdex_chart", apdex_score: @minutes.apdex_score, i: i, height: 100 %>
       </td>
     </tr>
-    <tr class='full_stats'>
+    <tr class='full_stats apdex happy'>
       <td><b>Happy</b><br />(t &lt; 0.1s)</td>
       <td class='number'><%= integer_number(@totals.apdex["happy"]) %></td>
       <td class='echart' id='<%= "echart-#{i+=1}" %>'>
         <%= render "echart", exceptions: @minutes.apdex["happy"], i: i, url: nil, height: 90 %>
       </td>
     </tr>
-    <tr class='full_stats'>
+    <tr class='full_stats apdex satisfied'>
       <td><b>Satisfied</b><br />(t &lt; 0.5s)</td>
       <td class='number'><%= integer_number(@totals.apdex["satisfied"]) %></td>
       <td class='echart' id='<%= "echart-#{i+=1}" %>'>
         <%= render "echart", exceptions: @minutes.apdex["satisfied"], i: i, url: nil, height: 90 %>
       </td>
     </tr>
-    <tr class='full_stats'>
+    <tr class='full_stats apdex tolerating'>
       <td><b>Tolerating</b><br />(0.5s &le; t &lt; 2s)</td>
       <td class='number'><%= integer_number(@totals.apdex["tolerating"]) %></td>
       <td class='echart' id='<%= "echart-#{i+=1}" %>'>
         <%= render "echart", exceptions: @minutes.apdex["tolerating"], i: i, url: nil, height: 90 %>
       </td>
     </tr>
-    <tr class='full_stats'>
+    <tr class='full_stats apdex frustrated'>
       <td><b>Frustrated</b><br />(t &ge; 2s)</td>
       <td class='number'><%= integer_number(@totals.apdex["frustrated"]) %></td>
       <td class='echart' id='<%= "echart-#{i+=1}" %>'>

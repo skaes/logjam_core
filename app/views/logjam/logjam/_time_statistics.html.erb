@@ -7,7 +7,7 @@
     <td class="number"><%= seconds_to_human(page.sum(resource).to_f / 1000) %></td>
     <td class="number"><%= number_to_percentage(page.sum(resource).to_f / resource_total * 100, :precision => 2) %></td>
     <% if resource == "total_time" -%>
-      <td class="number"><%= number_with_precision(page.apdex_score, :precision => 2) %></td>
+      <td class="number"><%= clean_link_to(number_with_precision(page.apdex_score, :precision => 2), :action => "apdex_overview", :page => page.page) %></td>
       <td class="number"><%= sometimes_link_errors(page) %></td>
       <td class="number"><%= sometimes_link_400s(page) %></td>
     <% else -%>

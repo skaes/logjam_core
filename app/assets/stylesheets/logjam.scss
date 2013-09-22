@@ -301,6 +301,18 @@ td.number {text-align: right;}
 #apdex-table td, #error-table td {font-size: 90%; line-height: 100%; white-space: nowrap;}
 #apdex-table th, #error-table th {font-size: 90%; white-space: nowrap;}
 
+tr.full_stats.apdex:hover { background: #fff; }
+tr.apdex td:nth-child(2) { font-weight: bold; }
+tr.apdex.excellent    { td:first-child, td:nth-child(2) { background: rgba(0,0,255,0.5); } }
+tr.apdex.good         { td:first-child, td:nth-child(2) { background: rgba(0,255,0,0.5); } }
+tr.apdex.fair         { td:first-child, td:nth-child(2) { background: rgba(255,165,0,0.5); } }
+tr.apdex.poor         { td:first-child, td:nth-child(2) { background: rgba(255,0,0,0.7); } }
+tr.apdex.unacceptable { td:first-child, td:nth-child(2) { background: rgba(150,150,150,0.8); } }
+tr.apdex.happy        { td:first-child, td:nth-child(2) { background: rgba(0,180,0,0.8); } }
+tr.apdex.satisfied    { td:first-child, td:nth-child(2) { background: rgba(255,255,0,0.8); } }
+tr.apdex.tolerating   { td:first-child, td:nth-child(2) { background: rgba(255,165,0,1); } }
+tr.apdex.frustrated   { td:first-child, td:nth-child(2) { background: rgba(255,0,0,0.8); } }
+
 #response-code-stats td {font-size: 90%; line-height: 100%; white-space: nowrap;}
 #response-code-stats th {font-size: 90%; white-space: nowrap;}
 
