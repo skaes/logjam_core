@@ -20,8 +20,8 @@ function logjam_echart(params) {
      .on("mouseover", mouse_over_event)
      .on("mousemove", mouse_over_event)
      .on("mouseout",  mouse_over_out)
-     .style("cursor", function(){ return (url == '' ? "arrow" : "pointer"); })
-     .on("click", function(){ if (url != '') document.location = url;})
+     .style("cursor", function(){ return url ? "pointer" : "arrow"; })
+     .on("click", function(){ if (url) document.location = url; })
   ;
 
   var xaxis = vis.append("svg:line")
