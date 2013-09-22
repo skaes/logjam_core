@@ -258,6 +258,43 @@ tr.full_stats a, tr.full_stats .dead-link {
 td.group-thing { font-size: 90%; }
 #column-right td.group-thing { max-width: 32em; overflow: hidden; }
 
+.gbg {
+    position: relative;
+    left:0;
+    top:0;
+    display: inline-block;
+    width: 100%;
+}
+.gct {
+    display: inline-block;
+    position: relative;
+    padding: 0px;
+}
+.gbox {
+    position: absolute;
+    left:0;
+    top: -2px;
+    background-color: rgba(176,196,222,0.5);
+    // background-color: rgba(255,0,0,0.2);
+    // background-color: rgba(70,130,180,0.7);
+    // background-color: rgba(180,180,180,0.3);
+    width: 0px;
+    min-width:1px;
+    height: 18px;
+    z-index: -100;
+}
+.gbox.apdex-ok   { background-color: rgba(0,255,0,0.2); }
+.gbox.apdex-fail { background-color: rgba(255,0,0,0.2); }
+.apdex-box {
+    position: absolute;
+    left: 94%;
+    top: -3px;
+    background-color: rgba(255,0,0,0.8);
+    width: 1px;
+    height: 19px;
+    z-index: 100;
+}
+
 /*
   #all-pages table.full_stats {
   tr:nth-child(2n+1) { background: #ddd; }

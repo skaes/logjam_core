@@ -290,6 +290,31 @@ module Logjam
       end
     end
 
+    def apdex_class(v)
+      if params[:grouping_function] == "apdex"
+        v > 0.94 ? "apdex-ok" : "apdex-fail"
+      else
+        ""
+      end
+    end
+
+    def page_percent(pages, page, resource)
+      case params[:grouping_function]
+      when "apdex"
+        page.apdex_score * 100
+      when "sum"
+        page.sum(resource) / pages.first.sum(resource) * 100
+      when "avg"
+        page.avg(resource) / pages.first.avg(resource) * 100
+      when "count"
+        page.count / pages.first.count * 100
+      when "stddev"
+        page.stddev(resource) / pages.first.stddev(resource) * 100
+      else
+        0
+      end
+    end
+
     def triangle_right
       '<span class="triangle">▶</span>'.html_safe
     end
