@@ -1,9 +1,9 @@
 $header-bg-color: #cca383;
 $header-height: 53px;
 $menu-hover-color: #fff;
-$menu-border-color: #ccc; //  rgba(230,230,230, 0.9);
+$menu-border-color: #ccc;
 $menu-active-bg-color: rgba(230,230,230, 0.9);
-$menu-inactive-bg-color: $header-bg-color;
+$menu-inactive-bg-color: rgba(200,200,200, 0.4);
 
 body {
     background-color: #fff;
@@ -520,6 +520,7 @@ svg {
     display: inline-block;
     margin: 0px 0px;
     padding: 0px;
+    font-size: 0;
 }
 .menu > ul.radio.vertical > li {
     display: block;
@@ -555,10 +556,12 @@ svg {
 .menu li a.active {
     background-color: $menu-active-bg-color;
     color: black;
+    box-shadow: 0 0 3px #aa8363;
 }
 .menu li a.inactive {
     background-color: $menu-inactive-bg-color;
     color: black;
+    box-shadow: 0 0 3px #aa8363;
 }
 .menu li li a {
     border-radius: 0px;
@@ -577,18 +580,20 @@ svg {
     text-align:center;
     text-decoration:none;
 }
-.menu > ul > li > a {
-    padding-right: 5px;
-}
 .menu li > a:hover {
     text-decoration:none;
 }
-.menu > ul > li:hover, ul.radio.horizontal > li:hover {
+.menu > ul > li:hover {
     & > a {
         background: #fff;
         text-decoration:none;
     }
-    border-bottom-left-radius: 0px;
+}
+.menu > ul > li.dropdown:hover {
+    & > a {
+        border-bottom-left-radius: 0px;
+        border-bottom-right-radius: 0px;
+    }
 }
 .menu li ul {
     position: absolute;
@@ -597,8 +602,7 @@ svg {
     height: auto;
     padding: 0px;
     margin: 0px;
-    // border: 1px solid #fff;
-    box-shadow: 0px 0px 8px #888;
+    box-shadow: 0px 2px 6px #888;
 }
 .menu li:hover ul {
     display:block;
@@ -620,52 +624,24 @@ svg {
 .menu li ul a:hover, .menu li ul li:hover a {
     background-color: $menu-border-color;
     border:0px;
-    // text-decoration:none;
-}
-ul.radio {
-    font-size: 0px;
+    text-decoration:none;
 }
 ul.radio.horizontal > li {
     & > a {
-        border-radius: 0px;
-        border: 1px solid $menu-border-color;
-        border-right: none;
+        border-radius: 3px;
         padding-left: 8px;
-        padding-right: 10px;
-        /* &:hover { */
-        /*      border-color: red; */
-        /*  } */
+        padding-right: 8px;
     }
-    &:first-child > a {
-        border-radius:3px 0px 0px 3px;
-    }
-    &:last-child > a {
-        border-radius:0px 3px 3px 0px;
-        border-right: 1px solid $menu-border-color;
+    & + li {
+        margin-left: 4px;
     }
 }
 ul.radio.vertical > li {
     & > a {
-        border-radius: 0px;
-        border: 1px solid $menu-border-color;
-        border-bottom: none;
         padding-left: 10px;
         padding-right: 10px;
-        &:hover {
-            // border-color: $menu-hover-color;
-        }
     }
-    &:first-child > a {
-        border-radius:3px 3px 0px 0px;
-    }
-    &:last-child > a {
-        border-radius:0px 0px 3px 3px;
-        border-bottom: 1px solid $menu-border-color;
-    }
-}
-
-ul.radio > li+li {
-    // margin-left: 5px;
+    & + li { margin-top: 2px; }
 }
 
 #navigation-widget {
@@ -683,20 +659,13 @@ ul.radio > li+li {
         cursor: pointer;
         & > ul {
             position:relative;
-            top: 5px;
+            top: 4px;
         }
     }
 }
 #navigation-widget > div > ul > li {
-    margin-right: 2px;
-    & > a {
-        padding: 0px 1px 0px 3px;
-        font-size: 21px;
-        &:after {
-            padding: 0px;
-            content: '';
-        }
-    }
+    & + li { margin-left: 2px; }
+    & > a { font-size: 21px; }
 }
 
 #app-widget { }
