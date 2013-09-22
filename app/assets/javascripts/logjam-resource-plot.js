@@ -409,16 +409,16 @@ function logjam_resource_plot(params) {
     .attr("class", "event")
     .attr("points", function(d,i) {
       var xCenter = x(d[0] / interval),
-          y       = -5,
-          p1      = [xCenter - 5, y],
-          p2      = [xCenter + 5, y],
-          p3      = [xCenter, y + 7];
+          y       = h+5,
+          p1      = [xCenter - 4, y],
+          p2      = [xCenter + 4, y],
+          p3      = [xCenter, y - 5];
 
       var what = [p1, p2, p3].map(function(point) { return point[0] + "," + point[1]; }).join(" ");
       return what;
     })
     .style("stroke", "rgba(255,0,0,0)")
-    .style("fill", "rgba(255,0,0,1)")
+    .style("fill", "rgba(255,0,0,0.7)")
     .on("mouseover", mouse_over_event)
     .on("mousemove", mouse_over_event)
     .on("mouseout",  mouse_over_out);
