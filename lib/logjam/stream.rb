@@ -103,6 +103,11 @@ module Logjam
         @type = args.first if args.first
         @type
       end
+
+      def port(*args)
+        @port = args.first if args.first
+        @port
+      end
     end
 
     class Importer < Context

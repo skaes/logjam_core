@@ -14,6 +14,7 @@ module Logjam
       @stream       = stream
       @application  = @stream.app
       @environment  = @stream.env
+      @port         = @stream.importer.port
       @context      = EM::ZeroMQ::Context.new(1)
       @request_processor = RequestProcessorServer.new(@stream, @context)
       @event_processor = EventProcessor.new(@stream)
@@ -36,25 +37,22 @@ module Logjam
     end
 
     def setup_connection
-      @socket = @context.socket(ZMQ::SUB)
+      @socket = @context.socket(ZMQ::PULL)
       @socket.setsockopt(ZMQ::LINGER, 500)
       @socket.setsockopt(ZMQ::RCVHWM, 5000)
-      @socket.setsockopt(ZMQ::SUBSCRIBE, requests_subscription_key)
-      @socket.setsockopt(ZMQ::SUBSCRIBE, events_subscription_key)
-      @stream.importer.hosts.each do |host|
-        address = "tcp://#{host}:9606"
-        log_info "connecting to #{address}"
-        @socket.connect(address)
-      end
-      @socket.on(:message) do |p1, p2|
-        key = p1.copy_out_string; p1.close
-        msg = p2.copy_out_string; p2.close
-        # puts key, msg
+      @socket.bind("tcp://0.0.0.0:#{@port}")
+      @socket.on(:message) do |p1, p2, p3|
+        stream = p1.copy_out_string; p1.close
+        key = p2.copy_out_string; p2.close
+        msg = p3.copy_out_string; p3.close
+        # log_info "#{stream}:#{key}:#{msg}"
         case key
         when /^logs/
           process_request(msg)
         when /^events/
           process_event(msg)
+        else
+          log_error "unkwown message key:#{key} for stream:#{stream}"
         end
       end
     end
@@ -62,7 +60,6 @@ module Logjam
     def shutdown
       stop_reparenting_timer
       log_info "shutting down zmq importer"
-      @socket.setsockopt(ZMQ::UNSUBSCRIBE, requests_subscription_key)
       @socket.unbind
       log_info "stopping processor"
       @request_processor.stop
@@ -83,6 +80,7 @@ module Logjam
     end
 
     def process_request(msg)
+      # log_info "processing request: #{msg}"
       (c = @capture_file) && (c.puts msg)
       request = Oj.load(msg, :mode => :compat)
       @request_processor.process(request)
