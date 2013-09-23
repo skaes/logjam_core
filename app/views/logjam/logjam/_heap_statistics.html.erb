@@ -1,6 +1,16 @@
 <% pages.each do |page| -%>
   <tr class="full_stats">
-    <td class="group-thing"><%= sometimes_link_grouping_result(page, :page, :page => page.page) %></td>
+    <td class="group-thing">
+      <div class="gbg">
+        <div class="gct"><%= sometimes_link_grouping_result(page, :page, :page => page.page) %></div>
+        <% if action_name == "totals_overview" %>
+          <div class="gbox <%= apdex_class(page.apdex_score) %>" style="width:<%= page_percent(pages, page, resource).to_f %>%"></div>
+          <% if params[:grouping_function] == "apdex" %>
+            <div class="apdex-box"></div>
+          <% end %>
+        <% end %>
+      </div>
+    </td>
     <td class="number"><%= sometimes_link_requests(page, :page, :grouping => "request", :page => without_module(page.page)) %></td>
     <td class="number"><%= number_with_precision(page.avg(resource), :precision => 0, :delimiter => ",") %></td>
     <td class="number"><%= sometimes_link_stddev(page, resource) %></td>

@@ -285,8 +285,10 @@ td.group-thing { font-size: 90%; }
     height: 18px;
     z-index: -100;
 }
-.gbox.apdex-ok   { background-color: rgba(0,255,0,0.2); }
+.gbox.apdex-ok { background-color: rgba(0,255,0,0.2); }
 .gbox.apdex-fail { background-color: rgba(255,0,0,0.2); }
+td.number.apdex-ok { background-color: rgba(0,255,0,0.2); }
+td.number.apdex-fail { background-color: rgba(255,0,0,0.2); }
 .apdex-box {
     position: absolute;
     left: 94%;
@@ -351,6 +353,12 @@ tr.apdex.happy        { td:first-child, td:nth-child(2) { background: rgba(0,180
 tr.apdex.satisfied    { td:first-child, td:nth-child(2) { background: rgba(255,255,0,0.8); } }
 tr.apdex.tolerating   { td:first-child, td:nth-child(2) { background: rgba(255,165,0,1); } }
 tr.apdex.frustrated   { td:first-child, td:nth-child(2) { background: rgba(255,0,0,0.8); } }
+
+td.apdex.excellent    { background: rgba(0,0,255,0.5); }
+td.apdex.good         { background: rgba(0,255,0,0.5); }
+td.apdex.fair         { background: rgba(255,165,0,0.5); }
+td.apdex.poor         { background: rgba(255,0,0,0.7); }
+td.apdex.unacceptable { background: rgba(150,150,150,0.8); }
 
 #response-code-stats td {font-size: 90%; line-height: 100%; white-space: nowrap;}
 #response-code-stats th {font-size: 90%; white-space: nowrap;}

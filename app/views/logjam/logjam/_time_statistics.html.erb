@@ -1,3 +1,4 @@
+<% sorted_by_apdex = params[:grouping_function] == "apdex" %>
 <% pages.each do |page| -%>
   <tr class="full_stats">
     <td class="group-thing">
@@ -5,7 +6,7 @@
         <div class="gct"><%= sometimes_link_grouping_result(page, :page, :page => page.page) %></div>
         <% if action_name == "totals_overview" %>
           <div class="gbox <%= apdex_class(page.apdex_score) %>" style="width:<%= page_percent(pages, page, resource).to_f %>%"></div>
-          <% if params[:grouping_function] == "apdex" %>
+          <% if sorted_by_apdex %>
             <div class="apdex-box"></div>
           <% end %>
         <% end %>
@@ -17,7 +18,9 @@
     <td class="number"><%= seconds_to_human(page.sum(resource).to_f / 1000) %></td>
     <td class="number"><%= number_to_percentage(page.sum(resource).to_f / resource_total * 100, :precision => 2) %></td>
     <% if resource == "total_time" -%>
-      <td class="number"><%= clean_link_to(number_with_precision(page.apdex_score, :precision => 2), :action => "apdex_overview", :page => page.page) %></td>
+      <td class="number <%= apdex_class(page.apdex_score, 'apdex') %>">
+        <%= clean_link_to(number_with_precision(page.apdex_score, :precision => 2), :action => "apdex_overview", :page => page.page) %>
+      </td>
       <td class="number"><%= sometimes_link_errors(page) %></td>
       <td class="number"><%= sometimes_link_400s(page) %></td>
     <% else -%>

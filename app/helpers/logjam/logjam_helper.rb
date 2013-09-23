@@ -289,8 +289,8 @@ module Logjam
       end
     end
 
-    def apdex_class(v)
-      if params[:grouping_function] == "apdex"
+    def apdex_class(v, gf = params[:grouping_function])
+      if  gf == "apdex"
         v > 0.94 ? "apdex-ok" : "apdex-fail"
       else
         ""
@@ -298,7 +298,7 @@ module Logjam
     end
 
     def page_percent(pages, page, resource)
-      case params[:grouping_function]
+      case gf = params[:grouping_function]
       when "apdex"
         page.apdex_score * 100
       when "sum"
@@ -310,6 +310,7 @@ module Logjam
       when "stddev"
         page.stddev(resource) / pages.first.stddev(resource) * 100
       else
+        logger.error ArgumentError.new("unknown grouping function: '#{gf}'")
         0
       end
     end
