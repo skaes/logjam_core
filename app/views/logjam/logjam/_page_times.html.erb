@@ -5,7 +5,7 @@
        resource_name = hrn(resource)
        options = {:resource => resource} -%>
     <% if @dataset.grouping? -%>
-      <th><%= @dataset.grouping %></th>
+      <th><%= @dataset.grouping_name %></th>
       <th <%= raw html_attributes_for_grouping_function("count","number of requests") %>>requests</th>
       <th <%= raw html_attributes_for_grouping_function("avg", "average") %>>avg<br/><%= resource_name %></th>
       <th <%= raw html_attributes_for_grouping_function("stddev", "standard deviation")%>>stddev<br/><%= resource_name %></th>

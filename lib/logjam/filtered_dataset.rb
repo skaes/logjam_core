@@ -50,6 +50,18 @@ module Logjam
       @offset = options[:offset] || 0
     end
 
+    def grouping_name
+      if grouping == "page"
+        if page == '::' || namespace?
+          "namespace"
+        else
+          "action"
+        end
+      else
+        grouping
+      end
+    end
+
     def page_description
       page == "::" ? "all actions" : page
     end
