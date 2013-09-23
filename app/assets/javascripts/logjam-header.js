@@ -1,10 +1,10 @@
 function submit_filter_form() {
   var selected_date = $("#datepicker").val().replace(/-/g,'/');
   if (selected_date.match(/\d\d\d\d\/\d\d\/\d\d/)) {
-    var action = $("#filter-form").attr("action");
-    var old_date = action.match(/\d\d\d\d\/\d\d\/\d\d/);
+    var old_action = $("#filter-form").attr("action");
+    var old_date = old_action.match(/\d\d\d\d\/\d\d\/\d\d/);
     if (old_date) {
-      $("#filter-form").attr("action", action.replace(old_date[0], selected_date));
+      $("#filter-form").attr("action", old_action.replace(old_date[0], selected_date));
     }
   }
   var action = new URI ($("#filter-form").attr("action"));
@@ -58,6 +58,9 @@ function view_resource(resource){
   $("#time-range").val(parameter_defaults.time_range);
   if (parameters.action != "totals_overview") {
     $("#filter-form").attr("action", home_url);
+  }
+  if (parameters.grouping_function == "apdex" && !(resource.match(/time/))) {
+    $("#grouping-function").val(parameter_defaults.grouping_function);
   }
   $("#filter-form").submit();
 }
