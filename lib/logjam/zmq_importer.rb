@@ -1,5 +1,3 @@
-require 'amqp'
-require 'amqp/extensions/rabbitmq'
 require 'date'
 require 'oj'
 
