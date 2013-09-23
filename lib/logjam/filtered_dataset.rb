@@ -52,7 +52,7 @@ module Logjam
 
     def grouping_name
       if grouping == "page"
-        if page == '::' || namespace?
+        if namespaces?
           "namespace"
         else
           "action"
@@ -154,6 +154,10 @@ module Logjam
 
     def namespace?
       totals.page_names.include?("::#{page.sub(/\A::/,'')}")
+    end
+
+    def namespaces?
+      do_the_query.all?{|p| p.page == 'Others...' || p.page =~ /\A::/}
     end
 
     def action?
