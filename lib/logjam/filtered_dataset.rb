@@ -106,6 +106,10 @@ module Logjam
       totals.the_pages.size == 1
     end
 
+    def size
+      do_the_query.size
+    end
+
     def do_the_query
       @query_result ||=
         if grouping == "request"

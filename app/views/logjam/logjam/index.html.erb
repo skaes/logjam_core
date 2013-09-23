@@ -48,7 +48,7 @@
         <%= render "breakdown" %>
       </div>
       <% end -%>
-      <% if params[:grouping] == "page" && !@dataset.single_page? && @dataset.do_the_query.size <= 20 && params[:grouping_function] != "apdex" -%>
+      <% if params[:grouping] == "page" && !@dataset.single_page? && @dataset.size <= 20 && params[:grouping_function] != "apdex" -%>
          <h4>Performance breakdown (percentages of <%= @dataset.short_description %>)</h4>
          <div id="performance-pie">
            <%= render "page_pie" %>

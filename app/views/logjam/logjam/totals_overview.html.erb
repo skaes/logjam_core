@@ -3,7 +3,7 @@
   <h3>
     Actions <%= hpn("for") %> sorted by
     <%= Logjam::Resource.grouping_function_description(params[:resource], params[:grouping_function]) %>
-    (<%= integer_number(@dataset.do_the_query.size) %>)
+    (<%= integer_number(@dataset.size) %>)
   </h3>
   <%= render "page_times" %>
 </div>
