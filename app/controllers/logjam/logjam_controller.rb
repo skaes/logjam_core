@@ -203,7 +203,7 @@ module Logjam
     end
 
     def totals_overview
-      redirect_on_empty_dataset and return
+      redirect_on_empty_dataset(true) and return
       @dataset.limit = 100_000
     end
 
@@ -487,14 +487,14 @@ module Logjam
       @page = params[:page]
     end
 
-    def dataset_from_params
+    def dataset_from_params(strip_namespace = false)
       prepare_params
       @dataset = FilteredDataset.new(
         :date => @date,
         :app => @app,
         :env => @env,
         :interval => params[:interval].to_i,
-        :page => @page,
+        :page => strip_namespace ? (@page.to_s).sub(/\A::/,'') : @page,
         :plot_kind => @plot_kind,
         :resource => params[:resource] || :total_time,
         :collected_resources => @collected_resources,
@@ -504,9 +504,9 @@ module Logjam
         :end_minute => params[:end_minute].to_i)
     end
 
-    def redirect_on_empty_dataset
-      dataset_from_params
-      if @dataset.empty? && !(['::', '', 'all_pages'].include?(@page)) && !request.referer.to_s.include?("app=#{@app}")
+    def redirect_on_empty_dataset(strip_namespace = false)
+      dataset_from_params(strip_namespace)
+      if @dataset.empty? && !@dataset.top_level? && !request.referer.to_s.include?("app=#{@app}")
         new_params = FilteredDataset.clean_url_params(params.merge(:page => '::',
                                                                    :default_app => @default_app,
                                                                    :default_env => @default_env))

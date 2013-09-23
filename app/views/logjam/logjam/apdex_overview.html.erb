@@ -4,7 +4,7 @@
   <h3>
     <%= @title %> <%= hpn("for") %>
     <%= clean_link_to(triangle_right,
-                      { :page => without_module(@page), :action => "totals_overview",
+                      { :page => @page, :action => "totals_overview",
                         :grouping => "page", :grouping_function => "apdex" },
                       :title => "action overview by apdex score") %>
   </h3>
