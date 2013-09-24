@@ -7,6 +7,7 @@ module Logjam
 
     def initialize
       @databases = Logjam.databases
+      @databases << Logjam.db_name(Date.today, "logjam", Rails.env) if @databases.empty?
       @info = {}
       @databases.each do |dbname|
         if dbname =~ NAME_FORMAT

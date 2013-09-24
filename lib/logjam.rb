@@ -160,6 +160,11 @@ module Logjam
       meta_collection(connection).update({:name => 'databases'}, {'$set' => {:value => known_databases}}, {:upsert => true, :multi => false})
       all_known_databases.concat(known_databases)
     end
+    if all_known_databases.empty?
+      db_name = Logjam.db_name(Date.today, "logjam", Rails.env)
+      ensure_known_database(db_name)
+      all_known_databases << db_name
+    end
     all_known_databases
   end
 
@@ -171,7 +176,7 @@ module Logjam
         rows = meta_collection(connection).find({:name => "databases"},{:fields => ["value"]}).to_a
         payload[:rows] = rows.size
       end
-      all_known_databases.concat(rows.first["value"])
+      all_known_databases.concat(rows.first["value"]) unless rows.empty?
     end
     all_known_databases
   end

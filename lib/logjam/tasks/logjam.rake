@@ -1,5 +1,11 @@
 namespace :logjam do
 
+  desc "bootstrap a logjam installation"
+  task :bootstrap => :environment do
+    Rake::Task["logjam:daemons:install"].invoke
+    Rake::Task["logjam:db:update_known_databases"].invoke
+  end
+
   def app_dir
     Rails.root.to_s
   end
