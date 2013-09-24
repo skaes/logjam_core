@@ -1,163 +1,34 @@
-= Logjam
+= logjam_core
 
-Logjam is a Ruby on Rails application used for finding performance hot spots in Ruby on Rails applications. 
-It can produce various graphs and tables showing how much time and memory are consumed by different parts of your application.
-The interface is flexible enough to be able to provide answers to a great many questions you may have about your application, such as
+logjam_core provides the engine which powers the main
+{logjam application}[http://github.com/skaes/logjam_app].
 
-* which pages in my application are most in need of optimization?
-* in the worst case, how slow is my application?
-* for which users is my application slowest?
-* under peak load, how busy are my servers?
-* which pages and which users are causing the most exceptions?
-* what pages are causing the ruby heap to be expanded?
-* which pages are making the most DB queries?
-
-Note that some of Logjam's features (eg those involving GC and memory data) depend on using a specially built ruby and some rails plugins, which are available separately. 
+It gets included into the main application as a git submodule.
 
 == Authors
 
-{David Anderson}[http://github.com/alpinegizmo] <david@alpinegizmo.com>
-and {Stefan Kaes}[http://github.com/skaes] <skaes@railsexpress.de>
-
-Development on Logjam began while the authors were working at Xing AG.
-
-== Quick overview
-
-* almost mandatory: make your log files syslog-compatible by adding the {logjam_logger}[http://gemcutter.org/gems/logjam_logger] gem to your application (not to Logjam)
-* optional, but easy and worthwhile: add the {time_bandits}[http://github.com/skaes/time_bandits] plugin to your application (not to Logjam)
-* optional and very useful: use a special version of ruby when running your application in order to log GC and memory usage data
-* install Logjam itself (the out-of-the-box config is okay for getting started, but you'll need to setup config/database.yml)
-* install gnuplot (if you don't already have it installed)
-* run your application, collect log data, import that log data (the sample.log file is included if you just want to play)
-* run Logjam
-
-See the sections below for more details on these steps.
-
-== Getting your application ready
-
-Logjam is designed to import rails log files from other rails applications. The standard rails log files don't contain as much information as we'd like, so we offer you some choices of what to do in the application you want to study:
-
-=== Leave your application as it is
-
-Note that this will not work if you are running more than one server process, unless you have modified your application to produce syslog compatible log files. If you really do need to use Logjam with standard Rails log files, then modify this section of config/initializers/matchers.rb to enable the RAILS_LOG_LINE_SPLITTER instead of the SYSLOG_LINE_SPLITTER.
-
-    # CONFIGURE ME: Pick one of the splitters above.
-    # LOG_LINE_SPLITTER = RAILS_LOG_LINE_SPLITTER
-    LOG_LINE_SPLITTER = SYSLOG_LINE_SPLITTER
-
-Under these circumstances, only the following performance attributes will be imported:
-
-    t.timestamp :started_at
-    t.string :page
-    t.integer :response_code
-    t.float :total_time
-    t.float :view_time
-    t.float :db_time
-    t.float :other_time
-
-=== Modify your application to produce syslog-compatible log files
-
-The easiest way to do this is to add the {logjam_logger}[http://gemcutter.org/gems/logjam_logger] gem to your application.
-
-    config.gem 'logjam_logger'
-
-Doing this will lead to logging and importing these attributes:
-
-    t.string :host
-    t.integer :process_id
-
-If your application sets the global hash $user_ids then logjam_logger will also log this info. One easy way to do this is to add a before_filter to your ApplicationController that looks something like this:
-
-    before_filter { |controller| ($user_ids ||= {})[Thread.current] = controller.session[:user_id] || 0 }
-
-It is also easy to add additional custom information, such as session_ids, time spent waiting for search servers, no-sql data stores, etc.
-
-=== Add the {time_bandits}[http://github.com/skaes/time_bandits] plugin to your application
-
-By doing this you can easily capture the following additional information:
-
-    t.integer :db_calls
-    t.integer :db_sql_query_cache_hits
-    t.float :memcache_time
-    t.integer :memcache_calls
-    t.integer :memcache_misses
-
-To configure time_bandits to log memcache and/or GC info, copy config/initializers/time_bandits.rb from Logjam into your application.
-
-=== Use a ruby that captures GC stats
-
-If you use a suitable ruby, such as skaes' {matzruby}[http://github.com/skaes/matzruby], you can also get:
-
-    t.float :gc_time
-    t.integer :gc_calls
-    t.integer :heap_size
-    t.integer :heap_growth
-    t.integer :allocated_objects
-    t.integer :allocated_bytes
-    t.integer :allocated_memory
-
-Also of interest if you are doing GC tuning is {gc_hacks}[http://github.com/skaes/gc_hacks].
-
-== Configuring and installing Logjam
-
-This documentation assumes that you are a rails developer, and generally familiar with how to configure, install, and deploy rails applications. 
-
-Included with Logjam is a script (in bin/import_local_log) that will parse and import your production rails log files into a database.
-
-You may want to review and modify these files, but the out-of-the-box behavior should be good enough to get you started.
-
-* config/initializers/matchers.rb
-* db/migrate/20090708080254_create_controller_actions.rb
-* db/migrate/20090709085133_add_indexes_to_controller_actions.rb
-* config/logjam.yml
-
-Logjam has only been tested on OS X, but it should be straightforward to get it running under Linux.
-
-In addition to the gems defined in environment.rb, you will need to install gnuplot. On the Mac,
-
-    sudo port install gnuplot
-
-Both ruby 1.8.7 and 1.9.2 are used by the authors.
-
-To get started, you will want to do the usual things to get your database ready, such as
-
-    rake db:create:all
-    rake db:migrate
-
-and it's a good idea to run the tests, especially if you have modified some of the files mentioned above.
-
-    rake test
-
-If the tests fail in a way that looks something like this
-
-    ActiveRecord::StatementInvalid: Mysql::Error: Column 'gc_calls' cannot be null
-
-Then you probably have a mis-match between the fields setup by the migrations, and those configured in logjam.yml.
-
-Note that for somewhat complex reasons that I won't get into here, RAILS_ENV=test rake db:migrate does NOT work with Logjam (okay, this has to do with factory_girl loading factories.rb when factory_girl is loaded). But rake db:test:clone does work, if you need it.
-
-An instance of Logjam is intended to be used with the logs from one application; if you want to use Logjam to study more than one application, the most straightforward solution is to use multiple installations of Logjam.
-
-== Importing data
-
-Before you use Logjam, you must import some data into its database. Logjam can import data from AMQP or from log files. 
-
-If you want to just play with Logjam to see what it can do, Logjam can be used to study itself (though it's not very interesting as a case study).
-
-To import the sample log file
-
-    bin/import_local_file sample.log
-
-To start over with an empty database
-
-    rake db:rebuild
+{Stefan Kaes}[http://github.com/skaes] <skaes@railsexpress.de>
+and {David Anderson}[http://github.com/alpinegizmo] <david@alpinegizmo.com>.
 
 == License
 
-Copyright (c) 2009 David Anderson, Stefan Kaes
+Older versions of this code were MIT licensed. The current license version is GPLv3.
+
+Copyright (c) 2009-2013 Stefan Kaes
+
+Copyright (c) 2009 David Anderson
 
 Copyright (c) 2009 XING AG
 
-Copyright 2005 Eric Hodel, The Robot Co-op.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-See LICENSES for details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
