@@ -10,14 +10,16 @@
     <% scatter_title = "view #{distribution_kind(@dataset.resource).to_s.gsub(/_/," ")} plot" %>
       <%= clean_link_to(fa_icon("signal flip-horizontal", :title => scatter_title),
                         :page => without_module(@page), :action => distribution_kind(@dataset.resource)) %>
-    <% end %>
-    <% if @dataset.live_stream? -%>
-      <%= link_to(fa_icon("facetime-video", :title => "view live stream"),
-                  clean_params(params.slice(:app,:env,:page).merge(:action => "live_stream")),
-                  :target => "_blank") %>
-    <% end -%>
+  <% end %>
+  <% if @dataset.live_stream? -%>
+    <%= link_to(fa_icon("facetime-video", :title => "view live stream"),
+                clean_params(params.slice(:app,:env,:page).merge(:action => "live_stream")),
+                :target => "_blank") %>
+  <% end -%>
+  <% unless @only_one_app %>
     <% if @dataset.has_callers? -%>
       <%= clean_link_to(fa_icon("phone", :title => "view callers"), :action => "callers") %>
     <% end -%>
     <%= clean_link_to(fa_icon("cloud", :title => "analyze call relationships"), :action => "call_relationships") %>
+  <% end %>
 </p>

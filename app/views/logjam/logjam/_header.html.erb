@@ -38,11 +38,13 @@ $(document).ready(initialize_header);
                   <%= clean_link_to("Resource Distribution Plot", :page => without_module(@page), :action => distribution_kind(@dataset.resource)) %>
                 </li>
               <% end %>
-              <li class="separator"></li>
-              <% if @dataset && @dataset.has_callers? -%>
-              <li><%= clean_link_to("My Callers", :action =>"callers") %></li>
+              <% unless @only_one_app %>
+                <li class="separator"></li>
+                <% if @dataset && @dataset.has_callers? -%>
+                  <li><%= clean_link_to("My Callers", :action =>"callers") %></li>
+                <% end %>
+                <li><%= clean_link_to("Call Relationships", :action =>"call_relationships") %></li>
               <% end %>
-              <li><%= clean_link_to("Call Relationships", :action =>"call_relationships") %></li>
             </ul>
           </li>
           <li><a id="home-button" onclick="go_home();"><%= fa_icon("home")%></a>
