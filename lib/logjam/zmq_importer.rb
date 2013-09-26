@@ -38,7 +38,7 @@ module Logjam
       @socket = @context.socket(ZMQ::PULL)
       @socket.setsockopt(ZMQ::LINGER, 500)
       @socket.setsockopt(ZMQ::RCVHWM, 5000)
-      @socket.bind("tcp://0.0.0.0:#{@port}")
+      @socket.bind("tcp://#{Logjam.bind_ip}:#{@port}")
       @socket.on(:message) do |p1, p2, p3|
         stream = p1.copy_out_string; p1.close
         key = p2.copy_out_string; p2.close

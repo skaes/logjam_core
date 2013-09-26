@@ -12,7 +12,8 @@ require 'set'
 @error_buffers = Hash.new{|h,k| h[k] = []}
 @sockets = Hash.new{|h,k| h[k] = Set.new}
 @anomaly_scores = Hash.new(0)
-@anomaly_host = ARGV[0] || "localhost"
+@bind_ip = ARGV[0] || "localhost"
+@anomaly_host = ARGV[1] || "localhost"
 
 @processed = 0
 
@@ -62,12 +63,12 @@ EM.run do
   pull_socket = context.socket(ZMQ::PULL)
   pull_socket.setsockopt(ZMQ::LINGER, 100)
   pull_socket.setsockopt(ZMQ::RCVHWM, 1000)
-  pull_socket.bind("tcp://0.0.0.0:9607")
+  pull_socket.bind("tcp://#{@bind_ip}:9607")
 
   pub_socket = context.socket(ZMQ::PUB)
   pub_socket.setsockopt(ZMQ::LINGER, 100)
   pub_socket.setsockopt(ZMQ::SNDHWM, 1000)
-  pub_socket.bind("tcp://0.0.0.0:9611")
+  pub_socket.bind("tcp://#{@bind_ip}:9611")
 
   sub_socket = context.socket(ZMQ::SUB)
   sub_socket.setsockopt(ZMQ::LINGER, 100)

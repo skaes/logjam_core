@@ -134,7 +134,9 @@ namespace :logjam do
       Logjam.streams(ENV['LOGJAM_SERVICE_TAG']).each do |i, s|
         next if ENV['RAILS_ENV'] == 'production' && s.env == 'development'
         if s.is_a?(Logjam::LiveStream)
-          installed_services << install_service("livestream", "live-stream-#{s.env}", :ANOMALIES_HOST => s.anomalies_host)
+          installed_services << install_service("livestream", "live-stream-#{s.env}",
+                                                :ANOMALIES_HOST => s.anomalies_host,
+                                                :BIND_IP => Logjam.bind_ip)
         else
           installed_services << install_service("importer", "importer-#{i}", :IMPORTER => i)
         end

@@ -28,12 +28,12 @@ context = ZMQ::Context.new(1)
 push_socket = context.socket(ZMQ::PUSH)
 push_socket.setsockopt(ZMQ::SNDHWM, 1000)
 push_socket.setsockopt(ZMQ::LINGER, 100)
-push_socket.connect("tcp://localhost:9607")
+push_socket.connect("tcp://127.0.0.1:9607")
 
 pub_socket = context.socket(ZMQ::PUB)
 pub_socket.setsockopt(ZMQ::SNDHWM, 1000)
 pub_socket.setsockopt(ZMQ::LINGER, 100)
-pub_socket.bind("tcp://0.0.0.0:9610")
+pub_socket.bind("tcp://127.0.0.1:9610")
 
 EM.run do
 

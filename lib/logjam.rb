@@ -6,6 +6,18 @@ Oj.default_options = {:mode => :compat, :time_format => :ruby}
 module Logjam
   extend self
 
+  # Network interface the various processes bind to. Defaults to
+  # "127.0.0.1", to avoid potential security holes. Set it to
+  # "0.0.0.0" for multi machine installs behind a firewall.
+  @@bind_ip = "127.0.0.1"
+  def self.bind_ip
+    @@bind_ip
+  end
+
+  def self.bind_ip=(ip)
+    @@bind_ip = ip
+  end
+
   @@streams = {}
   def self.streams(tag=nil)
     tag.blank? ? @@streams : @@streams.slice(*@@streams.values.select{|v| v.tag == tag}.map(&:name))
