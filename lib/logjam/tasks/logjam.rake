@@ -4,10 +4,6 @@ namespace :logjam do
     Rails.root.to_s
   end
 
-  def public_dir
-    "#{app_dir}/public"
-  end
-
   def logjam_dir
     "#{app_dir}/vendor/logjam"
   end
