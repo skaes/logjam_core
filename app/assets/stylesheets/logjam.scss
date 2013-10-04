@@ -172,23 +172,43 @@ div#pagetimes {
         margin: 6px 0px 4px 0px;
     }
     h4 {
+        display: inline-block;
         font-size: 12px;
         margin-top: 7px;
         margin-bottom: 3px;
     }
     table.full_stats {
         margin-top: 8px;
+        margin-right: 8px;
+        // border: 1px solid rgba(120, 120, 120, 0.2);
+        // box-shadow: 0px 0px 3px #ddd;
     }
 }
 
+#performance-break-down {
+    margin-top: 15px;
+    fieldset {
+        margin-bottom: 10px;
+        margin-left: 2px;
+        margin-right: 25px;
+        padding: 2px 13px 10px 2px;
+        border: 1px solid rgba(120, 120, 120, 0.2);
+        // box-shadow: 0px 0px 3px #ddd;
+    }
+}
 .breakdown-table {
-    vertical-align: middle;
+    vertical-align: top;
     display: inline-block;
-    width: 250px
+    width: 200px;
+    td {font-size: 100%; line-height: 130%; white-space: nowrap;}
+    th {font-size: 100%; white-space: nowrap;}
 }
 .breakdown-chart {
     vertical-align:middle;
     display:inline-block;
+    svg text {
+        font-size: 9px;
+    }
 }
 
 #performance-pie {
@@ -258,7 +278,7 @@ tr.full_stats a, tr.full_stats .dead-link {
 }
 
 td.group-thing { font-size: 90%; }
-#column-right td.group-thing { max-width: 32em; overflow: hidden; }
+#column-right td.group-thing { min-width: 25em; max-width: 30em; overflow: hidden; }
 
 .gbg {
     position: relative;
@@ -316,6 +336,7 @@ td.number {text-align: right;}
 .warn a {color:brown;}
 .timestamp {font-weight:bold;}
 
+// #plot-details table { box-shadow: 0px 0px 3px #ddd; }
 #plot-details-col1 { float:left; }
 #plot-details-col2 { float:left; margin-left:10px;}
 #plot-details-col3 { float:left; margin-left:10px;}
@@ -334,7 +355,7 @@ td.number {text-align: right;}
     shape-rendering: crispEdges;
 }
 
-#apdex-table, #error-table {float:left;}
+#apdex-table, #error-table { float:left; }
 #apdex-table { margin-top: 5px; }
 #apdex-table td, #error-table td {font-size: 90%; line-height: 100%; white-space: nowrap;}
 #apdex-table th, #error-table th {font-size: 90%; white-space: nowrap;}

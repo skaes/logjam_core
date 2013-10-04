@@ -41,18 +41,14 @@
         <%- end -%>
         <%= sometimes_link_all_pages %>
       </h3>
+      <div>
       <%= render "page_times" %>
-      <% if params[:grouping] == "page" && @dataset.single_page? -%>
+      </div>
+      <% if params[:grouping] == "page" -%>
       <div id="performance-break-down">
-        <h4>Performance breakdown</h4>
+        <h3>resources (avg)</h3>
         <%= render "breakdown" %>
       </div>
-      <% end -%>
-      <% if params[:grouping] == "page" && !@dataset.single_page? && @dataset.size <= 20 && params[:grouping_function] != "apdex" -%>
-         <h4>Performance breakdown (percentages of <%= @dataset.short_description %>)</h4>
-         <div id="performance-pie">
-           <%= render "page_pie" %>
-         </div>
       <% end -%>
     </div>
   </div>

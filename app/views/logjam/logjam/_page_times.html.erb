@@ -19,14 +19,13 @@
         <% else %>
           <th <%= raw html_attributes_for_grouping_function("apdex", "apdex score") %>>apdex</th>
           <th>errors/<br/>warnings</th>
-          <th>400s</th>
         <% end -%>
       <% end -%>
   </tr>
       <%= render "#{resource_type}_statistics", options.merge(:pages => @dataset.do_the_query) %>
     <% else -%>
       <th>minute</th>
-      <th>page</th>
+      <th>action</th>
       <th class="sorted"><%= resource_name %></th>
   </tr>
       <%= render "request_statistics", options.merge(:requests => @dataset.do_the_query) %>

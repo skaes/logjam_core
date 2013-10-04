@@ -3,11 +3,9 @@
     <td class="group-thing">
       <div class="gbg">
         <div class="gct"><%= sometimes_link_grouping_result(page, :page, :page => page.page) %></div>
-        <% if action_name == "totals_overview" %>
-          <div class="gbox <%= apdex_class(page.apdex_score) %>" style="width:<%= page_percent(pages, page, resource).to_f %>%"></div>
-          <% if params[:grouping_function] == "apdex" %>
-            <div class="apdex-box"></div>
-          <% end %>
+        <div class="gbox <%= apdex_class(page.apdex_score) %>" style="width:<%= page_percent(pages, page, resource).to_f %>%"></div>
+        <% if params[:grouping_function] == "apdex" %>
+          <div class="apdex-box"></div>
         <% end %>
       </div>
     </td>
