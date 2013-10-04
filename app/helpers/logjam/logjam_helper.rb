@@ -130,7 +130,7 @@ module Logjam
       ppage = params[:page]
       if grouping.to_sym == :page && ppage !~ /\AOthers/ && (ppage != @page || ppage =~ /^::/)
         params = params.merge(grouping => value)
-        params[:page] = without_module(ppage) unless @page == "::"
+        params[:page] = without_module(ppage) # unless @page == "::"
         params[:action] = "index"
         clean_link_to(value, params, :title => "view summary")
       else
