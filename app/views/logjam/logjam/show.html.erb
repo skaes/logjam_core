@@ -28,12 +28,13 @@
      other_keys.reject!{|k| k =~ /(^_id|lines|minute|page|_sq|request_info)$/}
 
      sorted_time_resources = @request.slice(*time_resources).sort { |a, b| b.last <=> a.last }
+     size = 75
   -%>
 
 <div id="request-details">
   <fieldset class="resource-fields">
-    <legend>Time resources</legend>
-    <table id="request-details-time" class="filter-widget">
+    <legend>Time</legend>
+    <table id="request-details-time" class="breakdown-table">
       <% sorted_time_resources.each do |name, value| -%>
         <% next if value.blank?  -%>
         <tr>
@@ -42,12 +43,13 @@
         </tr>
         <% end -%>
     </table>
-    <div id="times" class="filter-widget top-margin">
+    <div id="times" class="breakdown-chart">
       <% resources = time_resources-["total_time", "gc_time"] -%>
       <%= render :partial => "simple_pie", :locals => {
             :data => @request.values_at(*resources),
             :legend => resources,
             :container => "times",
+            :size => size,
             :colors => pie_colors.values_at(*resources) } %>
     </div>
   </fieldset>
@@ -55,8 +57,8 @@
   <% call_resource_values = @request.slice(*call_resources) -%>
   <% unless call_resource_values.blank? %>
     <fieldset class="resource-fields">
-      <legend>Call resources</legend>
-      <table id="request-details-calls" class="filter-widget">
+      <legend>Calls</legend>
+      <table id="request-details-calls" class="breakdown-table">
         <% call_resource_values.sort_by { |e| -e.last }.each do |name, value| -%>
         <% next if value.blank?  -%>
         <tr>
@@ -65,22 +67,23 @@
         </tr>
         <% end -%>
       </table>
-      <div id="calls" class="filter-widget top-margin">
+      <div id="calls" class="breakdown-chart">
         <% resources = *call_resources.select{|r| r =~ /_calls$/}-["gc_calls"] -%>
           <%= render :partial => "simple_pie", :locals => {
                 :data => @request.values_at(*resources),
                 :container => "calls",
                 :legend => resources,
+                :size => size,
                 :colors => pie_colors.values_at(*resources) } %>
       </div>
     </fieldset>
   <% end %>
 
-  <% memory_resource_values = @request.slice(*memory_resources+heap_resources) -%>
+  <% memory_resource_values = @request.slice(*memory_resources) -%>
   <% unless memory_resource_values.blank? %>
     <fieldset class="resource-fields">
-      <legend>Memory resources</legend>
-      <table id="request-details-memory" class="filter-widget">
+      <legend>Allocations</legend>
+      <table id="request-details-memory" class="breakdown-table">
         <% memory_resource_values.each do |name, value| -%>
         <% next if value.blank?  -%>
         <tr>
@@ -89,7 +92,7 @@
         </tr>
         <% end -%>
       </table>
-      <div id="memory" class="filter-widget top-margin">
+      <div id="memory" class="breakdown-chart">
         <% resources = *memory_resources-["allocated_memory"]
            h = @request.slice(*resources)
            h["allocated_objects"] *= 40 if h.include?("allocated_objects")
@@ -98,6 +101,36 @@
               :data => h.values_at(*resources),
               :legend => resources,
               :container => "memory",
+              :size => size,
+              :colors => pie_colors.values_at(*resources) } %>
+      </div>
+    </fieldset>
+  <% end %>
+
+  <% heap_resource_values = @request.slice(*heap_resources) -%>
+  <% unless heap_resource_values.blank? %>
+    <% heap_resource_values["free_slots"] = heap_resource_values["heap_size"] - heap_resource_values["live_data_set_size"] %>
+    <fieldset class="resource-fields">
+      <legend>Heap</legend>
+      <table id="request-details-heap" class="breakdown-table">
+        <% heap_resource_values.each do |name, value| -%>
+        <% next if value.blank?  -%>
+        <tr>
+          <td class="resource_name"><%= hrn name %></td>
+          <td class="number" style="color:<%= colors[name] || '#000' %>;"><%= number_with_delimiter(value.to_i) %></td>
+        </tr>
+        <% end -%>
+      </table>
+      <div id="heap" class="breakdown-chart">
+        <% resources = *heap_resources
+           h = @request.slice(*resources)
+           h["free_slots"] = h.delete("heap_size") - h["live_data_set_size"]
+           resources << "free_slots" -%>
+        <%= render :partial => "simple_pie", :locals => {
+              :data => h.values_at(*resources),
+              :legend => resources,
+              :container => "heap",
+              :size => size,
               :colors => pie_colors.values_at(*resources) } %>
       </div>
     </fieldset>
@@ -109,8 +142,9 @@
 </div>
 
 <% unless (lines = @request["lines"]).blank? -%>
-  <div id="request-lines" class="filter-widget">
-  <% ltimes = line_times(lines) %>
+  <fieldset id="request-lines" class="resource-fields">
+    <legend>Log lines</legend>
+    <% ltimes = line_times(lines) %>
   <% lines.each_with_index do |line,i| -%>
   <div class="logline" data-logjam-tags="<%= line_tags(line) %>">
     <div class="bg">
@@ -119,7 +153,7 @@
     </div>
   </div>
   <% end -%>
-  </div>
+  </fieldset>
   <% end %>
 <% end %>
 
@@ -156,7 +190,7 @@
   <div id="request_info">
     <fieldset class="resource-fields">
       <legend>Additional Request Info</legend>
-      <table id="request-info" class="filter-widget">
+      <table id="request-info" class="">
         <% %w(url method query_parameters body_parameters headers).each do |name| -%>
         <% next if (value = info[name]).blank?  -%>
         <tr>

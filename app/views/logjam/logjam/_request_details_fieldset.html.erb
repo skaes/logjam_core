@@ -1,6 +1,6 @@
 <fieldset class="resource-fields">
   <legend><%= title %></legend>
-  <table id="request-details" class="filter-widget">
+  <table id="request-details" class="breakdown-table">
     <% fields.each do |name, value| -%>
     <% next if value.blank? -%>
     <tr>
@@ -9,5 +9,4 @@
     </tr>
     <% end -%>
   </table>
-  <p class="clear-left"></p>
 </fieldset>

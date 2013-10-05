@@ -100,17 +100,6 @@ input, select {
 }
 
 
-#description.filter-widget {
-    font-style: italic;
-    margin: 0px 0px 0px 5px;
-    font-size: 90%;
-}
-.filter-widget {
-    float:left;
-    margin: 0px;
-    padding-right: 20px;
-    input, select { margin-left: 0px; }
-}
 .top-margin {
     margin-top: 7px;
 }
@@ -187,19 +176,21 @@ div#pagetimes {
 
 #performance-break-down {
     margin-top: 15px;
-    fieldset {
-        margin-bottom: 10px;
-        margin-left: 2px;
-        margin-right: 25px;
-        padding: 2px 13px 10px 2px;
-        border: 1px solid rgba(120, 120, 120, 0.2);
-        // box-shadow: 0px 0px 3px #ddd;
+    .breakdown-table {
+        width: 210px;
     }
+}
+fieldset {
+    margin-bottom: 10px;
+    margin-left: 2px;
+    margin-right: 25px;
+    padding: 2px 13px 10px 2px;
+    border: 1px solid rgba(120, 120, 120, 0.2);
+    // box-shadow: 0px 0px 3px #ddd;
 }
 .breakdown-table {
     vertical-align: top;
     display: inline-block;
-    width: 210px;
     td {font-size: 100%; line-height: 130%; white-space: nowrap;}
     th {font-size: 100%; white-space: nowrap;}
 }
@@ -456,10 +447,14 @@ td.apdex.unacceptable { background: rgba(150,150,150,0.8); }
 .resource-fields {
     display: inline-block;
     vertical-align: top;
-    border: none;
-/*   border: 1px solid #ddd; */
+    margin: 0px;
+    // border: none;
+    // box-shadow: 0px 0px 3px #ddd;
 }
 
+.logjam-tags-filter-root {
+    display: inline;
+}
 .resource-fields legend {
     font-weight: bold;
 }
