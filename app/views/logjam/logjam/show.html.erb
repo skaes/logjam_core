@@ -32,7 +32,7 @@
   -%>
 
 <div id="request-details">
-  <fieldset class="resource-fields">
+  <fieldset class="resource-fields resize">
     <legend>Time</legend>
     <table id="request-details-time" class="breakdown-table">
       <% sorted_time_resources.each do |name, value| -%>
@@ -56,7 +56,7 @@
 
   <% call_resource_values = @request.slice(*call_resources) -%>
   <% unless call_resource_values.blank? %>
-    <fieldset class="resource-fields">
+    <fieldset class="resource-fields resize">
       <legend>Calls</legend>
       <table id="request-details-calls" class="breakdown-table">
         <% call_resource_values.sort_by { |e| -e.last }.each do |name, value| -%>
@@ -81,7 +81,7 @@
 
   <% memory_resource_values = @request.slice(*memory_resources) -%>
   <% unless memory_resource_values.blank? %>
-    <fieldset class="resource-fields">
+    <fieldset class="resource-fields resize">
       <legend>Allocations</legend>
       <table id="request-details-memory" class="breakdown-table">
         <% memory_resource_values.each do |name, value| -%>
@@ -110,7 +110,7 @@
   <% heap_resource_values = @request.slice(*heap_resources) -%>
   <% unless heap_resource_values.blank? %>
     <% heap_resource_values["free_slots"] = heap_resource_values["heap_size"] - heap_resource_values["live_data_set_size"] %>
-    <fieldset class="resource-fields">
+    <fieldset class="resource-fields resize">
       <legend>Heap</legend>
       <table id="request-details-heap" class="breakdown-table">
         <% heap_resource_values.each do |name, value| -%>
@@ -210,6 +210,9 @@
 <%= content_for(:page_scripts) do %>
 $(document).ready(function(){
   install_logjam_lines_filter();
+  var resizable = $('.resource-fields.resize');
+  var max = d3.max(resizable.map(function(){ return $(this).height(); }));
+  resizable.each(function(){ $(this).height(max); });
   $(".logline").dblclick(function(){
       var text = $(this).html().replace(/[\u200B]/g ,'');
       var ref = text.match(/http:\/\/[^\s]+/);
