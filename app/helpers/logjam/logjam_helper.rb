@@ -385,7 +385,7 @@ module Logjam
         l.sub!(request_id, sometimes_link_to_request(request_id))
       end
       colored_line = level > 1 ? format_backtrace(l, request_id) : allow_breaks(l, request_id)
-      "#{format_log_level(level)} #{format_timestamp(timestamp.to_s)} #{colored_line}"
+      "#{format_log_level(level)} #{format_timestamp(timestamp.to_s)} <span class='lb'>#{colored_line}</span>"
     end
 
     def line_times(lines)

@@ -214,10 +214,13 @@ $(document).ready(function(){
   var max = d3.max(resizable.map(function(){ return $(this).height(); }));
   resizable.each(function(){ $(this).height(max); });
   $(".logline").dblclick(function(){
-      var text = $(this).html().replace(/[\u200B]/g ,'');
+      var text = $(this).find('.lb').text().replace(/[\u200B]/g ,'');
       var ref = text.match(/http:\/\/[^\s]+/);
-      if (ref != null)
-        window.prompt ("Extracted Curl Command:", "curl '" + ref + "'");
+      if (ref != null) {
+        window.prompt("Extracted Curl Command:", "curl '" + ref + "'");
+      } else {
+        window.prompt("Raw log line:", text);
+      }
    });
 });
 <% end %>
