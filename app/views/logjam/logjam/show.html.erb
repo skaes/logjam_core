@@ -5,7 +5,7 @@
 <div id="request-header">
 <% if @request.present? %>
   <div id="show-json"><%= link_to("show json", params.merge(:format => :json)) %></div>
-  <b>Request details for action
+  <h3>Request details for action
   <%
     page, minute = @request["page"], @request["minute"]
     _params = params.except(:utf8, :id, :action).merge(:page => page)
@@ -15,7 +15,7 @@
   <%= link_to(page, page_params, :title => "view summary") -%>
   at
   <%= link_to(minute_to_human(minute), request_params, :title => "show requests") -%>
-  </b>
+  </h3>
 </div>
 
 <%
