@@ -484,7 +484,7 @@ module Logjam
       @plot_kind = Resource.resource_type(params[:resource])
       @attributes = Resource.resources_for_type(@plot_kind)
       @collected_resources = Totals.new(@db).collected_resources
-      @page = params[:page]
+      @page = params[:page].to_s
     end
 
     def dataset_from_params(strip_namespace = false)
