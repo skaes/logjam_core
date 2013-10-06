@@ -328,9 +328,9 @@ td.number {text-align: right;}
 .timestamp {font-weight:bold;}
 
 // #plot-details table { box-shadow: 0px 0px 3px #ddd; }
-#plot-details-col1 { float:left; }
-#plot-details-col2 { float:left; margin-left:10px;}
-#plot-details-col3 { float:left; margin-left:10px;}
+#plot-details-col1 { float:left; margin-left:0px;}
+#plot-details-col2 { float:left; margin-left:30px;}
+#plot-details-col3 { float:left; margin-left:30px;}
 .stats { margin: 2px 0 2px 20px; }
 .stats th { font-size: 12px; }
 .stats td { font-size: 12px; padding: 0 8px; }

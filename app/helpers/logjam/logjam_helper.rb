@@ -227,19 +227,27 @@ module Logjam
     def link_error_list(n, error_type, html_options={})
       page = (@page||'').gsub(/^::/,'')
       params = { :page => page, :action => "errors", :error_type => error_type }
-      clean_link_to(n, params, html_options)
+      clean_link_to(integer_number(n), params, html_options)
+    end
+
+    def sometimes_link_error_list(n, error_type, html_options={})
+      n == 0 ? integer_number(n) : link_error_list(n, error_type, html_options)
     end
 
     def link_exception_list(n, html_options={})
       page = (@page||'').gsub(/^::/,'')
       params = { :page => page, :action => "exceptions" }
-      clean_link_to(n, params, html_options)
+      clean_link_to(integer_number(n), params, html_options)
+    end
+
+    def sometimes_link_exception_list(n, html_options={})
+      n == 0 ? integer_number(n) : link_exception_list(n, html_options)
     end
 
     def link_js_exception_list(n, html_options={})
       page = (@page||'').gsub(/^::/,'')
       params = { :page => page, :action => "js_exception_types" }
-      clean_link_to(n, params, html_options)
+      clean_link_to(integer_number(n), params, html_options)
     end
 
     def without_module(page)
