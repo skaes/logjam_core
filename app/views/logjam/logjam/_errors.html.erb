@@ -34,10 +34,12 @@
       <%= link_exception_list(integer_number(@dataset.exception_count), :title => "show exceptions") %>
     </td>
   </tr>
-  <tr>
-    <td>javascript exceptions</td>
-    <td class="number error">
-      <%= link_js_exception_list(integer_number(@dataset.js_exception_count), :title => "show javascript errors") %>
-    </td>
-  </tr>
+  <% if @dataset.js_exception_count > 0 %>
+    <tr>
+      <td>javascript exceptions</td>
+      <td class="number error">
+        <%= link_js_exception_list(integer_number(@dataset.js_exception_count), :title => "show javascript errors") %>
+      </td>
+    </tr>
+  <% end %>
 </table>
