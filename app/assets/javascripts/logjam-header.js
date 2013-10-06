@@ -13,6 +13,7 @@ function submit_filter_form() {
   uri.pathname(action.pathname());
   uri.search(x);
   uri.removeSearch("utf8")
+     .removeSearch("page", parameter_defaults.page)
      .removeSearch("resource", parameter_defaults.resource)
      .removeSearch("time_range", parameter_defaults.time_range)
      .removeSearch("grouping", parameter_defaults.grouping)
@@ -24,7 +25,7 @@ function submit_filter_form() {
 }
 
 function go_home() {
-  $("#page-field").val("::");
+  $("#page-field").val(parameter_defaults.page);
   $("#grouping").val(parameter_defaults.grouping);
   $("#resource").val(parameter_defaults.resource);
   $("#grouping-function").val(parameter_defaults.grouping_function);

@@ -126,7 +126,7 @@ module Logjam
     end
 
     def sometimes_link_grouping_result(result, grouping, params)
-      value = result.send(grouping)
+      value = result.send(grouping).sub(/\A::/,'')
       ppage = params[:page]
       if grouping.to_sym == :page && ppage !~ /\AOthers/ && (ppage != @page || ppage =~ /^::/)
         params = params.merge(grouping => value)
@@ -216,7 +216,7 @@ module Logjam
 
     def sometimes_link_response_code(code, n)
       text = memory_number(n)
-      params = { :app => @app, :env => @env, :action => "response_codes", :page => (@page||'::') }
+      params = { :app => @app, :env => @env, :action => "response_codes", :page => @page }
       if code.to_s =~ /[0-3]xx\z/
         text
       elsif code.to_s =~ /xx\z/

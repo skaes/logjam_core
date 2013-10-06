@@ -9,7 +9,7 @@ module Logjam
 
     DEFAULTS = {:plot_kind => :time, :interval => '5',
       :grouping => 'page', :resource => 'total_time', :grouping_function => 'sum',
-      :start_minute => '0', :end_minute => '1440'}
+      :start_minute => '0', :end_minute => '1440', :page => ''}
 
     def self.is_default?(attribute, value)
       DEFAULTS.keys.include?(attribute.to_sym) && DEFAULTS[attribute.to_sym].to_s == value

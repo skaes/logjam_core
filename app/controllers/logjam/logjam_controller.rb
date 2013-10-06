@@ -14,7 +14,7 @@ module Logjam
       show_modules = [":", "::"].include?(@page)
       re = show_modules ? /^::/ : /#{@page}/i
       pages = Totals.new(@db).page_names.select {|name| name =~ re && name != 'all_pages'}
-      pages.collect!{|p| p.gsub(/^::/,'')} unless show_modules
+      pages.collect!{|p| p.gsub(/^::/,'')}
       completions = pages.sort  # [0..34]
       render :json => {query: query, suggestions: completions}
     end
@@ -494,7 +494,7 @@ module Logjam
         :app => @app,
         :env => @env,
         :interval => params[:interval].to_i,
-        :page => strip_namespace ? (@page.to_s).sub(/\A::/,'') : @page,
+        :page => strip_namespace ? (@page.to_s).sub(/\A::/,'') : (@page.blank? ? '::' : @page),
         :plot_kind => @plot_kind,
         :resource => params[:resource] || :total_time,
         :collected_resources => @collected_resources,
@@ -507,7 +507,7 @@ module Logjam
     def redirect_on_empty_dataset(strip_namespace = false)
       dataset_from_params(strip_namespace)
       if @dataset.empty? && !@dataset.top_level? && !request.referer.to_s.include?("app=#{@app}")
-        new_params = FilteredDataset.clean_url_params(params.merge(:page => '::',
+        new_params = FilteredDataset.clean_url_params(params.merge(:page => '',
                                                                    :default_app => @default_app,
                                                                    :default_env => @default_env))
         redirect_to new_params
@@ -524,7 +524,7 @@ module Logjam
       dd = default_date
       selected_date = dd.to_s(:db) if params[:auto_refresh] == "1" && (dd.year != py || dd.month != pm || dd.day != pd)
       selected_date ||= dd.to_s(:db) unless (params[:year] && params[:month] && params[:day])
-      if selected_date.to_s =~ /\A(\d\d\d\d)-(\d\d)-(\d\d)\z/
+      if selected_date.to_s =~ /\A(\d\d\d\d)-(\d\d)-(\d\d)\z/ || params[:page] == '::'
         new_params = FilteredDataset.clean_url_params(
           :auto_refresh => params[:auto_refresh] == "1" ? "1" : nil,
           :default_app => @default_app, :default_env => @default_env,
@@ -532,7 +532,7 @@ module Logjam
           :year => $1, :month => $2, :day => $3, :interval => params[:interval],
           :start_minute => params[:start_minute], :end_minute => params[:end_minute],
           :app => params[:app], :env => params[:env],
-          :page => params[:page], :response => params[:response],
+          :page => params[:page].to_s.sub(/\A::/,''), :response => params[:response],
           :resource => params[:resource],
           :sort => params[:sort], :group => params[:group], :filter => params[:filter],
           :offset => params[:offset], :error_type => params[:error_type],
