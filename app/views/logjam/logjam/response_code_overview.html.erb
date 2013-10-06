@@ -7,7 +7,7 @@
     <% @totals.response_codes.keys.sort.each_with_index do |rc,i| %>
     <tr class='full_stats'>
       <% url = clean_url_for(:action => "response_codes", :response_code => rc) if rc.to_i >= 400 %>
-      <td><%= rc %></td>
+      <td><%= rc.to_i < 400 ? rc : link_to(rc, url) %></td>
       <td class='number'><%= sometimes_link_response_code(rc, @totals.response_codes[rc]) %></td>
       <td class='echart' id='<%= "echart-#{i+=1}" %>'>
         <%= render "echart", exceptions: @minutes.response[rc.to_s], i: i, url: url %>
