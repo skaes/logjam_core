@@ -178,6 +178,8 @@ div#pagetimes {
     margin-top: 15px;
     .breakdown-table {
         width: 210px;
+        td {font-size: 90%; line-height: 110%; white-space: nowrap;}
+        th {font-size: 90%; line-height: 110%; white-space: nowrap;}
     }
 }
 fieldset {
@@ -192,7 +194,7 @@ fieldset {
     vertical-align: top;
     display: inline-block;
     td {font-size: 100%; line-height: 130%; white-space: nowrap;}
-    th {font-size: 100%; white-space: nowrap;}
+    th {font-size: 100%; line-height: 130%; white-space: nowrap;}
 }
 .breakdown-chart {
     vertical-align:middle;
@@ -350,7 +352,7 @@ td.number {text-align: right;}
     float:left;
     td:first-child { padding-left: 1px; }
 }
-#apdex-table td, #error-table td, #response-code-table td {font-size: 90%; line-height: 100%; white-space: nowrap;}
+#apdex-table td, #error-table td, #response-code-table td {font-size: 90%; line-height: 110%; white-space: nowrap;}
 #apdex-table th, #error-table th, #response-code-table th {font-size: 90%; white-space: nowrap;}
 #apdex-table th, #error-table th, #response-code-table th {text-align: left;}
 
@@ -372,7 +374,7 @@ td.apdex.fair         { background: rgba(255,165,0,0.5); }
 td.apdex.poor         { background: rgba(255,0,0,0.7); }
 td.apdex.unacceptable { background: rgba(150,150,150,0.8); }
 
-#graph-stats td {font-size: 90%; line-height: 100%; white-space: nowrap;}
+#graph-stats td {font-size: 90%; line-height: 110%; white-space: nowrap;}
 #graph-stats th {font-size: 90%; white-space: nowrap;}
 #graph-counts {font-size: 90%; margin-bottom: 10px; white-space: nowrap;}
 #graph-counts p {font-weight: bold; white-space: nowrap;}
