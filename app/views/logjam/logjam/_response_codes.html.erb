@@ -4,10 +4,10 @@
       <%= clean_link_to(triangle_right, {:action => "response_code_overview"}, :title => "show response code timeline") %>
     </th>
   </tr>
-  <% @dataset.response_codes.keys.sort.each do |rc| %>
+  <% @dataset.response_code_summary.keys.sort.each do |rc| %>
   <tr>
     <td class="number-left"><%= rc %></td>
-    <td class="number"><%= sometimes_link_response_code(rc, @dataset.response_codes[rc]) %></td>
+    <td class="number"><%= sometimes_link_response_code(rc, @dataset.response_code_summary[rc]) %></td>
   </tr>
   <% end %>
 </table>

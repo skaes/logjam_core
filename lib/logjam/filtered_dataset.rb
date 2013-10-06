@@ -344,5 +344,13 @@ module Logjam
     def response_codes
       totals.response_codes
     end
+
+    def response_code_summary
+      @response_code_summary ||=
+        response_codes.each_with_object(Hash.new(0)) do |(rc,c),s|
+          rc_s = rc > 999 ? "?xx" : sprintf("%03d", rc).first + "xx"
+          s[rc_s] += c
+        end
+    end
   end
 end

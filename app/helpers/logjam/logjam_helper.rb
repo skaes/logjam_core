@@ -216,10 +216,16 @@ module Logjam
 
     def sometimes_link_response_code(code, n)
       text = memory_number(n)
-      if code.to_i < 400
-        h(text)
+      params = { :app => @app, :env => @env, :action => "response_codes", :page => (@page||'::') }
+      if code.to_s =~ /[0-3]xx\z/
+        text
+      elsif code.to_s =~ /xx\z/
+        params[:above] = code.to_s.sub('xx', '00')
+        clean_link_to(text, params, :class => "error", :title => "show requests with response #{code}")
+      elsif code.to_i < 400
+        text
       else
-        params = { :app => @app, :env => @env, :action => "response_codes", :response_code => code, :page => (@page||'::') }
+        params[:response_code] = code
         clean_link_to(text, params, :class => "error", :title => "show requests with response #{code}")
       end
     end
