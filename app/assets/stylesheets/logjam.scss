@@ -346,10 +346,13 @@ td.number {text-align: right;}
     shape-rendering: crispEdges;
 }
 
-#apdex-table, #error-table { float:left; }
-#apdex-table { margin-top: 5px; }
-#apdex-table td, #error-table td {font-size: 90%; line-height: 100%; white-space: nowrap;}
-#apdex-table th, #error-table th {font-size: 90%; white-space: nowrap;}
+#apdex-table, #error-table, #response-code-table {
+    float:left;
+    td:first-child { padding-left: 1px; }
+}
+#apdex-table td, #error-table td, #response-code-table td {font-size: 90%; line-height: 100%; white-space: nowrap;}
+#apdex-table th, #error-table th, #response-code-table th {font-size: 90%; white-space: nowrap;}
+#apdex-table th, #error-table th, #response-code-table th {text-align: left;}
 
 tr.full_stats.apdex:hover { background: #fff; }
 tr.apdex td:nth-child(2) { font-weight: bold; }
@@ -368,9 +371,6 @@ td.apdex.good         { background: rgba(0,255,0,0.5); }
 td.apdex.fair         { background: rgba(255,165,0,0.5); }
 td.apdex.poor         { background: rgba(255,0,0,0.7); }
 td.apdex.unacceptable { background: rgba(150,150,150,0.8); }
-
-#response-code-stats td {font-size: 90%; line-height: 100%; white-space: nowrap;}
-#response-code-stats th {font-size: 90%; white-space: nowrap;}
 
 #graph-stats td {font-size: 90%; line-height: 100%; white-space: nowrap;}
 #graph-stats th {font-size: 90%; white-space: nowrap;}
