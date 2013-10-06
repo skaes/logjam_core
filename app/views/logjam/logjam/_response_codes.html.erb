@@ -7,7 +7,7 @@
   <% @dataset.response_codes.keys.sort.each do |rc| %>
   <tr>
     <td class="number-left"><%= rc %></td>
-    <td class="number"><%= sometimes_link_response_code(@page, rc, @dataset.response_codes[rc]) %></td>
+    <td class="number"><%= sometimes_link_response_code(rc, @dataset.response_codes[rc]) %></td>
   </tr>
   <% end %>
 </table>

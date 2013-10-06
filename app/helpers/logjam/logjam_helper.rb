@@ -214,7 +214,7 @@ module Logjam
       end
     end
 
-    def sometimes_link_response_code(page, code, n)
+    def sometimes_link_response_code(code, n)
       text = memory_number(n)
       if code.to_i < 400
         h(text)
