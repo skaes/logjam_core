@@ -155,6 +155,7 @@ img {
     position: absolute;
     left: 635px;
 }
+
 div#pagetimes {
     h3 {
         font-size: 12px;
@@ -233,6 +234,7 @@ fieldset {
     line-height: 13px;
     padding: 3px 5px;
     vertical-align: middle;
+    white-space: nowrap;
     img.lj-ico {
         position: relative;
         top: -2px;
@@ -805,4 +807,43 @@ ul.radio.vertical > li {
     right: 45px;
     top: 29px;
     a:hover { background: #cca383; }
+}
+
+@media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape) {
+    .header {
+        height: 50px;
+    }
+}
+
+@media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait) {
+    .header {
+        height: 50px;
+    }
+    #column-left {
+        width: 800px;
+    }
+    #column-right {
+        left: 20px;
+        top: 630px;
+        width: 800px;
+    }
+}
+
+@media only screen and (max-device-width: 480px) and (orientation:landscape) {
+    .header {
+        height: 50px;
+    }
+}
+@media only screen and (max-device-width: 480px) and (orientation:portrait) {
+    .header {
+        height: 50px;
+    }
+    #column-left {
+        width: 800px;
+    }
+    #column-right {
+        left: 20px;
+        top: 630px;
+        width: 800px;
+    }
 }

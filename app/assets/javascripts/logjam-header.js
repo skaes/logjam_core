@@ -108,8 +108,10 @@ function initialize_header() {
      onSelect: function(value, data){ submit_filter_form(); }
    });
 
-  $("*[title]").tipsy({gravity:"nw", opacity:0.9, offset:10, delayIn:250, delayOut:0, fade:false});
-
+  var mobile = navigator.userAgent.match(/iPad|iPhone/i) != null;
+  if (!mobile) {
+    $("*[title]").tipsy({gravity:"nw", opacity:0.9, offset:10, delayIn:250, delayOut:0, fade:false});
+  }
   // bug in safari leaves the tooltips open and you can have more than one shown
   if ($.browser.safari) {
     $(window).on("beforeunload", function(e){ $(".tipsy").remove(); });
