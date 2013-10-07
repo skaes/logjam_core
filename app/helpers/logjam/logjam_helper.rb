@@ -314,19 +314,23 @@ module Logjam
     def page_percent(pages, page, resource)
       case gf = params[:grouping_function]
       when "apdex"
-        page.apdex_score * 100
+        page.apdex_score.to_f * 100
       when "sum"
-        page.sum(resource) / pages.first.sum(resource) * 100
+        div_percent(page.sum(resource) , pages.first.sum(resource))
       when "avg"
-        page.avg(resource) / pages.first.avg(resource) * 100
+        div_percent(page.avg(resource) , pages.first.avg(resource))
       when "count"
-        page.count / pages.first.count * 100
+        div_percent(page.count, pages.first.count)
       when "stddev"
-        page.stddev(resource) / pages.first.stddev(resource) * 100
+        div_percent(page.stddev(resource), pages.first.stddev(resource))
       else
         logger.error ArgumentError.new("unknown grouping function: '#{gf}'")
-        0
+        0.0
       end
+    end
+
+    def div_percent(a, b)
+      b == 0 ? 0 : (a.to_f / b) * 100
     end
 
     def triangle_right
