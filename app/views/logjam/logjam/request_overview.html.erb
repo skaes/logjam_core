@@ -12,7 +12,7 @@
   </h3>
   <%= render "result_navigator" %>
   <table class='full_stats'>
-    <tr><th>minute</th><th>page</th><th class="sorted"><%= resource_name %></th></tr>
+    <tr><th>severity</th><th>rc</th><th>minute</th><th>action</th><th class="sorted"><%= resource_name %></th></tr>
     <%= render "request_statistics", options.merge(:requests => @requests) %>
   </table>
 </div>

@@ -209,7 +209,7 @@ module Logjam
 
     def request_overview
       redirect_on_empty_dataset and return
-      @page_size = 32
+      @page_size = 25
       offset = params[:offset].to_i
       @dataset.limit = @page_size
       @dataset.offset = offset

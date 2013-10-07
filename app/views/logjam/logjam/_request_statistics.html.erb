@@ -1,6 +1,9 @@
 <% resource_type = Logjam::Resource.resource_type(resource) -%>
 <% requests.each do |request| -%>
   <tr class="full_stats">
+    <% severity = request["severity"] %>
+    <td><%= severity_icon(severity) %> <%= format_severity(severity) %></td>
+    <td><%= request["response_code"] %></td>
     <td><%= link_to_request(minute_to_human(request["minute"]), {:action => "show", :id => request["_id"]}, request["response_code"]) %></td>
     <td><%= clean_link_to(request["page"], {:grouping => "page", :page => request["page"]}, :title => "view summary") %></td>
     <% case resource_type

@@ -1,6 +1,6 @@
 <% if @page_count > 1 %>
 <div id="result-navigator">
-  <div class="navtext">Page <%= @current_page %> of <%= @page_count %></div>
+  <div class="navtext">Page <%= @current_page %> of <%= integer_number(@page_count) %></div>
   <ul class="navicons">
     <li>
       <% if @current_page > 1 %>

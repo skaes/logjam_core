@@ -46,7 +46,7 @@ module Logjam
       @start_minute = (options[:start_minute] || DEFAULTS[:start_minute]).to_i
       @end_minute = (options[:end_minute] || DEFAULTS[:end_minute]).to_i
       @collected_resources = options[:collected_resources]
-      @limit = options[:limit] || (@grouping == "request" ? 32 : 17)
+      @limit = options[:limit] || (@grouping == "request" ? 25 : 17)
       @offset = options[:offset] || 0
     end
 

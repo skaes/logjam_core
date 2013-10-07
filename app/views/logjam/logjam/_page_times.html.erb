@@ -24,6 +24,8 @@
   </tr>
       <%= render "#{resource_type}_statistics", options.merge(:pages => @dataset.do_the_query) %>
     <% else -%>
+      <th>severity</th>
+      <th>rc</th>
       <th>minute</th>
       <th>action</th>
       <th class="sorted"><%= resource_name %></th>
