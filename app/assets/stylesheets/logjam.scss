@@ -423,7 +423,7 @@ td.apdex.unacceptable { background: rgba(150,150,150,0.8); }
     }
     .navtext {
         display: inline-block;
-        width: 115px;
+        min-width: 145px;
     }
 }
 .normal {
