@@ -809,6 +809,7 @@ ul.radio.vertical > li {
     a:hover { background: #cca383; }
 }
 
+// iPad
 @media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape) {
     .header {
         height: 50px;
@@ -829,6 +830,7 @@ ul.radio.vertical > li {
     }
 }
 
+// iPhone
 @media only screen and (max-device-width: 480px) and (orientation:landscape) {
     .header {
         height: 50px;

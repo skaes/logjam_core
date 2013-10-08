@@ -11,7 +11,7 @@
       <td><%= severity_icon(severity) %> <%= format_severity(severity) %></td>
       <%- error_link_params = { :action =>"show", :id => r["_id"] } -%>
       <%- error_text = extract_error(r["lines"]||[], params[:exception]) -%>
-      <td><%= clean_link_to(minute_to_human(r["minute"]), error_link_params, :title => "show request") %></td>
+      <td><%= clean_link_to(request_started_at(r), error_link_params, :title => "show request") %></td>
       <td><%= clean_link_to(r["page"], { :action => "index", :grouping => "page", :page => r["page"] }, :title => "view summary") %></td>
       <td><%= clean_link_to(error_text, error_link_params, :title => "show request")  %></td>
     </tr>

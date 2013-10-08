@@ -14,7 +14,7 @@
   -%>
   <%= link_to(page, page_params, :title => "view summary") -%>
   at
-  <%= link_to(minute_to_human(minute), request_params, :title => "show requests") -%>
+  <%= link_to(request_started_at(@request), request_params, :title => "show requests") -%>
   </h3>
 </div>
 

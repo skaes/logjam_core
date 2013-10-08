@@ -87,6 +87,12 @@ module Logjam
       "%02d:%02d" % minute_of_day.divmod(60)
     end
 
+    def request_started_at(request)
+      request["started_at"][11..18]
+    rescue
+      minute_to_human(request["minute"])
+    end
+
     def distribution_kind(resource)
       case Resource.resource_type(resource)
       when :time

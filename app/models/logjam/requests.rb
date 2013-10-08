@@ -109,7 +109,7 @@ module Logjam
     end
 
     def all
-      fields = ["page", "user_id", "response_code", "severity"]
+      fields = ["page", "user_id", "response_code", "severity", "started_at"]
       if @old_format
         fields.concat ["heap_growth", @resource]
         fields << "minute" unless @resource == "minute"
