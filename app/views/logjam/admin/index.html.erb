@@ -1,10 +1,14 @@
-<div class="container">
-  <h1 class="controls">Storage space used on database servers:
+<div class="header">
+  <h3 id="admin-title" class="controls">Storage space used on database servers:
     ~ <%= integer_number(@total_bytes/(1024*1024*1024)) %>G
+  </h3>
+  <div id="admin-control">
     <%= form_tag(params.merge(:format => :csv), :method => :get) do %>
     <%= submit_tag "Download CSV", :id => "download-button", :name => nil %>
     <% end %>
-  </h1>
+  </div>
+</div>
+<div class="container">
   <table id="database-info" class="zebra">
     <tr>
       <th>Host</th><th>Application</th><th>Environment</th><th>Date</th><th>Size (G)</th>
