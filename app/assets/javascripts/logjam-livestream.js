@@ -254,11 +254,12 @@ function logjam_live_stream_chart(params){
         continue;
       }
       var severity = severity_image(severity_value);
+      var response_code = e["response_code"];
       var action = e["action"];
       var time = e["time"].slice(11,19);
       var desc = e["description"];
       var url = error_url(e["request_id"], e["time"]);
-      var new_row = $("<tr class='full_stats'><td>" + severity + "</td><td>" + time + "</td><td>" + action + "</td><td>" + desc + "</td></tr>");
+      var new_row = $("<tr class='full_stats'><td>" + severity + "</td><td>" + response_code + "</td><td>" + time + "</td><td>" + action + "</td><td>" + desc + "</td></tr>");
       new_row.hide().addClass("new_error clickable");
       var onclick = (function(u){ return function(){ window.open(u, "_blank");};})(url);
       new_row.children().click(onclick);

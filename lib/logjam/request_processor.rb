@@ -127,6 +127,7 @@ module Logjam
           # extract the first error found (duplicated code from logjam helpers)
           description = ((lines.detect{|(s,_,_)| s >= 2})[2].to_s)[0..80] rescue "--- unknown ---"
           error_info = { "request_id" => request_id.to_s,
+                         "response_code" => response_code,
                          "severity" => severity, "action" => page,
                          "description" => description, "time" => started_at }
           ["all_pages", pmodule].each do |p|
