@@ -172,12 +172,8 @@ module Logjam
       end
     end
 
-    def link_to_request(text, options, response_code = 200)
-      if response_code == 500
-        clean_link_to(text, options, :title => "show request", :class => "error")
-      else
-        clean_link_to(text, options, :title => "show request")
-      end
+    def link_to_request(text, options)
+      clean_link_to(text, options, :title => "show request")
     end
 
     def sometimes_link_to_request(request_id)

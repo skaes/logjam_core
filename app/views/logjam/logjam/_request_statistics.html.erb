@@ -1,11 +1,12 @@
 <% resource_type = Logjam::Resource.resource_type(resource) -%>
 <% requests.each do |request| -%>
-  <tr class="full_stats">
+  <% request_url = clean_url_for(:action => "show", :id => request["_id"]) -%>
+  <tr class="full_stats clickable" onclick="document.location.href='<%= request_url %>'" title="view request">
     <% severity = request["severity"] %>
     <td><%= severity_icon(severity) %> <%= format_severity(severity) %></td>
     <td><%= request["response_code"] %></td>
-    <td><%= link_to_request(request_started_at(request), {:action => "show", :id => request["_id"]}, request["response_code"]) %></td>
-    <td><%= clean_link_to(request["page"], {:grouping => "page", :page => request["page"]}, :title => "view summary") %></td>
+    <td><%= request_started_at(request) %></td>
+    <td><%= request["page"] %></td>
     <% case resource_type
        when :time -%>
     <td class="number"><%= seconds_to_human((request[resource]||0) / 1000.0) %></td>
