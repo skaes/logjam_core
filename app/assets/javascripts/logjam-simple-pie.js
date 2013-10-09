@@ -37,6 +37,7 @@ function logjam_simple_pie(params){
     .attr("d", arc);
 
   arcs.append("text")
+    .style("cursor", "default")
     .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
     .attr("dy", ".35em")
     .attr("text-anchor", "middle")
