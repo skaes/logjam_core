@@ -732,11 +732,9 @@ ul.radio.vertical > li {
     top: 2px;
     label {
         font-size: 18px;
-        cursor: pointer;
     }
     div {
         height: 22px;
-        cursor: pointer;
         & > ul {
             position:relative;
             top: 4px;
@@ -745,7 +743,7 @@ ul.radio.vertical > li {
     }
 }
 #navigation-widget > div > ul > li {
-    & + li { margin-left: 2px; }
+    & + li { margin-left: 4px; }
     & > a { font-size: 21px; }
 }
 

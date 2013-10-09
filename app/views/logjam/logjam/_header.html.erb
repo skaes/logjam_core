@@ -15,10 +15,10 @@ $(document).ready(initialize_header);
 <div class="header">
   <ul class="left">
     <li id="navigation-widget">
-      <div><%= label :filter, "logjam", :onclick => "go_home()" %></div>
+      <div><%= label :filter, "logjam" %></div>
       <div class="menu">
         <ul class="horizonzal">
-          <li class="dropdown"><a><%= fa_icon("eye-open")%></a>
+          <li class="dropdown" onclick="go_home();"><a><%= fa_icon("eye-open")%></a>
             <ul>
               <% if @dataset.try(:live_stream?) -%>
                 <li>
