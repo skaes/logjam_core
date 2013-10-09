@@ -219,7 +219,7 @@ module Logjam
     def sometimes_link_response_code(code, n)
       text = memory_number(n)
       params = { :app => @app, :env => @env, :action => "response_codes", :page => @page }
-      if code.to_s =~ /[0-3]xx\z/
+      if n == 0 || code.to_s =~ /[0-3]xx\z/
         text
       elsif code.to_s =~ /xx\z/
         params[:above] = code.to_s.sub('xx', '00')
