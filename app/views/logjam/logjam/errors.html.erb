@@ -9,7 +9,7 @@
     <% request_url = clean_url_for(:action => "show", :id => r["_id"]) -%>
     <tr class="full_stats clickable" onclick="document.location.href='<%= request_url %>'" title="view request">
       <% severity = r["severity"] %>
-      <td><%= severity_icon(severity) %> <%= format_severity(severity) %></td>
+      <td><%= severity_icon(severity, :title => nil) %> <%= format_severity(severity) %></td>
       <td><%= r["response_code"] %></td>
       <td><%= request_started_at(r) %></td>
       <td><%= r["page"] %></td>

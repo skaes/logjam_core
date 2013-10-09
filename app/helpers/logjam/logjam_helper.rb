@@ -345,9 +345,9 @@ module Logjam
       severity.is_a?(String) ? severity : (severity && SEVERITY_LABELS[severity]) || "UNKNOWN"
     end
 
-    def severity_icon(severity)
+    def severity_icon(severity, params = {})
       img = format_severity(severity).downcase
-      image_tag("#{img}.svg", :class => "lj-ico", :title => "log severity: #{img}")
+      image_tag("#{img}.svg", params.reverse_merge(:class => "lj-ico", :title => "log severity: #{img}"))
     end
 
     def extract_error(log_lines, exception)
