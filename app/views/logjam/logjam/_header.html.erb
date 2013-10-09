@@ -43,7 +43,7 @@ $(document).ready(initialize_header);
                 <% if @dataset && @dataset.has_callers? -%>
                   <li><%= clean_link_to("My Callers", :action =>"callers") %></li>
                 <% end %>
-                <li><%= clean_link_to("Call Relationships", :action =>"call_relationships") %></li>
+                <li><%= clean_link_to("Call Relationships", :action =>"call_relationships", :filter => @app) %></li>
               <% end %>
             </ul>
           </li>
