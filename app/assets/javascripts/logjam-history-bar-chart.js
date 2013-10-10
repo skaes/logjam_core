@@ -28,9 +28,16 @@ function logjam_history_bar_chart(data, metric, params) {
   var data_min = d3.min(relevant_data, function(d){ return d[metric]; }),
       data_max = d3.max(relevant_data, function(d){ return d[metric]; });
 
+  /*
+  if (metric == "apdex_score") {
+    data_max = 1.0;
+    data_min = d3.min([0.92, data_min]);
+  }
+  */
+
   var formatter = d3.format(",.r");
 
-  var x = d3.time.scale()
+  var x = d3.time.scale.utc()
       .range([0, width]);
 
   var y = d3.scale.linear()
@@ -79,12 +86,14 @@ function logjam_history_bar_chart(data, metric, params) {
     bar_tooltip_text = date_formatter(d.date) + " ~ " + tooltip_formatter(d[metric]);
   }
 
+  var bar_width = x(data[data.length-1].date) - x(data[data.length-2].date) - 0.1;
+
   svg.selectAll(".bar")
       .data(relevant_data)
     .enter().append("rect")
       .attr("class", function(d){ return bar_class(d.date); })
       .attr("x", function(d) { return x(d.date); })
-      .attr("width", width/data.length)
+      .attr("width", bar_width)
       .attr("y", function(d) { return y(d[metric]); })
       .attr("height", function(d) { return height - y(d[metric]); })
       .attr("cursor", "pointer")
