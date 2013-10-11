@@ -26,6 +26,7 @@ module Logjam
           @resources, @js_data, @js_events, @js_max, @request_counts, @gc_time, @js_zoom = @dataset.plot_data
         end
         format.json do
+          prepare_params
           pages, events = fetch_json_data_for_index(@db, @page)
           render :json => Oj.dump({:pages => pages, :events => events}, :mode => :compat)
         end
