@@ -28,3 +28,4 @@
 //= require logjam-history-bar-chart
 //= require logjam-livestream
 //= require logjam-call-graph
+//= require logjam-ready
