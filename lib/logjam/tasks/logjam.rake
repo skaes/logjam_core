@@ -23,10 +23,11 @@ namespace :logjam do
     desc "drop empty databases"
     task :drop_empty => :environment do
       delay = [ENV['REPAIR_DELAY'].to_i, 5].max
-      Logjam.drop_empty_databases(delay)
+      app = ENV['APPLICATION'] || '.+?'
+      Logjam.drop_empty_databases(app, delay)
     end
 
-    desc "drop databases"
+    desc "drop applications"
     task :drop_apps => :environment do
       Logjam.drop_applications(ENV['APPLICATIONS'].to_s.split(/\s*,\s*/))
     end

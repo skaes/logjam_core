@@ -281,14 +281,17 @@ module Logjam
     update_known_databases if dropped > 0
   end
 
-  def drop_empty_databases(delay = 60)
+  def drop_empty_databases(app = '.+?', delay = 60)
     dropped = 0
-    databases_sorted_by_date.each do |db_name|
-      conn = connection_for(db_name)
-      db = conn.db(db_name)
-      if db.stats["fileSize"] == 0
-        puts "dropping empty database: #{db_name}"
-        conn.drop_database(db_name)
+    db_match = db_name_format(:app => app)
+    connections.each do |_,connection|
+      names = connection.database_names
+      names.each do |name|
+        next unless name =~ db_match
+        db = connection.db(name)
+        next unless db.stats["fileSize"] == 0
+        puts "dropping empty database: #{name}"
+        connection.drop_database(name)
         sleep delay
         dropped += 1
       end
@@ -296,18 +299,21 @@ module Logjam
     update_known_databases if dropped > 0
   end
 
-  def drop_applications(apps)
-    databases = get_known_databases
-    apps.each do |app|
-      db_names = grep(databases, :app => app)
-      next if db_names.empty?
-      db_names.each do |db_name|
-        puts "dropping #{db_name}"
-        connection_for(db_name).drop_database(db_name)
+  def drop_applications(apps, delay = 10)
+    return if apps.blank?
+    dropped = 0
+    db_match = db_name_format(:app => apps.join("|"))
+    connections.each do |_,connection|
+      names = connection.database_names
+      names.each do |name|
+        next unless name =~ db_match
+        puts "dropping database: #{name}"
+        connection.drop_database(name)
+        sleep delay
+        dropped += 1
       end
     end
-    puts "updating known databases"
-    Logjam.update_known_databases
+    update_known_databases if dropped > 0
   end
 
   def update_severities
