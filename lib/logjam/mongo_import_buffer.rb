@@ -49,8 +49,8 @@ module Logjam
       if @old_buffer
         log_info "skipping publishing old data"
       else
-        # log_info "publishing fresh data"
-        @publisher.publish(@state[:modules], @state[:totals], @state[:errors])
+        ms = Benchmark.ms{ @publisher.publish(@state[:modules], @state[:totals], @state[:errors]) }
+        log_info("publishing fresh data: %.1f" % [ms])
       end
     end
 

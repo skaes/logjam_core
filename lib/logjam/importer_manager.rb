@@ -64,11 +64,10 @@ module Logjam
 
     def flush_buffers
       if @proxy
-        ms = Benchmark.ms do
-          states = @proxy.reset_state
-          @importer.process(states)
-        end
-        log_info("flushtime %4d ms" % [ms.to_i])
+        states = nil
+        ms1 = Benchmark.ms { states = @proxy.reset_state }
+        ms2 = Benchmark.ms { @importer.process(states) }
+        log_info("flushtime %4d ms (collect:%.1f, process: %.1f)" % [(ms1+ms2).to_i, ms1, ms2])
       end
     end
 
