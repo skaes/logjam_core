@@ -48,6 +48,7 @@ module Logjam
 
     def reset_state
       log_info "received reset state"
+      log_info("slots: %d, live: %d" % [GC.heap_slots, GC.heap_slots_live_after_last_gc])
       info = []
       @processors.each do |db_name, processor|
         info << [db_name, processor.reset_state]

@@ -67,7 +67,7 @@ module Logjam
         states = nil
         ms1 = Benchmark.ms { states = @proxy.reset_state }
         ms2 = Benchmark.ms { @importer.process(states) }
-        log_info("flushtime %4d ms (collect:%.1f, process: %.1f)" % [(ms1+ms2).to_i, ms1, ms2])
+        log_info("flushtime %4d ms (collect:%.1f, process:%.1f)" % [(ms1+ms2).to_i, ms1, ms2])
       end
     end
 
