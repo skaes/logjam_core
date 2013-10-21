@@ -3,5 +3,6 @@ export RAILS_ENV=RAILSENV
 export PATH=DAEMON_PATH
 export GEM_HOME=GEMHOME
 export GEM_PATH=GEMPATH
+test -f LOGJAM_DIR/config/worker.gc && source LOGJAM_DIR/config/worker.gc
 exec 2>&1
 exec LOGJAM_DIR/vendor/logjam/script/import_amqp_log IMPORTER "$@"
