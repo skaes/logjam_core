@@ -29,7 +29,7 @@ module Logjam
         connect_importer settings
       end
       trap_signals
-      shutdown_if_reparented_to_root_process
+      shutdown_if_reparented_to_root_process_or_heap_insanity_detected
     end
 
     private

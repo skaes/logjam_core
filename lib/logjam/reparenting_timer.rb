@@ -1,6 +1,6 @@
 module Logjam
   module ReparentingTimer
-    def shutdown_if_reparented_to_root_process
+    def shutdown_if_reparented_to_root_process_or_heap_insanity_detected
       @reparenting_timer = EM.add_periodic_timer(1) do
         if Process.ppid == 1
           begin
@@ -8,6 +8,9 @@ module Logjam
           ensure
             exit!(1)
           end
+        elsif GC.heap_slots > 1_000_000
+          # shutdown processor on excessive heap usage (possibly a ruby/railsexpress bug)
+          shutdown
         end
       end
     end

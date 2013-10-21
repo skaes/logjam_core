@@ -22,7 +22,7 @@ module Logjam
     def process
       setup_connection
       trap_signals
-      shutdown_if_reparented_to_root_process
+      shutdown_if_reparented_to_root_process_or_heap_insanity_detected
     end
 
     private
