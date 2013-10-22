@@ -8,7 +8,7 @@ module Logjam
           ensure
             exit!(1)
           end
-        elsif GC.heap_slots > 1_000_000
+        elsif GC.heap_slots > 1_500_000
           # shutdown processor on excessive heap usage (possibly a ruby/railsexpress bug)
           shutdown
         end
