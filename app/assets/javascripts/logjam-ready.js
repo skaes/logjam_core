@@ -9,7 +9,7 @@ $(document).ready(function() {
 
   $('tr.clickable[data-href]').click(function(event) {
     var href = $(this).data("href");
-    if (event.which == 2) {
+    if (event.which == 2 || event.metaKey) {
       window.open(href);
     } else {
       document.location.href = href;
