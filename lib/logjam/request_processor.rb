@@ -180,13 +180,13 @@ module Logjam
         entry["_id"] = oid if oid
       end
       convert_metrics_for_indexing(entry)
-      @requests.insert(entry)
+      @requests.insert(entry, :w => 0)
     rescue Exception => e
       if e.message =~ /String not valid UTF-8|key.*must not contain '.'|Cannot serialize the Numeric type BigDecimal/
         begin
           log_error "fixing json: #{e.class}(#{e})"
           entry = try_to_fix(entry)
-          request_id = @requests.insert(entry)
+          request_id = @requests.insert(entry, :w => 0)
           log_info "request insertion succeeed"
         rescue Exception => e
           log_error "Could not insert document: #{e.class}(#{e})"

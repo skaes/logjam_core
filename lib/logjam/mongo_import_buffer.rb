@@ -65,7 +65,7 @@ module Logjam
       end
     end
 
-    UPSERT_ONE = {:upsert => true, :multi => false}
+    UPSERT_ONE = {:upsert => true, :multi => false, :w => 0}
 
     def flush_quants_buffer(quants_buffer)
       quants = @quants
