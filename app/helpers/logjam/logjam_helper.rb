@@ -355,6 +355,7 @@ module Logjam
       error_line = ''
       error_level = 0
       log_lines.each do |s,t,l|
+        s = virtual_log_level(l, s)
         next unless s >= 2
         next if s <= error_level
         error_level = s
@@ -398,14 +399,33 @@ module Logjam
         level, timestamp, line = line
       end
       l = (safe_h line).strip
-      has_backtrace = l =~ /\.rb:\d+:in/
-      level = 2 if level == 1 && (has_backtrace || l =~ /Error|Exception/) && (l !~ /^(Rendering|Completed|Processing|Parameters)/)
+      vlevel = virtual_log_level(l, level)
       if l =~ /X-Logjam-Request-Id: (\S+)/
         request_id = $1
         l.sub!(request_id, sometimes_link_to_request(request_id))
       end
-      colored_line = level > 1 ? format_backtrace(l, request_id) : allow_breaks(l, request_id)
+      colored_line = vlevel > 1 ? format_backtrace(l, request_id) : allow_breaks(l, request_id)
       "#{format_log_level(level)} #{format_timestamp(timestamp.to_s)} <span class='lb'>#{colored_line}</span>"
+    end
+
+    def has_backtrace(line)
+      line =~ /\.rb:\d+:in/
+    end
+
+    def has_logged_error(line)
+      line =~ /Error|Exception/
+    end
+
+    def standard_rails_line(line)
+      line =~ /^(Rendering|Completed|Processing|Parameters)/
+    end
+
+    def virtual_log_level(line, level)
+      if level < 2 && (has_backtrace(line) || has_logged_error(line)) && !standard_rails_line(line)
+        2
+      else
+        level
+      end
     end
 
     def line_times(lines)
