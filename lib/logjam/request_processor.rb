@@ -45,9 +45,7 @@ module Logjam
       return if @stream.ignored_request?(entry)
 
       @request_count += 1
-      page = entry.delete("action")
-      page = "Unknown" if page.blank?
-      entry["page"] = page
+      page = entry["page"] = (entry.delete("action") || "Unknown").to_s
       # ensure that page contains a method name. otherwise totals model code will devliver strange metrics.
       page << "#unknown_method" unless page =~ /#/
       pmodule = "::"
