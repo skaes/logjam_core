@@ -18,7 +18,7 @@ module Logjam
       @request_processor = RequestProcessorServer.new(@stream)
       @event_processor = EventProcessor.new(@stream)
       @connections = []
-      @capture_file = File.open("#{Rails.root}/capture-#{$$}.log", "w") if ENV['LOGJAM_CAPTURE']
+      @capture_file = File.open("#{Rails.root}/capture-#{$$}.log", "wb") if ENV['LOGJAM_CAPTURE']
       @outstanding_heartbeats = Hash.new(0)
       @heartbeat_timers = {}
     end
@@ -193,9 +193,12 @@ module Logjam
     end
 
     def process_request(msg, routing_key)
-      (c = @capture_file) && (c.puts msg)
-      request = Oj.load(msg, :mode => :compat)
-      @request_processor.process(request)
+      if c = @capture_file
+        c.puts msg
+      else
+        request = Oj.load(msg, :mode => :compat)
+        @request_processor.process(request)
+      end
     end
 
     def process_event(msg, routing_key)

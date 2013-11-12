@@ -11,18 +11,30 @@ module Logjam
       @stream = Logjam.streams[config_name]
       @app = @stream.app
       @env = @stream.env
-      @importer = MongoImporter.new(@stream)
+      requests_collection = Logjam.db(Date.today, @app, @env)["requests"]
+      requests_collection.drop
+      @importer = RequestProcessor.new(@stream, requests_collection)
       @io = logfile_io(logfile_name)
     end
 
     def process
+      # @line_count = 0
+      # @start_time = Time.now
+      # @io.each_line do |line|
+      #   @line_count += 1
+      #   entry = Oj.load(line)
+      #   @importer.add entry
+      # end
+      # elapsed = Time.now - @start_time
+      # speed = @line_count / elapsed
+      # printf "\nprocessed %d requests (%d/second)\n", @line_count, speed.to_i
       EM.run do
         @connection = EM.watch @io, SimpleGrep
         @connection.importer = @importer
         @connection.notify_readable = true
         trap("INT") { stop }
         @timer = EM.add_periodic_timer(1) do
-          @importer.flush_buffers
+          @importer.reset_state
         end
       end
     end
@@ -55,8 +67,8 @@ module Logjam
       def notify_readable
         @line_count += 1
         line = @io.readline
-        entry = Oj.load(line)
-        @importer.add_entry entry
+        entry = JSON.parse(line)
+        @importer.add entry
       rescue EOFError
         detach
         @io.close
