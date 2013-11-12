@@ -89,8 +89,8 @@ module Logjam
           log_info "creating request processor #{dbname}"
           Logjam.ensure_known_database(dbname)
           database = Logjam.connection_for(dbname).db(dbname)
-          requests_collection, old_format = Requests.ensure_indexes(database["requests"])
-          RequestProcessor.new(@stream, requests_collection, old_format)
+          requests_collection = Requests.ensure_indexes(database["requests"])
+          RequestProcessor.new(@stream, requests_collection)
         end
     end
 

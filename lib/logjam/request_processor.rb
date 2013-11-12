@@ -7,10 +7,9 @@ module Logjam
   class RequestProcessor
     include Logjam::Helpers
 
-    def initialize(stream, request_collection, old_format = false)
+    def initialize(stream, request_collection)
       @stream = stream
       @requests = request_collection
-      @has_metrics_index = !old_format
       @generic_fields    = Set.new(Requests::GENERIC_FIELDS - %w(page response_code) + %w(action code engine))
       @quantified_fields = Requests::QUANTIFIED_FIELDS
       @squared_fields    = Requests::FIELDS.map{|f| [f,"#{f}_sq"]}
@@ -197,7 +196,6 @@ module Logjam
     end
 
     def convert_metrics_for_indexing(entry)
-      return unless @has_metrics_index
       metrics = []
       Requests::FIELDS.each do |f|
         if v = entry.delete(f)

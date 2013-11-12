@@ -23,10 +23,8 @@ module Logjam
     end
 
     def self.ensure_indexes(collection)
-      old_format = nil
       ms = Benchmark.ms do
         fields = indexed_fields(collection)
-        old_format = fields.include?("total_time")
         if (fields & INDEXED_FIELDS) == INDEXED_FIELDS
           logger.info "MONGO assuming request indexes already exist"
         else
@@ -40,7 +38,7 @@ module Logjam
         end
       end
       puts "MONGO Requests Indexes Creation (#{2*INDEXED_FIELDS.size+2+1}): #{"%.1f" % (ms)} ms"
-      [collection, old_format]
+      collection
     end
 
     def self.exists?(date, app, env, oid)
@@ -51,7 +49,6 @@ module Logjam
 
     def initialize(db, resource=nil, pattern='', options={})
       super(db, "requests")
-      @old_format = self.class.indexed_fields(@collection).include?("total_time")
       @resource = resource
       @pattern = pattern.to_s.sub(/^::/,'')
       @options = options
@@ -72,7 +69,7 @@ module Logjam
     end
 
     def selector(options={})
-      if @old_format || INDEXED_FIELDS.include?(@resource)
+      if INDEXED_FIELDS.include?(@resource)
         query_opts = {}
       else
         query_opts = {"metrics.n" => @resource}
@@ -109,18 +106,15 @@ module Logjam
     end
 
     def all
-      fields = {"page" => 1, "user_id" => 1, "response_code" => 1, "severity" => 1, "started_at" => 1}
-      if @old_format
-        fields.merge!("heap_growth" => 1, @resource => 1)
-        fields["minute"] = 1 unless @resource == "minute"
-      else
-        fields.merge!("metrics" => 1, "minute" => 1)
-      end
+      fields = {
+        "page" => 1, "user_id" => 1, "response_code" => 1, "severity" => 1,
+        "started_at" => 1, "metrics" => 1, "minute" => 1
+      }
       fields["lines"] = {'$slice' => -1000} if @options[:response_code] || @options[:severity] || @options[:exceptions]
 
       query_opts = {
         :fields => fields,
-        :sort => @old_format || INDEXED_FIELDS.include?(@resource) ?  [@resource, -1] : [["metrics.n", 1], ["metrics.v", -1]],
+        :sort => INDEXED_FIELDS.include?(@resource) ?  [@resource, -1] : [["metrics.n", 1], ["metrics.v", -1]],
         :limit => @options[:limit] || 25,
         :skip => @options[:skip]
       }
