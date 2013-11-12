@@ -32,8 +32,8 @@
 $.getJSON("<%= url_for(params.merge(:format => :json)) %>", function(response){
   var js_params = <%= raw Oj.dump(js_params) %>;
   response.data.forEach(function(d){ d.date = new Date(d.date); })
-  if (response.data.length == 1) {
-    $("#spinner").text("You have only on day of history. This view requires at least two days of data.");
+  if (response.data.length < 2) {
+    $("#spinner").text("You have only " + response.data.length + " days of history. This view requires at least two days of data.");
   }
   else {
     logjam_history_bar_chart(response.data, "apdex_score", js_params);

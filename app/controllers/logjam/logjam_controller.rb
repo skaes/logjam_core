@@ -92,7 +92,7 @@ module Logjam
             data << hash
           end
           data = data.sort_by{|d| d[:date]}  # .drop_while{|d| !d.has_key?(:request_count)}
-          data << { :date => (Date.parse(data.last[:date])+1).iso8601 }
+          data << { :date => (Date.parse(data.last[:date])+1).iso8601 } unless data.empty?
           collected_resources = data.inject(Set.new){|s,d| s.union(d.keys)}
           resources.reject!{|r| !collected_resources.include?(r.to_sym)}
           # logger.debug @data.inspect
