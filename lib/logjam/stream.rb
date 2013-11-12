@@ -10,7 +10,7 @@ module Logjam
       @tag = "development"
       @app, @env = name.split('-')
       raise "logjam stream configuration error: missing application name #{@app}" unless @app
-      raise "logjam stream configuration error: missing envrironment name #{@env}" unless @env
+      raise "logjam stream configuration error: missing environment name #{@env}" unless @env
       @importer = Importer.new
       instance_eval &block if block_given?
     end
