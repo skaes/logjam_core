@@ -10,6 +10,7 @@ module Logjam
       @application = @stream.app
       @environment = @stream.env
       @database_flush_interval = @stream.database_flush_interval
+      @shutdown = false
       log_info "creating ZMQ context"
       @zmq_context = ZMQ::Context.new(1)
       @importer = MongoImporter.new(@stream, @zmq_context)
@@ -33,13 +34,12 @@ module Logjam
     end
 
     def trap_signals
-      trap("INT") { shutdown }
-      trap("TERM") { shutdown }
+      trap("INT")  { @shutdown = true }
+      trap("TERM") { @shutdown = true }
     end
 
     def shutdown
       stop_flushing
-      flush_buffers
       stop_workers
       @importer.stop
       log_info "closing ZMQ context"
@@ -55,6 +55,7 @@ module Logjam
     def start_flushing
       @flushing_timer = EM.add_periodic_timer(@database_flush_interval) do
         flush_buffers
+        shutdown if @shutdown
       end
     end
 

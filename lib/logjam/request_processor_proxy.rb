@@ -14,6 +14,7 @@ module Logjam
       @env = @stream.env
       @servers = []
       @sockets = {}
+      @missing_workers = 0
       @context = zmq_context
       $PROGRAM_NAME = "logjam-importer-#{@app}-#{@env}"
       clean_old_sockets
@@ -32,6 +33,7 @@ module Logjam
           states << Marshal.load(data)
         end
       end
+      restart_missing_worker
       states
     end
 
@@ -47,6 +49,15 @@ module Logjam
     def start_servers(n)
       trap("CHLD"){ child_status_change }
       n.times do
+        fork_worker
+      end
+    end
+
+    # restart one worker at a time
+    def restart_missing_worker
+      if @missing_workers > 0
+        log_info "restarting worker. missing: #{@missing_workers}"
+        @missing_workers -= 1
         fork_worker
       end
     end
@@ -71,7 +82,7 @@ module Logjam
       log_info "CHLD status change: #{@sockets.keys.sort.inspect}"
       if (pid = wait_child) && remove_server(pid)
         log_error "Child worker #{pid} died"
-        fork_worker
+        @missing_workers += 1
       end
     end
 
@@ -122,5 +133,6 @@ module Logjam
     rescue
       log_error "shutting down workers raised #{$!}"
     end
+
   end
 end
