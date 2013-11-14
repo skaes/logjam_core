@@ -81,30 +81,40 @@ module Logjam
         # setup request stream
         log_info "creating request stream exchange #{importer_exchange_name} on #{broker}"
         request_stream_exchange = channel.topic(importer_exchange_name, :durable => true, :auto_delete => false)
+
         log_info "creating request stream queue #{importer_queue_name} on #{broker}"
         importer_queue = channel.queue(importer_queue_name, importer_queue_options)
+
         log_info "binding request stream exchange #{importer_exchange_name} to #{importer_queue_name} on #{broker}"
         importer_queue.bind(request_stream_exchange, :routing_key => importer_routing_key)
         importer_queue.bind(request_stream_exchange, :routing_key => events_routing_key)
         importer_queue.bind(request_stream_exchange, :routing_key => js_exceptions_routing_key)
+
         log_info "subscribing to request stream queue #{importer_queue_name} on #{broker}"
         importer_queue.subscribe do |header, msg|
-          case header.routing_key
-          when /^logs/
-             process_request(msg, header.routing_key)
-          when /^events/
-             process_event(msg, header.routing_key)
-          when /^javascript/
-            process_js_exception(msg, header.routing_key)
+          begin
+            case header.routing_key
+            when /^logs/
+              process_request(msg, header.routing_key)
+            when /^events/
+              process_event(msg, header.routing_key)
+            when /^javascript/
+              process_js_exception(msg, header.routing_key)
+            end
+          rescue => e
+            log_error "error during request processing: #{e.class}(#{e})"
           end
         end
 
         # setup heartbeats
         heartbeat_exchange = channel.topic(heartbeat_exchange_name, :durable => true, :auto_delete => false)
+
         log_info "creating heartbeats queue #{heartbeat_queue_name} on #{broker}"
         heartbeat_queue = channel.queue(heartbeat_queue_name, heartbeat_queue_options)
+
         log_info "binding heartbeats exchange #{heartbeat_exchange_name} to #{heartbeat_queue_name} on #{broker}"
         heartbeat_queue.bind(heartbeat_exchange, :routing_key => heartbeat_routing_key)
+
         log_info "subscribing to heartbeats queue #{heartbeat_queue_name} on #{broker}"
         heartbeat_queue.subscribe do |header, msg|
           process_heartbeat(connection, settings, msg, header.routing_key)

@@ -44,13 +44,17 @@ module Logjam
         key = p2.copy_out_string; p2.close
         msg = p3.copy_out_string; p3.close
         # log_info "#{stream}:#{key}:#{msg}"
-        case key
-        when /^logs/
-          process_request(msg)
-        when /^events/
-          process_event(msg)
-        else
-          log_error "unkwown message key:#{key} for stream:#{stream}"
+        begin
+          case key
+          when /^logs/
+            process_request(msg)
+          when /^events/
+            process_event(msg)
+          else
+            log_error "unkwown message key:#{key} for stream:#{stream}"
+          end
+        rescue => e
+          log_error "error during request processing: #{e.class}(#{e})"
         end
       end
     end
