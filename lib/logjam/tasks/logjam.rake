@@ -167,6 +167,27 @@ namespace :logjam do
       end
     end
 
+    def fetch_orphans
+      procs = []
+      `ps axo ppid,pid,args | egrep -e logjam-[iwd]`.each_line do |line|
+        items = line.chomp.strip.split(/\s+/, 3)
+        ppid, pid, cmd = items[0].to_i, items[1].to_i, items[2]
+        procs << [pid, cmd] if ppid == 1
+      end
+      procs
+    end
+
+    desc "List orphaned processes"
+    task :list_orphans do
+      unless (orphans = fetch_orphans).empty?
+        sleep 15
+        orphans &= fetch_orphans
+        host = `hostname`.chomp
+        orphans.each do |pid, cmd|
+          $stderr.puts "orphan: #{host} #{pid} #{cmd}"
+        end
+      end
+    end
   end
 
 end

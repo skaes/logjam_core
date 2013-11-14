@@ -3,6 +3,8 @@
 $stdout.sync = true
 $stderr.sync = true
 
+$PROGRAM_NAME = "logjam-data-stream-server-#{ENV['RAILS_ENV'] || 'development'}"
+
 require_relative '../../../config/boot'
 require 'em-websocket'
 require 'em-zeromq'
