@@ -45,12 +45,13 @@ module Logjam
 
     def send_data(p, data)
       # for now, don't send caller and exception counts, as they might contain UTF dots'
-      data = data.reject{|k,v| k =~ /\A(callers|exceptions)\./}
+      data = data.reject{|k,v| k =~ /\A(callers|exceptions|js_exceptions)\./}
       app_env_key = "#{@app}-#{@env},#{p.sub(/^::/,'').downcase}"
       perf_data = Oj.dump(data, :mode => :compat)
       @socket.send_strings([app_env_key, perf_data], ZMQ::DONTWAIT)
     rescue => e
-      log_error "could not publish performance/error data: #{e.class}(#{e})"
+      log_error "could not publish performance/error data: #{e.class}(#{e}): #{e.backtrace.join("\n")}"
+      log_error data.inspect
     end
   end
 
