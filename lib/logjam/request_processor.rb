@@ -151,13 +151,13 @@ module Logjam
       db = Logjam.db(Time.parse(exception["started_at"]), @stream.app, @stream.env)
       JsExceptions.new(db).insert(exception)
       key = JsExceptions.key_from_description(exception['description'])
+      minute = extract_minute_from_iso8601(exception["started_at"])
       [page, 'all_pages', pmodule].each do |p|
         # avoid inserting fake totals/minutes entries
         next if p =~ /(#unknown_method\z)|(\AUnknown)|(\A::\z)/
         tbuffer = (@totals_buffer[p] ||= Hash.new(0.0))
         tbuffer["js_exceptions.#{key}"] += 1
         tbuffer['count'] += 0
-        minute = extract_minute_from_iso8601(exception["started_at"])
         mbuffer = (@minutes_buffer[[p,minute]] ||= Hash.new(0.0))
         mbuffer["js_exceptions.#{key}"] += 1
         mbuffer['count'] += 0
