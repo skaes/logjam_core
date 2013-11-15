@@ -8,7 +8,7 @@ module Logjam
     end
 
     def self.key_from_description(description)
-      URI.escape(description, /[.$]/)
+      URI.escape(description, /[.$]/).force_encoding('UTF-8')
     end
 
     def self.description_from_key(mongo_key)
