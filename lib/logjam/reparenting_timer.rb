@@ -9,7 +9,8 @@ module Logjam
             exit!(1)
           end
         elsif GC.heap_slots > 1_500_000
-          # shutdown processor on excessive heap usage (possibly a ruby/railsexpress bug)
+          # shutdown processor on excessive heap usage
+          log_error "excessive heap usage. committing suicide."
           shutdown
         end
       end
