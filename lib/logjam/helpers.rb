@@ -8,6 +8,10 @@ module Logjam
       $stderr.puts "LJE[#{$$}] #{message}"; $stderr.flush
     end
 
+    def log_warn(message)
+      $stderr.puts "LJW[#{$$}] #{message}"; $stderr.flush
+    end
+
     def log_backtrace(e)
       log_error(e.backtrace[0..9].join("\nLJE[#{$$}] "))
     end

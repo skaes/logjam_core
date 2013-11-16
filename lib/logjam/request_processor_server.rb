@@ -62,15 +62,15 @@ module Logjam
       # log_info r.inspect
       processor(r).add(r)
     rescue => e
-      log_info "failed to process request: #{e.class}(#{e})"
-      log_info r.inspect
+      log_error "failed to process request: #{e.class}(#{e})"
+      log_error r.inspect
     end
 
     def process_js_exception(exception)
       processor(exception).add_js_exception(exception)
     rescue => e
-      log_info "failed to process JS exception: #{e.class}(#{e})"
-      log_info exception.inspect
+      log_error "failed to process JS exception: #{e.class}(#{e})"
+      log_error exception.inspect
     end
 
     def processor(hash)

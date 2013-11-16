@@ -56,7 +56,7 @@ module Logjam
     # restart one worker at a time
     def restart_missing_worker
       if @missing_workers > 0
-        log_info "restarting worker. missing: #{@missing_workers}"
+        log_warn "restarting worker. missing workers: #{@missing_workers}"
         @missing_workers -= 1
         fork_worker
       end

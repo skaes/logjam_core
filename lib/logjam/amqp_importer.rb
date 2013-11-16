@@ -43,7 +43,7 @@ module Logjam
 
     def on_tcp_connection_failure
       Proc.new do |settings|
-        log_info "connection failed: #{settings[:host]}"
+        log_error "connection failed: #{settings[:host]}"
         log_info "will try to again in 5 seconds"
         EM::Timer.new(5) { connect_importer(settings) }
       end
@@ -53,7 +53,7 @@ module Logjam
       log_info "trying to reconnect: #{settings[:host]}"
       connection.reconnect(true)
     rescue EventMachine::ConnectionError => e
-      log_info "#{settings[:host]}: could not reconnect: #{e}"
+      log_error "#{settings[:host]}: could not reconnect: #{e}"
       log_info "will try to again in 5 seconds"
       EM::Timer.new(5) { on_tcp_connection_loss(connection, settings) }
     end
@@ -68,7 +68,7 @@ module Logjam
       end
     rescue EventMachine::ConnectionError => e
       # we end up here when the initial connection fails
-      log_info "#{settings[:host]}: connection error: #{e}"
+      log_error "#{settings[:host]}: connection error: #{e}"
       log_info "will try to reconnect in 5 seconds"
       EM::Timer.new(5) { connect_importer settings }
     end

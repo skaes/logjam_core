@@ -51,7 +51,7 @@ module Logjam
     rescue => e
       log_error "could not publish performance/error data: #{e.class}(#{e})"
       log_backtrace(e)
-      log_info data.inspect
+      log_error data.inspect
       if data.is_a?(Hash)
         log_error "HASH data: #{data.keys.map(&:encoding)}"
       else

@@ -182,10 +182,9 @@ module Logjam
     rescue Exception => e
       if e.message =~ /String not valid UTF-8|key.*must not contain '.'|Cannot serialize the Numeric type BigDecimal/
         begin
-          log_error "fixing json: #{e.class}(#{e})"
+          log_warn "fixing json: #{e.class}(#{e})"
           entry = try_to_fix(entry)
           request_id = @requests.insert(entry, :w => 0)
-          log_info "request insertion succeeed"
         rescue Exception => e
           log_error "Could not insert document: #{e.class}(#{e})"
           log_error entry.inspect
@@ -254,7 +253,7 @@ module Logjam
       LIKELY_ENCODINGS.each do |encoding|
         begin
           if res = string.encode(Encoding::UTF_8, encoding)
-            log_error "changed encoding to #{encoding.name}: #{res}"
+            log_warn "changed encoding to #{encoding.name}: #{res}"
             return res
           end
         rescue EncodingError
@@ -272,7 +271,7 @@ module Logjam
     end
 
     def add_allocated_memory(entry)
-      if !(allocated_memory = entry["allocated_memory"]) && (allocated_objects = entry["allocated_objects"])
+      if !entry["allocated_memory"] && (allocated_objects = entry["allocated_objects"])
         # assume 64bit ruby
         entry["allocated_memory"] = entry["allocated_bytes"].to_i + allocated_objects * 40
       end
