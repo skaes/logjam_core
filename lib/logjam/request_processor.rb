@@ -7,7 +7,7 @@ module Logjam
   class RequestProcessor
     include Logjam::Helpers
 
-    def initialize(stream, request_collection, old_format)
+    def initialize(stream, request_collection, old_format = false)
       @stream = stream
       @requests = request_collection
       @has_metrics_index = !old_format
