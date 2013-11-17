@@ -243,7 +243,7 @@ module Logjam
       return string if string.ascii_only?
       # Try it as UTF-8 directly
       if string.frozen?
-        log_error "frozen string: #{string}"
+        log_warn "frozen string: #{string}"
         string = string.dup
       end
       string.force_encoding('UTF-8')
