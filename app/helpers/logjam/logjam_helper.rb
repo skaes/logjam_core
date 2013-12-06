@@ -362,7 +362,7 @@ module Logjam
         error_line = safe_h(l.to_s)
         break if exception && error_line =~ regex
       end
-      error_line[0..100].html_safe
+      h(error_line[0..100])
     end
 
     def format_log_level(l)
@@ -370,7 +370,7 @@ module Logjam
     end
 
     def allow_breaks(l, request_id=nil)
-      request_id ? l : CGI.unescape(l.gsub(/(%2C|=)/, '\1&#x200B;'))
+      request_id ? l : CGI.unescape(l.gsub(/(%2C|=)/, '\1&#x200B;')).gsub('<', '&lt;').gsub('>', '&gt;')
     end
 
     def format_timestamp(timestamp)
