@@ -8,7 +8,7 @@ module Logjam
           ensure
             exit!(1)
           end
-        elsif GC.heap_slots > 1_500_000
+        elsif GC.respond_to?(:heap_slots) && GC.heap_slots > 1_500_000
           # shutdown processor on excessive heap usage
           log_error "excessive heap usage. committing suicide."
           shutdown
