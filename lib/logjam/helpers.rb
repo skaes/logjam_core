@@ -1,3 +1,5 @@
+require 'fileutils'
+
 module Logjam
   module Helpers
     def log_info(message)
@@ -18,6 +20,12 @@ module Logjam
 
     def extract_minute_from_iso8601(iso_string)
       60 * iso_string[11..12].to_i + iso_string[14..15].to_i
+    end
+
+    def socket_path
+      path = File.join(Rails.root, 'tmp', 'sockets')
+      FileUtils.mkdir_p(path) unless File.exists?(path)
+      path
     end
   end
 end

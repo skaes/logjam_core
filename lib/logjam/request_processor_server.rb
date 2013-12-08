@@ -22,7 +22,7 @@ module Logjam
     end
 
     def socket_file_name
-      "#{Rails.root}/tmp/sockets/state-#{@stream.app}-#{@stream.env}-#{id}.ipc"
+      File.join(socket_path, "state-#{@stream.app}-#{@stream.env}-#{id}.ipc")
     end
 
     def setup_connection
