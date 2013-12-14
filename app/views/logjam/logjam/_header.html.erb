@@ -18,7 +18,7 @@ $(document).ready(initialize_header);
       <div><%= label :filter, "logjam" %></div>
       <div class="menu">
         <ul class="horizonzal">
-          <li class="dropdown" onclick="go_home();"><a><%= fa_icon("eye-open")%></a>
+          <li class="dropdown" onclick="go_home();"><a><%= fa_icon("eye")%></a>
             <ul>
               <% if @dataset.try(:live_stream?) -%>
                 <li>

@@ -1,9 +1,9 @@
 <p class="navicons">
   <% if params[:interval].to_s == "5" %>
-    <%= clean_link_to(fa_icon("zoom-in", :title => "increase plot resolution"),
+    <%= clean_link_to(fa_icon("search-plus", :title => "increase plot resolution"),
                       :page => without_module(@page), :action => "index", :interval => 1) %>
   <% else %>
-    <%= clean_link_to(fa_icon("zoom-out", :title => "decrease plot resolution"),
+    <%= clean_link_to(fa_icon("search-minus", :title => "decrease plot resolution"),
                       :page => without_module(@page), :action => "index", :interval => 5) %>
   <% end %>
   <% if @dataset.has_distribution_plot? %>
@@ -12,7 +12,7 @@
                         :page => without_module(@page), :action => distribution_kind(@dataset.resource)) %>
   <% end %>
   <% if @dataset.live_stream? -%>
-    <%= link_to(fa_icon("facetime-video", :title => "view live stream"),
+    <%= link_to(fa_icon("video-camera", :title => "view live stream"),
                 clean_params(params.slice(:app,:env,:page).merge(:action => "live_stream")),
                 :target => "_blank") %>
   <% end -%>
