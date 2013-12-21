@@ -38,7 +38,7 @@ module Logjam
     end
 
     def socket_file_name(pid)
-      "#{Rails.root}/tmp/sockets/state-#{@app}-#{@env}-#{pid}.ipc"
+      File.join(socket_path, "state-#{@app}-#{@env}-#{pid}.ipc")
     end
 
     def clean_old_sockets
