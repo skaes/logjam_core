@@ -33,7 +33,10 @@ module Logjam
         parts.each(&:close)
         on_reset_state_received
       end
-      @socket.bind("ipc:///#{socket_file_name}")
+      rc = @socket.bind("ipc:///#{socket_file_name}")
+      unless ZMQ::Util.resultcode_ok? rc
+        log_error("Could not bind to socket %s: %s (%d)" % [socket_file_name, ZMQ::Util.error_string, ZMQ::Util.errno])
+      end
     end
 
     def on_reset_state_received
