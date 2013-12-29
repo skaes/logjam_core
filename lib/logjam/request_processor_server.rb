@@ -8,6 +8,7 @@ module Logjam
     def initialize(stream, zmq_context = nil)
       @stream = stream
       @processors = {}
+      @gc_time_last = nil
       @context = zmq_context || EM::ZeroMQ::Context.new(1)
       setup_connection
     end
@@ -52,7 +53,10 @@ module Logjam
     def reset_state
       log_info "received reset state"
       if GC.respond_to?(:heap_slots) && GC.respond_to?(:heap_slots_live_after_last_gc)
-        log_info("slots: %d, live: %d" % [GC.heap_slots, GC.heap_slots_live_after_last_gc])
+        gc_time_now = GC.time/1000.0 # ms
+        gc_time_used = @gc_time_last ? gc_time_now - @gc_time_last : 0.0
+        log_info("slots: %6d, live: %6d, gc_time: %06.2f ms" % [GC.heap_slots, GC.heap_slots_live_after_last_gc, gc_time_used])
+        @gc_time_last = gc_time_now
       end
       info = []
       @processors.each do |db_name, processor|
