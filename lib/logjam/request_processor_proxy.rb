@@ -65,6 +65,7 @@ module Logjam
     def fork_worker
       log_info "forking worker"
       pid = EM.fork_reactor do
+        GC.enable_stats if GC.respond_to?(:enable_stats)
         worker_pid = Process.pid
         log_info "started worker #{worker_pid}"
         $PROGRAM_NAME = "logjam-worker-#{@app}-#{@env}"
