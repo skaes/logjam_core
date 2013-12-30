@@ -154,7 +154,7 @@ module Logjam
       selector = {"_id" => primary_key(id)}
       query = "Requests.find_one(#{id})"
       rows = with_conditional_caching(query) do |payload|
-        if row = @collection.find_one(selector)
+        if row = @collection.find_one(selector, {:fields => {'lines' => {'$slice' => -1000}}})
           (id = row["_id"]) && row["_id"] = id.to_s
           convert_metrics(row)
           payload[:rows] = 1
