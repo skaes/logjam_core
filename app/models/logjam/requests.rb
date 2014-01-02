@@ -109,14 +109,14 @@ module Logjam
     end
 
     def all
-      fields = ["page", "user_id", "response_code", "severity", "started_at"]
+      fields = {"page" => 1, "user_id" => 1, "response_code" => 1, "severity" => 1, "started_at" => 1}
       if @old_format
-        fields.concat ["heap_growth", @resource]
-        fields << "minute" unless @resource == "minute"
+        fields.merge!("heap_growth" => 1, @resource => 1)
+        fields["minute"] = 1 unless @resource == "minute"
       else
-        fields.concat ["metrics", "minute"]
+        fields.merge!("metrics" => 1, "minute" => 1)
       end
-      fields << "lines" if @options[:response_code] || @options[:severity] || @options[:exceptions]
+      fields["lines"] = {'$slice' => -1000} if @options[:response_code] || @options[:severity] || @options[:exceptions]
 
       query_opts = {
         :fields => fields,
