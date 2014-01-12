@@ -26,4 +26,10 @@
       </tr>
     <% end %>
   </table>
+  <h4>Call Header Information</h4>
+  <table id='caller-meta-info' class='full_stats'>
+    <tr><td>Requests with call header:</td><td class='number'><%= integer_number(@call_count) %></td></tr>
+    <% missing_count = @request_count - @call_count %>
+    <tr><td>Requests without call header:</td><td class='number'><%= integer_number(missing_count) %></td></tr>
+  </table>
 </div>

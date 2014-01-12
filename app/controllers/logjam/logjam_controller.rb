@@ -275,7 +275,9 @@ module Logjam
             else
               @callers.sort_by{|k,v| -v}
             end
+          @call_count = @callers.blank? ? 0 : @callers.map(&:second).sum
           totals = Totals.new(@db, ["callers"], @page.blank? ? 'all_pages' : @page)
+          @request_count = totals.count
           @caller_minutes = Minutes.new(@db, ["callers"], @page, totals.page_names, 2).callers
           # puts @caller_minutes.inspect
           if transform

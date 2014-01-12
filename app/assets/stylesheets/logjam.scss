@@ -391,6 +391,8 @@ td.apdex.unacceptable { background: rgba(150,150,150,0.8); }
 .controls a:hover {font-weight: bold; }
 #download-button { margin-left: 10px; }
 #callers #filter { }
+#callers h4 { margin-top: 20px; margin-bottom: 0px; }
+#caller-meta-info {margin-top: 2px; }
 
 #request-header { margin-bottom:5px; }
 #request-lines {
