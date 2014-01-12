@@ -371,6 +371,9 @@ module Logjam
 
     def allow_breaks(l, request_id=nil)
       request_id ? l : CGI.unescape(l.gsub(/(%2C|=)/, '\1&#x200B;')).gsub('<', '&lt;').gsub('>', '&gt;')
+    rescue => e
+      logger.error("#{e.class}(#{e})")
+      l
     end
 
     def format_timestamp(timestamp)
