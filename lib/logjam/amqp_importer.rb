@@ -147,7 +147,7 @@ module Logjam
     end
 
     def importer_exchange_name
-      [@stream.importer.exchange, @application, @environment].compact.join("-")
+      @stream.importer_exchange_name
     end
 
     def importer_routing_key

@@ -11,16 +11,20 @@ module Logjam
       @app, @env = name.split('-')
       raise "logjam stream configuration error: missing application name #{@app}" unless @app
       raise "logjam stream configuration error: missing environment name #{@env}" unless @env
-      @importer = Importer.new
-      instance_eval &block if block_given?
+      @importer = Importer.new(self)
+      instance_eval(&block) if block_given?
     end
 
     def importer(&block)
       if block_given?
-        @importer.instance_eval &block
+        @importer.instance_eval(&block)
       else
         @importer
       end
+    end
+
+    def importer_exchange_name
+      [importer.exchange, @app, @env].compact.join("-")
     end
 
     def tag(*args)
@@ -84,6 +88,10 @@ module Logjam
     private
 
     class Context
+      def initialize(stream)
+        @stream = stream
+      end
+
       def hosts(*args)
         @hosts = args if args.first
         @hosts
@@ -108,10 +116,15 @@ module Logjam
         @port = args.first if args.first
         @port
       end
+
+      def sub_type(*args)
+        @sub_type = args.first if args.first
+        @sub_type
+      end
     end
 
     class Importer < Context
-      def initialize
+      def initialize(stream)
         super
         hosts    "localhost"
         exchange "request-stream"

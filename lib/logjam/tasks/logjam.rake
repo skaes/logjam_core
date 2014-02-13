@@ -27,7 +27,7 @@ namespace :logjam do
       Logjam.drop_empty_databases(app, delay)
     end
 
-    desc "drop applications"
+    desc "drop applications APPLICATIONS=a,b,c"
     task :drop_apps => :environment do
       Logjam.drop_applications(ENV['APPLICATIONS'].to_s.split(/\s*,\s*/))
     end
@@ -72,6 +72,27 @@ namespace :logjam do
     end
   end
 
+  namespace :device do
+    desc "configure logjam device"
+    task :configure => :environment do
+      Logjam::Device.new.configure
+    end
+
+    desc "test logjam device config"
+    task :test => :environment do
+      Logjam::Device.new.test(ENV['LOGJAM_DEVICE_TEST_BROKER'], ENV['LOGJAM_DEVICE_TEST_ENV'])
+    end
+
+    namespace :proxy do
+      desc "setup logjam proxy config"
+      task :config => :environment do
+        streams = Logjam.streams(ENV['LOGJAM_SERVICE_TAG'])
+        device = Logjam::Device.new(streams)
+        puts device.proxy_config
+      end
+    end
+  end
+
   namespace :daemons do
     def service_dir
       ENV['LOGJAM_SERVICE_DIR'] || "#{app_dir}/service"
@@ -100,11 +121,16 @@ namespace :logjam do
     def install_service(template_name, service_name, substitutions={})
       target_dir = "#{service_dir}/#{service_name}"
       substitutions.merge!(:LOGJAM_DIR => ENV['LOGJAM_DIR'] || app_dir,
+                           :LOGJAM_SERVICE_TARGET_DIR => target_dir,
                            :RAILSENV => ENV['RAILS_ENV'] || "development",
                            :GEMHOME => Gem.dir,
                            :GEMPATH => clean_path((Gem.path+Gem.default_path).uniq),
                            :DAEMON_PATH => clean_path(ENV['PATH'].split(':')))
       system("mkdir -p #{target_dir}/log/logs")
+      # write config file first
+      if config = substitutions.delete(:config)
+        File.write("#{target_dir}/#{service_name}.conf", config)
+      end
       # order is important here: always create the dependent log service first!
       scripts = %w(log/run run)
       scripts.each do |script|
@@ -122,7 +148,10 @@ namespace :logjam do
     task :install => :environment do
       system("mkdir -p #{service_dir}")
       installed_services = []
-      Logjam.streams(ENV['LOGJAM_SERVICE_TAG']).each do |i, s|
+      streams = Logjam.streams(ENV['LOGJAM_SERVICE_TAG'])
+      device = Logjam::Device.new(streams)
+      have_proxied_streams
+      streams.each do |i, s|
         next if ENV['RAILS_ENV'] == 'production' && s.env == 'development'
         if s.is_a?(Logjam::LiveStream)
           installed_services << install_service("livestream", "live-stream-#{s.env}",
@@ -130,7 +159,14 @@ namespace :logjam do
                                                 :BIND_IP => Logjam.bind_ip)
         else
           installed_services << install_service("importer", "importer-#{i}", :IMPORTER => i)
+          if s.importer.sub_type == :proxy
+            have_proxied_streams = true
+            FileUtils.touch "#{Logjam.ipc_dir}/#{s.importer_exchange_name}"
+          end
         end
+      end
+      if have_proxied_streams
+        installed_services << install_service("proxy", "proxy", :config => device.proxy_config)
       end
       old_services = service_paths.map{|f| f.split("/").compact.last} - installed_services
       old_services.each do |old_service|

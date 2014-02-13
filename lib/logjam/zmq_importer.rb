@@ -38,7 +38,11 @@ module Logjam
       @socket = @context.socket(ZMQ::PULL)
       @socket.setsockopt(ZMQ::LINGER, 500)
       @socket.setsockopt(ZMQ::RCVHWM, 5000)
-      rc = @socket.bind("tcp://#{Logjam.bind_ip}:#{@port}")
+      if @stream.sub_type == :proxy
+        rc = @socket.connect("ipc://#{Logjam.ipc_dir}/#{@stream.importer_exchange_name}")
+      else
+        rc = @socket.bind("tcp://#{Logjam.bind_ip}:#{@port}")
+      end
       unless ZMQ::Util.resultcode_ok? rc
         log_error("Could not bind to socket %s:%d: %s (%d)" % [Logjam.bind_ip, @port, ZMQ::Util.error_string, ZMQ::Util.errno])
       end

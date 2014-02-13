@@ -18,6 +18,15 @@ module Logjam
     @@bind_ip = ip
   end
 
+  @@ipc_dir = "/tmp"
+  def self.ipc_dir
+    @@ipc_dir
+  end
+
+  def self.ipc_dir=(dir)
+    @@ipc_dir = dir
+  end
+
   @@streams = {}
   def self.streams(tag=nil)
     tag.blank? ? @@streams : @@streams.slice(*@@streams.values.select{|v| v.tag == tag}.map(&:name))
