@@ -150,7 +150,7 @@ namespace :logjam do
       installed_services = []
       streams = Logjam.streams(ENV['LOGJAM_SERVICE_TAG'])
       device = Logjam::Device.new(streams)
-      have_proxied_streams
+      have_proxied_streams = false
       streams.each do |i, s|
         next if ENV['RAILS_ENV'] == 'production' && s.env == 'development'
         if s.is_a?(Logjam::LiveStream)
