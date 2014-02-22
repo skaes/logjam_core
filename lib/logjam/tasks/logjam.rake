@@ -159,10 +159,7 @@ namespace :logjam do
                                                 :BIND_IP => Logjam.bind_ip)
         else
           installed_services << install_service("importer", "importer-#{i}", :IMPORTER => i)
-          if s.importer.sub_type == :proxy
-            have_proxied_streams = true
-            FileUtils.touch "#{Logjam.ipc_dir}/#{s.importer_exchange_name}"
-          end
+          have_proxied_streams ||= s.importer.sub_type == :proxy
         end
       end
       if have_proxied_streams
