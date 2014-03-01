@@ -79,7 +79,7 @@ module Logjam
     def get_bindings
       importer_streams.each_with_object({}) do |stream, info|
         next unless stream.importer.type == :amqp
-        # next unless %w(edge preview).include?(stream.env)
+        next unless %w(edge preview).include?(stream.env)
         stream.importer.hosts.each do |host|
           (info[host] ||= []) << stream
         end
