@@ -75,7 +75,7 @@ namespace :logjam do
   namespace :device do
     desc "configure logjam device"
     task :configure => :environment do
-      Logjam::Device.new.configure
+      Logjam::Device.new.configure_brokers
     end
 
     desc "test logjam device config"
