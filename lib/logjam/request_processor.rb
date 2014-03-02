@@ -10,7 +10,6 @@ module Logjam
     def initialize(stream, request_collection)
       @stream = stream
       @requests = request_collection
-      @generic_fields    = Set.new(Requests::GENERIC_FIELDS - %w(page response_code) + %w(action code engine))
       @quantified_fields = Requests::QUANTIFIED_FIELDS
       @squared_fields    = Requests::FIELDS.map{|f| [f,"#{f}_sq"]}
       @other_time_resources = Resource.time_resources - %w(total_time gc_time)
