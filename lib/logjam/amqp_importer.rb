@@ -86,10 +86,10 @@ module Logjam
         importer_queue = channel.queue(importer_queue_name, importer_queue_options)
 
         log_info "binding request stream exchange #{importer_exchange_name} to #{importer_queue_name} on #{broker}"
-        importer_queue.bind(request_stream_exchange, :routing_key => "#")
-        #importer_queue.bind(request_stream_exchange, :routing_key => importer_routing_key)
-        #importer_queue.bind(request_stream_exchange, :routing_key => events_routing_key)
-        #importer_queue.bind(request_stream_exchange, :routing_key => js_exceptions_routing_key)
+        # importer_queue.bind(request_stream_exchange, :routing_key => "#")
+        importer_queue.bind(request_stream_exchange, :routing_key => importer_routing_key)
+        importer_queue.bind(request_stream_exchange, :routing_key => events_routing_key)
+        importer_queue.bind(request_stream_exchange, :routing_key => js_exceptions_routing_key)
 
         log_info "subscribing to request stream queue #{importer_queue_name} on #{broker}"
         importer_queue.subscribe do |header, msg|
