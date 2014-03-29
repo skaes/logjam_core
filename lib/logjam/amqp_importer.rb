@@ -15,12 +15,35 @@ module Logjam
       @stream = stream
       @application = @stream.app
       @environment = @stream.env
-      @request_processor = RequestProcessorServer.new(@stream)
+      @app_string = "request-stream-#{@app}-#{@env}"
+      @context = EM::ZeroMQ::Context.new(1)
+      @request_processor = RequestProcessorServer.new(@stream, @context)
       @event_processor = EventProcessor.new(@stream)
       @connections = []
       @capture_file = File.open("#{Rails.root}/capture-#{$$}.log", "wb") if ENV['LOGJAM_CAPTURE']
       @outstanding_heartbeats = Hash.new(0)
       @heartbeat_timers = {}
+      setup_zmq_push_socket
+    end
+
+    def setup_zmq_push_socket
+      log_info "setting up push socket"
+      @socket = @context.socket(ZMQ::PUSH)
+      @socket.setsockopt(ZMQ::LINGER, 0) # milliseconds
+      @socket.setsockopt(ZMQ::SNDHWM, 1)
+      socket_spec = "tcp://localhost:9610"
+      rc = @socket.connect(socket_spec)
+      unless ZMQ::Util.resultcode_ok? rc
+        log_error("Could not connect to push socket %s: %s(%d)" % [socket_spec, ZMQ::Util.error_string, ZMQ::Util.errno])
+      end
+    end
+
+    def close_zmq_push_socket
+      @socket.close
+    end
+
+    def forward_msg_on_zmq_socket(msg, routing_key)
+      @socket.send_msg(@app_string, routing_key, msg)
     end
 
     def process
@@ -128,6 +151,7 @@ module Logjam
       stop_reparenting_timer
       stop_all_heartbeats
       close_connections
+      close_zmq_push_socket
     end
 
     def close_connections
@@ -204,20 +228,23 @@ module Logjam
     end
 
     def process_request(msg, routing_key)
-      if c = @capture_file
-        c.puts msg
+      if @capture_file
+        @capture_file.puts msg
       else
+        forward_msg_on_zmq_socket(msg, routing_key)
         request = Oj.load(msg, :mode => :compat)
         @request_processor.process(request)
       end
     end
 
     def process_event(msg, routing_key)
+      forward_msg_on_zmq_socket(msg, routing_key)
       event = Oj.load(msg, :mode => :compat)
       @event_processor.process(event)
     end
 
     def process_js_exception(msg, routing_key)
+      forward_msg_on_zmq_socket(msg, routing_key)
       exception = Oj.load(msg, :mode => :compat)
       @request_processor.process_js_exception(exception)
     end

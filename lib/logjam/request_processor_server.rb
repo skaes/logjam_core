@@ -5,11 +5,11 @@ module Logjam
 
     include Helpers
 
-    def initialize(stream, zmq_context = nil)
+    def initialize(stream, zmq_context)
       @stream = stream
       @processors = {}
       @gc_time_last = nil
-      @context = zmq_context || EM::ZeroMQ::Context.new(1)
+      @context = zmq_context
       setup_connection
     end
 
