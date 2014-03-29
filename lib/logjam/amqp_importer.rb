@@ -31,7 +31,7 @@ module Logjam
       @socket = @context.socket(ZMQ::PUSH)
       @socket.setsockopt(ZMQ::LINGER, 0) # milliseconds
       @socket.setsockopt(ZMQ::SNDHWM, 1)
-      socket_spec = "tcp://localhost:9610"
+      socket_spec = "tcp://localhost:9650"
       rc = @socket.connect(socket_spec)
       unless ZMQ::Util.resultcode_ok? rc
         log_error("Could not connect to push socket %s: %s(%d)" % [socket_spec, ZMQ::Util.error_string, ZMQ::Util.errno])
