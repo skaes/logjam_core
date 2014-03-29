@@ -15,7 +15,7 @@ module Logjam
       @stream = stream
       @application = @stream.app
       @environment = @stream.env
-      @app_string = "request-stream-#{@app}-#{@env}"
+      @app_string = "request-stream-#{@application}-#{@environment}"
       @context = EM::ZeroMQ::Context.new(1)
       @request_processor = RequestProcessorServer.new(@stream, @context)
       @event_processor = EventProcessor.new(@stream)
