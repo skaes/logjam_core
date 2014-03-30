@@ -203,6 +203,7 @@ namespace :logjam do
     def fetch_orphans
       procs = []
       `ps axo ppid,pid,args | egrep -e logjam-[iwd]`.each_line do |line|
+        next if line =~ /runsvdir/
         items = line.chomp.strip.split(/\s+/, 3)
         ppid, pid, cmd = items[0].to_i, items[1].to_i, items[2]
         procs << [pid, cmd] if ppid == 1
