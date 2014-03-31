@@ -30,7 +30,7 @@ module Logjam
       log_info "setting up push socket"
       @socket = @context.socket(ZMQ::PUSH)
       @socket.setsockopt(ZMQ::LINGER, 0) # milliseconds
-      @socket.setsockopt(ZMQ::SNDHWM, 1)
+      @socket.setsockopt(ZMQ::SNDHWM, 1000)
       socket_spec = "tcp://localhost:9650"
       rc = @socket.connect(socket_spec)
       unless ZMQ::Util.resultcode_ok? rc
