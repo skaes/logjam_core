@@ -24,27 +24,30 @@ def send_perf_data(ws, text)
 rescue => e
   $stderr.puts "#{e.class}(#{e})"
   $stderr.puts text
+  $stderr.puts e.backtrace.join("\n")
 end
 
 def send_to_web_sockets(app_env_key, perf_data)
   @sockets[app_env_key].each {|s| send_perf_data(s, perf_data)}
 rescue => e
   $stderr.puts "#{e.class}(#{e})"
+  $stderr.puts e.backtrace.join("\n")
 end
 
 def handle_perf_data(app_env_key, perf_data, pub_socket)
   # puts app_env_key, perf_data
   metrics_payload = perf_data =~ /total_time/
   b = metrics_payload ? @perf_buffers[app_env_key] : @error_buffers[app_env_key]
-  b << perf_data
+  b << perf_data.force_encoding("UTF-8")
   b.shift if b.size > 60
   send_to_web_sockets(app_env_key, perf_data)
   if metrics_payload
     pub_socket.send_msg(app_env_key, perf_data)
-    $stderr.puts(perf_data) if app_env_key == "perlapp-production,all_pages"
+    # $stderr.puts(perf_data) if app_env_key == "perlapp-production,all_pages"
   end
 rescue => e
   $stderr.puts "#{e.class}(#{e})"
+  $stderr.puts e.backtrace.join("\n")
 ensure
   @processed += 1
 end
@@ -53,6 +56,7 @@ def handle_anomaly_data(app_env_key, anomaly_data)
   send_to_web_sockets(app_env_key, anomaly_data)
 rescue => e
   $stderr.puts "#{e.class}(#{e})"
+  $stderr.puts e.backtrace.join("\n")
 ensure
   @processed += 1
 end
@@ -97,6 +101,7 @@ EM.run do
       handle_anomaly_data(app_env_key, anomaly_data)
     rescue => e
       $stderr.puts "#{e.class}(#{e})"
+      $stderr.puts e.backtrace.join("\n")
     ensure
       parts.each(&:close)
     end
@@ -122,7 +127,7 @@ EM.run do
       @sockets[app_env_key] << ws
       @perf_buffers[app_env_key].each{|m| send_perf_data(ws, m)}
       @error_buffers[app_env_key].each{|m| send_perf_data(ws, m)}
-      send_perf_data(ws, @anomaly_scores[app_env_key])
+      # send_perf_data(ws, @anomaly_scores[app_env_key])
       puts "web socket subscribed to #{app_env_key}: #{ws.object_id}"
     end
   end
