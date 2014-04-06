@@ -32,6 +32,18 @@ namespace :logjam do
       Logjam.drop_applications(ENV['APPLICATIONS'].to_s.split(/\s*,\s*/))
     end
 
+    desc "drop all databases"
+    task :drop_all_databases => :environment do
+      puts "are you sure to drop all databases from #{Logjam.connections.keys.join(', ')}?"
+      print "type YES to proceed: "
+      if STDIN.gets.chomp == "YES"
+        puts "destruction initiated"
+        Logjam.drop_all_databases
+      else
+        puts "aborted!"
+      end
+    end
+
     desc "remove old data"
     task :clean => :drop_old do
       delay = [ENV['REPAIR_DELAY'].to_i, 5].max
