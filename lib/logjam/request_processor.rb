@@ -45,7 +45,11 @@ module Logjam
       @request_count += 1
       page = entry["page"] = (entry.delete("action") || "Unknown").to_s
       # ensure that page contains a method name. otherwise totals model code will devliver strange metrics.
-      page << "#unknown_method" unless page =~ /#/
+      if page =~ /#$/
+        page << "unknown_method"
+      elsif page !~ /#/
+        page << "#unknown_method"
+      end
       pmodule = "::"
       # extract a top level name (A::..., A#foo => A)
       # this will always match, due to code above
