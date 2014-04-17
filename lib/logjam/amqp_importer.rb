@@ -133,6 +133,7 @@ module Logjam
         end
 
         # setup heartbeats
+        next unless Logjam.use_heart_beats
         heartbeat_exchange = channel.topic(heartbeat_exchange_name, :durable => true, :auto_delete => false)
 
         log_info "creating heartbeats queue #{heartbeat_queue_name} on #{broker}"
@@ -252,6 +253,7 @@ module Logjam
     end
 
     def send_heartbeats(connection, settings, heartbeat_exchange)
+      return unless Logjam.use_heart_beats
       @outstanding_heartbeats[connection] = 0
       @heartbeat_timers[connection] = EM::PeriodicTimer.new(5) do
         if (n = @outstanding_heartbeats[connection]) > 5
