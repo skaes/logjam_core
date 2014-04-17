@@ -17,6 +17,8 @@ module Logjam
       @environment = @stream.env
       @app_string = "request-stream-#{@application}-#{@environment}"
       @context = EM::ZeroMQ::Context.new(1)
+      @raw_context = @context.instance_variable_get "@context"
+      raise "murks" unless @raw_context
       @request_processor = RequestProcessorServer.new(@stream, @context)
       @event_processor = EventProcessor.new(@stream)
       @connections = []
@@ -28,7 +30,7 @@ module Logjam
 
     def setup_zmq_push_socket
       log_info "setting up push socket"
-      @socket = @context.socket(ZMQ::PUSH)
+      @socket = @raw_context.socket(ZMQ::PUSH)
       @socket.setsockopt(ZMQ::LINGER, 0) # milliseconds
       @socket.setsockopt(ZMQ::SNDHWM, 1000)
       socket_spec = "tcp://localhost:9650"
@@ -43,7 +45,7 @@ module Logjam
     end
 
     def forward_msg_on_zmq_socket(msg, routing_key)
-      @socket.send_msg(@app_string, routing_key, msg)
+      @socket.send_strings([@app_string, routing_key, msg], ZMQ::DONTWAIT)
     end
 
     def process
