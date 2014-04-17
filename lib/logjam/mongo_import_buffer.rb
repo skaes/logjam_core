@@ -36,6 +36,7 @@ module Logjam
 
     def flush_and_publish
       publish_unless_old_buffer
+      return if Logjam.dryrun
       flush_totals_buffer(@state[:totals])
       flush_minutes_buffer(@state[:minutes])
       flush_quants_buffer(@state[:quants])

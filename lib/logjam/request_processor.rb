@@ -14,6 +14,7 @@ module Logjam
       @squared_fields    = Requests::FIELDS.map{|f| [f,"#{f}_sq"]}
       @other_time_resources = Resource.time_resources - %w(total_time gc_time)
       @modules = Set.new(%w(all_pages))
+      @dryrun = Logjam.dryrun
       reset_buffers
     end
 
@@ -151,7 +152,7 @@ module Logjam
 
       @request_count ||= 0
       db = Logjam.db(Time.parse(exception["started_at"]), @stream.app, @stream.env)
-      JsExceptions.new(db).insert(exception)
+      JsExceptions.new(db).insert(exception) unless @dryrun
       key = JsExceptions.key_from_description(exception['description'])
       minute = extract_minute_from_iso8601(exception["started_at"])
       [page, 'all_pages', pmodule].each do |p|
@@ -180,6 +181,7 @@ module Logjam
         entry["_id"] = oid if oid
       end
       convert_metrics_for_indexing(entry)
+      return nil if @dryrun
       @requests.insert(entry, :w => 0)
     rescue Exception => e
       if e.message =~ /String not valid UTF-8|key.*must not contain '.'|Cannot serialize the Numeric type BigDecimal/

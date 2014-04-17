@@ -16,6 +16,15 @@ module Logjam
     @@use_heart_beats = use_heart_beats
   end
 
+  @@dryrun = false
+  def self.dryrun
+    @@dryrun
+  end
+
+  def self.dryrun=(dry)
+    @@dryrun = dry
+  end
+
   # Network interface the various processes bind to. Defaults to
   # "127.0.0.1", to avoid potential security holes. Set it to
   # "0.0.0.0" for multi machine installs behind a firewall.

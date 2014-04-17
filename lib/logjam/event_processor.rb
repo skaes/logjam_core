@@ -7,7 +7,7 @@ module Logjam
     end
 
     def process(event)
-      Events.new(db(event)).insert(event)
+      Events.new(db(event)).insert(event) unless Logjam.dryrun
     rescue => e
       log_error("error during processing event: #{event.inspect}")
       log_error("#{e.class}(#{e})")
