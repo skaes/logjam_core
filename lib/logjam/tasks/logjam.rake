@@ -1,3 +1,13 @@
+namespace :test do
+  Rake::TestTask.new(:logjam) do |t|
+    t.libs << "test"
+    t.pattern = 'vendor/logjam/test/**/*_test.rb'
+  end
+end
+
+# run logjam core tests as part of app tests
+Rake::Task['test'].enhance ['test:logjam']
+
 namespace :logjam do
 
   def app_dir
