@@ -44,20 +44,9 @@ module Logjam
       return if @stream.ignored_request?(entry)
 
       @request_count += 1
-      action = entry.delete("action")
-      page = entry["page"] = ( action || "Unknown").to_s
-      # ensure that page contains a method name. otherwise totals model code will devliver strange metrics.
-      page << "#unknown_method" unless page =~ /#/
-      pmodule = "::"
-      # extract a top level name (A::..., A#foo => A)
-      # this will always match, due to code above
-      if page =~ /^(.+?)::/ || page =~ /^([^:#]+)#/
-        pmodule << $1
-      else
-        log_error "MODULE IS BORKED: page='#{page}', action='#{action}'"
-        log_error entry.inspect
-        pmodule = "Unknown"
-      end
+
+      page, pmodule = convert_action_to_page_and_module(entry.delete("action"), entry)
+      entry["page"] = page
       @modules << pmodule
 
       response_code = entry["response_code"] = (entry.delete("code") || 500).to_i
@@ -140,19 +129,7 @@ module Logjam
     end
 
     def add_js_exception(exception)
-      pmodule = "::"
-      page = exception["logjam_action"]
-      page = "Unknown" if page.blank?
-      # avoid modifying the stored logjam_action, as this is not a real request
-      page += "#unknown_method" unless page =~ /#/
-      # try to extract a top level name (A::..., A#foo => A)
-      if page =~ /^(.+?)::/ || page =~ /^([^:#]+)#/
-        pmodule << $1
-      else
-        log_error "MODULE IS BORKED: page='#{page}', action='#{exception["logjam_action"]}'"
-        log_error exception.inspect
-        pmodule = "Unknown"
-      end
+      page, pmodule = convert_action_to_page_and_module(exception["logjam_action"], exception)
       @modules << pmodule
 
       @request_count ||= 0
