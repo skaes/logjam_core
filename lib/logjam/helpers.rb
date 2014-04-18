@@ -23,6 +23,13 @@ module Logjam
     def convert_action_to_page_and_module(action, entry)
       page = action.to_s.strip
 
+      # standard format, which clients should obey.
+      if page =~ /\A([^:#]+)(?:::[^:#]+)*#(?:[^:#]+)\z/
+        # puts "matched normally: #{action}"
+        return page, "::#{$1}"
+      end
+      # now deal with garbage input
+
       # remove excess colons and hash signs
       page.gsub!(/:::+/,'::')
       page.gsub!(/##+/,'#')
@@ -30,7 +37,7 @@ module Logjam
       page.gsub!(/([^:]|\A):([^:]|\z)/,'\1::\2')
 
       # ensure we have no '::' at the beginning or directly before a '#'
-      page.sub!(/^::/,'')
+      page.sub!(/\A::/,'')
       page.gsub!(/::#/,'#')
 
       # ensure that page has the format /(XXX::)*Module#method/
@@ -54,7 +61,7 @@ module Logjam
 
       # extract a top level module name (A::..., A#foo => A)
       pmodule = "::"
-      if page =~ /^([^:#]+)::/ || page =~ /^([^:#]+)#/
+      if page =~ /\A([^:#]+)::/ || page =~ /\A([^:#]+)#/
         pmodule << $1
       else
         log_error "MODULE EXTRACTION IS BORKED: page='#{page}', action='#{action}'"

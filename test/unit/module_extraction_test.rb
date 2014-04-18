@@ -3,6 +3,24 @@ require_relative "../test_helper"
 class ModuleExtractionTest < ActiveSupport::TestCase
   include Logjam::Helpers
 
+  test "action is a normal controller action" do
+    @page, @module = convert_action_to_page_and_module("A#x", {})
+    assert_equal "A#x", @page
+    assert_equal "::A", @module
+  end
+
+  test "action is a controller action in a module" do
+    @page, @module = convert_action_to_page_and_module("A::B#x", {})
+    assert_equal "A::B#x", @page
+    assert_equal "::A", @module
+  end
+
+  test "action is a controller action in a module in a module" do
+    @page, @module = convert_action_to_page_and_module("A::B::C#x", {})
+    assert_equal "A::B::C#x", @page
+    assert_equal "::A", @module
+  end
+
   test "action is nil" do
     @page, @module = convert_action_to_page_and_module(nil, {})
     assert_unknown
@@ -48,18 +66,6 @@ class ModuleExtractionTest < ActiveSupport::TestCase
 
   test "action has repeated colons" do
     @page, @module = convert_action_to_page_and_module("A::::B#x", {})
-    assert_equal "A::B#x", @page
-    assert_equal "::A", @module
-  end
-
-  test "action is a normal controller action" do
-    @page, @module = convert_action_to_page_and_module("A#x", {})
-    assert_equal "A#x", @page
-    assert_equal "::A", @module
-  end
-
-  test "action is a controller action in a module" do
-    @page, @module = convert_action_to_page_and_module("A::B#x", {})
     assert_equal "A::B#x", @page
     assert_equal "::A", @module
   end
