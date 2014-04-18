@@ -32,10 +32,10 @@ module Logjam
       # ensure we have no '::' at the beginning or directly before a '#'
       page.sub!(/^::/,'')
       page.gsub!(/::#/,'#')
-      page_length = page.length
 
       # ensure that page has the format /(XXX::)*Module#method/
       # otherwise namespace overview and stats will be borked
+      page_length = page.length
       if page_length == 0
         page = "Unknown#unknown_method"
       else
