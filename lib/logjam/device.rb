@@ -21,25 +21,6 @@ module Logjam
       end
     end
 
-    def proxy_config
-      lines = []
-      lines << "ipcdir = \"#{Logjam.ipc_dir}\""
-      lines << "backend"
-      lines << "    streams"
-      proxied_streams.map(&:importer_exchange_name).sort.each do |exchange_name|
-        lines << "        #{exchange_name}"
-      end
-      lines << "frontend"
-      lines << "    endpoints"
-      get_endpoints.each do |env, hosts|
-        lines << "        #{env}"
-        hosts.each_with_index do |host, i|
-          lines << "            bind#{i+1} = \"tcp://#{host}:9606\""
-        end
-      end
-      lines.join("\n")
-    end
-
     def test_broker(broker, env)
       works = false
       verbose = ENV['VERBOSE'] == "1"

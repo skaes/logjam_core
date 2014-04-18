@@ -69,15 +69,11 @@ module Logjam
         worker_pid = Process.pid
         log_info "started worker #{worker_pid}"
         $PROGRAM_NAME = "logjam-worker-#{@app}-#{@env}"
-        if @stream.importer.sub_type == :proxy
+        case @stream.importer.type
+        when :amqp
+          AMQPImporter.new(@stream).process
+        when :zmq
           ZMQImporter.new(@stream).process
-        else
-          case @stream.importer.type
-          when :amqp
-            AMQPImporter.new(@stream).process
-          when :zmq
-            ZMQImporter.new(@stream).process
-          end
         end
       end
       add_server(pid)

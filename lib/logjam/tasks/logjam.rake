@@ -104,15 +104,6 @@ namespace :logjam do
     task :test => :environment do
       Logjam::Device.new.test(ENV['LOGJAM_DEVICE_TEST_BROKER'], ENV['LOGJAM_DEVICE_TEST_ENV'])
     end
-
-    namespace :proxy do
-      desc "setup logjam proxy config"
-      task :config => :environment do
-        streams = Logjam.streams(ENV['LOGJAM_SERVICE_TAG'])
-        device = Logjam::Device.new(streams)
-        puts device.proxy_config
-      end
-    end
   end
 
   namespace :daemons do
@@ -172,7 +163,6 @@ namespace :logjam do
       installed_services = []
       streams = Logjam.streams(ENV['LOGJAM_SERVICE_TAG'])
       device = Logjam::Device.new(streams)
-      have_proxied_streams = false
       streams.each do |i, s|
         next if ENV['RAILS_ENV'] == 'production' && s.env == 'development'
         if s.is_a?(Logjam::LiveStream)
@@ -181,11 +171,7 @@ namespace :logjam do
                                                 :BIND_IP => Logjam.bind_ip)
         else
           installed_services << install_service("importer", "importer-#{i}", :IMPORTER => i)
-          have_proxied_streams ||= s.importer.sub_type == :proxy
         end
-      end
-      if have_proxied_streams
-        installed_services << install_service("proxy", "proxy", :config => device.proxy_config)
       end
       old_services = service_paths.map{|f| f.split("/").compact.last} - installed_services
       old_services.each do |old_service|
