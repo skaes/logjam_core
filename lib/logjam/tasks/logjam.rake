@@ -39,7 +39,8 @@ namespace :logjam do
 
     desc "drop applications APPLICATIONS=a,b,c"
     task :drop_apps => :environment do
-      Logjam.drop_applications(ENV['APPLICATIONS'].to_s.split(/\s*,\s*/))
+      delay = [ENV['REPAIR_DELAY'].to_i, 5].max
+      Logjam.drop_applications(ENV['APPLICATIONS'].to_s.split(/\s*,\s*/), delay)
     end
 
     desc "drop all databases"
