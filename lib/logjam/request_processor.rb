@@ -101,14 +101,6 @@ module Logjam
       end
 
       add_minutes_and_totals(increments, page, pmodule, minute)
-
-      #     hour = minute / 60
-      #     [page, "all_pages", pmodule].each do |p|
-      #       increments.each do |f,v|
-      #         (@hours_buffer[[p,hour]] ||= Hash.new(0))[f] += v
-      #       end
-      #     end
-
       add_quants(increments, page)
 
       if @stream.interesting_request?(entry)
@@ -166,9 +158,10 @@ module Logjam
       return nil if @dryrun
       @requests.insert(entry, :w => 0)
     rescue Exception => e
-      if e.message =~ /String not valid UTF-8|key.*must not contain '.'|Cannot serialize the Numeric type BigDecimal/
+      if e.message =~ /String not valid UTF-8|must not contain|Cannot serialize the Numeric type BigDecimal/
         begin
           log_warn "fixing json: #{e.class}(#{e})"
+          log_error entry.inspect
           entry = try_to_fix(entry)
           request_id = @requests.insert(entry, :w => 0)
         rescue Exception => e
@@ -201,7 +194,7 @@ module Logjam
       when Hash
         h = Hash.new
         entry.each_pair do |k,v|
-          new_key = k.is_a?(String) ? ensure_utf8(k).gsub('.', DOT_REPLACEMENT) : try_to_fix(k)
+          new_key = k.is_a?(String) ? ensure_utf8(k).gsub('.', DOT_REPLACEMENT).gsub("\0", "\\u0000") : try_to_fix(k)
           h[new_key] = try_to_fix(v)
         end
         h
@@ -228,7 +221,7 @@ module Logjam
       return string if string.ascii_only?
       # Try it as UTF-8 directly
       if string.frozen?
-        log_warn "frozen string: #{string}"
+        log_warn "frozen string: '#{string}'"
         string = string.dup
       end
       string.force_encoding('UTF-8')
