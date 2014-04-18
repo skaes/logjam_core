@@ -272,13 +272,22 @@ module Logjam
       stream = stream_for(db_name) || Logjam
       # puts "request cleaning threshold for #{db_name}: #{stream.request_cleaning_threshold}"
       if Date.today - stream.request_cleaning_threshold > date
-        db = connection_for(db_name).db(db_name)
-        coll = db["requests"]
-        if coll.count > 0
-          puts "removing old requests: #{db_name}"
-          coll.drop
-          db.command(:repairDatabase => 1)
-          sleep delay
+        begin
+          db = connection_for(db_name).db(db_name)
+          coll = db["requests"]
+          if coll.count > 0
+            puts "removing old requests: #{db_name}"
+            coll.drop
+            begin
+              db.command(:repairDatabase => 1)
+            rescue => e
+              $stderr.puts "#{e.class}(#{e.message})" unless e.message =~ /repairDatabase is a deprecated command/
+            end
+            sleep delay
+          end
+        rescue => e
+          $stderr.puts "error cleaning requests for: #{db_name}"
+          $stderr.puts "#{e.class}(#{e.message})"
         end
       end
     end
