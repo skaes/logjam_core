@@ -191,7 +191,9 @@ module Logjam
         :auto_delete => true,
         :arguments => {
           # reap messages after 1 minute
-          "x-message-ttl" => 60 * 1000
+          "x-message-ttl" => 60 * 1000,
+          # keep queue length lower than
+          # "x-max-length" => 1000
         }
       }
     end
