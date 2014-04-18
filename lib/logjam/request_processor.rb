@@ -158,10 +158,9 @@ module Logjam
       return nil if @dryrun
       @requests.insert(entry, :w => 0)
     rescue Exception => e
-      if e.message =~ /String not valid UTF-8|must not contain|Cannot serialize the Numeric type BigDecimal/
+      if e.message =~ /String not valid UTF-8|key.*must not contain '.'|Cannot serialize the Numeric type BigDecimal/
         begin
           log_warn "fixing json: #{e.class}(#{e})"
-          log_error entry.inspect
           entry = try_to_fix(entry)
           request_id = @requests.insert(entry, :w => 0)
         rescue Exception => e
@@ -194,7 +193,7 @@ module Logjam
       when Hash
         h = Hash.new
         entry.each_pair do |k,v|
-          new_key = k.is_a?(String) ? ensure_utf8(k).gsub('.', DOT_REPLACEMENT).gsub("\0", "\\u0000") : try_to_fix(k)
+          new_key = k.is_a?(String) ? ensure_utf8(k).gsub('.', DOT_REPLACEMENT) : try_to_fix(k)
           h[new_key] = try_to_fix(v)
         end
         h
