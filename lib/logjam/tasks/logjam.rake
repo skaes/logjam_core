@@ -107,6 +107,15 @@ namespace :logjam do
     end
   end
 
+  namespace :cimporter do
+    namespace :config do
+      desc "generate C importer config"
+      task :generate => :environment do
+        Logjam::Cimporter.new.generate_config
+      end
+    end
+  end
+
   namespace :daemons do
     def service_dir
       ENV['LOGJAM_SERVICE_DIR'] || "#{app_dir}/service"
@@ -164,15 +173,22 @@ namespace :logjam do
       installed_services = []
       streams = Logjam.streams(ENV['LOGJAM_SERVICE_TAG'])
       device = Logjam::Device.new(streams)
+      install_c_importer = false
       streams.each do |i, s|
         next if ENV['RAILS_ENV'] == 'production' && s.env == 'development'
         if s.is_a?(Logjam::LiveStream)
           installed_services << install_service("livestream", "live-stream-#{s.env}",
                                                 :ANOMALIES_HOST => s.anomalies_host,
                                                 :BIND_IP => Logjam.bind_ip)
-        else
+        elsif s.importer.devices.blank?
           installed_services << install_service("importer", "importer-#{i}", :IMPORTER => i)
+        else
+          install_c_importer = true
         end
+      end
+      if install_c_importer
+        Logjam::Cimporter.new.generate_config(StringIO.new(config = ""))
+        installed_services << install_service("cimporter", "cimporter", :config => config)
       end
       old_services = service_paths.map{|f| f.split("/").compact.last} - installed_services
       old_services.each do |old_service|
@@ -200,7 +216,7 @@ namespace :logjam do
     task :restart do
       interrupted=false
       trap('INT'){interrupted=true}
-      daemon_match = ENV['DAEMON_MATCH'] ? /#{ENV['DAEMON_MATCH']}/ : /./
+      daemon_match = ENV['DAEMON_MATCH'] ? /\A#{ENV['DAEMON_MATCH']}/ : /./
       service_paths.each do |service|
         next unless service =~ daemon_match
         system("sv force-restart #{service}")

@@ -47,10 +47,20 @@ module Logjam
       @frontend_page || self.class.frontend_page
     end
 
+    def ignored_request_uri(*args)
+      @ignored_request_uri = args.first if args.first
+      @ignored_request_uri ||= Logjam.ignored_request_uri
+    end
+
     module Thresholds
       def import_threshold(*args)
         @import_threshold = args.first.to_i if args.first
         @import_threshold ||= Logjam.import_threshold
+      end
+
+      def import_thresholds(*args)
+        @import_thresholds = args.first if args.first
+        @import_thresholds ||= Logjam.import_thresholds
       end
 
       def request_cleaning_threshold(*args)
@@ -72,15 +82,30 @@ module Logjam
 
     module InterestingRequest
       def interesting_request?(request)
-        request["total_time"].to_f > import_threshold ||
+        total_time = request["total_time"].to_f
+        total_time > import_threshold ||
           request["severity"] > 1 ||
           request["response_code"].to_i >= 400 ||
           request["exceptions"] ||
-          request["heap_growth"].to_i > 0
+          request["heap_growth"].to_i > 0 ||
+          special_import_threshold_matches?(request["page"], total_time)
+      end
+
+      def special_import_threshold_matches?(page, total_time)
+        if (thresholds = import_thresholds).blank?
+          return false
+        else
+          thresholds.each do |prefix,threshold|
+            return true if total_time > threshold && page.starts_with?("#{prefix}::")
+          end
+          return false
+        end
       end
 
       def ignored_request?(request)
-        false
+        if (info = request["request_info"]) && (uri = ignored_request_uri)
+          info["url"].to_s.starts_with?(uri)
+        end
       end
     end
     include InterestingRequest
@@ -121,6 +146,11 @@ module Logjam
         @sub_type = args.first if args.first
         @sub_type
       end
+
+      def devices(*args)
+        @devices = args.first if args.first
+        @devices
+      end
     end
 
     class Importer < Context
@@ -130,6 +160,7 @@ module Logjam
         exchange "request-stream"
         queue    "logjam3-importer-queue"
         type     :amqp
+        devices  Logjam.devices
       end
     end
 

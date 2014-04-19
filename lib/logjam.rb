@@ -37,6 +37,24 @@ module Logjam
     @@bind_ip = ip
   end
 
+  @@ignored_request_uri = nil
+  def self.ignored_request_uri
+    @@ignored_request_uri
+  end
+
+  def self.ignored_request_uri=(uri)
+    @@ignored_request_uri = uri
+  end
+
+  @@devices = nil
+  def self.devices
+    @@devices
+  end
+
+  def self.devices=(devices)
+    @@devices = devices
+  end
+
   @@streams = {}
   def self.streams(tag=nil)
     tag.blank? ? @@streams : @@streams.slice(*@@streams.values.select{|v| v.tag == tag}.map(&:name))
@@ -67,6 +85,15 @@ module Logjam
 
   def self.import_threshold
     @@import_threshold
+  end
+
+  @@import_thresholds = []
+  def self.import_thresholds=(import_thresholds)
+    @@import_thresholds = import_thresholds
+  end
+
+  def self.import_thresholds
+    @@import_thresholds
   end
 
   @@request_cleaning_threshold = 120
@@ -368,8 +395,7 @@ module Logjam
     end
   end
 
-  private
-  def database_config
-    YAML.load_file("#{Rails.root}/config/logjam_database.yml")[Rails.env]
+  def database_config(env = Rails.env)
+    YAML.load_file("#{Rails.root}/config/logjam_database.yml")[env]
   end
 end
