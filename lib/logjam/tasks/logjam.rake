@@ -216,7 +216,7 @@ namespace :logjam do
     task :restart do
       interrupted=false
       trap('INT'){interrupted=true}
-      daemon_match = ENV['DAEMON_MATCH'] ? /\A#{ENV['DAEMON_MATCH']}/ : /./
+      daemon_match = ENV['DAEMON_MATCH'] ? %r(#{ENV['DAEMON_MATCH']}) : /./
       service_paths.each do |service|
         next unless service =~ daemon_match
         system("sv force-restart #{service}")
