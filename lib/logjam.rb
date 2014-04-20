@@ -211,9 +211,10 @@ module Logjam
 
   def update_known_databases
     all_known_databases = []
+    today = Date.today
     connections.each do |_,connection|
       names = connection.database_names
-      known_databases = grep(names).sort
+      known_databases = grep(names).reject{|name| db_date(name) > today}.sort
       meta_collection(connection).create_index("name")
       meta_collection(connection).update({:name => 'databases'}, {'$set' => {:value => known_databases}}, {:upsert => true, :multi => false})
       all_known_databases.concat(known_databases)
