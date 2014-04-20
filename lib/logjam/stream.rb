@@ -52,63 +52,57 @@ module Logjam
       @ignored_request_uri ||= Logjam.ignored_request_uri
     end
 
-    module Thresholds
-      def import_threshold(*args)
-        @import_threshold = args.first.to_i if args.first
-        @import_threshold ||= Logjam.import_threshold
-      end
+    def import_threshold(*args)
+      @import_threshold = args.first.to_i if args.first
+      @import_threshold ||= Logjam.import_threshold
+    end
 
-      def import_thresholds(*args)
-        @import_thresholds = args.first if args.first
-        @import_thresholds ||= Logjam.import_thresholds
-      end
+    def import_thresholds(*args)
+      @import_thresholds = args.first if args.first
+      @import_thresholds ||= Logjam.import_thresholds
+    end
 
-      def request_cleaning_threshold(*args)
-        @request_cleaning_threshold = args.first.to_i if args.first
-        @request_cleaning_threshold ||= Logjam.request_cleaning_threshold
-      end
+    def request_cleaning_threshold(*args)
+      @request_cleaning_threshold = args.first.to_i if args.first
+      @request_cleaning_threshold ||= Logjam.request_cleaning_threshold
+    end
 
-      def database_cleaning_threshold(*args)
-        @database_cleaning_threshold = args.first.to_i if args.first
-        @database_cleaning_threshold ||= Logjam.database_cleaning_threshold
-      end
+    def database_cleaning_threshold(*args)
+      @database_cleaning_threshold = args.first.to_i if args.first
+      @database_cleaning_threshold ||= Logjam.database_cleaning_threshold
+    end
 
-      def database_flush_interval(*args)
-        @database_flush_interval = args.first.to_i if args.first
-        @database_flush_interval ||= Logjam.database_flush_interval
+    def database_flush_interval(*args)
+      @database_flush_interval = args.first.to_i if args.first
+      @database_flush_interval ||= Logjam.database_flush_interval
+    end
+
+    def interesting_request?(request)
+      total_time = request["total_time"].to_f
+      total_time > import_threshold ||
+        request["severity"] > 1 ||
+        request["response_code"].to_i >= 400 ||
+        request["exceptions"] ||
+        request["heap_growth"].to_i > 0 ||
+        special_import_threshold_matches?(request["page"], total_time)
+    end
+
+    def special_import_threshold_matches?(page, total_time)
+      if (thresholds = import_thresholds).blank?
+        return false
+      else
+        thresholds.each do |prefix,threshold|
+          return true if total_time > threshold && page.starts_with?("#{prefix}::")
+        end
+        return false
       end
     end
-    include Thresholds
 
-    module InterestingRequest
-      def interesting_request?(request)
-        total_time = request["total_time"].to_f
-        total_time > import_threshold ||
-          request["severity"] > 1 ||
-          request["response_code"].to_i >= 400 ||
-          request["exceptions"] ||
-          request["heap_growth"].to_i > 0 ||
-          special_import_threshold_matches?(request["page"], total_time)
-      end
-
-      def special_import_threshold_matches?(page, total_time)
-        if (thresholds = import_thresholds).blank?
-          return false
-        else
-          thresholds.each do |prefix,threshold|
-            return true if total_time > threshold && page.starts_with?("#{prefix}::")
-          end
-          return false
-        end
-      end
-
-      def ignored_request?(request)
-        if (info = request["request_info"]) && (uri = ignored_request_uri)
-          info["url"].to_s.starts_with?(uri)
-        end
+    def ignored_request?(request)
+      if (info = request["request_info"]) && (uri = ignored_request_uri)
+        info["url"].to_s.starts_with?(uri)
       end
     end
-    include InterestingRequest
 
     private
 
