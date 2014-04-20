@@ -104,8 +104,6 @@ module Logjam
       end
     end
 
-    private
-
     class Context
       def initialize(stream)
         @stream = stream
