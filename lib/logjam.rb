@@ -388,6 +388,19 @@ module Logjam
     update_known_databases if dropped > 0
   end
 
+  def list_databases_without_requests()
+    db_info = []
+    databases_sorted_by_date.each do |db_name|
+      date = db_date(db_name)
+      stream = stream_for(db_name) || Logjam
+      # puts "request cleaning threshold for #{db_name}: #{stream.request_cleaning_threshold}"
+      if Date.today - stream.request_cleaning_threshold > date
+        db_info << "#{database_config[stream.database]['host']}:#{db_name}"
+      end
+    end
+    puts db_info.sort.join("\n")
+  end
+
   def update_severities
     databases.each do |db_name|
       puts "updating severities: #{db_name}"
@@ -396,7 +409,8 @@ module Logjam
     end
   end
 
+  @@database_config ||= {}
   def database_config(env = Rails.env)
-    YAML.load_file("#{Rails.root}/config/logjam_database.yml")[env]
+    @@database_config[env] ||= YAML.load_file("#{Rails.root}/config/logjam_database.yml")[env]
   end
 end
