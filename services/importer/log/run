@@ -1,2 +1,2 @@
 #!/bin/sh
-exec svlogd -ttt ./logs
+exec svlogd -ttt ./logs ./errors

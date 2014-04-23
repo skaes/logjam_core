@@ -143,13 +143,25 @@ namespace :logjam do
 
     def install_service(template_name, service_name, substitutions={})
       target_dir = "#{service_dir}/#{service_name}"
+      source_dir = "#{template_dir}/#{template_name}"
       substitutions.merge!(:LOGJAM_DIR => ENV['LOGJAM_DIR'] || app_dir,
                            :LOGJAM_SERVICE_TARGET_DIR => target_dir,
                            :RAILSENV => ENV['RAILS_ENV'] || "development",
                            :GEMHOME => Gem.dir,
                            :GEMPATH => clean_path((Gem.path+Gem.default_path).uniq),
                            :DAEMON_PATH => clean_path(ENV['PATH'].split(':')))
-      system("mkdir -p #{target_dir}/log/logs")
+      FileUtils.mkdir_p("#{target_dir}/log/logs")
+      if File.directory?("#{source_dir}/log/logs") && File.exist?("#{source_dir}/log/logs/config")
+        FileUtils.cp("#{source_dir}/log/logs/config", "#{target_dir}/log/logs/config")
+      else
+        FileUtils.rm_f("#{target_dir}/log/logs/config")
+      end
+      if File.directory?("#{source_dir}/log/errors") && File.exist?("#{source_dir}/log/errors/config")
+        FileUtils.mkdir_p("#{target_dir}/log/errors")
+        FileUtils.cp("#{source_dir}/log/errors/config", "#{target_dir}/log/errors/config")
+      else
+        FileUtils.rm_f("#{target_dir}/log/errors")
+      end
       # write config file first
       if config = substitutions.delete(:config)
         File.write("#{target_dir}/#{service_name}.conf", config)
@@ -157,18 +169,19 @@ namespace :logjam do
       # order is important here: always create the dependent log service first!
       scripts = %w(log/run run)
       scripts.each do |script|
-        template = File.read("#{template_dir}/#{template_name}/#{script}")
+        template = File.read("#{source_dir}/#{script}")
         substitutions.each do |k,v|
           template.gsub!(%r[#{k}], v)
         end
         File.open("#{target_dir}/#{script}", "w"){|f| f.puts template}
-        system("chmod 755 #{target_dir}/#{script}")
+        FileUtils.chmod(0755, "#{target_dir}/#{script}")
       end
       service_name
     end
 
     desc "Install logjam daemons"
     task :install => :environment do
+      require "fileutils"
       system("mkdir -p #{service_dir}")
       installed_services = []
       streams = Logjam.streams(ENV['LOGJAM_SERVICE_TAG'])
