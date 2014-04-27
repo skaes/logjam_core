@@ -345,6 +345,10 @@ module Logjam
       totals.response_codes
     end
 
+    def response_codes_above(response_code)
+      response_codes.select{|k,v| k.to_i >= response_code}.values.sum
+    end
+
     def empty_response_code_summy
       Hash.new(0).merge!("1xx" => 0, "2xx" => 0, "3xx" => 0, "4xx" => 0, "5xx" => 0)
     end
