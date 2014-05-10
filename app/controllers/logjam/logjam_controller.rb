@@ -262,7 +262,8 @@ module Logjam
       redirect_on_empty_dataset and return
       params[:sort] ||= 'count'
       params[:group] ||= 'module'
-      @callers = Totals.new(@db, ["callers"], @page).callers
+      @totals = Totals.new(@db, ["callers"], @page.blank? ? 'all_pages' : @page)
+      @callers = @totals.callers
       if transform = get_transform(params[:group])
         @callers = @callers.each_with_object(Hash.new(0)){|(k,v),h| h[transform.call(k)] += v}
       end
@@ -277,9 +278,8 @@ module Logjam
               @callers.sort_by{|k,v| -v}
             end
           @call_count = @callers.blank? ? 0 : @callers.map(&:second).sum
-          totals = Totals.new(@db, ["callers"], @page.blank? ? 'all_pages' : @page)
-          @request_count = totals.count
-          @caller_minutes = Minutes.new(@db, ["callers"], @page, totals.page_names, 2).callers
+          @request_count = @totals.count
+          @caller_minutes = Minutes.new(@db, ["callers"], @page, @totals.page_names, 2).callers
           # puts @caller_minutes.inspect
           if transform
             minutes = Hash.new{|h,k| h[k] = Hash.new(0)}
