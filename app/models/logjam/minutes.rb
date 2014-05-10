@@ -18,7 +18,7 @@ module Logjam
       @pattern = pattern
       @interval = interval
       @pattern = "all_pages" if @pattern.blank? || @pattern == "::"
-      @pattern = "^::#{@pattern}" if page_names.include?("::#{pattern}")
+      @pattern = "::#{@pattern}" if page_names.include?("::#{pattern}")
       @pattern = Regexp.new(/#{@pattern}/) unless @pattern == "all_pages" || page_names.include?(@pattern)
       compute(interval)
     end
