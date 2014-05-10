@@ -262,7 +262,7 @@ module Logjam
       redirect_on_empty_dataset and return
       params[:sort] ||= 'count'
       params[:group] ||= 'module'
-      @totals = Totals.new(@db, ["callers"], @page.blank? ? 'all_pages' : @page)
+      @totals = Totals.new(@db, ["callers"], @page)
       @callers = @totals.callers
       if transform = get_transform(params[:group])
         @callers = @callers.each_with_object(Hash.new(0)){|(k,v),h| h[transform.call(k)] += v}
