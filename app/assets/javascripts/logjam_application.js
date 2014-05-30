@@ -11,7 +11,7 @@
 // GO AFTER THE REQUIRES BELOW.
 //
 //= require d3.v3.min
-//= require jquery-1.10.2.min
+//= require jquery-1.11.1.min
 //= require jquery-migrate-1.2.1.min
 //= require jquery.jdpicker
 //= require jquery.autocomplete
