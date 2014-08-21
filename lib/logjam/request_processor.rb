@@ -53,7 +53,7 @@ module Logjam
       total_time    = (entry["total_time"] ||= 1.0)
       started_at    = entry["started_at"]
       lines         = (entry["lines"] ||= [])
-      severity      = (entry["severity"] ||= lines.map{|s,t,l| s}.max || 5)
+      severity      = (entry["severity"] ||= lines.map{|s,t,l| s}.max || 1)
 
       # mongo field names must not contain dots
       if exceptions = entry["exceptions"]
