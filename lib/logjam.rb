@@ -401,6 +401,15 @@ module Logjam
     puts db_info.sort.join("\n")
   end
 
+  def list_all_databases
+    db_info = []
+    databases_sorted_by_date.each do |db_name|
+      stream = stream_for(db_name) || Logjam
+      db_info << "#{database_config[stream.database]['host']}:#{db_name}"
+    end
+    puts db_info.join("\n")
+  end
+
   def update_severities
     databases.each do |db_name|
       puts "updating severities: #{db_name}"
