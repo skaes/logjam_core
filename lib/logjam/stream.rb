@@ -32,6 +32,10 @@ module Logjam
       @tag
     end
 
+    def forward?
+      false
+    end
+
     def workers(*args)
       @workers = [1, args.first.to_i].max if args.first
       @workers || 1

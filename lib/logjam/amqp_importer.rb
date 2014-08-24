@@ -15,6 +15,7 @@ module Logjam
       @stream = stream
       @application = @stream.app
       @environment = @stream.env
+      @forward = @stream.forward?
       @app_string = "request-stream-#{@application}-#{@environment}"
       @context = EM::ZeroMQ::Context.new(1)
       @raw_context = @context.instance_variable_get "@context"
@@ -236,20 +237,20 @@ module Logjam
       if @capture_file
         @capture_file.puts msg
       else
-        forward_msg_on_zmq_socket(msg, routing_key)
+        forward_msg_on_zmq_socket(msg, routing_key) if @forward
         request = Oj.load(msg, :mode => :compat)
         @request_processor.process(request)
       end
     end
 
     def process_event(msg, routing_key)
-      forward_msg_on_zmq_socket(msg, routing_key)
+      forward_msg_on_zmq_socket(msg, routing_key) if @forward
       event = Oj.load(msg, :mode => :compat)
       @event_processor.process(event)
     end
 
     def process_js_exception(msg, routing_key)
-      forward_msg_on_zmq_socket(msg, routing_key)
+      forward_msg_on_zmq_socket(msg, routing_key) if @forward
       exception = Oj.load(msg, :mode => :compat)
       @request_processor.process_js_exception(exception)
     end
