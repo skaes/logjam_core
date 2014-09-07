@@ -8,6 +8,7 @@ module Logjam
 
   class AMQPImporter
 
+    include LogjamAgent::Util
     include Helpers
     include ReparentingTimer
 
@@ -120,6 +121,10 @@ module Logjam
         log_info "subscribing to request stream queue #{importer_queue_name} on #{broker}"
         importer_queue.subscribe do |header, msg|
           begin
+            # if info = header.headers["info"]
+            #  sent, sequence = unpack_info(info)
+            # end
+            # log_info "#{importer_exchange_name}:#{header.routing_key}:#{msg}:#{sent.iso8601(3)}:#{sequence}"
             case header.routing_key
             when /^logs/
               process_request(msg, header.routing_key)
@@ -129,7 +134,7 @@ module Logjam
               process_js_exception(msg, header.routing_key)
             end
           rescue => e
-            log_error "error during request processing: #{e.class}(#{e})"
+            log_error "error during request processing: #{e.class}(#{e}):#{e.backtrace[0]}"
           end
         end
 

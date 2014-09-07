@@ -5,6 +5,7 @@ module Logjam
 
   class ZMQImporter
 
+    include LogjamAgent::Util
     include Helpers
     include ReparentingTimer
 
@@ -42,11 +43,13 @@ module Logjam
       unless ZMQ::Util.resultcode_ok? rc
         log_error("Could not bind to socket %s:%d: %s (%d)" % [Logjam.bind_ip, @port, ZMQ::Util.error_string, ZMQ::Util.errno])
       end
-      @socket.on(:message) do |p1, p2, p3|
-        stream = p1.copy_out_string; p1.close
-        key = p2.copy_out_string; p2.close
-        msg = p3.copy_out_string; p3.close
-        # log_info "#{stream}:#{key}:#{msg}"
+      @socket.on(:message) do |*parts|
+        stream, key, msg, _info = parts.map(&:copy_out_string)
+        parts.each(&:close)
+        # if _info
+        #   sent, sequence = unpack_info(_info)
+        # end
+        # log_info "#{stream}:#{key}:#{msg}:#{sent.iso8601(3)}:#{sequence}"
         begin
           case key
           when /^logs/
