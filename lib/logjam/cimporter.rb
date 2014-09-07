@@ -59,7 +59,7 @@ module Logjam
     def generate_streams
       indented(1, "streams")
       @streams.values.each do |s|
-        indented(2, s.importer_exchange_name)
+        indented(2, s.importer_exchange_name.sub(/^request-stream-/,''))
         if (s.database != "default")
           indented(3, "db = %d" % [@database_keys.index(s.database)])
         end
