@@ -37,6 +37,15 @@ module Logjam
     @@bind_ip = ip
   end
 
+  @@allow_cross_domain_ajax = false
+  def self.allow_cross_domain_ajax
+    @@allow_cross_domain_ajax
+  end
+
+  def self.allow_cross_domain_ajax=(ip)
+    @@allow_cross_domain_ajax = ip
+  end
+
   @@ignored_request_uri = nil
   def self.ignored_request_uri
     @@ignored_request_uri

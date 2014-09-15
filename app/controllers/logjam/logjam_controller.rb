@@ -6,7 +6,7 @@ module Logjam
     before_filter :redirect_to_clean_url, :except => [:live_stream, :auto_complete_for_controller_action_page]
     before_filter :verify_app_env, :except => [:call_relationships, :call_graph]
     before_filter :print_params if Rails.env=="development"
-    # after_filter :allow_cross_domain_ajax
+    after_filter :allow_cross_domain_ajax
 
     def auto_complete_for_controller_action_page
       query = params[:page] = params.delete(:query)
@@ -34,8 +34,9 @@ module Logjam
     end
 
     def fetch_json_data_for_index(db, page, options = params)
+      options = {:app => @app, :env => @env}
       resources = Resource.all_resources + %w(apdex response severity exceptions js_exceptions)
-      stream = Logjam.streams["#{@app}-#{@env}"]
+      stream = Logjam.streams["#{options[:app]}-#{options[:env]}"]
       filter = stream.frontend_page if options[:frontend_only] == "1"
       pages = Totals.new(db, resources, page).pages(:order => :apdex, :limit => 100_000, :filter => filter)
       if pages.size > 0 && options[:summary] == "1"
@@ -572,7 +573,7 @@ module Logjam
     end
 
     def allow_cross_domain_ajax
-      response.headers['Access-Control-Allow-Origin'] = '*'
+      response.headers['Access-Control-Allow-Origin'] = '*' if Logjam.allow_cross_domain_ajax
     end
 
   end
