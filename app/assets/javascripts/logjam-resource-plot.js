@@ -17,7 +17,7 @@ function logjam_resource_plot(params) {
   var zoom_interval = 1;
 
   /* Sizing and scales. */
-  var w = document.getElementById('resource-plot').offsetWidth - 70,
+  var w = document.getElementById('resource-plot').offsetWidth -70,
       h = params.h,
       xticks = d3.range(25).map(function(h){ return h/interval*60; }),
       x      = d3.scale.linear().domain([0, 1440/interval]).range([0, w]),
