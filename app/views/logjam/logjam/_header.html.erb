@@ -23,11 +23,10 @@ var auto_complete_url = '<%= raw auto_complete_url_for_action_page %>';
 
 <header id="logjam-header">
   <h1 class="logo"><a href="/dashboard">LOGJAM</a></h1>
-<%
-=begin %>
+
   <% unless @only_one_app %>
     <div class="application-chooser">
-      <span><%= params[:app] || "Application" %> <i class="fa fa-angle-down"></i></span>
+      <span>:: <%= params[:app] || "Application" %> <i class="fa fa-angle-down"></i></span>
       <ul class="dropdown-menu">
         <% @apps.map do |app| %>
           <li class="dropdown-header"><a href="/?app=<%= app %>"><i class="fa fa-angle-right"></i> <%= app %></a></li>
@@ -43,9 +42,9 @@ var auto_complete_url = '<%= raw auto_complete_url_for_action_page %>';
       <% end %>
     </div>
   <% end %>
-<%
-=end %>
 
+<%
+=begin %>
       <% unless @only_one_app %>
         <div class="application-chooser">
           <%= select_tag "app", options_for_select(@apps, @app), :onchange => "view_selected_pages()" %>
@@ -56,7 +55,8 @@ var auto_complete_url = '<%= raw auto_complete_url_for_action_page %>';
           <%= select_tag "env", options_for_select(@envs, @env), :onchange => "view_selected_pages()" %>
         </div>
       <% end %>
-
+<%
+=end %>
   <div class="date-chooser">
 <%
 =begin %>

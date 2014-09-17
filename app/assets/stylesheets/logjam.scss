@@ -840,12 +840,6 @@ a.btn {
     color: #FFFFFF;
     flex-direction: row;
 
-    .logjam-app-name {
-        margin-bottom: 10px;
-        font-size: 16px;
-        text-transform: uppercase;
-    }
-
     h2 {
       font-weight: 300;
       font-size: 22px;
@@ -1099,10 +1093,12 @@ a.btn {
 
     .application-chooser {
       position: absolute;
-      left: 300px;
+      left: 140px;
       font-size: 18px;
       height: 60px;
-      line-height: 60px;
+      line-height: 65px;
+      font-weight: 300;
+      text-transform: uppercase;
 
       &:hover {
         .dropdown-menu {
@@ -1120,6 +1116,7 @@ a.btn {
         position: absolute;
         left: -10px;
         padding: 8px;
+        margin-top: -5px;
 
         li {
           width: 120px;
