@@ -33,6 +33,22 @@ module Logjam
       end
     end
 
+    # TODO: jan controller dashboard
+    def dashboard
+      respond_to do |format|
+        format.html do
+          redirect_on_empty_dataset and return
+          @resources, @js_data, @js_events, @js_max, @request_counts, @gc_time, @js_zoom = @dataset.plot_data
+        end
+        format.json do
+          prepare_params
+          pages, events = fetch_json_data_for_index(@db, @page)
+          render :json => Oj.dump({:pages => pages, :events => events}, :mode => :compat)
+        end
+      end
+    end
+    #  jan controller end
+
     def fetch_json_data_for_index(db, page, options = params)
       options = {:app => @app, :env => @env}
       resources = Resource.all_resources + %w(apdex response severity exceptions js_exceptions)

@@ -1,25 +1,25 @@
 <%= content_for(:page_scripts) do %>
-var parameters = <%= raw Oj.dump(params) %>;
-var parameter_defaults = <%= raw Oj.dump(default_header_parameters) %>;
-var self_url = '<%= raw self_url %>';
-var home_url = '<%= raw home_url %>';
-var history_url = '<%= raw history_url %>';
-var selectable_days = <%= raw Oj.dump(@days.map(&:to_s)) %>;
-var auto_complete_url = '<%= raw auto_complete_url_for_action_page %>';
-$(document).ready(initialize_header);
+  var parameters = <%= raw Oj.dump(params) %>;
+  var parameter_defaults = <%= raw Oj.dump(default_header_parameters) %>;
+  var self_url = '<%= raw self_url %>';
+  var home_url = '<%= raw home_url %>';
+  var history_url = '<%= raw history_url %>';
+<% if @days %>
+  var selectable_days = <%= raw Oj.dump(@days.map(&:to_s)) %>;
+  <% end %>
+  var auto_complete_url = '<%= raw auto_complete_url_for_action_page %>';
+  $(document).ready(initialize_header);
 
-$(function(){
-  $('.tabs a', '#logjam-sidebar').on('click', function(event) {
-    event.preventDefault();
-    event.stopPropagation();
+  $(function(){
+    $('.tabs a', '#logjam-sidebar').on('click', function(event) {
+      event.preventDefault();
+      event.stopPropagation();
 
-    $('.tabs a', '#logjam-sidebar').removeClass('active');
-    $(this).addClass('active');
+      $('.tabs a', '#logjam-sidebar').removeClass('active');
+      $(this).addClass('active');
+    })
   })
-})
-
 <% end %>
-
 
 <section id="logjam-sidebar">
 
@@ -58,43 +58,45 @@ $(function(){
     <% end %>
 
     <li><a <%= raw html_attributes_for_time_range("history") %>><i class="fa fa-history"></i> History</a></li>
-    <li class="dropdown fa fa-clock-o"><a <%= raw html_attributes_for_resource_type(:time) %>>Time</a>
-      <ul>
-        <% collected_time_resources.reverse.each do |r| %>
-          <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
-        <% end %>
-      </ul>
-    </li>
-
-    <% unless collected_call_resources.empty? %>
-      <li class="dropdown fa fa-phone"><a <%= raw html_attributes_for_resource_type(:call) %>>Calls</a>
+    <% #if @collected_time_resources %>
+      <li class="dropdown fa fa-clock-o"><a <%= raw html_attributes_for_resource_type(:time) %>>Time</a>
         <ul>
-          <% collected_call_resources.reverse.each do |r| %>
+          <% collected_time_resources.reverse.each do |r| %>
             <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
           <% end %>
         </ul>
       </li>
-    <% end %>
 
-    <% unless collected_memory_resources.empty? %>
-      <li class="dropdown fa fa-th"><a <%= raw html_attributes_for_resource_type(:memory) %>>Allocations</a>
-        <ul>
-          <% collected_memory_resources.reverse.each do |r| %>
-            <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
-          <% end %>
-        </ul>
-      </li>
-    <% end %>
+      <% unless collected_call_resources.empty? %>
+        <li class="dropdown fa fa-phone"><a <%= raw html_attributes_for_resource_type(:call) %>>Calls</a>
+          <ul>
+            <% collected_call_resources.reverse.each do |r| %>
+              <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
+            <% end %>
+          </ul>
+        </li>
+      <% end %>
 
-    <% unless collected_heap_resources.empty? %>
-      <li class="dropdown fa fa-bars"><a <%= raw html_attributes_for_resource_type(:heap) %>>Heap</a>
-        <ul>
-          <% collected_heap_resources.reverse.each do |r| %>
-            <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
-          <% end %>
-        </ul>
-      </li>
-    <% end %>
+      <% unless collected_memory_resources.empty? %>
+        <li class="dropdown fa fa-th"><a <%= raw html_attributes_for_resource_type(:memory) %>>Allocations</a>
+          <ul>
+            <% collected_memory_resources.reverse.each do |r| %>
+              <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
+            <% end %>
+          </ul>
+        </li>
+      <% end %>
+
+      <% unless collected_heap_resources.empty? %>
+        <li class="dropdown fa fa-bars"><a <%= raw html_attributes_for_resource_type(:heap) %>>Heap</a>
+          <ul>
+            <% collected_heap_resources.reverse.each do |r| %>
+              <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
+            <% end %>
+          </ul>
+        </li>
+      <% end %>
+    <% #end %>
 
   </ul>
 </div>
