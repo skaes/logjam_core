@@ -20,7 +20,7 @@
 
     <% if @request.present? %>
 
-      <h2><%= params[:app] %> :: Request details for action
+      <h2>Request details for action
           <%
             page, minute = @request["page"], @request["minute"]
             _params = params.except(:utf8, :id, :action).merge(:page => page)

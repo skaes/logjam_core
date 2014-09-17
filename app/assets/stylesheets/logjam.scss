@@ -41,7 +41,7 @@ img {
 
 .logline {
     width: 100%;
-    border-bottom: 1x solid #ddd;
+    border-bottom: 1px solid #ddd;
     margin: 1px;
 }
 .bg {
@@ -735,9 +735,15 @@ ul.radio.vertical > li {
 
 #show-json {
     position: absolute;
-    right: 40px;
+    right: 20px;
     top: 70px;
     text-transform: uppercase;
+
+    &:before {
+        font-family: fontAwesome;
+        content: "\f1c9";
+        margin-right: 5px;
+    }
 }
 
 #admin {
@@ -850,27 +856,19 @@ table {
     }
 
     a {
-        color: #ffffff;
+      color: #ffffff;
 
-        &:hover {
-            background: none;
-        }
-    }
-
-    .tabs {
-      border-bottom: 1px solid #444444;
-      padding-bottom: 26px;
-      margin-bottom: 15px;
-
-      .active {
-        border-color: #c9c9c9;
-        color: #c9c9c9;
+      &:hover {
+        background: none;
       }
     }
 
     .sidebar-search {
       margin-top: 20px;
       font-size: 12px;
+      border-bottom: 1px solid #444444;
+      padding-bottom: 13px;
+      margin-bottom: 13px;
 
       label {
         font-weight: 300;
@@ -894,29 +892,57 @@ table {
       }
     }
 
-    .logjam-menu {
-        > li {
-            display: block;
-            margin-top: 10px;
-            font-size: 14px;
-            font-weight: 700;
+    .menu-wrapper {
+      .tabs {
+        border-bottom: 1px solid #444444;
+        margin-bottom: 13px;
+        padding-bottom: 26px;
 
-            &:before {
-              margin-right: 5px;
-            }
+        .btn {
+          color: #999;
+          border-color: #999;
 
-            ul {
-              margin-left: 20px;
-              margin-top: 5px;
-              margin-bottom: 20px;
-              font-size: 12px;
-              font-weight: 400;
-            }
-
-            &.open {
-                height: auto;
-            }
+          &.active {
+            color: #FFF;
+            border-color: #FFF;
+          }
         }
+      }
+    }
+    .logjam-menu {
+      display: none;
+
+      &.active {
+        display: block;
+      }
+
+      > li {
+        display: block;
+        margin-top: 10px;
+        font-size: 14px;
+        font-weight: 700;
+
+        &:before {
+          margin-right: 5px;
+        }
+
+        ul {
+          margin-left: 20px;
+          margin-top: 5px;
+          margin-bottom: 20px;
+          font-size: 11px;
+          font-weight: 400;
+          text-transform: uppercase;
+
+          a:hover {
+            text-decoration: underline;
+          }
+        }
+
+        &.open {
+          height: auto;
+        }
+      }
     }
 
 
@@ -986,8 +1012,16 @@ table {
   width: 100%;
 
   > h2 {
-    margin: 20px 0 0 20px;
+    margin: 20px 0 0 10px;
     text-transform: capitalize;
+
+    a {
+        color: #006567;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
   }
 }
 
@@ -996,7 +1030,7 @@ table {
 }
 
 .app-dashboard {
-  margin: 20px !important;
+  margin: 10px !important;
   flex-direction: row;
 
   .app-overview {
@@ -1008,9 +1042,9 @@ table {
       background: #fff;
       border-radius: 2px;
       border: 1px solid #ddd;
-      padding: 20px;
-      padding-bottom: 20px;
-      margin: 20px;
+      padding: 15px;
+      padding-bottom: 40px;
+      margin: 10px;
       width: 100%;
       position: relative;
       overflow: hidden;
@@ -1068,6 +1102,17 @@ table {
       &:hover { background: none; }
     }
   }
+
+  .detail-table {
+    border-top: 1px solid #eee;
+
+    .item {
+      border: none;
+      border-radius: none;
+      margin: 12px 0 10px;
+      padding: 0;
+    }
+  }
 }
 
 #logjam-header {
@@ -1115,7 +1160,7 @@ table {
         /* box-shadow: 1px 0 2px 0 rgba(0, 0, 0, 0.5); */
         font-size: 14px;
         text-transform: capitalize;
-        width: 480px;
+        width: 600px;
         overflow: hidden;
         position: absolute;
         left: -10px;

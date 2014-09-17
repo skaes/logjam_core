@@ -25,11 +25,11 @@
 
   <div class="menu-wrapper">
     <div class="tabs">
-      <a class="btn active">Backend</a>
-      <a class="btn">Frontend</a>
+      <a data-menu="backend-menu" class="btn active">Backend</a>
+      <a data-menu="frontend-menu" class="btn">Frontend</a>
     </div>
 
-  <ul class="logjam-menu">
+  <ul class="logjam-menu active" id="backend-menu">
 
     <li class="sidebar-search">
       <input id="page-field" class="autocomplete" placeholder="Search Namespace / Action" name="page" size="45" type="text" value="<%= @page %>" onchange="view_selected_pages()" />
@@ -49,12 +49,9 @@
     <% end %>
 
     <% unless @only_one_app %>
-      <li>
-        <% if @dataset && @dataset.has_callers? -%>
-          <%= clean_link_to(fa_icon("phone", :title => "view callers"), :action => "callers") %>
-        <% end -%>
-        <%= clean_link_to(fa_icon("bar-chart", :title => "analyze call relationships") + " Call relationships", :action => "call_relationships", :filter => @app) %>
-      </li>
+          <li>
+            <%= clean_link_to(fa_icon("bar-chart", :title => "analyze call relationships") + " Call relationships", :action => "call_relationships", :filter => @app) %>
+          </li>
     <% end %>
 
     <li><a <%= raw html_attributes_for_time_range("history") %>><i class="fa fa-history"></i> History</a></li>
@@ -97,13 +94,23 @@
         </li>
       <% end %>
     <% #end %>
+  <ul class="logjam-menu" id="frontend-menu">
 
+  </ul>
   </ul>
 </div>
 
 </section>
 
 <script>
+
+  $(function(){
+    $('.tabs a', '#logjam-sidebar').on('click', function(event){
+      $('.logjam-menu').removeClass('active');
+      $( '#'+ $(this).data('menu') ).addClass('active');
+    })
+  });
+
 </script>
 
 <%

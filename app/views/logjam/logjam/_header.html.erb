@@ -8,7 +8,7 @@ var history_url = '<%= raw history_url %>';
   var selectable_days = <%= raw Oj.dump(@days.map(&:to_s)) %>;
   <% end %>
 var auto_complete_url = '<%= raw auto_complete_url_for_action_page %>';
-//$(document).ready(initialize_header);
+$(document).ready(initialize_header);
 <% end %>
 
 <% action = action_name == "index" ? "" : action_name %>
