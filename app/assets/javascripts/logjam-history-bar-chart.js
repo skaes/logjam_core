@@ -16,7 +16,7 @@ function logjam_history_bar_chart(data, metric, params) {
     return (week_day(date) ? "bar weekday" : "bar weekend");
   }
 
-  var margin = {top: 20, right: 20, bottom: 50, left: 150},
+  var margin = {top: 20, right: 20, bottom: 50, left: 40},
       width = 1100 - margin.left - margin.right,
       height = 150 - margin.top - margin.bottom;
 

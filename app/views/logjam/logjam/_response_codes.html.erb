@@ -1,13 +1,17 @@
-<table id="response-code-table">
-  <tr>
-    <th colspan="2">response codes
-      <%= clean_link_to(triangle_right, {:action => "response_code_overview"}, :title => "show response code timeline") %>
-    </th>
-  </tr>
-  <% @dataset.response_code_summary.keys.sort.each do |rc| %>
-  <tr>
-    <td class="number-left"><%= rc %></td>
-    <td class="number"><%= sometimes_link_response_code(rc, @dataset.response_code_summary[rc]) %></td>
-  </tr>
-  <% end %>
-</table>
+<div class="item">
+  <h2>RESPONSE CODES</h2>
+  <span class="value"><%= number_with_delimiter @dataset.count_requests %></span>
+
+  <table id="response-code-table" style="width:100">
+    <% @dataset.response_code_summary.keys.sort.each do |rc| %>
+    <tr>
+      <td class="number-left"><%= rc %></td>
+      <td class="number"><%= sometimes_link_response_code(rc, @dataset.response_code_summary[rc]) %></td>
+    </tr>
+    <% end %>
+  </table>
+
+  <div class="action">
+    <%= clean_link_to("show response code timeline", {:action => "response_code_overview"}, :title => "show response code timeline") %>
+  </div>
+</div>

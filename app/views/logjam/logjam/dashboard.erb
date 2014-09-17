@@ -1,0 +1,40 @@
+<%= render "header" %>
+
+<div id="logjam-container">
+
+  <%= render "dashboard_apdex_overview" %>
+  <div id="logjam-content" class="app-dashboard">
+
+    <% ["Overview","appgallery","appstore","bingo","communities","companies","contacts","content","crowdsourcing","events","feedy","flmp","graphdb","hermes","ipad","jobs","login","logjam","messages","messagesprimera","mobilehub","payments","people","perlapp","perlcron","perlrest","perlworker","perlyaml","premium","profilebackend","profiles","publicsearch","railsmisc","recommenders","riaktivities","searchapi","searchproxy","spi","touch","triton","welcome","xas","xtm","xws"].map do |item| %>
+    <% end %>
+
+    <h2>Platform status</h2>
+    <div class="app-overview">
+
+      <div class="item">
+        <h2>Apdex Frontend</h2>
+        <span class="value">0.98</span>
+      </div>
+
+      <div class="item">
+        <h2>Apdex Backend</h2>
+        <span class="value">0.94</span>
+      </div>
+
+      <div class="item">
+        <h2>Requests</h2>
+        <span class="value">7535125</span>
+      </div>
+
+      <div class="item break">
+        <h2>Errors</h2>
+        <span class="value">125345</span>
+      </div>
+
+    </div>
+
+
+  </div>
+
+</div>
+

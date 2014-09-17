@@ -1,17 +1,19 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+  <link rel="shortcut icon" href="/assets/favicon.ico" type="image/ico">
   <% if params[:auto_refresh] == "1" %>
   <meta http-equiv="refresh" content="60">
   <% end %>
   <title>Logjam</title>
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
   <%= stylesheet_link_tag "application" %>
   <%= javascript_include_tag "application" %>
 </head>
 <body>
   <%= yield %>
+
   <script type="text/javascript">
   <%= yield :page_scripts %>
   </script>

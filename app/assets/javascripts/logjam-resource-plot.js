@@ -17,7 +17,7 @@ function logjam_resource_plot(params) {
   var zoom_interval = 1;
 
   /* Sizing and scales. */
-  var w = params.w,
+  var w = document.getElementById('resource-plot').offsetWidth - 70,
       h = params.h,
       xticks = d3.range(25).map(function(h){ return h/interval*60; }),
       x      = d3.scale.linear().domain([0, 1440/interval]).range([0, w]),
@@ -305,7 +305,7 @@ function logjam_resource_plot(params) {
     .style("fill", "rgba(255,0,0,0.3)");
 
   var area = d3.svg.area()
-        .interpolate("step-after")
+        .interpolate("cardinal")
         .x(function(d) { return x(d.x+.5); })
         .y0(function(d) { return y(d.y0); })
         .y1(function(d) { return y(d.y+d.y0); });

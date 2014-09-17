@@ -11,13 +11,14 @@
 }
 .jdpicker_w .date_selector {
 	background: #FFF;
-	border: 1px solid #bbb;
+	border: 1px solid #c9c9c9;
 	padding: 5px;
 	margin: -1px 0 0 0;
 	position: absolute;
 	z-index: 100000;
 	display: none;
-	width:210px
+	width:210px;
+	border-radius: 1px;
 }
 
 .jdpicker_w .date_selector table {
@@ -146,7 +147,7 @@
 	text-align:right;
 	border:none !important;
 	font-size:70%;
-	background:#FCFCFC !important;
+	background:#006567 !important;
 	padding-right:4px;
 }
 
@@ -166,14 +167,15 @@
 }
 .jdpicker_w .date_selector td.selectable_day, .jdpicker_w .date_selector tr.selectable_week td {
 	cursor: pointer;
-	background: image-url('bg_selectable.png');
+	background: #ebebeb;
 	border:1px solid #aaa;
 	color:#333
 }
 .jdpicker_w .date_selector td.selected, .jdpicker_w .date_selector tr.selected  td {
-	background: image-url('bg_selected.png');
+	background: #006567;
+	color: #FFFFFF;
 }
 .jdpicker_w .date_selector tr.selectable_week.hover td, .jdpicker_w .date_selector td.selectable_day.hover {
-	background: image-url('bg_hover.png');
+	/* background: image-url('bg_hover.png'); */
 	color: white;
 }

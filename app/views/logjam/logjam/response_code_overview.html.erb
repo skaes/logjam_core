@@ -1,18 +1,34 @@
 <%= render "header" %>
+<div id="logjam-container">
+  <%= render "sidebar" %>
+  <div id="show-json"><i class="fa fa-file-text-o"></i> <%= link_to("show json", params.merge(:format => :json)) %></div>
+  <div id="logjam-content" class="app-dashboard">
 
-<div id='exceptions'>
-  <h3><%= @title %> <%= hpn("for") %></h3>
-  <table class='full_stats'>
-    <tr><th>Type</th><th>Count</th><th>Distribution over time (0-24h, 2 minute intervals)</th></tr>
-    <% @totals.response_codes.keys.sort.each_with_index do |rc,i| %>
-    <tr class='full_stats'>
-      <% url = clean_url_for(:action => "response_codes", :response_code => rc) if rc.to_i >= 400 %>
-      <td><%= rc.to_i < 400 ? raw("<span class='dead-link'>#{rc}</span>") : link_to(rc, url) %></td>
-      <td class='number'><%= sometimes_link_response_code(rc, @totals.response_codes[rc]) %></td>
-      <td class='echart' id='<%= "echart-#{i+=1}" %>'>
-        <%= render "echart", exceptions: @minutes.response[rc.to_s], i: i, url: url %>
-      </td>
-    </tr>
-    <% end %>
-  </table>
+    <h2><%= params[:app] %></h2>
+    <div class="app-overview">
+      <div id="logjam-container">
+        <%= render "sidebar" %>
+        <div id="logjam-content" class="app-dashboard">
+          <h2><%= params[:app] %> :: <%= @title %> <%= hpn("for") %></h2>
+
+          <div class="table-wrapper">
+            <table class='full_stats'>
+              <tr><th>Type</th><th>Count</th><th>Distribution over time (0-24h, 2 minute intervals)</th></tr>
+              <% @totals.response_codes.keys.sort.each_with_index do |rc,i| %>
+              <tr class='full_stats'>
+                <% url = clean_url_for(:action => "response_codes", :response_code => rc) if rc.to_i >= 400 %>
+                <td><%= rc.to_i < 400 ? raw("<span class='dead-link'>#{rc}</span>") : link_to(rc, url) %></td>
+                <td class='number'><%= sometimes_link_response_code(rc, @totals.response_codes[rc]) %></td>
+                <td class='echart' id='<%= "echart-#{i+=1}" %>'>
+                  <%= render "echart", exceptions: @minutes.response[rc.to_s], i: i, url: url %>
+                </td>
+              </tr>
+              <% end %>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

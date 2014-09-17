@@ -5,12 +5,20 @@
    colors = Logjam::Resource.colors
    pie_colors = Logjam::Resource.colors_with_transparency(0.7)
    s = @dataset.summary
-   chart_size = 70
+   chart_size = 100
 -%>
 
-<fieldset class="resource-fields">
-  <legend>Time</legend>
-  <table id="request-details-time" class="breakdown-table">
+<div class="item">
+  <h2>Time</h2>
+  <div id="time-resources" class="breakdown-chart">
+    <% resources = time_resources-["total_time", "gc_time"] -%>
+    <%= render :partial => "simple_pie", :locals => {
+          :data => resources.map{|r| s.avg(r)},
+          :legend => resources,
+          :container => "time-resources",
+          :colors => pie_colors.values_at(*resources), :size => chart_size } %>
+  </div>
+  <table>
     <% time_resources.each do |name| -%>
       <% next if (value = s.avg(name)).zero?  -%>
       <tr>
@@ -21,20 +29,21 @@
       </tr>
     <% end -%>
   </table>
-  <div id="time-resources" class="breakdown-chart">
-    <% resources = time_resources-["total_time", "gc_time"] -%>
-    <%= render :partial => "simple_pie", :locals => {
-          :data => resources.map{|r| s.avg(r)},
-          :legend => resources,
-          :container => "time-resources",
-          :colors => pie_colors.values_at(*resources), :size => chart_size } %>
-  </div>
-</fieldset>
+</div>
 
 <% unless s.zero_resources?(call_resources) %>
-<fieldset class="resource-fields">
-  <legend>Calls</legend>
-  <table id="request-details-calls" class="breakdown-table">
+<div class="item">
+  <h2>Calls</h2>
+  <div id="call-resources" class="breakdown-chart">
+  <% resources = *call_resources.select{|r| r =~ /_calls$/}-["gc_calls"] -%>
+    <%= render :partial => "simple_pie", :locals => {
+          :data =>  resources.map{|r| s.avg(r)},
+          :legend => resources,
+          :container => "call-resources",
+          :colors => pie_colors.values_at(*resources), :size => chart_size
+        } %>
+  </div>
+  <table>
     <% call_resources.each do |name| -%>
       <% next if (value = s.avg(name)).zero?  -%>
       <tr>
@@ -47,24 +56,24 @@
       </tr>
     <% end -%>
   </table>
-  <div id="call-resources" class="breakdown-chart">
-  <% resources = *call_resources.select{|r| r =~ /_calls$/}-["gc_calls"] -%>
-    <%= render :partial => "simple_pie", :locals => {
-          :data =>  resources.map{|r| s.avg(r)},
-          :legend => resources,
-          :container => "call-resources",
-          :colors => pie_colors.values_at(*resources), :size => chart_size
-        } %>
-  </div>
-</fieldset>
+</div>
 <% end %>
 
-<p class="clear-left"></p>
-
 <% unless s.zero_resources?(memory_resources) %>
-<fieldset class="resource-fields">
-  <legend>Allocations</legend>
-  <table id="request-details-allocations" class="breakdown-table">
+<div class="item">
+  <h2>Allocations</h2>
+  <div id="allocation-resources" class="breakdown-chart">
+  <% resources = *memory_resources-["allocated_memory"]
+     h = resources.inject({}){|h,r| h[r] = s.avg(r); h }
+     h["allocated_objects"] *= 40 if h.include?("allocated_objects")
+  -%>
+    <%= render :partial => "simple_pie", :locals => {
+          :data => h.values_at(*resources),
+          :legend => resources,
+          :container => "allocation-resources",
+          :colors => pie_colors.values_at(*resources), :size => chart_size } %>
+  </div>
+  <table>
     <% memory_resources.each do |name| -%>
       <% next if (value = s.avg(name)).zero?  -%>
       <tr>
@@ -77,24 +86,24 @@
       </tr>
     <% end -%>
   </table>
-  <div id="allocation-resources" class="breakdown-chart">
-  <% resources = *memory_resources-["allocated_memory"]
-     h = resources.inject({}){|h,r| h[r] = s.avg(r); h }
-     h["allocated_objects"] *= 40 if h.include?("allocated_objects")
-  -%>
-    <%= render :partial => "simple_pie", :locals => {
-          :data => h.values_at(*resources),
-          :legend => resources,
-          :container => "allocation-resources",
-          :colors => pie_colors.values_at(*resources), :size => chart_size } %>
-  </div>
-</fieldset>
+</div>
 <% end %>
 
 <% unless s.zero_resources?(heap_resources) %>
-<fieldset class="resource-fields">
-  <legend>Heap</legend>
-  <table id="request-details-memory" class="breakdown-table">
+<div class="item">
+  <h2>Heap</h2>
+  <div id="heap-resources" class="breakdown-chart">
+    <% resources = *heap_resources + ["free_slots"] - ["heap_size"]
+       h = resources.inject({}){|h,r| h[r] = s.avg(r); h }
+       h["free_slots"] = s.avg('heap_size') - s.avg('live_data_set_size')
+    -%>
+    <%= render :partial => "simple_pie", :locals => {
+          :data => h.values_at(*resources),
+          :legend => resources,
+          :container => "heap-resources",
+          :colors => pie_colors.values_at(*resources), :size => chart_size } %>
+  </div>
+  <table>
     <% heap_resources.each do |name| -%>
       <% next if (value = s.avg(name)).zero?  -%>
       <tr>
@@ -116,18 +125,5 @@
       </td>
     </tr>
   </table>
-  <div id="heap-resources" class="breakdown-chart">
-    <% resources = *heap_resources + ["free_slots"] - ["heap_size"]
-       h = resources.inject({}){|h,r| h[r] = s.avg(r); h }
-       h["free_slots"] = s.avg('heap_size') - s.avg('live_data_set_size')
-    -%>
-    <%= render :partial => "simple_pie", :locals => {
-          :data => h.values_at(*resources),
-          :legend => resources,
-          :container => "heap-resources",
-          :colors => pie_colors.values_at(*resources), :size => chart_size } %>
-  </div>
-</fieldset>
+</div>
 <% end %>
-
-<p class="clear-left"></p>

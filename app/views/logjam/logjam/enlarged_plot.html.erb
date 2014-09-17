@@ -1,4 +1,11 @@
 <%= render "header" %>
-<div id='enlarged-plot'>
-  <%= render :partial => "resource_plot", :locals => {:width => 1440, :height => 720} %>
+<div id="logjam-container">
+  <%= render "sidebar" %>
+  <div id="logjam-content" class="app-dashboard">
+    <h2><%= params[:app] %> :: Timings</h2>
+    <div id="enlarged-plot" class="table-wrapper">
+      <%= render :partial => "resource_plot", :locals => {:width => 1080, :height => 460} %>
+    </div>
+
+  </div>
 </div>

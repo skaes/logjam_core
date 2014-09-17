@@ -1,9 +1,7 @@
+<div class="item">
+  <h2>Apdex backend</h2>
+  <span class="value"><%= "%.2f" % @dataset.apdex %></span>
 <table id="apdex-table">
-  <tr>
-    <th colspan="2">apdex
-      <%= clean_link_to(triangle_right, {:action => "apdex_overview"}, :title => "show apdex overview") %>
-    </th>
-  </tr>
   <tr>
     <td>happy (t &lt; 0.1s)</td>
     <td class="number" title="<%= @dataset.happy_count %>"><%= "%.2f" % (100.0 * @dataset.happy) %>%</td>
@@ -23,6 +21,11 @@
   <tr><td></td><td></td></tr>
   <tr>
     <td><%= link_to "apdex score", "http://www.apdex.org/overview.html", :title => "show definition" %></td>
-    <td class="number"><%= "%.2f" % @dataset.apdex %></td>
+    <td class="number"></td>
   </tr>
 </table>
+  <div class="action">
+    <%= clean_link_to('show apdex overview', {:action => "apdex_overview"}, :title => "show apdex overview") %>
+  </div>
+</div>
+
