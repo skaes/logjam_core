@@ -23,82 +23,96 @@
 
 <section id="logjam-sidebar">
 
-  <div class="menu-wrapper">
-    <div class="tabs">
-      <a data-menu="backend-menu" class="btn active">Backend</a>
-      <a data-menu="frontend-menu" class="btn">Frontend</a>
-    </div>
+  <% action = action_name == "index" ? "" : action_name %>
+  <%= form_tag(params.except(:id).merge(:action => action), :method => :get, :id => "filter-form", :autocomplete => "off") do -%>
 
-  <ul class="logjam-menu active" id="backend-menu">
+    <div class="menu-wrapper">
+      <div class="tabs">
+        <a data-menu="backend-menu" class="btn active">Backend</a>
+        <a data-menu="frontend-menu" class="btn">Frontend</a>
+      </div>
 
-    <li class="sidebar-search">
-      <input id="page-field" class="autocomplete" placeholder="Search Namespace / Action" name="page" size="45" type="text" value="<%= @page %>" onchange="view_selected_pages()" />
-    </li>
+      <ul class="logjam-menu active" id="backend-menu">
 
-    <% if @dataset && @dataset.live_stream? -%>
-      <li>
-        <%= link_to(fa_icon("play-circle", :title => "view live stream") + " Live View", clean_params(params.slice(:app,:env,:page).merge(:action => "live_stream"))) %>
-      </li>
-    <% end -%>
+        <li class="sidebar-search">
+          <input id="page-field" class="autocomplete" placeholder="Search Namespace / Action" name="page" size="45" type="text" value="<%= @page %>" onchange="view_selected_pages()" />
+        </li>
 
-    <% if @dataset && @dataset.has_distribution_plot? %>
-      <li>
-      <% scatter_title = "view #{distribution_kind(@dataset.resource).to_s.gsub(/_/," ")} plot" %>
-        <%= clean_link_to(fa_icon("signal flip-horizontal", :title => scatter_title) + " Distribution plot" ,:page => without_module(@page), :action => distribution_kind(@dataset.resource)) %>
-      </li>
-    <% end %>
-
-    <% unless @only_one_app %>
+        <% if @dataset && @dataset.live_stream? -%>
           <li>
-            <%= clean_link_to(fa_icon("bar-chart", :title => "analyze call relationships") + " Call relationships", :action => "call_relationships", :filter => @app) %>
+            <%= link_to(fa_icon("play-circle", :title => "view live stream") + " Live View", clean_params(params.slice(:app,:env,:page).merge(:action => "live_stream"))) %>
           </li>
-    <% end %>
+        <% end -%>
 
-    <li><a <%= raw html_attributes_for_time_range("history") %>><i class="fa fa-history"></i> History</a></li>
-    <% #if @collected_time_resources %>
-      <li class="dropdown fa fa-clock-o"><a <%= raw html_attributes_for_resource_type(:time) %>>Time</a>
-        <ul>
-          <% collected_time_resources.reverse.each do |r| %>
-            <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
+        <% if @dataset && @dataset.has_distribution_plot? %>
+          <li>
+          <% scatter_title = "view #{distribution_kind(@dataset.resource).to_s.gsub(/_/," ")} plot" %>
+            <%= clean_link_to(fa_icon("signal flip-horizontal", :title => scatter_title) + " Distribution plot" ,:page => without_module(@page), :action => distribution_kind(@dataset.resource)) %>
+          </li>
+        <% end %>
+
+        <% unless @only_one_app %>
+              <li>
+                <%= clean_link_to(fa_icon("bar-chart", :title => "analyze call relationships") + " Call relationships", :action => "call_relationships", :filter => @app) %>
+              </li>
+        <% end %>
+
+        <li><a <%= raw html_attributes_for_time_range("history") %>><i class="fa fa-history"></i> History</a></li>
+        <% #if @collected_time_resources %>
+          <li class="dropdown fa fa-clock-o"><a <%= raw html_attributes_for_resource_type(:time) %>>Time</a>
+            <ul>
+              <% collected_time_resources.reverse.each do |r| %>
+                <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
+              <% end %>
+            </ul>
+          </li>
+
+          <% unless collected_call_resources.empty? %>
+            <li class="dropdown fa fa-phone"><a <%= raw html_attributes_for_resource_type(:call) %>>Calls</a>
+              <ul>
+                <% collected_call_resources.reverse.each do |r| %>
+                  <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
+                <% end %>
+              </ul>
+            </li>
           <% end %>
-        </ul>
-      </li>
 
-      <% unless collected_call_resources.empty? %>
-        <li class="dropdown fa fa-phone"><a <%= raw html_attributes_for_resource_type(:call) %>>Calls</a>
-          <ul>
-            <% collected_call_resources.reverse.each do |r| %>
-              <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
-            <% end %>
-          </ul>
-        </li>
-      <% end %>
+          <% unless collected_memory_resources.empty? %>
+            <li class="dropdown fa fa-th"><a <%= raw html_attributes_for_resource_type(:memory) %>>Allocations</a>
+              <ul>
+                <% collected_memory_resources.reverse.each do |r| %>
+                  <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
+                <% end %>
+              </ul>
+            </li>
+          <% end %>
 
-      <% unless collected_memory_resources.empty? %>
-        <li class="dropdown fa fa-th"><a <%= raw html_attributes_for_resource_type(:memory) %>>Allocations</a>
-          <ul>
-            <% collected_memory_resources.reverse.each do |r| %>
-              <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
-            <% end %>
-          </ul>
-        </li>
-      <% end %>
+          <% unless collected_heap_resources.empty? %>
+            <li class="dropdown fa fa-bars"><a <%= raw html_attributes_for_resource_type(:heap) %>>Heap</a>
+              <ul>
+                <% collected_heap_resources.reverse.each do |r| %>
+                  <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
+                <% end %>
+              </ul>
+            </li>
+          <% end %>
+        <% #end %>
+      <ul class="logjam-menu" id="frontend-menu">
 
-      <% unless collected_heap_resources.empty? %>
-        <li class="dropdown fa fa-bars"><a <%= raw html_attributes_for_resource_type(:heap) %>>Heap</a>
-          <ul>
-            <% collected_heap_resources.reverse.each do |r| %>
-              <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
-            <% end %>
-          </ul>
-        </li>
-      <% end %>
-    <% #end %>
-  <ul class="logjam-menu" id="frontend-menu">
+    </ul>
+  </div>
 
-  </ul>
-  </ul>
-</div>
+    <input type="hidden" id="app" name="app" value="<%= params[:app] %>" />
+    <input type="hidden" id="env" name="env" value="<%= params[:env] %>" />
+    <input type="hidden" id="time-range" name="time_range" value="<%= params[:time_range] %>" />
+    <input type="hidden" id="grouping" name="grouping" value="<%= params[:grouping]%>" />
+    <input type="hidden" id="resource" name="resource" value="<%= params[:resource] %>" />
+    <input type="hidden" id="grouping-function" name="grouping_function" value="<%= params[:grouping_function] %>" />
+    <input type="hidden" id="start-minute" name="start_minute" value="<%= params[:start_minute] %>" />
+    <input type="hidden" id="end-minute" name="end_minute" value="<%= params[:end_minute] %>" />
+    <input type="hidden" id="interval" name="interval" value="<%= params[:interval] %>" />
+
+  <% end %>
 
 </section>
 
