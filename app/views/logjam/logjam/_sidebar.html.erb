@@ -63,16 +63,17 @@
 
         <li><a <%= raw html_attributes_for_time_range("history") %>><i class="fa fa-history"></i> History</a></li>
         <% #if @collected_time_resources %>
-          <li class="dropdown fa fa-clock-o"><a <%= raw html_attributes_for_resource_type(:time) %>>Time</a>
+          <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:time) %>><i class="fa fa-clock-o"></i> Time</a>
             <ul>
               <% collected_time_resources.reverse.each do |r| %>
-                <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
+              <li>
+                <a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
               <% end %>
             </ul>
           </li>
 
           <% unless collected_call_resources.empty? %>
-            <li class="dropdown fa fa-phone"><a <%= raw html_attributes_for_resource_type(:call) %>>Calls</a>
+            <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:call) %>><i class="fa fa-phone"></i> Calls</a>
               <ul>
                 <% collected_call_resources.reverse.each do |r| %>
                   <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
@@ -82,7 +83,7 @@
           <% end %>
 
           <% unless collected_memory_resources.empty? %>
-            <li class="dropdown fa fa-th"><a <%= raw html_attributes_for_resource_type(:memory) %>>Allocations</a>
+            <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:memory) %>><i class="fa fa-th"></i> Allocations</a>
               <ul>
                 <% collected_memory_resources.reverse.each do |r| %>
                   <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
@@ -92,7 +93,7 @@
           <% end %>
 
           <% unless collected_heap_resources.empty? %>
-            <li class="dropdown fa fa-bars"><a <%= raw html_attributes_for_resource_type(:heap) %>>Heap</a>
+            <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:heap) %>><i class="fa fa-bars"></i> Heap</a>
               <ul>
                 <% collected_heap_resources.reverse.each do |r| %>
                   <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
