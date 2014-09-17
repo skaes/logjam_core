@@ -21,7 +21,11 @@
   })
 <% end %>
 
-<section id="logjam-sidebar">
+<section id="logjam-sidebar" class="open">
+
+  <div class="sidebar-collapse">
+    <i class="fa fa-caret-square-o-left"></i>
+  </div>
 
   <% action = action_name == "index" ? "" : action_name %>
   <%= form_tag(params.except(:id).merge(:action => action), :method => :get, :id => "filter-form", :autocomplete => "off") do -%>
@@ -124,6 +128,10 @@
       $( '#'+ $(this).data('menu') ).addClass('active');
     })
   });
+
+  $('.sidebar-collapse', '#logjam-sidebar').on('click', function(){
+    $('#logjam-sidebar').toggleClass('closed');
+  })
 
 </script>
 
