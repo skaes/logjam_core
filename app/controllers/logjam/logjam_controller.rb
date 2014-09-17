@@ -516,7 +516,7 @@ module Logjam
         new_params = FilteredDataset.clean_url_params(params.merge(:page => '',
                                                                    :default_app => @default_app,
                                                                    :default_env => @default_env))
-        redirect_to new_params
+        redirect_to new_params.to_hash
         return true
       else
         return false
@@ -543,7 +543,7 @@ module Logjam
           :sort => params[:sort], :group => params[:group], :filter => params[:filter],
           :offset => params[:offset], :error_type => params[:error_type],
           :grouping => params[:grouping], :grouping_function => params[:grouping_function])
-        redirect_to new_params
+        redirect_to new_params.to_hash
       end
     end
 
