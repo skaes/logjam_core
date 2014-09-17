@@ -66,8 +66,9 @@
           <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:time) %>><i class="fa fa-clock-o"></i> Time</a>
             <ul>
               <% collected_time_resources.reverse.each do |r| %>
-              <li>
-                <a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
+                <li <% if params[:resource] == r %>class="active"<% end %>>
+                  <a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a>
+                </li>
               <% end %>
             </ul>
           </li>
