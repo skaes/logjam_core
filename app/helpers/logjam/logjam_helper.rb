@@ -164,7 +164,7 @@ module Logjam
       end
     end
 
-    def sometimes_link_all_pages
+    def sometimes_link_all_pages(text)
       if params[:grouping] == "page"
         clean_link_to("show all actions", { :action => "totals_overview", :page => @page }, :title => "show all actions")
       elsif params[:grouping] == "request"

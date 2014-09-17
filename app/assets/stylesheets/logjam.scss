@@ -992,7 +992,7 @@ a.btn {
 }
 
 .app-dashboard {
-  margin: 20px !important;
+  margin: 10px !important;
   flex-direction: row;
 
   .app-overview {
@@ -1004,9 +1004,9 @@ a.btn {
       background: #fff;
       border-radius: 2px;
       border: 1px solid #ddd;
-      padding: 20px;
+      padding: 15px;
       padding-bottom: 40px;
-      margin: 20px;
+      margin: 10px;
       width: 100%;
       position: relative;
       overflow: hidden;
@@ -1062,6 +1062,17 @@ a.btn {
       }
 
       &:hover { background: none; }
+    }
+  }
+
+  .detail-table {
+    border-top: 1px solid #eee;
+
+    .item {
+      border: none;
+      border-radius: none;
+      margin: 12px 0 10px;
+      padding: 0;
     }
   }
 }
