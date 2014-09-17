@@ -8,7 +8,7 @@ function logjam_live_stream_chart(params){
   var transparent_ico_path = params.transparent_ico_path;
 
   /* Sizing and scales. */
-  var w = 600,
+  var w = parseInt(document.getElementById('live-stream-chart').offsetWidth - 100, 10),
       h = 300,
       slice = 10,
       x = d3.scale.linear().domain([0, w]).range([0, w]),

@@ -41,7 +41,7 @@ img {
 
 .logline {
     width: 100%;
-    background-color: #eee;
+    border-bottom: 1x solid #ddd;
     margin: 1px;
 }
 .bg {
@@ -205,7 +205,7 @@ th.sorted {
 }
 
 tr.full_stats:hover {
-    background: #ccc;
+    background: #ddd;
 }
 
 tr.full_stats a, tr.full_stats .dead-link {
@@ -409,6 +409,7 @@ td.apdex.unacceptable { background: rgba(150,150,150,0.8); }
 .resource_name {
     vertical-align: top;
     white-space: nowrap;
+    text-transform: uppercase;
 }
 
 .embedded_table td {
@@ -458,7 +459,6 @@ input[type="text"]:disabled
 #anomaly-score { display: none; }
 #anomaly-score-title { font-size: 14px; }
 #anomaly-score-value { font-weight: bold; font-size: 48px; margin-top: 20px; }
-#live-stream-chart {float: left; }
 #recent-errors-title { clear: both; padding-top: 10px; }
 
 #request-history {
@@ -840,6 +840,12 @@ a.btn {
     color: #FFFFFF;
     flex-direction: row;
 
+    .logjam-app-name {
+        margin-bottom: 10px;
+        font-size: 16px;
+        text-transform: uppercase;
+    }
+
     h2 {
       font-weight: 300;
       font-size: 22px;
@@ -1009,6 +1015,9 @@ a.btn {
       margin: 20px;
       width: 100%;
       position: relative;
+      overflow: hidden;
+      overflow-x: auto;
+
 
       h2 {
           font-size: 14px;
@@ -1026,6 +1035,14 @@ a.btn {
 
       table {
         width: 100%;
+      }
+    }
+
+    &.overview-wrap {
+      flex-wrap: wrap;
+
+      .item {
+        width: 26.2%;
       }
     }
   }

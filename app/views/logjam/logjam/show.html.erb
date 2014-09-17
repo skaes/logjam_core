@@ -1,174 +1,150 @@
+<%
+     time_resources = Logjam::Resource.time_resources
+     call_resources = Logjam::Resource.call_resources
+     memory_resources = Logjam::Resource.memory_resources
+     heap_resources = Logjam::Resource.heap_resources
+     colors = Logjam::Resource.colors
+     pie_colors = Logjam::Resource.colors_with_transparency(0.7)
+     other_keys = @request.keys - time_resources - call_resources - memory_resources - heap_resources
+     other_keys.reject!{|k| k =~ /(^_id|lines|minute|page|_sq|request_info)$/}
+
+     sorted_time_resources = @request.slice(*time_resources).sort { |a, b| b.last <=> a.last }
+     size = 75
+  -%>
+
 <%= render "header" %>
 <div id="logjam-container">
   <%= render "sidebar" %>
   <div id="show-json"><i class="fa fa-file-text-o"></i> <%= link_to("show json", params.merge(:format => :json)) %></div>
   <div id="logjam-content" class="app-dashboard">
 
-    <h2><%= params[:app] %></h2>
-    <div class="app-overview">
+    <% if @request.present? %>
 
-      <div id="single-request">
+      <h2><%= params[:app] %> :: Request details for action
+          <%
+            page, minute = @request["page"], @request["minute"]
+            _params = params.except(:utf8, :id, :action).merge(:page => page)
+            page_params = clean_params(_params.merge(:grouping => "page"))
+            request_params = clean_params(_params.merge(:grouping => "request", :start_minute => minute, :end_minute => minute))
+          -%>
+          <%= link_to(page, page_params, :title => "view summary") -%>
+          at
+          <%= link_to(request_started_at(@request), request_params, :title => "show requests") -%>
+      </h2>
 
-      <div id="request-header">
-      <% if @request.present? %>
-        <div id="show-json"><%= link_to("show json", params.merge(:format => :json)) %></div>
-        <h3>Request details for action
-        <%
-          page, minute = @request["page"], @request["minute"]
-          _params = params.except(:utf8, :id, :action).merge(:page => page)
-          page_params = clean_params(_params.merge(:grouping => "page"))
-          request_params = clean_params(_params.merge(:grouping => "request", :start_minute => minute, :end_minute => minute))
-        -%>
-        <%= link_to(page, page_params, :title => "view summary") -%>
-        at
-        <%= link_to(request_started_at(@request), request_params, :title => "show requests") -%>
-        </h3>
-      </div>
-
-      <%
-           time_resources = Logjam::Resource.time_resources
-           call_resources = Logjam::Resource.call_resources
-           memory_resources = Logjam::Resource.memory_resources
-           heap_resources = Logjam::Resource.heap_resources
-           colors = Logjam::Resource.colors
-           pie_colors = Logjam::Resource.colors_with_transparency(0.7)
-           other_keys = @request.keys - time_resources - call_resources - memory_resources - heap_resources
-           other_keys.reject!{|k| k =~ /(^_id|lines|minute|page|_sq|request_info)$/}
-
-           sorted_time_resources = @request.slice(*time_resources).sort { |a, b| b.last <=> a.last }
-           size = 75
-        -%>
-
-      <div id="request-details">
-        <fieldset class="resource-fields resize">
-          <legend>Time</legend>
-          <table id="request-details-time" class="breakdown-table">
-            <% sorted_time_resources.each do |name, value| -%>
-              <% next if value.blank?  -%>
-              <tr>
-                <td class="resource_name"><%= hrn name %></td>
-                <td class="number" style="color:<%= colors[name] || '#000' %>;"><%= seconds_to_human(value / 1000.0) %></td>
-              </tr>
-              <% end -%>
-          </table>
-          <div id="times" class="breakdown-chart">
-            <% resources = time_resources-["total_time", "gc_time"] -%>
-            <%= render :partial => "simple_pie", :locals => {
-                  :data => @request.values_at(*resources),
-                  :legend => resources,
-                  :container => "times",
-                  :size => size,
-                  :colors => pie_colors.values_at(*resources) } %>
-          </div>
-        </fieldset>
-
+      <div class="app-overview">
         <% call_resource_values = @request.slice(*call_resources) -%>
-        <% unless call_resource_values.blank? %>
-          <fieldset class="resource-fields resize">
-            <legend>Calls</legend>
-            <table id="request-details-calls" class="breakdown-table">
-              <% call_resource_values.sort_by { |e| -e.last }.each do |name, value| -%>
-              <% next if value.blank?  -%>
-              <tr>
-                <td class="resource_name"><%= hrn name %></td>
-                <td class="number" style="color:<%= colors[name] || '#000' %>;"><%= number_with_delimiter(value.to_i) %></td>
-              </tr>
-              <% end -%>
-            </table>
-            <div id="calls" class="breakdown-chart">
-              <% resources = *call_resources.select{|r| r =~ /_calls$/}-["gc_calls"] -%>
+          <% unless call_resource_values.blank? %>
+            <div class="item">
+              <h2>Calls</h2>
+              <div id="calls" class="breakdown-chart">
+                <% resources = *call_resources.select{|r| r =~ /_calls$/}-["gc_calls"] -%>
+                  <%= render :partial => "simple_pie", :locals => {
+                        :data => @request.values_at(*resources),
+                        :container => "calls",
+                        :legend => resources,
+                        :size => size,
+                        :colors => pie_colors.values_at(*resources) } %>
+              </div>
+              <table id="request-details-calls">
+                <% call_resource_values.sort_by { |e| -e.last }.each do |name, value| -%>
+                <% next if value.blank?  -%>
+                <tr>
+                  <td class="resource_name"><%= hrn name %></td>
+                  <td class="number" style="color:<%= colors[name] || '#000' %>;"><%= number_with_delimiter(value.to_i) %></td>
+                </tr>
+                <% end -%>
+              </table>
+
+            </div>
+          <% end %>
+
+          <% memory_resource_values = @request.slice(*memory_resources) -%>
+          <% unless memory_resource_values.blank? %>
+            <div class="item">
+              <h2>Allocations</h2>
+              <div id="memory" class="breakdown-chart">
+                <% resources = *memory_resources-["allocated_memory"]
+                   h = @request.slice(*resources)
+                   h["allocated_objects"] *= 40 if h.include?("allocated_objects")
+                   -%>
                 <%= render :partial => "simple_pie", :locals => {
-                      :data => @request.values_at(*resources),
-                      :container => "calls",
+                      :data => h.values_at(*resources),
                       :legend => resources,
+                      :container => "memory",
                       :size => size,
                       :colors => pie_colors.values_at(*resources) } %>
+              </div>
+              <table id="request-details-memory">
+                <% memory_resource_values.each do |name, value| -%>
+                <% next if value.blank?  -%>
+                <tr>
+                  <td class="resource_name"><%= hrn name %></td>
+                  <td class="number" style="color:<%= colors[name] || '#000' %>;"><%= number_with_delimiter(value.to_i) %></td>
+                </tr>
+                <% end -%>
+              </table>
             </div>
-          </fieldset>
-        <% end %>
+          <% end %>
 
-        <% memory_resource_values = @request.slice(*memory_resources) -%>
-        <% unless memory_resource_values.blank? %>
-          <fieldset class="resource-fields resize">
-            <legend>Allocations</legend>
-            <table id="request-details-memory" class="breakdown-table">
-              <% memory_resource_values.each do |name, value| -%>
-              <% next if value.blank?  -%>
-              <tr>
-                <td class="resource_name"><%= hrn name %></td>
-                <td class="number" style="color:<%= colors[name] || '#000' %>;"><%= number_with_delimiter(value.to_i) %></td>
-              </tr>
-              <% end -%>
-            </table>
-            <div id="memory" class="breakdown-chart">
-              <% resources = *memory_resources-["allocated_memory"]
-                 h = @request.slice(*resources)
-                 h["allocated_objects"] *= 40 if h.include?("allocated_objects")
-                 -%>
-              <%= render :partial => "simple_pie", :locals => {
-                    :data => h.values_at(*resources),
-                    :legend => resources,
-                    :container => "memory",
-                    :size => size,
-                    :colors => pie_colors.values_at(*resources) } %>
+          <% heap_resource_values = @request.slice(*heap_resources) -%>
+          <% unless heap_resource_values.blank? %>
+            <% heap_resource_values["free_slots"] = heap_resource_values["heap_size"] - heap_resource_values["live_data_set_size"] %>
+            <div class="item">
+              <h2>Heap</h2>
+              <div id="heap" class="breakdown-chart">
+                <% resources = *heap_resources
+                   h = @request.slice(*resources)
+                   h["free_slots"] = h.delete("heap_size") - h["live_data_set_size"]
+                   resources << "free_slots" -%>
+                <%= render :partial => "simple_pie", :locals => {
+                      :data => h.values_at(*resources),
+                      :legend => resources,
+                      :container => "heap",
+                      :size => size,
+                      :colors => pie_colors.values_at(*resources) } %>
+              </div>
+              <table id="request-details-heap">
+                <% heap_resource_values.each do |name, value| -%>
+                <% next if value.blank?  -%>
+                <tr>
+                  <td class="resource_name"><%= hrn name %></td>
+                  <td class="number" style="color:<%= colors[name] || '#000' %>;"><%= number_with_delimiter(value.to_i) %></td>
+                </tr>
+                <% end -%>
+              </table>
             </div>
-          </fieldset>
-        <% end %>
+          <% end %>
 
-        <% heap_resource_values = @request.slice(*heap_resources) -%>
-        <% unless heap_resource_values.blank? %>
-          <% heap_resource_values["free_slots"] = heap_resource_values["heap_size"] - heap_resource_values["live_data_set_size"] %>
-          <fieldset class="resource-fields resize">
-            <legend>Heap</legend>
-            <table id="request-details-heap" class="breakdown-table">
-              <% heap_resource_values.each do |name, value| -%>
-              <% next if value.blank?  -%>
-              <tr>
-                <td class="resource_name"><%= hrn name %></td>
-                <td class="number" style="color:<%= colors[name] || '#000' %>;"><%= number_with_delimiter(value.to_i) %></td>
-              </tr>
-              <% end -%>
-            </table>
-            <div id="heap" class="breakdown-chart">
-              <% resources = *heap_resources
-                 h = @request.slice(*resources)
-                 h["free_slots"] = h.delete("heap_size") - h["live_data_set_size"]
-                 resources << "free_slots" -%>
-              <%= render :partial => "simple_pie", :locals => {
-                    :data => h.values_at(*resources),
-                    :legend => resources,
-                    :container => "heap",
-                    :size => size,
-                    :colors => pie_colors.values_at(*resources) } %>
-            </div>
-          </fieldset>
-        <% end %>
+      </div>
+
 
         <% Logjam::RequestDetailPlugins.all.each do |plugin| %>
           <%= render "request_details_fieldset", instance_exec(@request, &plugin) %>
         <% end %>
-      </div>
 
       <% unless (lines = @request["lines"]).blank? -%>
-        <fieldset id="request-lines" class="resource-fields">
-          <legend>Log lines</legend>
-          <% ltimes = line_times(lines) %>
-        <% lines.each_with_index do |line,i| -%>
-        <div class="logline" data-logjam-tags="<%= line_tags(line) %>">
-          <div class="bg">
-            <pre class="ct"><%= raw format_log_line(line) %></pre>
-            <div class="box" style="width:<%= (1000 * ltimes[i]).to_i %>px"></div>
+        <div class="app-overview">
+          <div class="item">
+            <h2>Log lines</h2>
+            <% ltimes = line_times(lines) %>
+          <% lines.each_with_index do |line,i| -%>
+          <div class="logline" data-logjam-tags="<%= line_tags(line) %>">
+            <div class="bg">
+              <pre class="ct"><%= raw format_log_line(line) %></pre>
+              <div class="box" style="width:<%= (1000 * ltimes[i]).to_i %>px"></div>
+            </div>
+          </div>
+          <% end -%>
           </div>
         </div>
-        <% end -%>
-        </fieldset>
-        <% end %>
       <% end %>
 
+
       <% if @js_exceptions.present? -%>
-        <div id="js_exceptions">
-          <fieldset class="resource-fields">
-            <legend>Javascript Exceptions</legend>
+        <div class="app-overview">
+          <di class="item">
+            <h2>Javascript Exceptions</h2>
             <table>
               <% @js_exceptions.each.with_index do |e, i| -%>
                 <% unless i == 0 -%>
@@ -189,15 +165,15 @@
                 <% end -%>
               <% end -%>
             </table>
-          </fieldset>
+          </di>
         </div>
       <% end -%>
 
       <% if @request.present? %>
         <% if info = @request["request_info"] -%>
-        <div id="request_info">
-          <fieldset class="resource-fields">
-            <legend>Additional Request Info</legend>
+        <div class="app-overview">
+          <div class="item">
+            <h2>Additional Request Info</h2>
             <table id="request-info" class="">
               <% %w(url method query_parameters body_parameters headers custom).each do |name| -%>
               <% next if (value = info[name]).blank?  -%>
@@ -207,30 +183,31 @@
               </tr>
               <% end -%>
             </table>
-          </fieldset>
+          </div>
         </div>
         <% end -%>
       <% end -%>
 
-      </div>
+    <% end %>
 
-      <%= content_for(:page_scripts) do %>
-      $(document).ready(function(){
-        install_logjam_lines_filter();
-        var resizable = $('.resource-fields.resize');
-        var max = d3.max(resizable.map(function(){ return $(this).height(); }));
-        resizable.each(function(){ $(this).height(max); });
-        $(".logline").dblclick(function(){
-            var text = $(this).find('.lb').text().replace(/[\u200B]/g ,'');
-            var ref = text.match(/http:\/\/[^\s]+/);
-            if (ref != null) {
-              window.prompt("Extracted Curl Command:", "curl '" + ref + "'");
-            } else {
-              window.prompt("Raw log line:", text);
-            }
-         });
-      });
-      <% end %>
+    <%= content_for(:page_scripts) do %>
+    $(document).ready(function(){
+      install_logjam_lines_filter();
+      var resizable = $('.resource-fields.resize');
+      var max = d3.max(resizable.map(function(){ return $(this).height(); }));
+      resizable.each(function(){ $(this).height(max); });
+      $(".logline").dblclick(function(){
+          var text = $(this).find('.lb').text().replace(/[\u200B]/g ,'');
+          var ref = text.match(/http:\/\/[^\s]+/);
+          if (ref != null) {
+            window.prompt("Extracted Curl Command:", "curl '" + ref + "'");
+          } else {
+            window.prompt("Raw log line:", text);
+          }
+       });
+    });
+    <% end %>
+
     </div>
   </div>
 </div>

@@ -1,12 +1,12 @@
-<fieldset class="resource-fields resize">
-  <legend><%= title %></legend>
-  <table id="request-details" class="breakdown-table">
-    <% fields.each do |name, value| -%>
+<h2><%= title %></h2>
+<div class="app-overview overview-wrap">
+  <% max = fields.length %>
+  <% fields.each do |name, value| -%>
     <% next if value.blank? -%>
-    <tr>
-      <td class="resource_name"><%= hrn name %></td>
-      <td class="number"><%= value %></td>
-    </tr>
-    <% end -%>
-  </table>
-</fieldset>
+    <div class="item">
+      <h2><%= hrn name %></h2>
+      <%= value %>
+    </div>
+  <% end -%>
+</div>
+

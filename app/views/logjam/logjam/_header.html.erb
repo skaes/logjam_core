@@ -4,7 +4,9 @@ var parameter_defaults = <%= raw Oj.dump(default_header_parameters) %>;
 var self_url = '<%= raw self_url %>';
 var home_url = '<%= raw home_url %>';
 var history_url = '<%= raw history_url %>';
-var selectable_days = <%= raw Oj.dump(@days.map(&:to_s)) %>;
+  <% if @days %>
+  var selectable_days = <%= raw Oj.dump(@days.map(&:to_s)) %>;
+  <% end %>
 var auto_complete_url = '<%= raw auto_complete_url_for_action_page %>';
 //$(document).ready(initialize_header);
 <% end %>
