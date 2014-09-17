@@ -6,10 +6,12 @@ module Logjam
 
       def resources_for_type(type)
         case type
-        when :time   then Resource.time_resources
-        when :memory then Resource.memory_resources
-        when :call   then Resource.call_resources
-        when :heap   then Resource.heap_resources
+        when :time     then Resource.time_resources
+        when :memory   then Resource.memory_resources
+        when :call     then Resource.call_resources
+        when :heap     then Resource.heap_resources
+        when :frontend then Resource.frontend_resources
+        when :dom      then Resource.dom_resources
         end
       end
 
@@ -39,6 +41,14 @@ module Logjam
 
       def heap_resources
         resource_map["heap_resources"].map{|r| r.keys}.flatten
+      end
+
+      def frontend_resources
+        resource_map["frontend_resources"].map{|r| r.keys}.flatten
+      end
+
+      def dom_resources
+        resource_map["dom_resources"].map{|r| r.keys}.flatten
       end
 
       # returns a Hash mapping resources to colors, used for plotting
@@ -80,6 +90,10 @@ module Logjam
           :memory
         elsif heap_resources.include? resource
           :heap
+        elsif frontend_resources.include? resource
+          :frontend
+        elsif dom_resources.include? resource
+          :dom
         else
           nil
         end
@@ -91,10 +105,12 @@ module Logjam
 
       def default_resource(resource_type)
         case resource_type.to_sym
-        when :time   then 'total_time'
-        when :call   then resource_exists?('db_calls') ? 'db_calls' : call_resources.first
-        when :memory then 'allocated_objects'
-        when :heap   then 'heap_size'
+        when :time       then 'total_time'
+        when :call       then resource_exists?('db_calls') ? 'db_calls' : call_resources.first
+        when :memory     then 'allocated_objects'
+        when :heap       then 'heap_size'
+        when :frontend   then 'page_time'
+        when :dom        then 'html_nodes'
         end
       end
 

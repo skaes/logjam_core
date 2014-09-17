@@ -74,7 +74,7 @@ module Logjam
 
     def generate_metrics
       indented(0, "metrics")
-      %w(time call memory heap).each do |t|
+      %w(time call memory heap frontend dom).each do |t|
         generate_resource(t)
       end
     end
