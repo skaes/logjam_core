@@ -1,73 +1,85 @@
 <%= render "header" %>
-<div id="callers">
-  <div id="show-json"><%= link_to("show json", params.merge(:format => :json)) %></div>
-  <h3><%= @title %> (<span id="call-count"><%= @data.size %></span>)</h3>
-  <div class="controls">
-    <%= form_tag(params, :method => :get) do %>
-      <%= hidden_field_tag :app, @app %>
-      <%= hidden_field_tag :env, @env %>
-      <%= hidden_field_tag :page, @page %>
-      <span>Group by:</span>
-      <%= select_tag 'group', options_for_select(callers_grouping_options, params[:group]), :onchange => "form.submit()" %>
-      <span>Sort by:</span>
-      <%= select_tag 'sort', options_for_select(%w(caller callee count), params[:sort]), :onchange => "form.submit()" %>
-      <span>Filter:</span>
-      <%= text_field_tag 'filter', params[:filter], :size => 30 %>
-    <% end %>
-    <%= form_tag(params.merge(:action => "call_graph"), :method => :get) do %>
-      <%= hidden_field_tag :app, @app %>
-      <%= hidden_field_tag :env, @env %>
-      <%= hidden_field_tag :page, @page %>
-      <%= hidden_field_tag :group, params[:group] %>
-      <%= hidden_field_tag :sort, params[:sort] %>
-      <%= hidden_field_tag :filter, params[:filter], :id => "graph-filter" %>
-      <%= submit_tag "Graph it!", :id => "graph-button", :name => nil %>
-    <% end %>
-    <%= form_tag(params.merge(:format => :csv), :method => :get) do %>
-      <%= hidden_field_tag :app, @app %>
-      <%= hidden_field_tag :env, @env %>
-      <%= hidden_field_tag :page, @page %>
-      <%= hidden_field_tag :group, params[:group] %>
-      <%= hidden_field_tag :sort, params[:sort] %>
-      <%= submit_tag "Download CSV", :id => "download-button", :name => nil %>
-    <% end %>
+<div id="logjam-container">
+  <%= render "sidebar" %>
+  <div id="show-json"><i class="fa fa-file-text-o"></i> <%= link_to("show json", params.merge(:format => :json)) %></div>
+  <div id="logjam-content" class="app-dashboard">
+
+    <h2><%= @title %> (<span id="call-count"><%= @data.size %></span>)</h2>
+    <div class="app-overview">
+      <div class="controls item">
+        <%= form_tag(params, :method => :get) do %>
+          <%= hidden_field_tag :app, @app %>
+          <%= hidden_field_tag :env, @env %>
+          <%= hidden_field_tag :page, @page %>
+          <span>Group by:</span>
+          <%= select_tag 'group', options_for_select(callers_grouping_options, params[:group]), :onchange => "form.submit()" %>
+          <span>Sort by:</span>
+          <%= select_tag 'sort', options_for_select(%w(caller callee count), params[:sort]), :onchange => "form.submit()" %>
+          <span>Filter:</span>
+          <%= text_field_tag 'filter', params[:filter], :size => 30 %>
+        <% end %>
+        <%= form_tag(params.merge(:action => "call_graph"), :method => :get) do %>
+          <%= hidden_field_tag :app, @app %>
+          <%= hidden_field_tag :env, @env %>
+          <%= hidden_field_tag :page, @page %>
+          <%= hidden_field_tag :group, params[:group] %>
+          <%= hidden_field_tag :sort, params[:sort] %>
+          <%= hidden_field_tag :filter, params[:filter], :id => "graph-filter" %>
+          <%= submit_tag "Graph it!", :id => "graph-button", :name => nil %>
+        <% end %>
+        <%= form_tag(params.merge(:format => :csv), :method => :get) do %>
+          <%= hidden_field_tag :app, @app %>
+          <%= hidden_field_tag :env, @env %>
+          <%= hidden_field_tag :page, @page %>
+          <%= hidden_field_tag :group, params[:group] %>
+          <%= hidden_field_tag :sort, params[:sort] %>
+          <%= submit_tag "Download CSV", :id => "download-button", :name => nil %>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="app-overview">
+      <div id="callers" class="item">
+        <table class='full_stats'>
+          <tr><th>Caller</th><th>Callee</th><th>#Calls</th></tr>
+          <% @data.each do |h| %>
+            <% caller, callee, count = h.values_at(:source, :target, :count) %>
+            <tr class='full_stats'>
+              <td class="name"><%= caller %></td>
+              <td class="name"><%= callee %></td>
+              <td class="number"><%= integer_number(count) %></td>
+            </tr>
+          <% end %>
+        </table>
+      </div>
+    </div>
   </div>
-  <table class='full_stats'>
-    <tr><th>Caller</th><th>Callee</th><th>#Calls</th></tr>
-    <% @data.each do |h| %>
-      <% caller, callee, count = h.values_at(:source, :target, :count) %>
-      <tr class='full_stats'>
-        <td class="name"><%= caller %></td>
-        <td class="name"><%= callee %></td>
-        <td class="number"><%= integer_number(count) %></td>
-      </tr>
-    <% end %>
-  </table>
 </div>
-<script type="text/javascript">
-  var filter = $('#callers #filter');
-  function filter_fun(){
-      var filter_text = filter.val();
-      $('#callers #graph-filter').val(filter_text);
-      // var json_link = $('#show-json a').attr("href");
-      // var new_json_link = json_link.replace(/filter=[^&]*&/,'filter='+filter_text+'&');
-      // $('#show-json a').attr("href", new_json_link);
-      var filter_regexp = new RegExp(filter_text, 'i');
-      var visible_count = 0;
-      $('#callers tr.full_stats').each(function(){
-          var caller = $(this).children(":first");
-          var callee = caller.next();
-          var text = caller.html() + "," + callee.html();
-          if (text.match(filter_regexp)) {
-            $(this).show();
-            visible_count += 1;
-          }
-          else {
-            $(this).hide();
-          }
-      });
-      $('#callers #call-count').text(""+visible_count);
-  };
-  filter.keyup(filter_fun);
-  $(document).ready(filter_fun);
-</script>
+
+    <script type="text/javascript">
+      var filter = $('#callers #filter');
+      function filter_fun(){
+          var filter_text = filter.val();
+          $('#callers #graph-filter').val(filter_text);
+          // var json_link = $('#show-json a').attr("href");
+          // var new_json_link = json_link.replace(/filter=[^&]*&/,'filter='+filter_text+'&');
+          // $('#show-json a').attr("href", new_json_link);
+          var filter_regexp = new RegExp(filter_text, 'i');
+          var visible_count = 0;
+          $('#callers tr.full_stats').each(function(){
+              var caller = $(this).children(":first");
+              var callee = caller.next();
+              var text = caller.html() + "," + callee.html();
+              if (text.match(filter_regexp)) {
+                $(this).show();
+                visible_count += 1;
+              }
+              else {
+                $(this).hide();
+              }
+          });
+          $('#callers #call-count').text(""+visible_count);
+      };
+      filter.keyup(filter_fun);
+      $(document).ready(filter_fun);
+    </script>

@@ -323,10 +323,6 @@ td.apdex.unacceptable { background: rgba(150,150,150,0.8); }
 #graph-counts p {font-weight: bold; white-space: nowrap;}
 .graph-counts-title { display:inline-block; width:376px; margin-top:6px; }
 
-#requests, #single-request, #exceptions, #callers, #all-pages {
-    margin: 8px;
-}
-
 .controls form { display: inline; }
 .controls a {color: blue; margin-left: 5px; }
 .controls a:hover {font-weight: bold; }
@@ -805,6 +801,7 @@ ul.radio.vertical > li {
   text-transform: uppercase;
   display: inline-block;
   padding: 0 10px;
+  cursor: pointer;
 
   &.active {
     /* border: 1px solid #666666; */
@@ -823,6 +820,13 @@ a.btn {
   display: none;
   border-radius: 1px;
 
+}
+
+table {
+    th {
+        border-bottom: 1px solid #ddd;
+        text-align: left;
+    }
 }
 
 /* layout and structure */
@@ -1005,7 +1009,7 @@ a.btn {
       border-radius: 2px;
       border: 1px solid #ddd;
       padding: 20px;
-      padding-bottom: 40px;
+      padding-bottom: 20px;
       margin: 20px;
       width: 100%;
       position: relative;

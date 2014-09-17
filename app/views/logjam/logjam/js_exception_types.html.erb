@@ -1,18 +1,28 @@
 <%= render "header" %>
+<div id="logjam-container">
+  <%= render "sidebar" %>
+  <div id="show-json"><i class="fa fa-file-text-o"></i> <%= link_to("show json", params.merge(:format => :json)) %></div>
+  <div id="logjam-content" class="app-dashboard">
 
-<div id='exceptions'>
-  <h3><%= @title %> <%= hpn("for") %> (<%= integer_number(@totals.js_exception_count) %>)</h3>
-  <table class='full_stats'>
-    <tr><th>Exception</th><th>Count</th><th>Distribution over time (0-24h, 2 minute intervals)</th></tr>
-    <% @totals.js_exceptions.to_a.sort.each_with_index do |(e,c),i| %>
-    <tr class='full_stats'>
-      <% url = clean_url_for(:action => "js_exceptions", :js_exception => e) %>
-      <td><%= link_to Logjam::JsExceptions.description_from_key(e), url %></td>
-      <td class='number'><%= link_to integer_number(c), url %>
-      <td class='echart' id='<%= "echart-#{i}" %>'>
-        <%= render "echart", exceptions: @minutes.js_exceptions[e], i: i, url: url%>
-      </td>
-    </tr>
-    <% end %>
-  </table>
+    <h2><%= @title %> <%= hpn("for") %> (<%= integer_number(@totals.js_exception_count) %>)</h2>
+    <div class="app-overview">
+      <div id="exceptions" class="item">
+
+        <table class='full_stats'>
+          <tr><th>Exception</th><th>Count</th><th>Distribution over time (0-24h, 2 minute intervals)</th></tr>
+          <% @totals.js_exceptions.to_a.sort.each_with_index do |(e,c),i| %>
+          <tr class='full_stats'>
+            <% url = clean_url_for(:action => "js_exceptions", :js_exception => e) %>
+            <td><%= link_to Logjam::JsExceptions.description_from_key(e), url %></td>
+            <td class='number'><%= link_to integer_number(c), url %>
+            <td class='echart' id='<%= "echart-#{i}" %>'>
+              <%= render "echart", exceptions: @minutes.js_exceptions[e], i: i, url: url%>
+            </td>
+          </tr>
+          <% end %>
+        </table>
+      </div>
+
+    </div>
+  </div>
 </div>

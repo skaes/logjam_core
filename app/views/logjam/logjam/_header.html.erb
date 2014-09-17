@@ -38,7 +38,7 @@ var auto_complete_url = '<%= raw auto_complete_url_for_action_page %>';
   <% unless @only_one_env %>
     <div class="enviroment-chooser">
       <% @envs.map do |env| %>
-        <button type="submit" class="btn active" value="<%= env %>"><%= env %></button>
+        <button type="submit" class="btn active" onclick="view_selected_pages()" value="<%= env %>"><%= env %></button>
       <% end %>
     </div>
   <% end %>
