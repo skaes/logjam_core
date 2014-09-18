@@ -22,7 +22,7 @@ $(document).ready(initialize_header);
       <span>:: <%= params[:app] || "Application" %> <i class="fa fa-angle-down"></i></span>
       <ul class="dropdown-menu">
         <% @apps.map do |app| %>
-          <li class="dropdown-header"><a href="/?app=<%= app %>"><i class="fa fa-angle-right"></i> <%= app %></a></li>
+          <li class="dropdown-header"><a <% if params[:app] == app %>class="active"<% end %> href="/?app=<%= app %>"><i class="fa fa-angle-right"></i> <%= app %></a></li>
         <% end %>
       </ul>
     </div>
