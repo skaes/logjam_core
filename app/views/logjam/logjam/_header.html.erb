@@ -44,7 +44,12 @@ $(document).ready(initialize_header);
   <% end %>
 
   <div id="auto-refresh">
-    <%= check_box_tag "auto_refresh", "1", params[:auto_refresh]=="1", :onchange => "submit_filter_form()" %> <label for="auto_refresh">Autorefresh</label>
+    <% if params[:auto_refresh] == "1" %>
+      <i class="fa fa-toggle-on"></i>
+    <% else %>
+      <i class="fa fa-toggle-off"></i>
+    <% end %>
+     Autorefresh
   </div>
 
   <div class="date-chooser">
@@ -59,6 +64,17 @@ $(document).ready(initialize_header);
 <script>
 
   $(function(){
+    $('#auto-refresh').on('click', function(){
+      if( $('#auto_refresh').val() == '1' ) {
+        $('#auto_refresh').val('0');
+        submit_filter_form();
+      }
+      else {
+        $('#auto_refresh').val('1');
+        submit_filter_form();
+      }
+    })
+
     $('.enviroment-chooser .btn', '#logjam-header').on('mousedown', function(event){
       $('#env').val( $(this).val() );
     });

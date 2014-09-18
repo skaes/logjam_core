@@ -109,7 +109,7 @@
     .date-chooser {
       position: absolute;
       right: 20px;
-      top: 12px;
+      top: 15px;
       font-size: 18px;
 
       a {
@@ -137,6 +137,8 @@
     #auto-refresh {
       position: absolute;
       right: 200px;
-      top: 15px;
+      top: 20px;
+      cursor: pointer;
+      font-size: 16px;
     }
 }
