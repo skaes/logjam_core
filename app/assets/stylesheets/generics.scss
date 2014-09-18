@@ -70,7 +70,54 @@ a.btn {
     height: 3px;
 }
 
+.invisible { visibility:hidden; display:none; }
+
 .warning {
     font-size: 200%;
     color: blue;
+}
+
+.error {color:red;}
+.error a {color:red;}
+.warn {color:brown;}
+.warn a {color:brown;}
+
+.timestamp {font-weight:bold;}
+
+.controls form { display: inline; }
+.controls a {color: blue; margin-left: 5px; }
+.controls a:hover {font-weight: bold; }
+
+.resource_name {
+    vertical-align: top;
+    white-space: nowrap;
+    text-transform: uppercase;
+}
+
+.triangle {
+    color: orange;
+}
+
+.autocomplete-suggestions {
+  border:1px solid $lighter-grey;
+  background:$white;
+  cursor:default;
+  text-align:left;
+  overflow:hidden;
+  border-radius: 1px;
+
+  .autocomplete-selected {
+    background: $lighter-grey;
+  }
+
+  .autocomplete-suggestion {
+    padding: 1px 2px;
+    white-space: nowrap;
+    overflow: hidden;
+
+    strong {
+      font-weight:normal;
+      color:#3399FF;
+    }
+  }
 }
