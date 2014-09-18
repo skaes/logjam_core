@@ -25,13 +25,36 @@
   .header {
     height: 50px;
   }
+
   #column-left {
     width: 800px;
   }
+
   #column-right {
     left: 20px;
     top: 630px;
     width: 800px;
+  }
+
+  #logjam-container {
+    display: block;
+  }
+
+  #logjam-sidebar {
+    left: -250px;
+    position: absolute;
+    z-index: 10000;
+  }
+
+  #mobile-trigger {
+      display: inline;
+      font-size: 20px;
+  }
+
+  .sidebar-visible {
+    #logjam-sidebar {
+      left: 0;
+    }
   }
 }
 
@@ -40,17 +63,63 @@
   .header {
     height: 50px;
   }
+
+  #logjam-container {
+    display: block;
+  }
+
+  #logjam-sidebar {
+    left: -250px;
+    position: absolute;
+    z-index: 10000;
+  }
+
+  #mobile-trigger {
+      display: inline;
+      font-size: 20px;
+  }
+
+  .sidebar-visible {
+    #logjam-sidebar {
+      left: 0;
+    }
+  }
 }
+
 @media only screen and (max-device-width: 480px) and (orientation:portrait) {
   .header {
     height: 50px;
   }
+
+  #logjam-container {
+    display: block;
+  }
+
+  #logjam-sidebar {
+    left: -250px;
+    position: absolute;
+    z-index: 10000;
+  }
+
+  #mobile-trigger {
+      display: inline;
+      font-size: 20px;
+  }
+
+  .sidebar-visible {
+    #logjam-sidebar {
+      left: 0;
+    }
+  }
+
   #column-left {
     width: 800px;
   }
+
   #column-right {
     left: 20px;
     top: 630px;
     width: 800px;
   }
+
 }
