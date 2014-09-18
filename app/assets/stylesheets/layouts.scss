@@ -232,14 +232,6 @@ td.number {text-align: right;}
 .stats td { font-size: 12px; padding: 0 8px; }
 .table-heading { font-weight: bold; padding-top: 10px; }
 
-.xlabel, .ylabel, .legend, .label, .rlabel, .tooltip {
-    font: 8px sans-serif;
-    stroke: none;
-    fill: $black;
-    stroke-width: 0.5;
-    shape-rendering: crispEdges;
-}
-
 #apdex-table, #error-table, #response-code-table {
     float:left;
     td:first-child { padding-left: 1px; }
@@ -273,7 +265,6 @@ td.apdex.unacceptable { background: rgba(150,150,150,0.8); }
 .graph-counts-title { display:inline-block; width:376px; margin-top:6px; }
 
 #download-button { margin-left: 10px; }
-#callers #filter { }
 #callers h4 { margin-top: 20px; margin-bottom: 0px; }
 #caller-meta-info {margin-top: 2px; }
 
@@ -315,25 +306,6 @@ td.apdex.unacceptable { background: rgba(150,150,150,0.8); }
 #anomaly-score-title { font-size: 14px; }
 #anomaly-score-value { font-weight: bold; font-size: 48px; margin-top: 20px; }
 #recent-errors-title { clear: both; padding-top: 10px; }
-
-#request-history {
-    .title {
-      text-transform: uppercase;
-      font-size: 16px;
-      color: $xing-green;
-    }
-    .axis path,
-    .axis line {
-        fill: none;
-        stroke: $black;
-        shape-rendering: crispEdges;
-    }
-    .bar, .weekday { fill: steelblue; }
-    .weekend { fill: #90B4D2; }
-    .x.axis path, .y.axis path {
-        // display: none;
-    }
-}
 
 #spinner {
     font: 20px sans-serif;
