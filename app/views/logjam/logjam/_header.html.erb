@@ -43,8 +43,11 @@ $(document).ready(initialize_header);
     </div>
   <% end %>
 
-  <div class="date-chooser">
+  <div id="auto-refresh">
+    <%= check_box_tag "auto_refresh", "1", params[:auto_refresh]=="1", :onchange => "submit_filter_form()" %> Autorefresh
+  </div>
 
+  <div class="date-chooser">
       <% if params[:time_range] == "date" %>
         <input size="11" type="text" value="<%= @date %>" id="datepicker" onchange="submit_filter_form()" />
       <% else %>
