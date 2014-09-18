@@ -103,6 +103,7 @@
 
         <% #end %>
       <ul class="logjam-menu<% if params[:_section] == 'frontend' %> active<% end %>" id="frontend-menu">
+        <li><i class="fa fa-warning"></i><%= clean_link_to("Details", {:action => "js_exception_types"}, :title => "Details") %></li>
       </ul>
 
       <i class="fa fa-file-text-o"></i> <%= link_to("show json", params.merge(:format => :json)) %>

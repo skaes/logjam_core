@@ -1,3 +1,6 @@
+@import 'mixins.scss';
+@import 'constants.scss';
+
 .bgdebug   { @include bgimg; background-image: image-url('debug.svg')   ;  }
 .bginfo    { @include bgimg; background-image: image-url('info.svg')    ;  }
 .bgwarn    { @include bgimg; background-image: image-url('warn.svg')    ;  }

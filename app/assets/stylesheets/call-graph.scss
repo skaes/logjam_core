@@ -1,3 +1,6 @@
+@import 'mixins.scss';
+@import 'constants.scss';
+
 #call-graph-info {
   position: fixed;
   z-index: 10000;
