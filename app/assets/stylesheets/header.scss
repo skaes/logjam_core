@@ -69,19 +69,20 @@
             display: block;
             padding: 5px;
 
-            &:hover,
-            &.active {
-              background: $lighter-grey;
-            }
+
 
             &:before {
               margin-right: 5px;
             }
           }
-        }
 
-        .hide {
-          display: none;
+          &:hover a,
+          &.active a {
+            background: $lighter-grey;
+          }
+          &.hide {
+            display: none;
+          }
         }
       }
     }
