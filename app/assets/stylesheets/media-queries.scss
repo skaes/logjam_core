@@ -157,6 +157,7 @@
       &:hover {
         .dropdown-menu {
           display: block;
+          box-sizing: border-box;
         }
       }
 
