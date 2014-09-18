@@ -60,3 +60,8 @@ svg {
     -khtml-user-select: none; /* webkit (konqueror) browsers */
     -ms-user-select: none; /* IE10+ */
 }
+
+input[type="text"]:disabled
+{
+    color:#ccc;
+}

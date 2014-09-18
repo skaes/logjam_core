@@ -18,14 +18,6 @@
     position: relative;
     padding: 2px;
 }
-.box {
-    position: absolute;
-    left:0;
-    top: -2px;
-    background-color: rgba(255,0,0,0.4);
-    width: 0px;
-    height: 3px;
-}
 
 img.lj-ico { vertical-align: top; width: 16px; height:16px; }
 #request-details a { color: blue; }
@@ -185,11 +177,6 @@ td.apdex.unacceptable { background: rgba(150,150,150,0.8); }
     color: blue;
 }
 
-.warning {
-    font-size: 200%;
-    color: blue;
-}
-
 #result-navigator {
     margin-top: 0px;
     margin-bottom: 5px;
@@ -208,12 +195,6 @@ td.apdex.unacceptable { background: rgba(150,150,150,0.8); }
         display: inline-block;
         min-width: 145px;
     }
-}
-
-#admin-control {
-    position: absolute;
-    right: 10px;
-    top: 12px;
 }
 
 .resource-fields legend {
@@ -261,13 +242,6 @@ td.apdex.unacceptable { background: rgba(150,150,150,0.8); }
       color:#3399FF;
     }
   }
-}
-
-
-
-input[type="text"]:disabled
-{
-    color:#ccc;
 }
 
 #anomaly-score { display: none; }
