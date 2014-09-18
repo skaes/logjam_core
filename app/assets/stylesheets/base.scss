@@ -1,0 +1,41 @@
+body {
+    background-color: #ebebeb;
+    color: #333;
+    margin: 0px;
+    padding: 0px;
+}
+
+body, p, ol, ul, td {
+    font-family: "Open Sans", "Helvetica Neue", verdana, arial, helvetica, sans-serif;
+    font-size:   12px;
+    line-height: 18px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    padding: 0;
+    font-weight: 400;
+}
+
+ul, li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+img {
+  border: 0 none;
+}
+
+a {
+    text-decoration: none;
+    color: #000;
+    cursor: pointer;
+}
+
+pre {
+    margin: 1px 0!important;
+    padding: 4px!important;
+    font-size: 11px;
+    white-space: pre-wrap;
+}
