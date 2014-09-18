@@ -493,7 +493,6 @@ table {
 
 #logjam-sidebar {
     background: #2D353C;
-
     min-width: 220px;
     max-width: 220px;
     color: #FFFFFF;
@@ -631,6 +630,12 @@ table {
       }
     }
 
+    .admin {
+      border-top: 1px solid #444444;
+      margin-top: 20px;
+      padding-top: 10px;
+      text-transform: uppercase;
+    }
 
     &.dashboard-apdex-overview {
         min-width: 300px;
