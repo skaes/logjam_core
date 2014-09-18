@@ -1,53 +1,56 @@
+@import 'mixins.scss';
+@import 'constants.scss';
+
 // Retina Display
 @media only screen and (-webkit-min-device-pixel-ratio: 2) {
-    th.sortable:hover {
-        background-image: image-url('table_sort_desc2x.png');
-    }
+  th.sortable:hover {
+    background-image: image-url('table_sort_desc2x.png');
+  }
 }
 
 @media only screen and (-webkit-min-device-pixel-ratio: 2) {
-    th.sorted {
-        background-image: image-url('table_sorted_desc2x.png');
-    }
+  th.sorted {
+    background-image: image-url('table_sorted_desc2x.png');
+  }
 }
 
 // iPad
 @media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape) {
-    .header {
-        height: 50px;
-    }
+  .header {
+    height: 50px;
+  }
 }
 
 @media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait) {
-    .header {
-        height: 50px;
-    }
-    #column-left {
-        width: 800px;
-    }
-    #column-right {
-        left: 20px;
-        top: 630px;
-        width: 800px;
-    }
+  .header {
+    height: 50px;
+  }
+  #column-left {
+    width: 800px;
+  }
+  #column-right {
+    left: 20px;
+    top: 630px;
+    width: 800px;
+  }
 }
 
 // iPhone
 @media only screen and (max-device-width: 480px) and (orientation:landscape) {
-    .header {
-        height: 50px;
-    }
+  .header {
+    height: 50px;
+  }
 }
 @media only screen and (max-device-width: 480px) and (orientation:portrait) {
-    .header {
-        height: 50px;
-    }
-    #column-left {
-        width: 800px;
-    }
-    #column-right {
-        left: 20px;
-        top: 630px;
-        width: 800px;
-    }
+  .header {
+    height: 50px;
+  }
+  #column-left {
+    width: 800px;
+  }
+  #column-right {
+    left: 20px;
+    top: 630px;
+    width: 800px;
+  }
 }
