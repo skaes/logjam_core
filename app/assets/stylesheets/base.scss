@@ -32,7 +32,7 @@ img {
 
 a {
     text-decoration: none;
-    color: #000;
+    color: $link-color;
     cursor: pointer;
 }
 
@@ -41,4 +41,22 @@ pre {
     padding: 4px!important;
     font-size: 11px;
     white-space: pre-wrap;
+}
+
+pre a { color: blue; }
+pre a:hover { color: blue; }
+
+table {
+  tr:nth-child(1) {
+    border-bottom: 1px solid $lighter-grey !important;
+    text-align: left !important;
+    background: none !important;
+  }
+}
+
+svg {
+    -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+    -moz-user-select: none; /* mozilla browsers */
+    -khtml-user-select: none; /* webkit (konqueror) browsers */
+    -ms-user-select: none; /* IE10+ */
 }

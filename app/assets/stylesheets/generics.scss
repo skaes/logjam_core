@@ -9,3 +9,66 @@
 .bgunknown { @include bgimg; background-image: image-url('unknown.svg') ;  }
 
 .red { color: red; }
+
+.sortable, .clickable {
+    cursor: pointer;
+}
+
+.btn {
+  border: 1px solid #c9c9c9;
+  background: none;
+  border-color: $light-grey;
+  color: $light-grey;
+  border-radius: 1px;
+  height: 31px;
+  font-size: 12px;
+  font-family: "Open Sans", "Helvetica", Verdana, Arial;
+  text-transform: uppercase;
+  display: inline-block;
+  padding: 0 10px;
+  cursor: pointer;
+
+  &.active {
+    /* border: 1px solid $grey; */
+    border-color: $xing-green;
+    color: $xing-green;
+
+    background: none;
+    box-shadow: none !important;
+  }
+}
+a.btn {
+  line-height: 31px;
+}
+
+.dropdown-menu {
+  display: none;
+  border-radius: 1px;
+}
+
+.navicons {
+  border: 1px solid $lighter-grey;
+  padding: 2px;
+  border-radius: 1px;
+  z-index: 10;
+  display: inline-block;
+  font-size: 16px;
+  margin: 0;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+
+  a {
+    color: $xing-green;
+    margin: 0px 5px;
+  }
+}
+
+.box {
+    position: absolute;
+    left:0;
+    top: -2px;
+    background-color: rgba(255,0,0,0.4);
+    width: 0px;
+    height: 3px;
+}

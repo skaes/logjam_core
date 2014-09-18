@@ -1,2 +1,449 @@
 @import 'mixins.scss';
 @import 'constants.scss';
+
+#logjam-container {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+#logjam-sidebar {
+    background: #2D353C;
+    min-width: 220px;
+    max-width: 220px;
+    color: $white;
+    flex-direction: row;
+    position: relative;
+
+    &.closed {
+      min-width: 0;
+      max-width: 0;
+
+      .sidebar-collapse {
+        color: $black;
+      }
+    }
+
+    .sidebar-collapse {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 16px;
+      background: $dark-grey;
+      font-size: 10px;
+      text-transform: uppercase;
+      text-align: right;
+      padding-right: 5px;
+      cursor: pointer;
+    }
+
+    form {
+      margin: 40px 20px 20px 20px;
+
+    }
+
+    h2 {
+      font-weight: 300;
+      font-size: 22px;
+    }
+
+    a {
+      color: $white;
+
+      &:hover {
+        background: none;
+      }
+    }
+
+    .sidebar-search {
+      margin-top: 20px;
+      font-size: 12px;
+      border-bottom: 1px solid $dark-grey;
+      padding-bottom: 13px;
+      margin-bottom: 13px;
+
+      label {
+        font-weight: 300;
+        color: $white;
+        text-transform: uppercase;
+      }
+
+      input[type=text] {
+        background: #555555;
+        border: 0;
+        padding: 7px 5px;
+        width: 170px;
+        color: $white;
+        font-size: 12px;
+        border: 1px solid transparent;
+
+        &:focus {
+          outline: none;
+          border: 1px solid #c9c9c9
+        }
+      }
+    }
+
+    .menu-wrapper {
+      .tabs {
+        border-bottom: 1px solid $dark-grey;
+        margin-bottom: 13px;
+        padding-bottom: 26px;
+
+        .btn {
+          color: #999;
+          border-color: #999;
+
+          &.active {
+            color: $white;
+            border-color: $white;
+          }
+        }
+      }
+    }
+    .logjam-menu {
+      display: none;
+
+      &.active {
+        display: block;
+      }
+
+      a {
+        color: $lighter-grey;
+      }
+
+      .active a {
+        color: $white;
+      }
+
+      > li {
+        display: block;
+        margin-top: 10px;
+        font-size: 14px;
+        font-weight: 700;
+
+        &:before {
+          margin-right: 5px;
+        }
+
+        ul {
+          margin-left: 20px;
+          margin-top: 5px;
+          margin-bottom: 20px;
+          font-size: 11px;
+          font-weight: 400;
+          text-transform: uppercase;
+
+          a:hover {
+            text-decoration: underline;
+          }
+        }
+
+        &.open {
+          height: auto;
+        }
+      }
+    }
+
+    .admin {
+      border-top: 1px solid $dark-grey;
+      margin-top: 20px;
+      padding-top: 10px;
+      text-transform: uppercase;
+    }
+
+    &.dashboard-apdex-overview {
+        min-width: 300px;
+
+        li {
+          height: 25px;
+          line-height: 25px;
+        }
+
+        ul {
+          margin-top: 20px;
+        }
+
+        li {
+            text-transform: capitalize;
+            height: 27px;
+            line-height: 27px;
+            border: 1px solid $grey;
+            margin-bottom: 5px;
+            position: relative;
+            border-radius: 1px;
+            overflow: hidden;
+
+            &.header {
+              border: none;
+              background: none;
+            }
+
+            .application-position {
+              position: absolute;
+              z-index: 20;
+              left: 10px;
+              font-weight: 900;
+              opacity: 0.5
+            }
+
+            .application-name {
+              position: absolute;
+              z-index: 20;
+              left: 30px;
+              font-weight: 700;
+            }
+
+            .application-apdex {
+              position: absolute;
+              z-index: 20;
+              left: 160px;
+            }
+            mark {
+              position: absolute;
+              left: 0;
+              top: 0;
+              bottom: 0;
+              z-index: 10px;
+            }
+        &.apdex-ok mark { background: #2ECC71 }
+        &.apdex-notok mark { background: #F7856A }
+
+      }
+    }
+}
+#logjam-content {
+  position: relative;
+  flex-direction: row;
+  width: 100%;
+
+  > h2 {
+    margin: 20px 0 0 10px;
+    text-transform: capitalize;
+
+    a {
+        color: $xing-green;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+  }
+}
+
+.has-action {
+  padding-bottom: 40px;
+}
+
+.app-dashboard {
+  margin: 10px !important;
+  flex-direction: row;
+
+  .app-overview {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+
+    .item {
+      background: $white;
+      border-radius: 2px;
+      border: 1px solid $lighter-grey;
+      padding: 15px;
+      padding-bottom: 40px;
+      margin: 10px;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+      overflow-x: auto;
+
+
+      h2 {
+          font-size: 14px;
+          text-transform: uppercase;
+          color: $xing-green;
+          margin-bottom: 10px;
+      }
+
+      .value {
+        font-size: 22px;
+        font-weight: 400;
+        margin-bottom: 10px;
+        display: block;
+      }
+
+      table {
+        width: 100%;
+      }
+
+      .collapse-table {
+        display: none;
+      }
+
+/*       &:hover .collapse-table {
+        display: block;
+      } */
+    }
+
+    &.overview-wrap {
+      flex-wrap: wrap;
+
+      .item {
+        width: 26.2%;
+      }
+    }
+  }
+  .action {
+    color: $xing-green;
+    text-align: right;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: $lighter-grey;
+    padding: 5px;
+    text-transform: uppercase;
+    font-size: 10px;
+
+    a {
+      display: block;
+
+      &:after {
+        content: "\f105";
+        font-family: FontAwesome;
+        margin-left: 5px;
+      }
+
+      &:hover { background: none; }
+    }
+  }
+
+  .detail-table {
+    border-top: 1px solid $lightest-grey;
+
+    .item {
+      border: none;
+      border-radius: none;
+      margin: 12px 0 10px;
+      padding: 0;
+    }
+  }
+}
+
+#logjam-header {
+    height: $header-height;
+    background: $header-bg-color;
+    box-shadow: 1px 0 2px 0 rgba(0, 0, 0, 0.5);
+    position: relative;
+    z-index: 10000;
+
+    .logo {
+        background-image: url('/assets/icon.png');
+        margin: 0;
+        padding: 0;
+        padding-left: 25px;
+        font-weight: 300;
+        line-height: 20px;
+        margin-left: 20px;
+        margin-top: 20px;
+        float: left;
+
+        background-repeat: no-repeat;
+        background-position: 0 0;
+        height: auto;
+        width: auto;
+
+    }
+
+    .application-chooser {
+      position: absolute;
+      left: 140px;
+      font-size: 18px;
+      height: 60px;
+      line-height: 65px;
+      font-weight: 300;
+      text-transform: uppercase;
+
+      &:hover {
+        .dropdown-menu {
+          display: flex;
+        }
+      }
+
+      .dropdown-menu {
+        box-shadow: 1px 1px 14px -7px rgba(0, 0, 0, 0.5) inset;
+        /* box-shadow: 1px 0 2px 0 rgba(0, 0, 0, 0.5); */
+        font-size: 14px;
+        text-transform: capitalize;
+        height: 340px;
+        width: 600px;
+        overflow: hidden;
+        position: absolute;
+        left: -10px;
+        padding: 8px;
+        margin-top: -5px;
+        flex-direction: column;
+        align-items: flex-start;
+        flex-flow: column wrap;
+
+        li {
+          width: 120px;
+          margin-right: 20px;
+          float: left;
+          font-size: 12px;
+          display: block;
+          border-radius: 1px;
+
+          a {
+            display: block;
+            padding: 5px;
+
+            &:hover,
+            &.active {
+              background: $lighter-grey;
+            }
+
+            &:before {
+              margin-right: 5px;
+            }
+          }
+        }
+      }
+    }
+
+    .enviroment-chooser {
+      position: absolute;
+      top: 12px;
+      left: 450px;
+      font-size: 18px;
+    }
+
+    .date-chooser {
+      position: absolute;
+      right: 20px;
+      top: 12px;
+      font-size: 18px;
+
+      a {
+        margin-top: 7px;
+        float: left;
+      }
+
+      #datepicker {
+        border: 0;
+        font-size: 18px;
+        width: 100px;
+        font-family: "Open Sans";
+        float: left;
+      }
+      .jdpicker_w {
+        display: inline;
+      }
+    }
+    ul {
+        list-style: none;
+        background-color: $header-bg-color;
+    }
+    input, select { margin: 0px; position: relative; top: 3px; }
+    label { font-size: 10px; position: relative; top: 3px; }
+}
