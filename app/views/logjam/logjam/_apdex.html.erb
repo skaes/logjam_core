@@ -1,7 +1,7 @@
 <div class="item">
   <h2>Apdex backend</h2>
   <span class="value"><%= "%.2f" % @dataset.apdex %></span>
-<table id="apdex-table">
+<table class="collapse-table">
   <tr>
     <td>happy (t &lt; 0.1s)</td>
     <td class="number" title="<%= @dataset.happy_count %>"><%= "%.2f" % (100.0 * @dataset.happy) %>%</td>

@@ -2,7 +2,7 @@
   <h2>RESPONSE CODES</h2>
   <span class="value"><%= number_with_delimiter @dataset.count_requests %></span>
 
-  <table id="response-code-table" style="width:100">
+  <table class="collapse-table">
     <% @dataset.response_code_summary.keys.sort.each do |rc| %>
     <tr>
       <td class="number-left"><%= rc %></td>

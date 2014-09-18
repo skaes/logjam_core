@@ -27,7 +27,7 @@
             request_params = clean_params(_params.merge(:grouping => "request", :start_minute => minute, :end_minute => minute))
           -%>
           <%= link_to(page, page_params, :title => "view summary") -%>
-          at
+          @
           <%= link_to(request_started_at(@request), request_params, :title => "show requests") -%>
       </h2>
 
@@ -123,9 +123,9 @@
         <% end %>
 
       <% unless (lines = @request["lines"]).blank? -%>
+        <h2>Log lines</h2>
         <div class="app-overview">
           <div class="item">
-            <h2>Log lines</h2>
             <% ltimes = line_times(lines) %>
           <% lines.each_with_index do |line,i| -%>
           <div class="logline" data-logjam-tags="<%= line_tags(line) %>">
