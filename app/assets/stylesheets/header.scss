@@ -41,6 +41,18 @@
         }
       }
 
+      .application-suggest {
+        border: 0;
+        font-size: 18px;
+        font-weight: 300;
+        font-family: "Open Sans";
+        width: 160px;
+
+        &:focus {
+          outline: none;
+        }
+      }
+
       .dropdown-menu {
         box-shadow: 1px 1px 14px -7px rgba(0, 0, 0, 0.5) inset;
         /* box-shadow: 1px 0 2px 0 rgba(0, 0, 0, 0.5); */
@@ -122,15 +134,9 @@
         background-color: $header-bg-color;
     }
 
-  .application-suggest {
-    border: 0;
-    font-size: 18px;
-    font-weight: 300;
-    font-family: "Open Sans";
-    width: 160px;
-
-    &:focus {
-      outline: none;
+    #auto-refresh {
+      position: absolute;
+      right: 200px;
+      top: 15px;
     }
-  }
 }

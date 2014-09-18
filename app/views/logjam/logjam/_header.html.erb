@@ -44,7 +44,7 @@ $(document).ready(initialize_header);
   <% end %>
 
   <div id="auto-refresh">
-    <%= check_box_tag "auto_refresh", "1", params[:auto_refresh]=="1", :onchange => "submit_filter_form()" %> Autorefresh
+    <%= check_box_tag "auto_refresh", "1", params[:auto_refresh]=="1", :onchange => "submit_filter_form()" %> <label for="auto_refresh">Autorefresh</label>
   </div>
 
   <div class="date-chooser">
@@ -104,16 +104,10 @@ $(document).ready(initialize_header);
         }
       }
 
-      if( event.keyCode == 13 ) {
+      if( event.keyCode == 13 && $('.dropdown-menu li.active a', '.application-chooser').length > 0 ) {
         location.href = $('.dropdown-menu li.active a', '.application-chooser').attr('href');
       }
-
-
-
- /*     arrowdown: 40
-      arrowup: 38*/
-    })
-
+    });
   });
 
 </script>
