@@ -573,10 +573,6 @@ table {
     }
 }
 
-.collapse-table {
-  display: none;
-}
-
 /* layout and structure */
 #logjam-container {
   width: 100%;
@@ -847,6 +843,14 @@ table {
       table {
         width: 100%;
       }
+
+      .collapse-table {
+        display: none;
+      }
+
+/*       &:hover .collapse-table {
+        display: block;
+      } */
     }
 
     &.overview-wrap {

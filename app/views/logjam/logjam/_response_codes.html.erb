@@ -1,6 +1,10 @@
+<%
+  codes_above_400 = @dataset.response_code_summary["4xx"] + @dataset.response_code_summary["5xx"]
+%>
+
 <div class="item">
-  <h2>RESPONSE CODES</h2>
-  <span class="value"><%= number_with_delimiter @dataset.count_requests %></span>
+  <h2>Error CODES</h2>
+  <span class="value"><%= codes_above_400 %></span>
 
   <table class="collapse-table">
     <% @dataset.response_code_summary.keys.sort.each do |rc| %>
