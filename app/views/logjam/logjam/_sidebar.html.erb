@@ -30,7 +30,7 @@
     <div class="menu-wrapper">
       <div class="tabs">
         <a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/?app<%= params[:app] %>/?app=<%= params[:app] %>&_section=backend" data-menu="backend-menu" class="btn<% if params[:_section] == 'backend' %> active<% end %>">Backend</a>
-        <a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/?app=<%= params[:app] %>&_section=frontend" data-menu="frontend-menu" class="btn<% if params[:_section] == 'frontend' %> active<% end %>">Frontend</a>
+        <a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/frontend_overview/?app=<%= params[:app] %>&_section=frontend" data-menu="frontend-menu" class="btn<% if params[:_section] == 'frontend' %> active<% end %>">Frontend</a>
       </div>
 
       <ul class="logjam-menu<% if params[:_section] == 'backend' %> active<% end %>" id="backend-menu">

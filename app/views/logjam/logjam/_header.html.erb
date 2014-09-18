@@ -15,11 +15,14 @@ $(document).ready(initialize_header);
 
 
 <header id="logjam-header">
-  <h1 class="logo"><a href="/dashboard">LOGJAM</a></h1>
-
+  <h1 class="logo"><a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/dashboard">LOGJAM</a></h1>
   <% unless @only_one_app %>
     <div class="application-chooser">
-      <span>:: <%= params[:app] || "Application" %> <i class="fa fa-angle-down"></i></span>
+      <% if params[:action] == 'dashboard' || !params[:app] %>
+        <span>:: Choose Application <i class="fa fa-angle-down"></i></span>
+      <% else %>
+        <span>:: <%= params[:app] %> <i class="fa fa-angle-down"></i></span>
+      <% end %>
       <ul class="dropdown-menu">
         <% @apps.map do |app| %>
           <li class="dropdown-header"><a <% if params[:app] == app %>class="active"<% end %> href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/?app=<%= app %>&_section=backend"><i class="fa fa-angle-right"></i> <%= app %></a></li>

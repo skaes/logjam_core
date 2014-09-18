@@ -152,8 +152,12 @@ tr.full_stats a, tr.full_stats .dead-link {
 
 .full_stats td:first-child {
   max-width: 300px;
-  overflow: hidden;
-  text-overflow: ellipsis
+  a {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap
+  }
 }
 
 td.group-thing { font-size: 90%; }
