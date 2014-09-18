@@ -85,31 +85,38 @@
 }
 
 @media only screen and (max-device-width: 480px) and (orientation:portrait) {
-  .header {
-    height: 50px;
-  }
-
   #logjam-container {
     display: block;
+    overflow: hidden;
   }
 
   #logjam-sidebar {
     left: -250px !important;
     position: absolute !important;
     z-index: 10000 !important;
+    transition: left 0.5s;
+    top: 0;
+    bottom: 0;
+    overflow-y: scroll; /* has to be scroll, not auto */
+    -webkit-overflow-scrolling: touch;
   }
 
-  .sidebar-visible #logjam-sidebar {
-    left: 0 !important;
+  .sidebar-visible {
+    #logjam-sidebar {
+      left: 0 !important;
+    }
   }
 
   #logjam-content {
-    flex-direction: column;
-    width: 300px;
   }
   .app-dashboard {
+    margin: 0 !important;
+
     .app-overview {
-      flex-direction: column;
+      display: block;
+      flex-direction: initial;
+      padding: 10px;
+      box-sizing: border-box;
 
       .item {
         margin: 10px 0;
@@ -129,14 +136,46 @@
     }
   }
 
-  #column-left {
-    width: 800px;
-  }
+  #logjam-header {
+    height: 150px;
 
-  #column-right {
-    left: 20px;
-    top: 630px;
-    width: 800px;
+    .application-chooser {
+      margin-left: 10px;
+      position: static;
+
+      i.fa {
+        display: none;
+      }
+
+      .dropdown-menu {
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: auto;
+      }
+
+      &:hover {
+        .dropdown-menu {
+          display: block;
+        }
+      }
+
+    }
+
+    .enviroment-chooser {
+      top: 60px;
+      left: 10px;
+    }
+
+    #auto-refresh {
+      width: 120px;
+      left: -10px;
+      top: 110px;
+    }
+
+    .date-chooser {
+      top: 104px;
+    }
   }
 
 }
