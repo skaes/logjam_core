@@ -1,0 +1,210 @@
+@import 'mixins.scss';
+@import 'constants.scss';
+
+#logjam-sidebar {
+    background: #2D353C;
+    min-width: 220px;
+    max-width: 220px;
+    color: $white;
+    flex-direction: row;
+    position: relative;
+
+    &.closed {
+      min-width: 0;
+      max-width: 0;
+
+      .sidebar-collapse {
+        color: $black;
+      }
+    }
+
+    .sidebar-collapse {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 16px;
+      background: $dark-grey;
+      font-size: 10px;
+      text-transform: uppercase;
+      text-align: right;
+      padding-right: 5px;
+      cursor: pointer;
+    }
+
+    form {
+      margin: 40px 20px 20px 20px;
+
+    }
+
+    h2 {
+      font-weight: 300;
+      font-size: 22px;
+    }
+
+    a {
+      color: $white;
+
+      &:hover {
+        background: none;
+      }
+    }
+
+    .sidebar-search {
+      margin-top: 20px;
+      font-size: 12px;
+      border-bottom: 1px solid $dark-grey;
+      padding-bottom: 13px;
+      margin-bottom: 13px;
+
+      label {
+        font-weight: 300;
+        color: $white;
+        text-transform: uppercase;
+      }
+
+      input[type=text] {
+        background: #555555;
+        border: 0;
+        padding: 7px 5px;
+        width: 170px;
+        color: $white;
+        font-size: 12px;
+        border: 1px solid transparent;
+
+        &:focus {
+          outline: none;
+          border: 1px solid #c9c9c9
+        }
+      }
+    }
+
+    .menu-wrapper {
+      .tabs {
+        border-bottom: 1px solid $dark-grey;
+        margin-bottom: 13px;
+        padding-bottom: 26px;
+
+        .btn {
+          color: #999;
+          border-color: #999;
+          background: none;
+
+          &.active {
+            color: $white;
+            border-color: $white;
+          }
+        }
+      }
+    }
+    .logjam-menu {
+      display: none;
+
+      &.active {
+        display: block;
+      }
+
+      a {
+        color: $lighter-grey;
+      }
+
+      .active a {
+        color: $white;
+      }
+
+      > li {
+        display: block;
+        margin-top: 10px;
+        font-size: 14px;
+        font-weight: 700;
+
+        &:before {
+          margin-right: 5px;
+        }
+
+        ul {
+          margin-left: 20px;
+          margin-top: 5px;
+          margin-bottom: 20px;
+          font-size: 11px;
+          font-weight: 400;
+          text-transform: uppercase;
+
+          a:hover {
+            text-decoration: underline;
+          }
+        }
+
+        &.open {
+          height: auto;
+        }
+      }
+    }
+
+    .admin {
+      border-top: 1px solid $dark-grey;
+      margin-top: 20px;
+      padding-top: 10px;
+      text-transform: uppercase;
+    }
+
+    &.dashboard-apdex-overview {
+        min-width: 300px;
+
+        li {
+          height: 25px;
+          line-height: 25px;
+        }
+
+        ul {
+          margin-top: 20px;
+        }
+
+        li {
+            text-transform: capitalize;
+            height: 27px;
+            line-height: 27px;
+            border: 1px solid $grey;
+            margin-bottom: 5px;
+            position: relative;
+            border-radius: 1px;
+            overflow: hidden;
+
+            &.header {
+              border: none;
+              background: none;
+            }
+
+            .application-position {
+              position: absolute;
+              z-index: 20;
+              left: 10px;
+              font-weight: 900;
+              opacity: 0.5
+            }
+
+            .application-name {
+              position: absolute;
+              z-index: 20;
+              left: 30px;
+              font-weight: 700;
+            }
+
+            .application-apdex {
+              position: absolute;
+              z-index: 20;
+              left: 160px;
+            }
+            mark {
+              position: absolute;
+              left: 0;
+              top: 0;
+              bottom: 0;
+              z-index: 10px;
+            }
+        &.apdex-ok mark { background: #2ECC71 }
+        &.apdex-notok mark { background: #F7856A }
+
+      }
+    }
+}
