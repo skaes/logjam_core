@@ -60,13 +60,11 @@
 
 // iPhone
 @media only screen and (max-device-width: 480px) and (orientation:landscape) {
-  .header {
-    height: 50px;
-  }
 
   #logjam-container {
     display: block;
   }
+
 
   #logjam-sidebar {
     left: -250px;
@@ -96,9 +94,28 @@
   }
 
   #logjam-sidebar {
-    left: -250px;
-    position: absolute;
-    z-index: 10000;
+    left: -250px !important;
+    position: absolute !important;
+    z-index: 10000 !important;
+  }
+
+  .sidebar-visible #logjam-sidebar {
+    left: 0 !important;
+  }
+
+  #logjam-content {
+    flex-direction: column;
+    width: 300px;
+  }
+  .app-dashboard {
+    .app-overview {
+      flex-direction: column;
+
+      .item {
+        margin: 10px 0;
+        box-sizing: border-box;
+      }
+    }
   }
 
   #mobile-trigger {

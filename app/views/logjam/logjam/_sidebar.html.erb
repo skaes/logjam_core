@@ -132,7 +132,12 @@
 
 <script>
 
-
+  $(function(){
+    $("#mobile-trigger").on("click", function(){
+      console.log('foo');
+        $("body").toggleClass("sidebar-visible");
+    });
+  });
 
   $('.sidebar-collapse', '#logjam-sidebar').on('click', function(){
     $('#logjam-sidebar').toggleClass('closed');
