@@ -3,9 +3,10 @@
   <%= render "sidebar" %>
   <div id="logjam-content" class="app-dashboard">
     <h2><%= params[:app] %> :: Timings</h2>
-    <div id="enlarged-plot" class="table-wrapper">
-      <%= render :partial => "resource_plot", :locals => {:width => 1080, :height => 460} %>
+    <div class="app-overview">
+      <div id="enlarged-plot" class="item">
+        <%= render :partial => "resource_plot", :locals => {:width => 1080, :height => 460} %>
+      </div>
     </div>
-
   </div>
 </div>

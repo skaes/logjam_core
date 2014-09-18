@@ -119,45 +119,6 @@ pre a:hover, #request-details a:hover { color: blue; }
     }
 }
 
-/* TODO: check for removal posiibility */
-.table-wrapper {
-  box-sizing: border-box;
-  margin-top: 20px;
-  padding: 20px;
-  background: #fff;
-  border-radius: 1px;
-  border: 1px solid #ddd;
-
-  .full_stats {
-      margin-left: 0px;
-      margin-top: 10px;
-      border-collapse: collapse;
-      width: 100%;
-  }
-
-  .full_stats th {
-      margin: 0;
-      padding: 4px;
-      text-align: left;
-      font-size:   12px;
-      line-height: 13px;
-      height: 26px;
-      border-bottom: 1px solid #ebebeb;
-  }
-
-  .full_stats td {
-      font-size: 12px;
-      line-height: 13px;
-      padding: 3px 5px;
-      vertical-align: middle;
-      white-space: nowrap;
-      img.lj-ico {
-          position: relative;
-          top: -2px;
-      }
-  }
-}
-
 .sortable, .clickable {
     cursor: pointer;
 }
@@ -187,6 +148,12 @@ tr.full_stats:hover {
 
 tr.full_stats a, tr.full_stats .dead-link {
     padding: 0 2px;
+}
+
+.full_stats td:first-child {
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis
 }
 
 td.group-thing { font-size: 90%; }

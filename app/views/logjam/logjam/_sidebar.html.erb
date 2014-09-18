@@ -12,6 +12,12 @@
 
 <% end %>
 
+<%
+  if !params[:_section]
+    params[:_section] = "backend"
+  end
+%>
+
 <section id="logjam-sidebar" class="open">
 
   <div class="sidebar-collapse">
@@ -104,7 +110,7 @@
 
     <input type="hidden" id="app" name="app" value="<%= params[:app] %>" />
     <input type="hidden" id="env" name="env" value="<%= params[:env] %>" />
-    <input type="hidden" id="_section" name="_section" value="<%= params[:_section] || 'backend' %>" />
+    <input type="hidden" id="_section" name="_section" value="<%= params[:_section] %>" />
     <input type="hidden" id="time-range" name="time_range" value="<%= params[:time_range] %>" />
     <input type="hidden" id="grouping" name="grouping" value="<%= params[:grouping]%>" />
     <input type="hidden" id="resource" name="resource" value="<%= params[:resource] %>" />

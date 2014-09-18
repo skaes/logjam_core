@@ -1,30 +1,25 @@
 <%= render "header" %>
 <div id="logjam-container">
   <%= render "sidebar" %>
-
   <div id="logjam-content" class="app-dashboard">
-
     <h2><%= @title %> <%= hpn("for") %></h2>
-        <div id="logjam-content" class="app-dashboard">
-
-          <div class="table-wrapper">
-            <table class='full_stats'>
-              <tr><th>Type</th><th>Count</th><th>Distribution over time (0-24h, 2 minute intervals)</th></tr>
-              <% @totals.response_codes.keys.sort.each_with_index do |rc,i| %>
-              <tr class='full_stats'>
-                <% url = clean_url_for(:action => "response_codes", :response_code => rc) if rc.to_i >= 400 %>
-                <td><%= rc.to_i < 400 ? raw("<span class='dead-link'>#{rc}</span>") : link_to(rc, url) %></td>
-                <td class='number'><%= sometimes_link_response_code(rc, @totals.response_codes[rc]) %></td>
-                <td class='echart' id='<%= "echart-#{i+=1}" %>'>
-                  <%= render "echart", exceptions: @minutes.response[rc.to_s], i: i, url: url %>
-                </td>
-              </tr>
-              <% end %>
-            </table>
-          </div>
-
-        </div>
+    <div class="app-overview">
+      <div class="item">
+        <table class='full_stats'>
+          <tr><th>Type</th><th>Count</th><th>Distribution over time (0-24h, 2 minute intervals)</th></tr>
+          <% @totals.response_codes.keys.sort.each_with_index do |rc,i| %>
+          <tr class='full_stats'>
+            <% url = clean_url_for(:action => "response_codes", :response_code => rc) if rc.to_i >= 400 %>
+            <td><%= rc.to_i < 400 ? raw("<span class='dead-link'>#{rc}</span>") : link_to(rc, url) %></td>
+            <td class='number'><%= sometimes_link_response_code(rc, @totals.response_codes[rc]) %></td>
+            <td class='echart' id='<%= "echart-#{i+=1}" %>'>
+              <%= render "echart", exceptions: @minutes.response[rc.to_s], i: i, url: url %>
+            </td>
+          </tr>
+          <% end %>
+        </table>
       </div>
     </div>
   </div>
 </div>
+

@@ -2,6 +2,7 @@
 <div id="logjam-container">
   <%= render "sidebar" %>
   <div id="logjam-content" class="app-dashboard">
+    <div class="app-overview">
     <h2><%= params[:app] %> :: Request time distribution</h2>
 
     <%
@@ -35,10 +36,11 @@
       }
     %>
 
-    <div id="distribution-plot" class="table-wrapper">
-      <script type="text/javascript">
-        logjam_quants_plot(<%=raw Oj.dump(js_params)%>);
-      </script>
+      <div id="distribution-plot" class="item">
+        <script type="text/javascript">
+          logjam_quants_plot(<%=raw Oj.dump(js_params)%>);
+        </script>
+      </div>
     </div>
   </div>
 </div>

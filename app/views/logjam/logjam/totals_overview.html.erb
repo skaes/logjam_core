@@ -2,13 +2,13 @@
 <div id="logjam-container">
   <%= render "sidebar" %>
   <div id="logjam-content" class="app-dashboard">
-    <h2><%= params[:app] %> :: Actions <%= hpn("for") %> sorted by
-        <%= Logjam::Resource.grouping_function_description(params[:resource], params[:grouping_function]) %>
-        (<%= integer_number(@dataset.size) %>)</h2>
-
-    <div class="table-wrapper">
-      <%= render "page_times" %>
+    <div class="app-overview">
+      <h2><%= params[:app] %> :: Actions <%= hpn("for") %> sorted by
+          <%= Logjam::Resource.grouping_function_description(params[:resource], params[:grouping_function]) %>
+          (<%= integer_number(@dataset.size) %>)</h2>
+      <div class="item">
+        <%= render "page_times" %>
+      </div>
     </div>
-
   </div>
 </div>
