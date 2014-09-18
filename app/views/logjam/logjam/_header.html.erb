@@ -25,7 +25,7 @@ $(document).ready(initialize_header);
       <% end %>
       <ul class="dropdown-menu">
         <% @apps.map do |app| %>
-          <li class="dropdown-header"><a <% if params[:app] == app %>class="active"<% end %> href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/?app=<%= app %>&_section=backend"><i class="fa fa-angle-right"></i> <%= app %></a></li>
+          <li class="dropdown-header" data-app="<%= app %>"><a <% if params[:app] == app %>class="active"<% end %> href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/?app=<%= app %>&_section=backend"><i class="fa fa-angle-right"></i> <%= app %></a></li>
         <% end %>
       </ul>
     </div>
@@ -61,7 +61,12 @@ $(document).ready(initialize_header);
   $(function(){
     $('.enviroment-chooser .btn', '#logjam-header').on('mousedown', function(event){
       $('#env').val( $(this).val() );
+    });
+
+    $('.application-suggest').on('keyup', function(event) {
+
     })
+
   });
 
 </script>
