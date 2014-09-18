@@ -29,12 +29,9 @@
   cursor: pointer;
 
   &.active {
-    /* border: 1px solid $grey; */
     border-color: $xing-green;
-    color: $xing-green;
-
-    background: none;
-    box-shadow: none !important;
+    background: $xing-green;
+    color: $white;
   }
 }
 a.btn {
