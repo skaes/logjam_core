@@ -20,10 +20,6 @@
 
 <section id="logjam-sidebar" class="open">
 
-  <div class="sidebar-collapse">
-    <i class="fa fa-caret-square-o-left"></i>
-  </div>
-
   <% action = action_name == "index" ? "" : action_name %>
   <%= form_tag(params.except(:id).merge(:action => action), :method => :get, :id => "filter-form", :autocomplete => "off") do -%>
 

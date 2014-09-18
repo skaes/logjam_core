@@ -9,29 +9,6 @@
     flex-direction: row;
     position: relative;
 
-    &.closed {
-      min-width: 0;
-      max-width: 0;
-
-      .sidebar-collapse {
-        color: $black;
-      }
-    }
-
-    .sidebar-collapse {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 16px;
-      background: $dark-grey;
-      font-size: 10px;
-      text-transform: uppercase;
-      text-align: right;
-      padding-right: 5px;
-      cursor: pointer;
-    }
-
     form {
       margin: 40px 20px 20px 20px;
 
