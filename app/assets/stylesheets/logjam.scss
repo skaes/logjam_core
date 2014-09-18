@@ -162,8 +162,6 @@ td.apdex.unacceptable { background: rgba(150,150,150,0.8); }
 .controls form { display: inline; }
 .controls a {color: blue; margin-left: 5px; }
 .controls a:hover {font-weight: bold; }
-#download-button { margin-left: 10px; }
-#callers #filter { }
 #callers h4 { margin-top: 20px; margin-bottom: 0px; }
 #caller-meta-info {margin-top: 2px; }
 
@@ -281,12 +279,9 @@ table.zebra {
 }
 
 #auto-refresh {
-    margin-left: 25px;
-    position: relative;
-    top: -21px;
-    input {
-       top:0px;
-    }
+  position: absolute;
+  right: 200px;
+  top: 20px;
 }
 
 // iPad
