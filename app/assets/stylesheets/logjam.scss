@@ -57,7 +57,6 @@ a {
     position: relative;
     padding: 2px;
 }
-/* TODO : template:show test/remove  */
 .box {
     position: absolute;
     left:0;
@@ -103,8 +102,8 @@ pre a:hover, #request-details a:hover { color: blue; }
   font-size: 16px;
   margin: 0;
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 10px;
+  right: 10px;
 
   a {
     color: #006567;
@@ -190,15 +189,6 @@ td.group-thing { font-size: 90%; }
 .gbox.apdex-fail { background-color: rgba(255,0,0,0.2); }
 td.number.apdex-ok { background-color: rgba(0,255,0,0.2); }
 td.number.apdex-fail { background-color: rgba(255,0,0,0.2); }
-.apdex-box {
-    position: absolute;
-    left: 94%;
-    top: -3px;
-    background-color: rgba(255,0,0,0.8);
-    width: 1px;
-    height: 19px;
-    z-index: 100;
-}
 
 td {padding: 0 8px;}
 td.number {text-align: right;}
@@ -220,8 +210,6 @@ td.number {text-align: right;}
 .stats th { font-size: 12px; }
 .stats td { font-size: 12px; padding: 0 8px; }
 .table-heading { font-weight: bold; padding-top: 10px; }
-
-#resource-plot { margin-top: 20px; }
 
 .xlabel, .ylabel, .legend, .label, .rlabel, .tooltip {
     font: 8px sans-serif;
@@ -306,15 +294,12 @@ td.apdex.unacceptable { background: rgba(150,150,150,0.8); }
     }
 }
 
-#admin-control, #admin-title {
-    margin: 0px;
-    padding: 3px 10px;
+#admin-control {
+    position: absolute;
+    right: 10px;
+    top: 12px;
 }
 
-/* TODO: test/remove */
-.logjam-tags-filter-root {
-    display: inline;
-}
 .resource-fields legend {
     font-weight: bold;
 }
@@ -397,21 +382,12 @@ input[type="text"]:disabled
     font: 20px sans-serif;
     margin: 20px;
 }
-#perf-title {
-    font: 20px sans-serif;
-    font-weight: bold;
-    margin-left: 400px;
-    margin-top: 10px;
-}
-div.container {
-    margin: 10px;
-}
+
 table.zebra {
     margin: 3px;
     tr:nth-child(2n+1) { background: #ddd; }
-    tr:nth-child(1)    { background: #ccc; }
     td, th { padding: 2px 5px 2px 5px; }
-    border-spacing: 0px;
+    border-spacing: 0;
 }
 
 svg {
@@ -421,31 +397,6 @@ svg {
     -ms-user-select: none; /* IE10+ */
 }
 
-/* TODO: test/remove */
-.header > ul {
-    font-size: 0;
-    white-space: nowrap;
-    margin: 0px;
-    padding: 0px;
-    position: absolute;
-    top: 0px;
-    &:last-child { clear: both; }
-    &.left { left: 0; z-index: 200; }
-    &.right { right: 0; z-index: 100; }
-}
-
-/* TODO: test/remove */
-.header > ul > li {
-    font-size: 12px;
-    position: relative;
-    top: 0px;
-    display: inline-block;
-    margin: -2px 10px 2px 10px;
-    padding: 0px;
-    &:last-child { clear:left; }
-    & > div { height: 25px; }
-}
-
 #auto-refresh {
     margin-left: 25px;
     position: relative;
@@ -453,13 +404,6 @@ svg {
     input {
        top:0px;
     }
-}
-
-#admin {
-    position: absolute;
-    right: 200px;
-    top: 70px;
-    a:hover { background: #cca383; }
 }
 
 // iPad
@@ -534,14 +478,14 @@ a.btn {
 .dropdown-menu {
   display: none;
   border-radius: 1px;
-
 }
 
 table {
-    th {
-        border-bottom: 1px solid #ddd;
-        text-align: left;
-    }
+  tr:nth-child(1) {
+    border-bottom: 1px solid #ddd !important;
+    text-align: left !important;
+    background: none !important;
+  }
 }
 
 /* layout and structure */
