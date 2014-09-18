@@ -1,9 +1,26 @@
+//LAYOUT-COLORS:
+$white: :#fff;
+$lightest-grey: #eee;
+$lighter-grey: #ddd;
+$light-grey: #808080;
+$grey :#666;
+$dark-grey :#444;
+$black: #000;
+$xing-green: #006567;
+
+//HEIGHT/WIDTH/MARGIN/PADDING:
 $header-height: 60px;
 
-$header-bg-color: #ffffff;
+//BACKGROUND-COLORS:
+$header-bg-color: $white;
 $menu-active-bg-color: rgba(230,230,230, 0.9);
 $menu-inactive-bg-color: rgba(200,200,200, 0.4);
 
-$menu-hover-color: #fff;
+//FONT-COLORS:
+$link-color: $black;
+$menu-hover-color: $white;
+$navicons-link-color: $xing-green;
 
+//BORDER-COLORS:
 $menu-border-color: #ccc;
+$navicons-border-color: $lighter-grey;
