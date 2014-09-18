@@ -19,9 +19,9 @@ $(document).ready(initialize_header);
   <% unless @only_one_app %>
     <div class="application-chooser">
       <% if params[:action] == 'dashboard' || !params[:app] %>
-        <span>:: Choose Application <i class="fa fa-angle-down"></i></span>
+        :: <input class="application-suggest" type="text" placeholder="Choose Application"> <i class="fa fa-angle-down"></i>
       <% else %>
-        <span>:: <%= params[:app] %> <i class="fa fa-angle-down"></i></span>
+        :: <input class="application-suggest" type="text" placeholder="<%= params[:app] %>"> <i class="fa fa-angle-down"></i>
       <% end %>
       <ul class="dropdown-menu">
         <% @apps.map do |app| %>

@@ -1,0 +1,131 @@
+@import 'mixins.scss';
+@import 'constants.scss';
+
+#logjam-header {
+    height: $header-height;
+    background: $header-bg-color;
+    box-shadow: 1px 0 2px 0 rgba(0, 0, 0, 0.5);
+    position: relative;
+    z-index: 10000;
+
+    .logo {
+        background-image: url('/assets/icon.png');
+        margin: 0;
+        padding: 0;
+        padding-left: 25px;
+        font-weight: 300;
+        line-height: 20px;
+        margin-left: 20px;
+        margin-top: 20px;
+        float: left;
+
+        background-repeat: no-repeat;
+        background-position: 0 0;
+        height: auto;
+        width: auto;
+
+    }
+
+    .application-chooser {
+      position: absolute;
+      left: 140px;
+      font-size: 18px;
+      height: 60px;
+      line-height: 65px;
+      font-weight: 300;
+      text-transform: uppercase;
+
+      &:hover {
+        .dropdown-menu {
+          display: flex;
+        }
+      }
+
+      .dropdown-menu {
+        box-shadow: 1px 1px 14px -7px rgba(0, 0, 0, 0.5) inset;
+        /* box-shadow: 1px 0 2px 0 rgba(0, 0, 0, 0.5); */
+        font-size: 14px;
+        text-transform: capitalize;
+        height: 340px;
+        width: 600px;
+        overflow: hidden;
+        position: absolute;
+        left: -10px;
+        padding: 8px;
+        margin-top: -5px;
+        flex-direction: column;
+        align-items: flex-start;
+        flex-flow: column wrap;
+
+        li {
+          width: 120px;
+          margin-right: 20px;
+          float: left;
+          font-size: 12px;
+          display: block;
+          border-radius: 1px;
+
+          a {
+            display: block;
+            padding: 5px;
+
+            &:hover,
+            &.active {
+              background: $lighter-grey;
+            }
+
+            &:before {
+              margin-right: 5px;
+            }
+          }
+        }
+      }
+    }
+
+    .enviroment-chooser {
+      position: absolute;
+      top: 15px;
+      left: 450px;
+      font-size: 18px;
+    }
+
+    .date-chooser {
+      position: absolute;
+      right: 20px;
+      top: 12px;
+      font-size: 18px;
+
+      a {
+        margin-top: 7px;
+        float: left;
+      }
+
+      #datepicker {
+        border: 0;
+        font-size: 18px;
+        width: 100px;
+        font-family: "Open Sans";
+        float: left;
+      }
+      .jdpicker_w {
+        display: inline;
+      }
+    }
+
+    ul {
+        list-style: none;
+        background-color: $header-bg-color;
+    }
+
+  .application-suggest {
+    border: 0;
+    font-size: 18px;
+    font-weight: 300;
+    font-family: "Open Sans";
+    width: 150px;
+
+    &:focus {
+      outline: none;
+    }
+  }
+}
