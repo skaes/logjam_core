@@ -14,84 +14,36 @@
   }
 }
 
-// iPad
-@media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape) {
-  .header {
-    height: 50px;
-  }
-}
-
-@media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait) {
-  .header {
-    height: 50px;
-  }
-
-  #column-left {
-    width: 800px;
-  }
-
-  #column-right {
-    left: 20px;
-    top: 630px;
-    width: 800px;
-  }
-
-  #logjam-container {
-    display: block;
-  }
-
-  #logjam-sidebar {
-    left: -250px;
-    position: absolute;
-    z-index: 10000;
-  }
-
-  #mobile-trigger {
-      display: inline;
-      font-size: 20px;
-  }
-
-  .sidebar-visible {
-    #logjam-sidebar {
-      left: 0;
-    }
-  }
-}
-
-// iPhone
-@media only screen and (max-device-width: 480px) and (orientation:landscape) {
-
-  #logjam-container {
-    display: block;
-  }
-
-
-  #logjam-sidebar {
-    left: -250px;
-    position: absolute;
-    z-index: 10000;
-  }
-
-  #mobile-trigger {
-      display: inline;
-      font-size: 20px;
-  }
-
-  .sidebar-visible {
-    #logjam-sidebar {
-      left: 0;
-    }
-  }
-}
-
-@media only screen and (max-device-width: 480px) and (orientation:portrait) {
+@media all and (max-device-width: 1024px) {
   #logjam-container {
     display: block;
     overflow: hidden;
   }
 
+  .app-dashboard {
+    margin: 0 !important;
+  }
+
+  #mobile-trigger {
+    background: $dark-grey;
+    font-size: 16px;
+    color: $white;
+    line-height: 44px;
+    height: 44px;
+    display: block;
+    transition: padding 0.5s;
+    padding-left: 0;
+
+    &:before {
+      content: "\f0c9";
+      font-family: fontAwesome;
+      margin-right: 5px;
+      margin-left: 5px;
+    }
+  }
+
   #logjam-sidebar {
-    left: -250px !important;
+    left: -220px !important;
     position: absolute !important;
     z-index: 10000 !important;
     transition: left 0.5s;
@@ -102,13 +54,65 @@
   }
 
   .sidebar-visible {
+    #mobile-trigger {
+      padding-left: 230px;
+
+      &:before {
+        content: "\f00d";
+      }
+    }
+
     #logjam-sidebar {
       left: 0 !important;
     }
   }
 
-  #logjam-content {
+  .app-overview {
+    .item {
+      min-width: 0;
+    }
   }
+
+}
+
+// iPad Portrait
+@media all and (max-device-width: 1000px) {
+
+  .app-overview {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+     overflow-x: scroll; /* has to be scroll, not auto */
+    -webkit-overflow-scrolling: touch;
+
+    .item {
+      min-width: 250px;
+    }
+  }
+
+  #logjam-header {
+    height: 110px;
+
+    .enviroment-chooser {
+      top: 60px;
+      left: 10px;
+    }
+
+    #auto-refresh {
+      width: 120px;
+      right: 30px;
+      left: auto;
+      top: 24px;
+    }
+
+    .date-chooser {
+      top: 71px;
+    }
+  }
+
+}
+
+@media all and (max-device-width: 750px) {
   .app-dashboard {
     margin: 0 !important;
 
@@ -121,27 +125,21 @@
       .item {
         margin: 10px 0;
         box-sizing: border-box;
+        min-width: 0;
       }
     }
   }
 
-  #mobile-trigger {
-      display: inline;
-      font-size: 20px;
-  }
-
-  .sidebar-visible {
-    #logjam-sidebar {
-      left: 0;
-    }
-  }
-
   #logjam-header {
-    height: 150px;
+    height: 110px;
 
     .application-chooser {
       margin-left: 10px;
       position: static;
+
+      .application-suggest {
+        width: 130px;
+      }
 
       i.fa {
         display: none;
@@ -161,17 +159,18 @@
           box-sizing: border-box;
         }
       }
-
     }
+  }
+}
 
-    .enviroment-chooser {
-      top: 60px;
-      left: 10px;
-    }
+// iPhone
+@media all and (max-device-width: 320px) {
+  #logjam-header {
+    height: 150px;
 
     #auto-refresh {
       width: 120px;
-      left: -10px;
+      left: 10px;
       top: 110px;
     }
 
@@ -179,5 +178,4 @@
       top: 104px;
     }
   }
-
 }
