@@ -79,6 +79,12 @@ $(document).ready(initialize_header);
     });
 
     $('.application-suggest').on('focus', function(event) {
+      $('.application-chooser').addClass('active');
+      $('.dropdown-menu li', '.application-chooser').removeClass('hide');
+    });
+
+    $('.application-suggest').on('blur', function(event) {
+      $('.application-chooser').removeClass('active');
       $('.dropdown-menu li', '.application-chooser').removeClass('active');
     });
 
@@ -122,7 +128,13 @@ $(document).ready(initialize_header);
       if( event.keyCode == 13 && $('.dropdown-menu li.active a', '.application-chooser').length > 0 ) {
         location.href = $('.dropdown-menu li.active a', '.application-chooser').attr('href');
       }
+
     });
+
+    $('.dropdown-menu li').on("touch", function(event){
+      alert('foo');
+    });
+
   });
 
 </script>

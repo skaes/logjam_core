@@ -1,6 +1,21 @@
 @import 'mixins.scss';
 @import 'constants.scss';
 
+::-webkit-input-placeholder { /* WebKit browsers */
+    color:    $black;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color:    $black;
+   opacity:  1;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color:    $black;
+   opacity:  1;
+}
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+   color:    $black;
+}
+
 #logjam-header {
     height: $header-height;
     background: $header-bg-color;
@@ -35,8 +50,9 @@
       font-weight: 300;
       text-transform: uppercase;
 
-      &:hover {
+      &.active {
         .dropdown-menu {
+          display: -webkit-flex;
           display: flex;
         }
       }
@@ -47,15 +63,16 @@
         font-weight: 300;
         font-family: "Open Sans";
         width: 160px;
+        z-index: 10000;
 
         &:focus {
           outline: none;
         }
+
       }
 
       .dropdown-menu {
         box-shadow: 1px 1px 14px -7px rgba(0, 0, 0, 0.5) inset;
-        /* box-shadow: 1px 0 2px 0 rgba(0, 0, 0, 0.5); */
         font-size: 14px;
         text-transform: capitalize;
         height: 340px;
@@ -67,7 +84,10 @@
         margin-top: -5px;
         flex-direction: column;
         align-items: flex-start;
+        -webkit-align-items: flex-start;
+        -webkit-flex-flow: column wrap;
         flex-flow: column wrap;
+        z-index: 10000;
 
         li {
           width: 120px;

@@ -15,10 +15,6 @@
 }
 
 @media all and (max-width: 1100px) {
-  #mobile-trigger {
-    background: green !important;
-  }
-
   #logjam-container {
     display: block;
     overflow: hidden;
@@ -82,6 +78,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    flex-direction: row !important;
 
     .item {
       min-width: 250px;
@@ -92,10 +89,6 @@
 
 /* iPad Portrait  */
 @media all and (max-width: 800px) {
-  #mobile-trigger {
-    background: yellow !important;
-  }
-
   .app-overview {
     display: flex;
     flex-direction: row;
@@ -132,9 +125,6 @@
 }
 /* smartphone landscape */
 @media all and (max-width: 750px) {
-  #mobile-trigger {
-    background: red !important;
-  }
   .app-dashboard {
     margin: 0 !important;
 
@@ -175,7 +165,7 @@
         z-index: 1000;
       }
 
-      &:hover {
+      .active {
         .dropdown-menu {
           display: block;
           box-sizing: border-box;
