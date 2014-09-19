@@ -7,6 +7,9 @@ module Logjam
 
     def initialize(page_info, resources)
       @page_info = page_info
+      @page_info['count'] ||= 0
+      @page_info['page_count'] ||= 0
+      @page_info['ajax_count'] ||= 0
       @resources = resources
     end
 
@@ -18,8 +21,15 @@ module Logjam
       @page_info["page"] = page
     end
 
-    def count(resource=nil)
-      @page_info["count"]
+    def count(resource='total_time')
+      key = if resource == 'ajax_time'
+              'ajax_count'
+            elsif Resource.resource_type(resource) == :frontend
+              'page_count'
+            else
+              'count'
+            end
+      @page_info[key]
     end
 
     def sum(resource)
@@ -31,13 +41,13 @@ module Logjam
     end
 
     def avg(resource)
-      sum(resource) / count.to_f
+      sum(resource) / count(resource).to_f
     end
 
     def stddev(resource)
       @page_info["#{resource}_stddev"] ||=
         begin
-          n, s, sq = count, sum(resource), sum_sq(resource)
+          n, s, sq = count(resource), sum(resource), sum_sq(resource)
           a = avg(resource)
           (n == 1 || s == 0) ? 0.0 : Math.sqrt((sq - n*a*a).abs/(n-1).to_f)
         end
@@ -48,7 +58,19 @@ module Logjam
     end
 
     def apdex_score
-      (apdex["satisfied"].to_f + apdex["tolerating"].to_f / 2.0) / count.to_f
+      (apdex["satisfied"].to_f + apdex["tolerating"].to_f / 2.0) / count('total_time').to_f
+    end
+
+    def fapdex
+      @page_info["fapdex"] ||= {}
+    end
+
+    def fcount
+      @page_info['page_count'] + @page_info['ajax_count']
+    end
+
+    def fapdex_score
+      (fapdex["satisfied"].to_f + fapdex["tolerating"].to_f / 2.0) / fcount.to_f
     end
 
     def response
@@ -99,12 +121,20 @@ module Logjam
     end
 
     def add(other)
-      @page_info["count"] += other.count
+      @page_info["count"] += other.count('total_time')
+      @page_info["page_count"] += other.count('page_time')
+      @page_info["ajax_count"] += other.count('ajax_time')
       @resources.each do |r|
-        @page_info[r] = sum(r) + other.sum(r)
-        @page_info["#{r}_sq"] = sum_sq(r) + other.sum_sq(r)
+        begin
+          @page_info[r] = sum(r) + other.sum(r)
+          @page_info["#{r}_sq"] = sum_sq(r) + other.sum_sq(r)
+        rescue
+          Rails.logger.error("MUUUU[#{r}]: #{@page_info.inspect}, !!! #{sum(r)}  !!! #{other.send :inspect}")
+          raise
+        end
       end
       other.apdex.each {|x,y| apdex[x] = (apdex[x]||0) + y}
+      other.fapdex.each {|x,y| fapdex[x] = (fapdex[x]||0) + y}
       other.response.each {|x,y| response[x] = (response[x]||0) + y}
       other.severity.each {|x,y| severity[x] = (severity[x]||0) + y}
       other.exceptions.each {|x,y| exceptions[x] = (exceptions[x]||0) + y}
@@ -131,7 +161,7 @@ module Logjam
     def to_hash
       {
         page: page,
-        count: count,
+        count: count('total_time'),
         apdex: apdex.merge(t: 0.5, score: apdex_score),
         response_codes: response,
       }.tap do |h|
@@ -188,6 +218,7 @@ module Logjam
       super(db, "totals")
       @resources = resources.dup
       @apdex = @resources.delete("apdex")
+      @fapdex = @resources.delete("fapdex")
       @response = @resources.delete("response")
       @severity = @resources.delete("severity")
       @exceptions = @resources.delete("exceptions")
@@ -239,7 +270,7 @@ module Logjam
       if order = options[:order]
         case order.to_sym
         when :count
-          pages.sort_by!{|r| -r.count}
+          pages.sort_by!{|r| -r.count('total_time')}
         when :apdex
           pages.sort_by!{|r| r.apdex_score}
         else
@@ -254,8 +285,8 @@ module Logjam
       proper << combine_pages(rest)
     end
 
-    def count
-      @count ||= the_pages.inject(0){|n,p| n += p.count}
+    def count(resource = 'total_time')
+      @count ||= the_pages.inject(0){|n,p| n += p.count(resource)}
     end
 
     def request_count
@@ -279,7 +310,7 @@ module Logjam
     end
 
     def avg(resource)
-      @avg[resource] ||= sum(resource)/count rescue 0.0
+      @avg[resource] ||= sum(resource)/count(resource) rescue 0.0
     end
 
     def zero_resources?(resources)
@@ -289,7 +320,7 @@ module Logjam
     def stddev(resource)
       @stddev[resource] ||=
         begin
-          n, s, sq = count, sum(resource), sum_sq(resource)
+          n, s, sq = count(resource), sum(resource), sum_sq(resource)
           a = avg(resource)
           (n == 1 || s == 0) ? 0.0 : Math.sqrt((sq - n*a*a).abs/(n-1).to_f)
         end
@@ -297,6 +328,10 @@ module Logjam
 
     def apdex
       @apdex_hash ||= the_pages.inject(Hash.new(0)){|h,p| p.apdex.each{|k,v| h[k] += v}; h}
+    end
+
+    def fapdex
+      @fapdex_hash ||= the_pages.inject(Hash.new(0)){|h,p| p.fapdex.each{|k,v| h[k] += v}; h}
     end
 
     def response_codes
@@ -396,7 +431,7 @@ module Logjam
     end
 
     def compute
-      all_fields = ["page", "count", @apdex, @response, @severity, @exceptions, @js_exceptions, @callers].compact + @resources
+      all_fields = ["page", "count", "page_count", "ajax_count", @apdex, @fapdex, @response, @severity, @exceptions, @js_exceptions, @callers].compact + @resources
       sq_fields = @resources.map{|r| "#{r}_sq"}
       fields = {:fields => all_fields.concat(sq_fields)}
 

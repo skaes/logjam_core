@@ -10,7 +10,11 @@ module Logjam
 
     MEMORY_FIELDS = Resource.memory_resources + Resource.heap_resources
 
-    FIELDS = TIME_FIELDS + CALL_FIELDS + MEMORY_FIELDS
+    FRONTEND_FIELDS = Resource.frontend_resources
+
+    DOM_FILEDS = Resource.dom_resources
+
+    FIELDS = TIME_FIELDS + CALL_FIELDS + MEMORY_FIELDS + FRONTEND_FIELDS + DOM_FILEDS
 
     QUANTIFIED_FIELDS = TIME_FIELDS + %w(allocated_objects allocated_bytes)
 

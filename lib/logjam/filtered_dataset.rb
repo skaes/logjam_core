@@ -32,6 +32,7 @@ module Logjam
     end
 
     def initialize(options = {})
+      # puts options.inspect
       @date = options[:date]
       @app = options[:app]
       @env = options[:env]
@@ -83,7 +84,9 @@ module Logjam
     end
 
     def accumulates_time?
-      (Resource.resource_type(resource) == :time) && grouping? && [:sum, :avg, :stddev, :count, :apdex].include?(grouping_function.to_sym)
+      [:time, :frontend].include?(Resource.resource_type(resource)) &&
+        grouping? &&
+        [:sum, :avg, :stddev, :count, :apdex, :fapdex].include?(grouping_function.to_sym)
     end
 
     def intervals_per_day
@@ -141,15 +144,17 @@ module Logjam
 
     def resource_fields
       case Resource.resource_type(resource)
-      when :time   then Resource.time_resources
-      when :call   then Resource.call_resources
-      when :memory then Resource.memory_resources
-      when :heap   then Resource.heap_resources
+      when :time       then Resource.time_resources
+      when :call       then Resource.call_resources
+      when :memory     then Resource.memory_resources
+      when :heap       then Resource.heap_resources
+      when :dom        then Resource.dom_resources
+      when :frontend   then Resource.frontend_resources
       end & @collected_resources
     end
 
     def totals
-      @totals ||= Totals.new(@db, %w(apdex response severity exceptions js_exceptions) + resource_fields, page)
+      @totals ||= Totals.new(@db, %w(apdex fapdex response severity exceptions js_exceptions) + resource_fields, page)
     end
 
     def namespace?
@@ -171,8 +176,8 @@ module Logjam
     def summary
       @summary ||=
         begin
-          all_resources = Resource.time_resources + Resource.call_resources + Resource.memory_resources + Resource.heap_resources
-          resources = (all_resources & @collected_resources) - %w(heap_growth) + %w(apdex response callers)
+          all_resources = Resource.time_resources + Resource.call_resources + Resource.memory_resources + Resource.heap_resources + Resource.frontend_resources + Resource.dom_resources
+          resources = (all_resources & @collected_resources) - %w(heap_growth) + %w(apdex fapdex response callers)
           Totals.new(@db, resources, page, totals.page_names)
         end
     end
@@ -181,8 +186,11 @@ module Logjam
       [:allocated_memory, :allocated_bytes].include? attr.to_sym
     end
 
-    YLABELS = { :time => 'Response time (ms)', :call => '# of calls',
-                :memory => 'Allocations (bytes)', :heap => 'Heap size (slots)'}
+    YLABELS = {
+      :time => 'Response time (ms)', :call => '# of calls',
+      :memory => 'Allocations (bytes)', :heap => 'Heap size (slots)',
+      :frontend => 'Frontend time (ms)', :dom => '# of nodes'
+    }
 
     def has_callers?
       summary.callers_count > 0
@@ -193,7 +201,7 @@ module Logjam
     end
 
     def resources_excluded_from_plot
-      %w(total_time allocated_memory requests heap_growth)
+      %w(total_time allocated_memory requests heap_growth ajax_time page_time)
     end
 
     def plotted_resources
@@ -224,6 +232,8 @@ module Logjam
               if v.is_a?(Float) && v.nan?
                 Rails.logger.error("found NaN for resource #{r} minute #{i}")
                 v = 0.0
+              else
+                # Rails.logger.error("found #{v} for resource #{r} minute #{i}")
               end
               total += v unless r == "gc_time"
               results[r][i] = v
@@ -311,6 +321,47 @@ module Logjam
 
     def apdex
       satisfied + tolerating / 2.0
+    end
+
+    # frontend apdex
+    def f_count
+      f_satisfied_count + f_tolerating_count + f_frustrated_count
+    end
+
+    def f_happy_count
+      totals.fapdex["happy"].to_i
+    end
+
+    def f_happy
+      f_happy_count / f_count.to_f
+    end
+
+    def f_satisfied_count
+      totals.fapdex["satisfied"].to_i
+    end
+
+    def f_satisfied
+      f_satisfied_count / f_count.to_f
+    end
+
+    def f_tolerating_count
+      totals.fapdex["tolerating"].to_i
+    end
+
+    def f_tolerating
+      f_tolerating_count / f_count.to_f
+    end
+
+    def f_frustrated_count
+      totals.fapdex["frustrated"].to_i
+    end
+
+    def f_frustrated
+      f_frustrated_count / f_count.to_f
+    end
+
+    def fapdex
+      f_satisfied + f_tolerating / 2.0
     end
 
     def error_count
