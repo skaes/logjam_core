@@ -5,7 +5,8 @@ var xDown = null,
     yDown = null,
     touchTarget;
 
-function handleTouchStart(evt) {
+function handleTouchStart(event) {
+  var evt = event.originalEvent;
   if (evt.touches) {
     xDown = evt.touches[0].clientX;
     yDown = evt.touches[0].clientY;
@@ -16,9 +17,10 @@ function handleTouchStart(evt) {
     touchTarget = evt.target;
 };
 
-function handleTouchMove(evt) {
-    var touchElement = $('#logjam-sidebar');
-    var touchElementTrigger = $('#mobile-trigger');
+function handleTouchMove(event) {
+    var evt = event.originalEvent;
+
+    var touchElement = $('#logjam-sidebar, #mobile-trigger');
 
     if ( ! xDown || ! yDown ) {
         return;

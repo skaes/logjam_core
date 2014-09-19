@@ -84,8 +84,10 @@ $(document).ready(initialize_header);
     });
 
     $('.application-suggest').on('blur', function(event) {
-      $('.application-chooser').removeClass('active');
-      $('.dropdown-menu li', '.application-chooser').removeClass('active');
+      setTimeout(function(){
+        $('.application-chooser').removeClass('active');
+        $('.dropdown-menu li', '.application-chooser').removeClass('active');
+      }, 50)
     });
 
     $('.application-suggest').on('keyup', function(event) {
@@ -128,13 +130,7 @@ $(document).ready(initialize_header);
       if( event.keyCode == 13 && $('.dropdown-menu li.active a', '.application-chooser').length > 0 ) {
         location.href = $('.dropdown-menu li.active a', '.application-chooser').attr('href');
       }
-
     });
-
-    $('.dropdown-menu li').on("touch", function(event){
-      alert('foo');
-    });
-
   });
 
 </script>
