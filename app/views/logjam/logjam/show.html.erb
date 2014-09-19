@@ -5,9 +5,10 @@
      heap_resources = Logjam::Resource.heap_resources
      colors = Logjam::Resource.colors
      pie_colors = Logjam::Resource.colors_with_transparency(0.7)
+
+     # TODO: fix it
      other_keys = @request.keys - time_resources - call_resources - memory_resources - heap_resources
      other_keys.reject!{|k| k =~ /(^_id|lines|minute|page|_sq|request_info)$/}
-
      sorted_time_resources = @request.slice(*time_resources).sort { |a, b| b.last <=> a.last }
      size = 75
   -%>
