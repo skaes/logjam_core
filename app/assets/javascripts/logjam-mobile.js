@@ -17,7 +17,8 @@ function handleTouchStart(evt) {
 };
 
 function handleTouchMove(evt) {
-    var touchElement = document.getElementById('logjam-sidebar');
+    var touchElement = $('#logjam-sidebar');
+    var touchElementTrigger = $('#mobile-trigger');
 
     if ( ! xDown || ! yDown ) {
         return;
@@ -37,24 +38,24 @@ function handleTouchMove(evt) {
     if ( Math.abs( xDiff ) > Math.abs( yDiff ) ) {/*most significant*/
         if ( xDiff > 0 ) {
             /* left swipe */
-          if (touchTarget == touchElement) {
+          if (touchTarget === touchElement[0] || $.contains(touchElement[0], touchTarget)) {
             $(document).trigger("swipeLeft");
           }
         } else {
             /* right swipe */
-          if (touchTarget == touchElement) {
+          if (touchTarget === touchElement[0]) {
             $(document).trigger("swipeRight");
           }
         }
     } else {
         if ( yDiff > 0 ) {
             /* up swipe */
-          if (touchTarget == touchElement) {
+          if (touchTarget == touchElement[0]) {
             $(document).trigger("swipeUp");
           }
         } else {
             /* down swipe */
-          if (touchTarget == touchElement) {
+          if (touchTarget == touchElement[0]) {
             $(document).trigger("swipeUp");
           }
         }
