@@ -218,10 +218,8 @@ td.group-thing { font-size: 90%; }
     height: 18px;
     z-index: -100;
 }
-.gbox.apdex-ok { background-color: rgba(0,255,0,0.2); }
-.gbox.apdex-fail { background-color: rgba(255,0,0,0.2); }
-td.number.apdex-ok { background-color: rgba(0,255,0,0.2); }
-td.number.apdex-fail { background-color: rgba(255,0,0,0.2); }
+.apdex-ok { background-color: rgba(0,255,0,0.2) !important; }
+.apdex-fail { background-color: rgba(255,0,0,0.2) !important; }
 
 td {padding: 0 8px;}
 td.number {text-align: right;}
