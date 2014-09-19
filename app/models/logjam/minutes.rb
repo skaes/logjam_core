@@ -20,6 +20,7 @@ module Logjam
       @pattern = "all_pages" if @pattern.blank? || @pattern == "::"
       @pattern = "::#{@pattern}" if page_names.include?("::#{pattern}")
       @pattern = Regexp.new(/#{@pattern}/) unless @pattern == "all_pages" || page_names.include?(@pattern)
+      @counter_name = (@resources & Resource.frontend_resources).empty? ? "count" : "page_count"
       compute(interval)
     end
 
@@ -55,9 +56,19 @@ module Logjam
       @apdex ||= extract_sub_hash('apdex')
     end
 
+    def fapdex
+      @apdex ||= extract_sub_hash('fapdex')
+    end
+
     def apdex_score
       @apdex_score ||= @minutes.keys.each_with_object(Hash.new(0)) do |m,h|
         h[m] = ((apdex["satisfied"][m] + apdex["tolerating"][m]/2.0) / counts[m])/@interval.to_f
+      end
+    end
+
+    def fapdex_score
+      @fapdex_score ||= @minutes.keys.each_with_object(Hash.new(0)) do |m,h|
+        h[m] = ((fapdex["satisfied"][m] + fapdex["tolerating"][m]/2.0) / counts[m])/@interval.to_f
       end
     end
 
@@ -75,20 +86,21 @@ module Logjam
     end
 
     def compound_resources
-      %w(apdex exceptions js_exceptions severity callers response)
+      %w(apdex fapdex exceptions js_exceptions severity callers response)
     end
 
     def compute(interval)
       logger.debug "pattern: #{@pattern}, resources: #{@resources.inspect}"
       selector = {:page => @pattern}
-      fields = {:fields => ["minute","count"].concat(@resources)}
+      fields = {:fields => ["minute", @counter_name].concat(@resources)}
 
       query = "Minutes.find(#{selector.inspect},#{fields.inspect})"
       rows = with_conditional_caching(query) do |payload|
         rs = []
         @collection.find(selector, fields.clone).each do |row|
           row.delete("_id")
-          rs << row
+          rs << row if row[@counter_name].to_i > 0
+          puts row.inspect
         end
         payload[:rows] = rs.size
         rs
@@ -100,7 +112,7 @@ module Logjam
       counter_resources = @resources - compound_resources
       hashed_resources = @resources & compound_resources
       while row = rows.shift
-        count = row["count"] || 0.0
+        count = row[@counter_name] || 0.0
         slot = row["minute"] / interval
         counts[slot] += count
         sum_sofar = (sums[slot] ||= Hash.new(0.0))
