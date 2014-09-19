@@ -169,6 +169,10 @@ th.sorted {
     background-size: 16px 12px;
 }
 
+table.full_stats {
+  border-spacing: 0;
+}
+
 tr.full_stats:hover {
     background: $lighter-grey;
 }
