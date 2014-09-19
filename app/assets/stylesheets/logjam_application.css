@@ -10,5 +10,13 @@
  *
   *= require font-awesome
   *= require_self
-  *= require_tree .
+  *= require base
+  *= require generics
+  *= require header
+  *= require jdpicker
+  *= require sidebar
+  *= require layouts
+  *= require charts
+  *= require tipsy
+  *= require media-queries
  */

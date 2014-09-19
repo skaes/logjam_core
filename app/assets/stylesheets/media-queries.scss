@@ -2,22 +2,13 @@
 @import 'constants.scss';
 
 // Retina Display
-@media only screen and (-webkit-min-device-pixel-ratio: 2) {
-  th.sortable:hover {
-    background-image: image-url('table_sort_desc2x.png');
-  }
-}
 
-@media only screen and (-webkit-min-device-pixel-ratio: 2) {
-  th.sorted {
-    background-image: image-url('table_sorted_desc2x.png');
-  }
-}
 
-@media all and (max-device-width: 1024px) {
+@media all and (max-width: 1024px) {
   #logjam-container {
     display: block;
     overflow: hidden;
+    background: ff0000;
   }
 
   .app-dashboard {
@@ -33,6 +24,7 @@
     display: block;
     transition: padding 0.5s;
     padding-left: 0;
+
 
     &:before {
       content: "\f0c9";
@@ -76,8 +68,7 @@
 }
 
 // iPad Portrait
-@media all and (max-device-width: 1000px) {
-
+@media all and (max-width: 1000px) {
   .app-overview {
     display: flex;
     flex-direction: row;
@@ -87,6 +78,7 @@
 
     .item {
       min-width: 250px;
+
     }
   }
 
@@ -112,7 +104,7 @@
 
 }
 
-@media all and (max-device-width: 750px) {
+@media all and (max-width: 750px) {
   .app-dashboard {
     margin: 0 !important;
 
@@ -164,7 +156,7 @@
 }
 
 // iPhone
-@media all and (max-device-width: 320px) {
+@media all and (max-width: 320px) {
   #logjam-header {
     height: 150px;
 
