@@ -1,18 +1,35 @@
 @import 'mixins.scss';
 @import 'constants.scss';
 
-// Retina Display
+ /* Retina Display  */
+@media only screen and (-webkit-min-device-pixel-ratio: 2) {
 
 
-@media all and (max-width: 1024px) {
+  th.sorted {
+    background-image: image-url('table_sorted_desc2x.png');
+
+    &:hover {
+      background-image: image-url('table_sort_desc2x.png');
+    }
+  }
+}
+
+@media all and (max-width: 1100px) {
+  #mobile-trigger {
+    background: green !important;
+  }
+
   #logjam-container {
     display: block;
     overflow: hidden;
-    background: ff0000;
+    box-sizing: border-box;
+    width: auto;
+    margin-right: 0px;
   }
 
   .app-dashboard {
     margin: 0 !important;
+    box-sizing: border-box;
   }
 
   #mobile-trigger {
@@ -60,15 +77,25 @@
   }
 
   .app-overview {
+     overflow-x: scroll; /* has to be scroll, not auto */
+    -webkit-overflow-scrolling: touch;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
     .item {
-      min-width: 0;
+      min-width: 250px;
     }
   }
 
 }
 
-// iPad Portrait
-@media all and (max-width: 1000px) {
+/* iPad Portrait  */
+@media all and (max-width: 800px) {
+  #mobile-trigger {
+    background: yellow !important;
+  }
+
   .app-overview {
     display: flex;
     flex-direction: row;
@@ -103,8 +130,11 @@
   }
 
 }
-
+/* smartphone landscape */
 @media all and (max-width: 750px) {
+  #mobile-trigger {
+    background: red !important;
+  }
   .app-dashboard {
     margin: 0 !important;
 
@@ -155,7 +185,7 @@
   }
 }
 
-// iPhone
+/* smartphone portrait */
 @media all and (max-width: 320px) {
   #logjam-header {
     height: 150px;
