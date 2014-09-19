@@ -197,8 +197,8 @@ td.group-thing { font-size: 90%; }
 
 .gbg {
     position: relative;
-    left:0;
-    top:0;
+    left: 0;
+    top: 2px;
     display: inline-block;
     width: 100%;
     z-index: 1;
@@ -211,7 +211,7 @@ td.group-thing { font-size: 90%; }
 .gbox {
     position: absolute;
     left:0;
-    top: -2px;
+    top: 0px;
     background-color: rgba(112, 195, 255, 0.5);
     width: 0px;
     min-width:1px;
