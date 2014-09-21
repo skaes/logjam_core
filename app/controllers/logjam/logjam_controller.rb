@@ -146,6 +146,7 @@ module Logjam
 
     def show
       prepare_params
+      redirect_on_empty_dataset and return
       logjam_request_id = [@app, @env, params[:id]].join('-')
       @js_exceptions = Logjam::JsExceptions.new(@db).find_by_request(logjam_request_id)
       @request = Requests.new(@db).find(params[:id])

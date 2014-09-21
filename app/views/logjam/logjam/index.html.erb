@@ -3,23 +3,31 @@
   <%= render "sidebar" %>
   <div id="logjam-content" class="app-dashboard">
 
+    <% if @dataset.empty? -%>
+
     <div class="app-overview">
+      <div class="item">
+        <p class="warning">Alas, thar be nothin' in t' database!</p>
+      </div>
+    </div>
+
+    <% else -%>
+
+    <div class="app-overview">
+      <% if @dataset.has_frontend? %>
       <%= render "frontend_apdex" %>
+      <% end %>
       <%= render "apdex" %>
       <%= render "response_codes" %>
       <%= render "errors" %>
     </div>
 
     <div class="app-overview">
-
       <div class="item has-action">
-        <% if @dataset.empty? -%>
-        <p class="warning">Dataset is empty.</p>
-        <% else -%>
-          <h2>
-            showing
-            <%= number_with_delimiter @dataset.count_requests %> of <%= number_with_delimiter @dataset.count %> requests
-          </h2>
+        <h2>
+          showing
+          <%= number_with_delimiter @dataset.count_requests %> of <%= number_with_delimiter @dataset.count %> requests
+        </h2>
           <%= render "navicons" %>
           <%= render :partial => "resource_plot", :locals => {:width => 450, :height => 150} %>
         <% end -%>
@@ -51,4 +59,5 @@
         <%= render "breakdown" %>
       </div>
     <% end -%>
+  </div>
 </div>
