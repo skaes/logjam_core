@@ -89,6 +89,12 @@
         color: $white;
       }
 
+      .inactive a {
+          color: grey;
+          cursor: default;
+          pointer-events: none;
+      }
+
       > li {
         display: block;
         margin-top: 10px;

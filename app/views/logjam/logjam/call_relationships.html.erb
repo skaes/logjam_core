@@ -39,7 +39,7 @@
 
     <div class="app-overview">
       <div id="callers" class="item">
-        <table class='full_stats'>
+        <table class="full_stats">
           <tr><th>Caller</th><th>Callee</th><th>#Calls</th></tr>
           <% @data.each do |h| %>
             <% caller, callee, count = h.values_at(:source, :target, :count) %>

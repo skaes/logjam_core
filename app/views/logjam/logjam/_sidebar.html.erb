@@ -37,22 +37,24 @@
           <input id="page-field" class="autocomplete" placeholder="Search Namespace / Action" name="page" size="45" type="text" value="<%= @page %>" onchange="view_selected_pages()" />
         </li>
 
-        <% if @dataset && @dataset.live_stream? -%>
-          <li>
-            <%= link_to(fa_icon("play-circle", :title => "view live stream") + " Live View", clean_params(params.slice(:app,:env,:page).merge(:action => "live_stream"))) %>
-          </li>
-        <% end -%>
+        <% klass = (@dataset && @dataset.live_stream?) ? "active" : "inactive" %>
+        <li class="<%= klass %>">
+          <%= link_to(fa_icon("play-circle", :title => "view live stream") + " Live View", clean_params(params.slice(:app,:env,:page).merge(:action => "live_stream"))) %>
+        </li>
 
-        <% if @dataset && @dataset.has_distribution_plot? %>
-          <li>
+        <% klass = @dataset && @dataset.has_distribution_plot? ? "active" : "inactive" %>
+        <li class="<%= klass %>">
           <% scatter_title = "view #{distribution_kind(@dataset.resource).to_s.gsub(/_/," ")} plot" %>
-            <%= clean_link_to(fa_icon("signal flip-horizontal", :title => scatter_title) + " Distribution plot" ,:page => without_module(@page), :action => distribution_kind(@dataset.resource)) %>
-          </li>
-        <% end %>
+            <%= clean_link_to(fa_icon("signal flip-horizontal", :title => scatter_title) + " Distribution Plot" ,:page => without_module(@page), :action => distribution_kind(@dataset.resource)) %>
+        </li>
 
         <% unless @only_one_app %>
+          <% klass = @dataset && @dataset.has_callers? ? "active" : "inactive" %>
+          <li class="<%= klass %>">
+            <%= clean_link_to(fa_icon("phone", :title => "Show Callers") + " Callers", :action =>"callers") %>
+          </li>
           <li>
-            <%= clean_link_to(fa_icon("bar-chart", :title => "analyze call relationships") + " Call relationships", :action => "call_relationships", :filter => @app) %>
+            <%= clean_link_to(fa_icon("cloud", :title => "analyze call relationships") + " Call Relationships", :action => "call_relationships", :filter => @app) %>
           </li>
         <% end %>
 
@@ -107,10 +109,10 @@
 
       <ul class="admin">
         <li>
-          <i class="fa fa-file-text-o"></i> <%= link_to("show json", params.merge(:format => :json)) %>
+          <i class="fa fa-file-text-o"></i> <%= clean_link_to("API Response", params.merge(:format => :json)) %>
         </li>
         <li>
-          <i class="fa fa-cogs"></i> <%= link_to("admin", admin_storage_path, :title => "admin stuff") %>
+          <i class="fa fa-cogs"></i> <%= link_to("Admin Space", admin_storage_path, :title => "admin stuff") %>
         </li>
       </ul>
   </div>
