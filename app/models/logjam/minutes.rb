@@ -100,7 +100,7 @@ module Logjam
         @collection.find(selector, fields.clone).each do |row|
           row.delete("_id")
           rs << row if row[@counter_name].to_i > 0
-          puts row.inspect
+          # puts row.inspect
         end
         payload[:rows] = rs.size
         rs

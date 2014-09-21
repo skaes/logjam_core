@@ -289,16 +289,21 @@ module Logjam
       @count ||= the_pages.inject(0){|n,p| n += p.count(resource)}
     end
 
-    def request_count
-      @request_count ||=
-        begin
-          query = "Totals.request_count"
-          with_conditional_caching(query) do |payload|
-            rows = @collection.find({:page=>"all_pages"},{:fields=>["count"]}).to_a
-            payload[:rows] = rows.size
-            rows.first["count"].to_i
-          end
+    KNOWN_SECTIONS = %i(backend frontend)
+    def request_count(section = :backend)
+      raise ArgumentErrror.new("unknown section: #{section}") unless KNOWN_SECTIONS.include?(section)
+      unless @request_counts
+        query = "Totals.request_count(count,page_count,ajax_count)"
+        @request_counts = with_conditional_caching(query) do |payload|
+          counts = Hash.new(0)
+          rows = @collection.find({:page=>"all_pages"},{:fields=>["count","page_count","ajax_count"]}).to_a
+          payload[:rows] = rows.size
+          counts[:backend] = rows.first["count"].to_i
+          counts[:frontend] = rows.first["ajax_count"].to_i + rows.first["page_count"].to_i
+          counts
         end
+      end
+      @request_counts[section]
     end
 
     def sum(resource)

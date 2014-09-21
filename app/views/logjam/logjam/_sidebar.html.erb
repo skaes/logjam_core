@@ -28,7 +28,8 @@
     <div class="menu-wrapper">
       <div class="tabs">
         <a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/?app=<%= params[:app] %>&section=backend" data-menu="backend-menu" class="btn<% if params[:section] == 'backend' %> active<% end %>">Backend</a>
-        <a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/frontend_overview/?app=<%= params[:app] %>&section=frontend" data-menu="frontend-menu" class="btn<% if params[:section] == 'frontend' %> active<% end %>">Frontend</a>
+        <% klass = @dataset && @dataset.has_frontend? ? " enabled" : " disabled" %>
+        <a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/frontend_overview/?app=<%= params[:app] %>&section=frontend" data-menu="frontend-menu" class="btn<% if params[:section] == 'frontend' %> active<% end %> <%=klass%>">Frontend</a>
       </div>
 
       <ul class="logjam-menu<% if params[:section] == 'backend' %> active<% end %>" id="backend-menu">
@@ -37,19 +38,19 @@
           <input id="page-field" class="autocomplete" placeholder="Search Namespace / Action" name="page" size="45" type="text" value="<%= @page %>" onchange="view_selected_pages()" />
         </li>
 
-        <% klass = (@dataset && @dataset.live_stream?) ? "active" : "inactive" %>
+        <% klass = (@dataset && @dataset.live_stream?) ? "enabled" : "disabled" %>
         <li class="<%= klass %>">
           <%= link_to(fa_icon("play-circle", :title => "view live stream") + " Live View", clean_params(params.slice(:app,:env,:page).merge(:action => "live_stream"))) %>
         </li>
 
-        <% klass = @dataset && @dataset.has_distribution_plot? ? "active" : "inactive" %>
+        <% klass = @dataset && @dataset.has_distribution_plot? ? "enabled" : "disabled" %>
         <li class="<%= klass %>">
           <% scatter_title = "view #{distribution_kind(@dataset.resource).to_s.gsub(/_/," ")} plot" %>
             <%= clean_link_to(fa_icon("signal flip-horizontal", :title => scatter_title) + " Distribution Plot" ,:page => without_module(@page), :action => distribution_kind(@dataset.resource)) %>
         </li>
 
         <% unless @only_one_app %>
-          <% klass = @dataset && @dataset.has_callers? ? "active" : "inactive" %>
+          <% klass = @dataset && @dataset.has_callers? ? "enabled" : "disabled" %>
           <li class="<%= klass %>">
             <%= clean_link_to(fa_icon("phone", :title => "Show Callers") + " Callers", :action =>"callers") %>
           </li>

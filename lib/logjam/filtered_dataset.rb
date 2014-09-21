@@ -196,6 +196,10 @@ module Logjam
       summary.callers_count > 0
     end
 
+    def has_frontend?
+      summary.request_count(:frontend) > 0
+    end
+
     def ylabel
       YLABELS[plot_kind] || ""
     end

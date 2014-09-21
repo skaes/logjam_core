@@ -89,8 +89,8 @@
         color: $white;
       }
 
-      .inactive a {
-          color: grey;
+      .disabled a {
+          color: $grey;
           cursor: default;
           pointer-events: none;
       }

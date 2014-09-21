@@ -38,6 +38,12 @@ a.btn {
   line-height: 31px;
 }
 
+a.disabled {
+    color: $grey;
+    cursor: default;
+    pointer-events: none;
+}
+
 .dropdown-menu {
   display: none;
   border-radius: 1px;
