@@ -211,11 +211,11 @@ td.group-thing { font-size: 90%; }
 .gbox {
     position: absolute;
     left:0;
-    top: 0px;
+    top: -1px;
     background-color: rgba(112, 195, 255, 0.5);
     width: 0px;
     min-width:1px;
-    height: 18px;
+    height: 21px;
     z-index: -100;
 }
 .apdex-ok { background-color: rgba(0,255,0,0.2) !important; }
