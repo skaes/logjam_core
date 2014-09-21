@@ -514,7 +514,7 @@ module Logjam
       get_date
       params[:start_minute] ||= FilteredDataset::DEFAULTS[:start_minute]
       params[:end_minute] ||= FilteredDataset::DEFAULTS[:end_minute]
-      params[:resource] ||= params[:'_section'] == "frontend" ? 'page_time' : FilteredDataset::DEFAULTS[:resource]
+      params[:resource] ||= params[:section] == "frontend" ? 'page_time' : FilteredDataset::DEFAULTS[:resource]
       params[:grouping] ||= FilteredDataset::DEFAULTS[:grouping]
       params[:grouping_function] ||= FilteredDataset::DEFAULTS[:grouping_function]
       params[:interval] ||= FilteredDataset::DEFAULTS[:interval]
@@ -539,7 +539,7 @@ module Logjam
         :grouping => params[:grouping],
         :grouping_function => (params[:grouping_function] || :avg).to_sym,
         :start_minute => params[:start_minute].to_i,
-        :section => params[:'_section'] || 'backend',
+        :section => params[:section] || 'backend',
         :end_minute => params[:end_minute].to_i)
     end
 

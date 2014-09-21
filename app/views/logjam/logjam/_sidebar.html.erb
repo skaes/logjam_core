@@ -13,8 +13,8 @@
 <% end %>
 
 <%
-  if !params[:_section]
-    params[:_section] = "backend"
+  if !params[:section]
+    params[:section] = "backend"
   end
 %>
 
@@ -27,11 +27,11 @@
 
     <div class="menu-wrapper">
       <div class="tabs">
-        <a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/?app<%= params[:app] %>/?app=<%= params[:app] %>&_section=backend" data-menu="backend-menu" class="btn<% if params[:_section] == 'backend' %> active<% end %>">Backend</a>
-        <a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/frontend_overview/?app=<%= params[:app] %>&_section=frontend" data-menu="frontend-menu" class="btn<% if params[:_section] == 'frontend' %> active<% end %>">Frontend</a>
+        <a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/?app<%= params[:app] %>/?app=<%= params[:app] %>&section=backend" data-menu="backend-menu" class="btn<% if params[:section] == 'backend' %> active<% end %>">Backend</a>
+        <a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/frontend_overview/?app=<%= params[:app] %>&section=frontend" data-menu="frontend-menu" class="btn<% if params[:section] == 'frontend' %> active<% end %>">Frontend</a>
       </div>
 
-      <ul class="logjam-menu<% if params[:_section] == 'backend' %> active<% end %>" id="backend-menu">
+      <ul class="logjam-menu<% if params[:section] == 'backend' %> active<% end %>" id="backend-menu">
 
         <li class="sidebar-search">
           <input id="page-field" class="autocomplete" placeholder="Search Namespace / Action" name="page" size="45" type="text" value="<%= @page %>" onchange="view_selected_pages()" />
@@ -100,7 +100,7 @@
         <% end %>
       </ul>
 
-      <ul class="logjam-menu<% if params[:_section] == 'frontend' %> active<% end %>" id="frontend-menu">
+      <ul class="logjam-menu<% if params[:section] == 'frontend' %> active<% end %>" id="frontend-menu">
         <li><i class="fa fa-bar-chart"></i> <%= clean_link_to("Overview", {:action => "frontend_overview"}, :title => "Overview") %></li>
         <li><i class="fa fa-warning"></i> <%= clean_link_to("Errors", {:action => "js_exception_types"}, :title => "Errors") %></li>
       </ul>
@@ -118,7 +118,7 @@
     <input type="hidden" id="app" name="app" value="<%= params[:app] %>" />
     <input type="hidden" id="env" name="env" value="<%= params[:env] %>" />
     <input type="hidden" id="auto_refresh" name="auto_refresh" value="<%= params[:auto_refresh] %>" />
-    <input type="hidden" id="_section" name="_section" value="<%= params[:_section] %>" />
+    <input type="hidden" id="section" name="section" value="<%= params[:section] %>" />
     <input type="hidden" id="time-range" name="time_range" value="<%= params[:time_range] %>" />
     <input type="hidden" id="grouping" name="grouping" value="<%= params[:grouping]%>" />
     <input type="hidden" id="resource" name="resource" value="<%= params[:resource] %>" />
