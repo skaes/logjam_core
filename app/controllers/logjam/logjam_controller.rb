@@ -94,7 +94,7 @@ module Logjam
           page = /^#{page}$/ if @page =~ /\A::/ && page_names.include?(page)
           page = /^::#{page}$/ if @page !~ /\A::/ && page_names.include?("::#{page}")
           page = 'all_pages' if @page == '' || @page == '::'
-          resources = %w(apdex severity exceptions total_time) + (Resource.all_resources - %w(total_time))
+          resources = %w(apdex severity exceptions total_time) + Resource.all_resources - Resource.frontend_resources - Resource.dom_resources
           databases = Logjam.grep(Logjam.databases, :app => @app, :env => @env)
           data = []
           today = Date.today
@@ -112,7 +112,8 @@ module Logjam
                 :exceptions => summary.exception_count,
                 :apdex_score => summary.apdex_score
               }
-              Resource.all_resources.each do |r|
+              # TODO: FE
+              (Resource.all_resources - Resource.frontend_resources - Resource.dom_resources).each do |r|
                 if (v = summary.avg(r)) != 0
                   hash[r.to_sym] = v
                 end
@@ -133,8 +134,8 @@ module Logjam
               :calls => Resource.call_resources.reverse & resources,
               :memory => Resource.memory_resources & resources,
               :heap => Resource.heap_resources & resources,
-              :frontend => Resource.frontend_resources & resources,
-              :dom => Resource.dom_resources & resources
+              # :frontend => Resource.frontend_resources & resources,
+              # :dom => Resource.dom_resources & resources
             },
             :data => data
           }
