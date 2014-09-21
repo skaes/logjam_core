@@ -298,8 +298,10 @@ module Logjam
           counts = Hash.new(0)
           rows = @collection.find({:page=>"all_pages"},{:fields=>["count","page_count","ajax_count"]}).to_a
           payload[:rows] = rows.size
-          counts[:backend] = rows.first["count"].to_i
-          counts[:frontend] = rows.first["ajax_count"].to_i + rows.first["page_count"].to_i
+          if rows.size > 0
+            counts[:backend] = rows.first["count"].to_i
+            counts[:frontend] = rows.first["ajax_count"].to_i + rows.first["page_count"].to_i
+          end
           counts
         end
       end
