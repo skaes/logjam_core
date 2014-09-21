@@ -52,16 +52,28 @@ module Logjam
     end
 
     def time_number(f)
-      number_with_precision(f.to_f, :delimiter => ",", :separator => ".", :precision => 2)
+      if f.to_f.nan?
+        "NaN"
+      else
+        number_with_precision(f.to_f, :delimiter => ",", :separator => ".", :precision => 2)
+      end
     end
     alias_method :float_number, :time_number
 
     def memory_number(f)
-      number_with_precision(f.floor, :delimiter => ",", :separator => ".", :precision => 0)
+      if f.to_f.nan?
+        "NaN"
+      else
+        number_with_precision(f.floor, :delimiter => ",", :separator => ".", :precision => 0)
+      end
     end
 
     def integer_number(i)
-      number_with_precision(i.to_i, :delimiter => ",", :precision => 0)
+      if i.to_f.nan?
+        "NaN"
+      else
+        number_with_precision(i.to_i, :delimiter => ",", :precision => 0)
+      end
     end
 
     def callers_sorting_options
