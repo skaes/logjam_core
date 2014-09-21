@@ -4,12 +4,10 @@
   <div id="logjam-content" class="app-dashboard">
 
     <div class="app-overview">
-
       <%= render "frontend_apdex" %>
       <%= render "apdex" %>
       <%= render "response_codes" %>
       <%= render "errors" %>
-
     </div>
 
     <div class="app-overview">
@@ -37,7 +35,7 @@
                 between <%= minute_to_human(@dataset.start_minute) %>
                 and <%= minute_to_human(@dataset.end_minute) %>
                 <%- end -%>
-                <%= sometimes_link_all_pages("(show all actions)") %>
+                <%= sometimes_link_all_pages %>
               </h2>
               <%= render "page_times" %>
             </div>
