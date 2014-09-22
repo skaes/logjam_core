@@ -1,4 +1,4 @@
-<div class="item<% if "%.2f" % @dataset.apdex >= "0.94" %> apdex-ok<% end %><% if "%.2f" % @dataset.apdex < "0.94" %> apdex-fail<% end %>">
+<div class="item has-action<% if "%.2f" % @dataset.apdex >= "0.94" %> apdex-ok<% end %><% if "%.2f" % @dataset.apdex < "0.94" %> apdex-fail<% end %>">
   <h2>Apdex backend</h2>
   <span class="value"><%= "%.2f" % @dataset.apdex %></span>
 <table class="collapse-table">

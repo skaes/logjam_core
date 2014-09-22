@@ -25,10 +25,6 @@
   }
 }
 
-.has-action {
-  padding-bottom: 40px;
-}
-
 .app-dashboard {
   margin: 10px !important;
   flex-direction: row;
@@ -44,12 +40,15 @@
       border-radius: 2px;
       border: 1px solid $lighter-grey;
       padding: 15px;
-      padding-bottom: 40px;
       margin: 10px;
       width: 100%;
       position: relative;
       overflow: hidden;
       overflow-x: auto;
+
+      &.has-action {
+        padding-bottom: 40px;
+      }
 
 
       h2 {
