@@ -2,7 +2,7 @@
   codes_above_400 = @dataset.response_code_summary["4xx"] + @dataset.response_code_summary["5xx"]
 %>
 
-<div class="item">
+<div class="item has-action">
   <h2>Error Responses</h2>
   <span class="value"><%= codes_above_400 %></span>
 
