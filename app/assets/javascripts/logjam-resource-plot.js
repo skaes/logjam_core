@@ -57,7 +57,7 @@ function logjam_resource_plot(params) {
   var vis = d3.select(params.container)
         .append("svg")
         .attr("width", w+50)
-        .attr("height", h+100)
+        .attr("height", h+70)
         .style("stroke", "#999")
         .style("strokeWidth", 1.0)
         .on("click", update_y_scale)
@@ -69,7 +69,7 @@ function logjam_resource_plot(params) {
     .attr("class", "label")
     .attr("dy", h+30)
     .attr("dx", w/2)
-    .style("font", "12px sans-serif")
+    .style("font", "12px open sans")
     .attr("text-anchor", "middle")
     .text("Time of day");
 
@@ -112,7 +112,7 @@ function logjam_resource_plot(params) {
     .attr("dx", 0)
     .attr("dy", 12)
     .attr("text-anchor", "middle")
-    .style("font", "8px sans-serif")
+    .style("font", "8px open sans")
     .text(function(d){return (d*interval)/60;});
 
   /* Y-label */
@@ -120,7 +120,7 @@ function logjam_resource_plot(params) {
     .attr("class", "label")
     .attr("dy", -25)
     .attr("dx", -w/2+140)
-    .style("font", "12px sans-serif")
+    .style("font", "12px open sans")
     .attr("text-anchor", "middle")
     .attr("transform", "rotate(270)")
     .text(params.ylabel);
@@ -147,7 +147,7 @@ function logjam_resource_plot(params) {
       .attr("dx", -10)
       .attr("dy", 3)
       .attr("text-anchor", "middle")
-      .style("font", "8px sans-serif")
+      .style("font", "8px open sans")
       .text(y_ticks_formatter);
     vlabels.exit().remove();
 
@@ -169,10 +169,10 @@ function logjam_resource_plot(params) {
     .data(legend)
     .enter().append("svg:text")
     .attr("class", "legend")
-    .attr("x", function(d,i){return 10+(120*(Math.floor(i/2)));})
-    .attr("y", function(d,i){return h+50+14*(i%2);})
+    .attr("x", function(d,i){ return 10+(120*(Math.floor(i))); })
+    .attr("y", function(d,i){ return h+50; })
     .on("click", function(d,i){ submit_resource(legend[i]); })
-    .style("font", "10px sans-serif")
+    .style("font", "10px open sans")
     .style("cursor", "pointer")
     .text(String);
 
@@ -181,8 +181,8 @@ function logjam_resource_plot(params) {
     .enter().append("svg:circle")
     .attr("class", "legendmark")
     .attr("transform", "translate(-7,-3)")
-    .attr("cx", function(d,i){return 10+(120*(Math.floor(i/2)));})
-    .attr("cy", function(d,i){return h+50+14*(i%2);})
+    .attr("cx", function(d,i){return 10+(120*(Math.floor(i)));})
+    .attr("cy", function(d,i){ return h+50; })
     .attr("r", 4)
     .on("click", function(d,i){ submit_resource(legend[i]); })
     .style("cursor", "pointer")
@@ -196,7 +196,7 @@ function logjam_resource_plot(params) {
     .enter()
     .append("text")
     .attr("class", "rlabel")
-    .style("font", "10px sans-serif")
+    .style("font", "10px open sans")
     .attr("text-anchor", "end")
     .attr("y", function(d,i){ return 50-i*25-1 })
     .attr("x", w-1)
