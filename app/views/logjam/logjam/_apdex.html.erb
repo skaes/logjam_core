@@ -1,31 +1,30 @@
-<div class="item<% if "%.2f" % @dataset.apdex >= "0.94" %> apdex-ok<% end %><% if "%.2f" % @dataset.apdex < "0.94" %> apdex-fail<% end %>">
-  <h2>Apdex Backend</h2>
-  <span class="value"><%= "%.2f" % @dataset.apdex %></span>
-<table class="collapse-table">
-  <tr>
-    <td>happy (t &lt; 0.1s)</td>
-    <td class="number" title="<%= @dataset.happy_count %>"><%= "%.2f" % (100.0 * @dataset.happy) %>%</td>
-  </tr>
-  <tr>
-    <td>satisfied (t &lt; 0.5s)</td>
-    <td class="number" title="<%= @dataset.satisfied_count %>"><%= "%.2f" % (100.0 * @dataset.satisfied) %>%</td>
-  </tr>
-  <tr>
-    <td>tolerating (0.5s &le; t &lt; 2s)</td>
-    <td class="number" title="<%= @dataset.tolerating_count %>"><%= "%.2f" % (100.0 * @dataset.tolerating) %>%</td>
-  </tr>
-  <tr>
-    <td>frustrated (t &ge; 2s)</td>
-    <td class="number" title="<%= @dataset.frustrated_count %>"><%= "%.2f" % (100.0 * @dataset.frustrated) %>%</td>
-  </tr>
-  <tr><td></td><td></td></tr>
-  <tr>
-    <td><%= link_to "apdex score", "http://www.apdex.org/overview.html", :title => "show definition" %></td>
-    <td class="number"></td>
-  </tr>
-</table>
-  <div class="action">
-    <%= clean_link_to('show apdex overview', {:action => "apdex_overview"}, :title => "show apdex overview") %>
-  </div>
+<div class="item clickable<% if "%.2f" % @dataset.apdex >= "0.94" %> apdex-ok<% end %><% if "%.2f" % @dataset.apdex < "0.94" %> apdex-fail<% end %>">
+  <%= link_to({:action => "apdex_overview"}, :title => "show apdex overview") do %>
+    <h2>Apdex backend</h2>
+    <span class="value"><%= "%.2f" % @dataset.apdex %></span>
+    <table class="collapse-table">
+      <tr>
+        <td>happy (t &lt; 0.1s)</td>
+        <td class="number" title="<%= @dataset.happy_count %>"><%= "%.2f" % (100.0 * @dataset.happy) %>%</td>
+      </tr>
+      <tr>
+        <td>satisfied (t &lt; 0.5s)</td>
+        <td class="number" title="<%= @dataset.satisfied_count %>"><%= "%.2f" % (100.0 * @dataset.satisfied) %>%</td>
+      </tr>
+      <tr>
+        <td>tolerating (0.5s &le; t &lt; 2s)</td>
+        <td class="number" title="<%= @dataset.tolerating_count %>"><%= "%.2f" % (100.0 * @dataset.tolerating) %>%</td>
+      </tr>
+      <tr>
+        <td>frustrated (t &ge; 2s)</td>
+        <td class="number" title="<%= @dataset.frustrated_count %>"><%= "%.2f" % (100.0 * @dataset.frustrated) %>%</td>
+      </tr>
+      <tr><td></td><td></td></tr>
+      <tr>
+        <td><%= link_to "apdex score", "http://www.apdex.org/overview.html", :title => "show definition" %></td>
+        <td class="number"></td>
+      </tr>
+    </table>
+  <% end %>
 </div>
 

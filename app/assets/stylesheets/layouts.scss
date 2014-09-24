@@ -25,8 +25,19 @@
   }
 }
 
-.has-action {
-  padding-bottom: 40px;
+.clickable > a {
+  display: block;
+  position: relative;
+
+  &:after {
+    content: "\f105";
+    font-family: fontAwesome;
+    position: absolute;
+    right: 0;
+    top: 44%;
+    color: $grey;
+    font-size: 30px;
+  }
 }
 
 .app-dashboard {
@@ -43,13 +54,16 @@
       background: $white;
       border-radius: 2px;
       border: 1px solid $lighter-grey;
-      padding: 15px;
-      padding-bottom: 40px;
+      padding: 10px;
       margin: 10px;
       width: 100%;
       position: relative;
       overflow: hidden;
       overflow-x: auto;
+
+      &.has-action {
+        padding-bottom: 40px;
+      }
 
 
       h2 {
@@ -182,13 +196,16 @@ tr.full_stats a, tr.full_stats .dead-link {
     padding: 0 2px;
 }
 
-.full_stats td:first-child {
-  max-width: 300px;
-  a {
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap
+.full_stats {
+  td:first-child {
+    max-width: 300px;
+
+    a {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap
+    }
   }
 }
 
