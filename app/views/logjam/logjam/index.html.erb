@@ -14,7 +14,7 @@
 
     <div class="app-overview">
 
-      <div class="item has-action">
+      <div class="item">
         <% if @dataset.empty? -%>
         <p class="warning">Dataset is empty.</p>
         <% else -%>
@@ -25,9 +25,6 @@
           <%= render "navicons" %>
           <%= render :partial => "resource_plot", :locals => {:width => 450, :height => 150} %>
         <% end -%>
-        <div class="action">
-          <%= clean_link_to("view enlarged plot", { :page => without_module(@page), :action => "enlarged_plot", :interval => 1 }, :title => "view enlarged plot") %>
-        </div>
         <div class="app-overview detail-table">
           <% unless @dataset.empty? -%>
           <div class="item">
