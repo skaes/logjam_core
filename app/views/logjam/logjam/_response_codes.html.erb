@@ -2,20 +2,18 @@
   codes_above_400 = @dataset.response_code_summary["4xx"] + @dataset.response_code_summary["5xx"]
 %>
 
-<div class="item has-action">
-  <h2>Error Responses</h2>
-  <span class="value"><%= codes_above_400 %></span>
+<div class="item clickable">
+  <%= link_to({:action => "response_code_overview"}, :title => "show response code timeline") do %>
+    <h2>Error Responses</h2>
+    <span class="value"><%= codes_above_400 %></span>
 
-  <table class="collapse-table">
-    <% @dataset.response_code_summary.keys.sort.each do |rc| %>
-    <tr>
-      <td class="number-left"><%= rc %></td>
-      <td class="number"><%= sometimes_link_response_code(rc, @dataset.response_code_summary[rc]) %></td>
-    </tr>
-    <% end %>
-  </table>
-
-  <div class="action">
-    <%= clean_link_to("show response code timeline", {:action => "response_code_overview"}, :title => "show response code timeline") %>
-  </div>
+    <table class="collapse-table">
+      <% @dataset.response_code_summary.keys.sort.each do |rc| %>
+      <tr>
+        <td class="number-left"><%= rc %></td>
+        <td class="number"><%= sometimes_link_response_code(rc, @dataset.response_code_summary[rc]) %></td>
+      </tr>
+      <% end %>
+    </table>
+  <% end %>
 </div>

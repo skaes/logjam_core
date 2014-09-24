@@ -25,6 +25,21 @@
   }
 }
 
+.clickable > a {
+  display: block;
+  position: relative;
+
+  &:after {
+    content: "\f105";
+    font-family: fontAwesome;
+    position: absolute;
+    right: 0;
+    top: 44%;
+    color: $grey;
+    font-size: 30px;
+  }
+}
+
 .app-dashboard {
   margin: 10px !important;
   flex-direction: row;
@@ -181,13 +196,16 @@ tr.full_stats a, tr.full_stats .dead-link {
     padding: 0 2px;
 }
 
-.full_stats td:first-child {
-  max-width: 300px;
-  a {
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap
+.full_stats {
+  td:first-child {
+    max-width: 300px;
+
+    a {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap
+    }
   }
 }
 
