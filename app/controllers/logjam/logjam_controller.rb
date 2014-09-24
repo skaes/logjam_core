@@ -94,7 +94,7 @@ module Logjam
           page = /^#{page}$/ if @page =~ /\A::/ && page_names.include?(page)
           page = /^::#{page}$/ if @page !~ /\A::/ && page_names.include?("::#{page}")
           page = 'all_pages' if @page == '' || @page == '::'
-          resources = %w(apdex severity exceptions total_time) + (Resource.all_resources - %w(total_time))
+          resources = %w(apdex severity exceptions total_time) + Resource.all_resources - Resource.frontend_resources - Resource.dom_resources
           databases = Logjam.grep(Logjam.databases, :app => @app, :env => @env)
           data = []
           today = Date.today
@@ -112,7 +112,8 @@ module Logjam
                 :exceptions => summary.exception_count,
                 :apdex_score => summary.apdex_score
               }
-              Resource.all_resources.each do |r|
+              # TODO: FE
+              (Resource.all_resources - Resource.frontend_resources - Resource.dom_resources).each do |r|
                 if (v = summary.avg(r)) != 0
                   hash[r.to_sym] = v
                 end
@@ -133,8 +134,8 @@ module Logjam
               :calls => Resource.call_resources.reverse & resources,
               :memory => Resource.memory_resources & resources,
               :heap => Resource.heap_resources & resources,
-              :frontend => Resource.frontend_resources & resources,
-              :dom => Resource.dom_resources & resources
+              # :frontend => Resource.frontend_resources & resources,
+              # :dom => Resource.dom_resources & resources
             },
             :data => data
           }
@@ -145,6 +146,7 @@ module Logjam
 
     def show
       prepare_params
+      redirect_on_empty_dataset and return
       logjam_request_id = [@app, @env, params[:id]].join('-')
       @js_exceptions = Logjam::JsExceptions.new(@db).find_by_request(logjam_request_id)
       @request = Requests.new(@db).find(params[:id])
@@ -383,6 +385,7 @@ module Logjam
 
     def call_relationships
       prepare_params
+      redirect_on_empty_dataset and return
       params[:group] ||= 'module'
       params[:sort] ||= 'caller'
       # only filter data when explicitly requested
@@ -454,6 +457,7 @@ module Logjam
 
     def live_stream
       get_app_env
+      redirect_on_empty_dataset and return
       @resources = Logjam::Resource.time_resources-%w(total_time gc_time)
       ws_port = RUBY_PLATFORM =~ /darwin/ ? 9608 : 8080
       @socket_url = "ws://#{request.host}:#{ws_port}/"
@@ -514,7 +518,7 @@ module Logjam
       get_date
       params[:start_minute] ||= FilteredDataset::DEFAULTS[:start_minute]
       params[:end_minute] ||= FilteredDataset::DEFAULTS[:end_minute]
-      params[:resource] ||= params[:'_section'] == "frontend" ? 'page_time' : FilteredDataset::DEFAULTS[:resource]
+      params[:resource] ||= params[:section] == "frontend" ? 'page_time' : FilteredDataset::DEFAULTS[:resource]
       params[:grouping] ||= FilteredDataset::DEFAULTS[:grouping]
       params[:grouping_function] ||= FilteredDataset::DEFAULTS[:grouping_function]
       params[:interval] ||= FilteredDataset::DEFAULTS[:interval]
@@ -539,7 +543,7 @@ module Logjam
         :grouping => params[:grouping],
         :grouping_function => (params[:grouping_function] || :avg).to_sym,
         :start_minute => params[:start_minute].to_i,
-        :section => params[:'_section'] || 'backend',
+        :section => params[:section] || 'backend',
         :end_minute => params[:end_minute].to_i)
     end
 

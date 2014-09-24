@@ -3,32 +3,37 @@
   <%= render "sidebar" %>
   <div id="logjam-content" class="app-dashboard">
 
-    <div class="app-overview">
+    <% if @dataset.empty? -%>
 
+    <div class="app-overview">
+      <div class="item">
+        <p class="warning">Alas, thar be nothin' in t' database!</p>
+      </div>
+    </div>
+
+    <% else -%>
+
+    <div class="app-overview">
       <%= render "frontend_apdex" %>
       <%= render "frontend_dom_nodes" %>
       <%= render "frontend_dom_style_nodes" %>
       <%= render "frontend_dom_script_nodes" %>
       <%= render "frontend_javascript_errors" %>
-
     </div>
 
     <div class="app-overview">
-
       <div class="item has-action">
-        <% if @dataset.empty? -%>
-        <p class="warning">Dataset is empty.</p>
-        <% else -%>
-          <h2>
-            showing
-            <%= number_with_delimiter @dataset.count_requests %> of <%= number_with_delimiter @dataset.count %> requests
-          </h2>
-          <%= render "navicons" %>
-          <%= render :partial => "frontend_resource_plot", :locals => {:width => 450, :height => 150} %>
-        <% end -%>
+        <h2>
+          showing
+          <%= number_with_delimiter @dataset.count_requests %> of <%= number_with_delimiter @dataset.count %> requests
+        </h2>
+        <%= render "navicons" %>
+        <%= render :partial => "frontend_resource_plot", :locals => {:width => 450, :height => 150} %>
         <div class="action">
           <%= clean_link_to("view enlarged plot", { :page => without_module(@page), :action => "enlarged_plot", :interval => 1 }, :title => "view enlarged plot") %>
-        </div>
+          </div>
       </div>
     </div>
-</div>
+    <% end %>
+  </div>
+</di>
