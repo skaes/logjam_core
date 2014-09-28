@@ -21,15 +21,20 @@ module Logjam
       @page_info["page"] = page
     end
 
+    FE_RESOURCE_TYPES = %i(frontend dom)
+
+    def ajax_count; @page_info["ajax_count"]; end
+    def page_count; @page_info["page_count"]; end
+    def backend_count; @page_info["count"]; end
+
     def count(resource='total_time')
-      key = if resource == 'ajax_time'
-              'ajax_count'
-            elsif Resource.resource_type(resource) == :frontend
-              'page_count'
-            else
-              'count'
-            end
-      @page_info[key]
+      if resource == 'ajax_time'
+        ajax_count
+      elsif FE_RESOURCE_TYPES.include?(Resource.resource_type(resource))
+        page_count
+      else
+        backend_count
+      end
     end
 
     def sum(resource)
@@ -121,9 +126,9 @@ module Logjam
     end
 
     def add(other)
-      @page_info["count"] += other.count('total_time')
-      @page_info["page_count"] += other.count('page_time')
-      @page_info["ajax_count"] += other.count('ajax_time')
+      @page_info["count"] += other.backend_count
+      @page_info["page_count"] += other.page_count
+      @page_info["ajax_count"] += other.ajax_count
       @resources.each do |r|
         begin
           @page_info[r] = sum(r) + other.sum(r)
@@ -146,6 +151,7 @@ module Logjam
       res = super
       res.page_info = pi = @page_info.clone
       pi["apdex"] = pi["apdex"].clone if pi["apdex"]
+      pi["fapdex"] = pi["fapdex"].clone if pi["fapdex"]
       pi["response"] = pi["response"].clone if pi["response"]
       pi["severity"] = pi["severity"].clone if pi["severity"]
       pi["exceptions"] = pi["exceptions"].clone if pi["exceptions"]
@@ -230,6 +236,7 @@ module Logjam
       @avg = {}
       @sum_sq = {}
       @stddev = {}
+      @count = {}
     end
 
     def the_pages
@@ -286,7 +293,7 @@ module Logjam
     end
 
     def count(resource = 'total_time')
-      @count ||= the_pages.inject(0){|n,p| n += p.count(resource)}
+      @count[resource] ||= the_pages.inject(0){|n,p| n += p.count(resource)}
     end
 
     KNOWN_SECTIONS = %i(backend frontend)

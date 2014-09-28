@@ -25,7 +25,7 @@
       <div class="item has-action">
         <h2>
           showing
-          <%= number_with_delimiter @dataset.count_requests %> of <%= number_with_delimiter @dataset.count %> requests
+          <%= number_with_delimiter @dataset.count_requests('page_time') %> of <%= number_with_delimiter @dataset.count(:frontend) %> requests
         </h2>
         <%= render "navicons" %>
         <%= render :partial => "frontend_resource_plot", :locals => {:width => 450, :height => 150} %>

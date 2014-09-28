@@ -49,6 +49,8 @@ module Logjam
       @collected_resources = options[:collected_resources]
       @limit = options[:limit] || (@grouping == "request" ? 25 : 17)
       @offset = options[:offset] || 0
+      @request_counts = {}
+      @count = {}
     end
 
     def grouping_name
@@ -101,16 +103,16 @@ module Logjam
       (@date == Date.today || Rails.env.development?) && (page.blank? || page == "all_pages" || page == "::" || namespace?)
     end
 
-    def empty?
-      count_requests == 0
+    def empty?(resource = 'total_time')
+      count_requests(resource) == 0
     end
 
-    def count_requests
-      totals.count.to_i
+    def count_requests(resource = 'total_time')
+      @request_counts[resource] ||= totals.count(resource).to_i
     end
 
-    def count
-      @count ||= totals.request_count
+    def count(section = :backend)
+      @count[section] ||= totals.request_count(section)
     end
 
     def sum(time_attr = 'total_time')
