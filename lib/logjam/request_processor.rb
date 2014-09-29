@@ -72,14 +72,14 @@ module Logjam
       increments = {"count" => 1}
       add_squared_fields(increments, entry)
 
-      if total_time >= 2000 || response_code >= 500 then
-        increments["apdex.frustrated"] = 1
-      elsif total_time < 100 then
+      if total_time < 100 then
         increments["apdex.happy"] = increments["apdex.satisfied"] = 1
       elsif total_time < 500 then
         increments["apdex.satisfied"] = 1
       elsif total_time < 2000 then
         increments["apdex.tolerating"] = 1
+      else
+        increments["apdex.frustrated"] = 1
       end
 
       increments["response.#{response_code}"] = 1
