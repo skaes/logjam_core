@@ -12,18 +12,16 @@
 
 <% end %>
 
-<%
-  if !params[:section]
-    params[:section] = "backend"
-  end
-%>
-
 <a id="mobile-trigger">Menu</a>
 
 <section id="logjam-sidebar" class="open">
 
   <% action = action_name == "index" ? "" : action_name %>
   <%= form_tag(params.except(:id).merge(:action => action), :method => :get, :id => "filter-form", :autocomplete => "off") do -%>
+
+    <div class="sidebar-search">
+      <input id="page-field" class="autocomplete" placeholder="Search Namespace / Action" name="page" size="45" type="text" value="<%= @page %>" onchange="view_selected_pages()" />
+    </div>
 
     <div class="menu-wrapper">
       <div class="tabs">
@@ -34,8 +32,11 @@
 
       <ul class="logjam-menu<% if params[:section] == 'backend' %> active<% end %>" id="backend-menu">
 
-        <li class="sidebar-search">
-          <input id="page-field" class="autocomplete" placeholder="Search Namespace / Action" name="page" size="45" type="text" value="<%= @page %>" onchange="view_selected_pages()" />
+        <li>
+          <a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/?app=<%= params[:app] %>&section=backend">
+            <i class="fa fa-tachometer"></i>
+            Dashboard
+          </a>
         </li>
 
         <% klass = (@dataset && @dataset.live_stream?) ? "enabled" : "disabled" %>

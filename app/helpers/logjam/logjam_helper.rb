@@ -150,7 +150,7 @@ module Logjam
         params = params.merge(grouping => value)
         params[:page] = without_module(ppage) # unless @page == "::"
         params[:action] = "index"
-        clean_link_to(value, params, :title => "view summary")
+        clean_link_to(value, params, :"data-tooltip" => "view summary")
       else
         content_tag(:span, value, :class => 'dead-link')
       end
@@ -159,7 +159,7 @@ module Logjam
     def sometimes_link_requests(result, grouping, options)
       n = number_with_delimiter(result.count.to_i)
       if :page == grouping.to_sym && result.page != "Others..."
-        clean_link_to(n, options.merge(:action => "index"), :title => "show requests")
+        clean_link_to(n, options.merge(:action => "index"), :"data-tooltip" => "show requests")
       else
         n
       end
@@ -170,7 +170,7 @@ module Logjam
       n = number_with_precision(stddev, :precision => 0 , :delimiter => ',')
       if stddev > 0 && page.page != "Others..."
         params = { :app => @app, :env => @env, :page => without_module(page.page), :action => distribution_kind(resource) }
-        clean_link_to(n, params, :title => distribution_kind(resource).to_s.gsub(/_/,' '))
+        clean_link_to(n, params, :"data-tooltip" => distribution_kind(resource).to_s.gsub(/_/,' '))
       else
         n
       end
@@ -178,21 +178,21 @@ module Logjam
 
     def sometimes_link_all_pages
       if params[:grouping] == "page"
-        clean_link_to("show all actions", { :action => "totals_overview", :page => @page }, :title => "show all actions", :style => 'float:right;')
+        clean_link_to("show all actions", { :action => "totals_overview", :page => @page }, :"data-tooltip" => "show all actions")
       elsif params[:grouping] == "request"
-        clean_link_to("browse requests", { :action => "request_overview", :page => @page }, :title => "browse requests", :style => 'float:right;')
+        clean_link_to("browse requests", { :action => "request_overview", :page => @page }, :"data-tooltip" => "browse requests")
       end
     end
 
     def link_to_request(text, options)
-      clean_link_to(text, options, :title => "show request")
+      clean_link_to(text, options, :"data-tooltip" => "show request")
     end
 
     def sometimes_link_to_request(request_id)
       app, env, oid = request_id.split('-')
       if @database_info.db_exists?(@date, app, env) && Requests.exists?(@date, app, env, oid)
         params = { :app => app, :env => env, :action => "show", :id => oid }
-        clean_link_to(request_id, params, :title => "show request")
+        clean_link_to(request_id, params, :"data-tooltip" => "show request")
       else
         request_id
       end
@@ -209,9 +209,9 @@ module Logjam
       else
         params = { :app => @app, :env => @env, :action => "errors", :page => without_module(page.page) }
         errors = error_count == 0 ? error_count :
-          clean_link_to(integer_number(error_count), params.merge(:error_type => "logged_error"), :class => "error", :title => "show errors")
+          clean_link_to(integer_number(error_count), params.merge(:error_type => "logged_error"), :class => "error data-tooltip-bottom-nose-right", :"data-tooltip" => "show errors")
         warnings = warning_count == 0 ? warning_count :
-          clean_link_to(integer_number(warning_count), params.merge(:error_type => "logged_warning"), :class => "warn", :title => "show warnings")
+          clean_link_to(integer_number(warning_count), params.merge(:error_type => "logged_warning"), :class => "warn data-tooltip-bottom-nose-right", :"data-tooltip" => "show warnings")
         raw "#{errors}/#{warnings}"
       end
     end
@@ -224,7 +224,7 @@ module Logjam
         integer_number(n)
       else
         params = { :app => @app, :env => @env, :action => "response_codes", :above => 400, :page => without_module(page.page) }
-        link_to(integer_number(n), params, :class => "warn", :title => "show 400s")
+        link_to(integer_number(n), params, :class => "warn", :"data-tooltip" => "show 400s")
       end
     end
 
@@ -235,12 +235,12 @@ module Logjam
         text
       elsif code.to_s =~ /xx\z/
         params[:above] = code.to_s.sub('xx', '00')
-        clean_link_to(text, params, :class => "error", :title => "show requests with response #{code}")
+        clean_link_to(text, params, :class => "error", :"data-tooltip" => "show requests with response #{code}")
       elsif code.to_i < 400
         text
       else
         params[:response_code] = code
-        clean_link_to(text, params, :class => "error", :title => "show requests with response #{code}")
+        clean_link_to(text, params, :class => "error", :"data-tooltip" => "show requests with response #{code}")
       end
     end
 
@@ -359,7 +359,20 @@ module Logjam
 
     def severity_icon(severity, params = {})
       img = format_severity(severity).downcase
-      image_tag("#{img}.svg", params.reverse_merge(:class => "lj-ico", :title => "log severity: #{img}"))
+      icon = ""
+
+      case img
+        when "error"
+          icon = "fa-exclamation-triangle "+ img
+        when "warn"
+          icon = "fa-exclamation-triangle "+ img
+        when "fatal"
+          icon = "fa-minus-circle "+ img
+        when "info"
+          icon = "fa-info-circle "+ img
+        end
+
+      content_tag(:i, "",{:class => "fa #{icon}"})
     end
 
     def extract_error(log_lines, exception)

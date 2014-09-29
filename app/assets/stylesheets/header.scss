@@ -17,148 +17,145 @@
 }
 
 #logjam-header {
-    height: $header-height;
-    background: $header-bg-color;
-    box-shadow: 1px 0 2px 0 rgba(0, 0, 0, 0.5);
-    position: relative;
-    z-index: 10000;
+  height: $header-height;
+  background: $header-bg-color;
+  box-shadow: 1px 0 2px 0 rgba(0, 0, 0, 0.5);
+  position: relative;
+  z-index: 10000;
 
-    .logo {
-        background-image: image-url('icon.png');
-        margin: 0;
-        padding: 0;
-        padding-left: 25px;
-        font-weight: 300;
-        line-height: 20px;
-        margin-left: 20px;
-        margin-top: 20px;
-        float: left;
+  .logo {
+    background-image: image-url('icon.png');
+    margin: 0;
+    padding: 0;
+    padding-left: 25px;
+    font-weight: 300;
+    line-height: 20px;
+    margin-left: 20px;
+    margin-top: 20px;
+    float: left;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    height: auto;
+    width: auto;
+  }
 
-        background-repeat: no-repeat;
-        background-position: 0 0;
-        height: auto;
-        width: auto;
+  .application-chooser {
+    position: absolute;
+    left: 140px;
+    font-size: 18px;
+    height: 60px;
+    line-height: 65px;
+    font-weight: 300;
+    text-transform: uppercase;
 
-    }
-
-    .application-chooser {
-      position: absolute;
-      left: 140px;
-      font-size: 18px;
-      height: 60px;
-      line-height: 65px;
-      font-weight: 300;
-      text-transform: uppercase;
-
-      &.active {
-        .dropdown-menu {
-          display: -webkit-flex;
-          display: flex;
-        }
-      }
-
-      .application-suggest {
-        border: 0;
-        font-size: 18px;
-        font-weight: 300;
-        font-family: "Open Sans";
-        width: 160px;
-        z-index: 10000;
-
-        &:focus {
-          outline: none;
-        }
-
-      }
-
+    &.active {
       .dropdown-menu {
-        box-shadow: 1px 1px 14px -7px rgba(0, 0, 0, 0.5) inset;
-        font-size: 14px;
-        text-transform: capitalize;
-        height: 340px;
-        width: 600px;
-        overflow: hidden;
-        position: absolute;
-        left: -10px;
-        padding: 8px;
-        margin-top: -5px;
-        flex-direction: column;
-        align-items: flex-start;
-        -webkit-align-items: flex-start;
-        -webkit-flex-flow: column wrap;
-        flex-flow: column wrap;
-        z-index: 10000;
+        display: -webkit-flex;
+        display: flex;
+      }
+    }
 
-        li {
-          width: 120px;
-          margin-right: 20px;
-          float: left;
-          font-size: 12px;
+    .application-suggest {
+      border: 0;
+      font-size: 18px;
+      font-weight: 300;
+      font-family: "Open Sans";
+      width: 160px;
+      z-index: 10000;
+
+      &:focus {
+        outline: none;
+      }
+    }
+
+    .dropdown-menu {
+      box-shadow: 1px 1px 14px -7px rgba(0, 0, 0, 0.5) inset, 0 6px 15px -5px rgba(0,0,0,0.5);
+      font-size: 14px;
+      text-transform: capitalize;
+      height: 340px;
+      width: 600px;
+      overflow: hidden;
+      position: absolute;
+      left: -10px;
+      padding: 8px;
+      margin-top: -5px;
+      flex-direction: column;
+      align-items: flex-start;
+      -webkit-align-items: flex-start;
+      -webkit-flex-flow: column wrap;
+      flex-flow: column wrap;
+      z-index: 10000;
+
+      li {
+        width: 120px;
+        margin-right: 20px;
+        float: left;
+        font-size: 12px;
+        display: block;
+        border-radius: 1px;
+
+        a {
           display: block;
-          border-radius: 1px;
-
-          a {
-            display: block;
-            padding: 5px;
+          padding: 5px;
 
 
 
-            &:before {
-              margin-right: 5px;
-            }
+          &:before {
+            margin-right: 5px;
           }
+        }
 
-          &:hover a,
-          &.active a {
-            background: $lighter-grey;
-          }
-          &.hide {
-            display: none;
-          }
+        &:hover a,
+        &.active a {
+          background: $lighter-grey;
+        }
+        &.hide {
+          display: none;
         }
       }
     }
+  }
 
-    .enviroment-chooser {
-      position: absolute;
-      top: 15px;
-      left: 450px;
-      font-size: 18px;
+  .enviroment-chooser {
+    position: absolute;
+    top: 15px;
+    left: 450px;
+    font-size: 18px;
+  }
+
+  .date-chooser {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    font-size: 16px;
+
+    a {
+      margin-top: 7px;
+      float: left;
     }
 
-    .date-chooser {
-      position: absolute;
-      right: 20px;
-      top: 15px;
+    #datepicker {
+      border: 0;
       font-size: 16px;
-
-      a {
-        margin-top: 7px;
-        float: left;
-      }
-
-      #datepicker {
-        border: 0;
-        font-size: 16px;
-        width: 100px;
-        font-family: "Open Sans";
-        float: left;
-      }
-      .jdpicker_w {
-        display: inline;
-      }
+      width: 100px;
+      font-family: "Open Sans";
+      float: left;
     }
-
-    ul {
-        list-style: none;
-        background-color: $header-bg-color;
+    .jdpicker_w {
+      display: inline;
     }
+  }
 
-    #auto-refresh {
-      position: absolute;
-      right: 200px;
-      top: 20px;
-      cursor: pointer;
-      font-size: 16px;
-    }
+  ul {
+      list-style: none;
+      background-color: $header-bg-color;
+  }
+
+  #auto-refresh {
+    position: absolute;
+    right: 200px;
+    top: 20px;
+    cursor: pointer;
+    font-size: 16px;
+  }
 }

@@ -30,3 +30,4 @@
 //= require logjam-call-graph
 //= require logjam-ready
 //= require logjam-mobile
+//= require logjam-keyboard-controls

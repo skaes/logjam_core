@@ -13,6 +13,11 @@ $(document).ready(initialize_header);
 
 <% action = action_name == "index" ? "" : action_name %>
 
+<%
+  if !params[:section]
+    params[:section] = "backend"
+  end
+%>
 
 <header id="logjam-header">
   <h1 class="logo"><a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/dashboard">LOGJAM</a></h1>
@@ -21,11 +26,11 @@ $(document).ready(initialize_header);
       <% if params[:action] == 'dashboard' || !params[:app] %>
         :: <input class="application-suggest" type="text" placeholder="Choose Application"> <i class="fa fa-angle-down"></i>
       <% else %>
-        :: <input class="application-suggest" type="text" placeholder="<%= params[:app] %>"> <i class="fa fa-angle-down"></i>
+        :: <input accesskey="a" class="application-suggest" type="text" placeholder="<%= params[:app] %>"> <i class="fa fa-angle-down"></i>
       <% end %>
       <ul class="dropdown-menu">
         <% @apps.map do |app| %>
-          <li class="dropdown-header" data-app="<%= app %>"><a <% if params[:app] == app %>class="active"<% end %> href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/?app=<%= app %>&section=backend"><i class="fa fa-angle-right"></i> <%= app %></a></li>
+          <li class="dropdown-header" data-app="<%= app %>"><a <% if params[:app] == app %>class="active"<% end %> href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/?app=<%= app %>&section=<%= params[:section] %>"><i class="fa fa-angle-right"></i> <%= app %></a></li>
         <% end %>
       </ul>
     </div>
