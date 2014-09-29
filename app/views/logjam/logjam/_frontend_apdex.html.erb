@@ -1,7 +1,5 @@
 <div class="item clickable<% if "%.2f" % @dataset.fapdex >= "0.94" %> apdex-ok<% end %><% if "%.2f" % @dataset.fapdex < "0.94" %> apdex-fail<% end %>">
   <h2>Apdex Frontend</h2>
   <span class="value"><%= "%.2f" % @dataset.fapdex %></span>
-  <div class="action">
-  </div>
 </div>
 

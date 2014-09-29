@@ -9,10 +9,11 @@
 .bgunknown { @include bgimg; background-image: image-url('unknown.svg') ;  }
 
 .red { color: red; }
+.info { color: #005ddd; }
+.sortable, .clickable { cursor: pointer; }
+.right { text-align: right; }
+.triangle { color: orange; }
 
-.sortable, .clickable {
-    cursor: pointer;
-}
 
 .btn {
   border: 1px solid #c9c9c9;
@@ -27,6 +28,12 @@
   display: inline-block;
   padding: 0 10px;
   cursor: pointer;
+
+  &.btn-small {
+    height: 21px;
+    line-height: 21px;
+    padding: 0 5px;
+  }
 
   &.active {
     border-color: $xing-green;
@@ -60,6 +67,10 @@ a.disabled {
   position: absolute;
   top: 10px;
   right: 10px;
+
+  li {
+    display: inline
+  }
 
   a {
     color: $xing-green;
@@ -100,10 +111,6 @@ a.disabled {
     text-transform: uppercase;
 }
 
-.triangle {
-    color: orange;
-}
-
 .autocomplete-suggestions {
   border:1px solid $lighter-grey;
   background:$white;
@@ -125,5 +132,13 @@ a.disabled {
       font-weight:normal;
       color:#3399FF;
     }
+  }
+}
+
+th {
+  border-bottom: 1px solid $lighter-grey;
+
+  &[onclick] {
+    cursor: pointer;
   }
 }

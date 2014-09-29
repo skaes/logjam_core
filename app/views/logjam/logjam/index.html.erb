@@ -5,56 +5,52 @@
 
     <% if @dataset.empty? -%>
 
-    <div class="app-overview">
-      <div class="item">
-        <p class="warning">Alas, thar be nothin' in t' database!</p>
+      <div class="app-overview">
+        <div class="item">
+          <p class="warning">Alas, thar be nothin' in t' database!</p>
+        </div>
       </div>
-    </div>
 
     <% else -%>
 
-    <div class="app-overview">
-      <% if @dataset.has_frontend? %>
-      <%= render "frontend_apdex" %>
-      <% end %>
-      <%= render "apdex" %>
-      <%= render "response_codes" %>
-      <%= render "errors" %>
-    </div>
+      <div class="app-overview">
+        <% if @dataset.has_frontend? %>
+          <%= render "frontend_apdex" %>
+        <% end %>
+        <%= render "apdex" %>
+        <%= render "response_codes" %>
+        <%= render "errors" %>
+      </div>
 
-    <div class="app-overview">
-      <div class="item has-action">
-        <h2>
-          showing
-          <%= number_with_delimiter @dataset.count_requests %> of <%= number_with_delimiter @dataset.count %> requests
-        </h2>
+      <div class="app-overview">
+        <div class="item has-action">
+          <h2>
+            showing
+            <%= number_with_delimiter @dataset.count_requests %> of <%= number_with_delimiter @dataset.count %> requests
+          </h2>
           <%= render "navicons" %>
           <%= render :partial => "resource_plot", :locals => {:width => 450, :height => 150} %>
-        <% end -%>
-        <div class="app-overview detail-table">
-          <% unless @dataset.empty? -%>
-          <div class="item">
-            <div id="pagetimes">
-              <h2><%= @dataset.description %>
-                <%- if params[:grouping] == "request" -%>
-                between <%= minute_to_human(@dataset.start_minute) %>
-                and <%= minute_to_human(@dataset.end_minute) %>
-                <%- end -%>
-                <%= sometimes_link_all_pages %>
-              </h2>
-              <%= render "page_times" %>
-            </div>
+          <h2><%= @dataset.description %>
+            <%- if params[:grouping] == "request" -%>
+            between <%= minute_to_human(@dataset.start_minute) %>
+            and <%= minute_to_human(@dataset.end_minute) %>
+            <%- end -%>
+          </h2>
+          <div id="pagetimes">
+            <%= render "page_times" %>
           </div>
-          <% end -%>
+          <div class="action">
+          <%= sometimes_link_all_pages %>
+          </div>
         </div>
       </div>
-    </div>
 
-    <% if params[:grouping] == "page" -%>
-      <h2>Resources (avg)</h2>
-      <div id="performance-break-down" class="app-overview">
-        <%= render "breakdown" %>
-      </div>
+      <% if params[:grouping] == "page" -%>
+        <h2>Resources (avg)</h2>
+        <div class="app-overview">
+          <%= render "breakdown" %>
+        </div>
+      <% end -%>
     <% end -%>
   </div>
 </div>

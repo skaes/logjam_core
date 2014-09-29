@@ -24,7 +24,7 @@
           <%= hidden_field_tag :group, params[:group] %>
           <%= hidden_field_tag :sort, params[:sort] %>
           <%= hidden_field_tag :filter, params[:filter], :id => "graph-filter" %>
-          <%= submit_tag "Graph it!", :id => "graph-button", :name => nil %>
+          <%= submit_tag "Graph it!", :id => "graph-button", :name => nil, :class => "btn" %>
         <% end %>
         <%= form_tag(params.merge(:format => :csv), :method => :get) do %>
           <%= hidden_field_tag :app, @app %>
@@ -32,7 +32,7 @@
           <%= hidden_field_tag :page, @page %>
           <%= hidden_field_tag :group, params[:group] %>
           <%= hidden_field_tag :sort, params[:sort] %>
-          <%= submit_tag "Download CSV", :id => "download-button", :name => nil %>
+          <%= submit_tag "Download CSV", :id => "download-button", :name => nil, :class => "btn" %>
         <% end %>
       </div>
     </div>

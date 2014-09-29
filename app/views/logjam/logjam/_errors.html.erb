@@ -2,8 +2,8 @@
   total_problems = @dataset.error_count + @dataset.logged_error_count(4) + @dataset.logged_error_count(3) + @dataset.logged_error_count(2) + @dataset.exception_count
 %>
 
-<div class="item clickable">
-  <%= link_to({:action => "error_overview"}, :title => "show error overview") do %>
+<div class="item icon-action">
+  <%= link_to({:action => "error_overview"}) do %>
 
     <h2>Problems</h2>
     <span class="value"><%= number_with_delimiter total_problems %></span>

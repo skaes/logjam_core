@@ -20,11 +20,16 @@
     <div class="app-overview">
       <div class="item">
         <table class="full_stats">
-          <tr><th>Application</th><th>Action</th><th>Calls</th><th>Distribution over time (0-24h, 2 minute intervals)</th></tr>
+          <tr>
+            <th>Application</th>
+            <th>Action</th>
+            <th class="right">Calls</th>
+            <th class="echart">Distribution over time (0-24h, 2 minute intervals)</th>
+          </tr>
           <% @callers.each_with_index do |(caller, count), i| %>
             <% app, controller = caller.split('-') %>
             <% url = url_for(params.merge(:app => app, :page => controller)) unless controller.blank? %>
-            <tr class='full_stats'>
+            <tr>
               <td><%= app %></td>
               <td><%= link_to(controller, url) unless controller.blank? %></td>
               <td class="number"><%= integer_number(count) %></td>
@@ -34,12 +39,14 @@
             </tr>
           <% end %>
         </table>
-        <h4>Call Header Information</h4>
-        <table id='caller-meta-info' class='full_stats'>
-          <tr><td>Requests with call header:</td><td class='number'><%= integer_number(@call_count) %></td></tr>
+      </div>
+    </div>
+    <h2>Call Header Information</h2>
+    <div class="app-overview">
+      <div class="item">
+          <strong>Requests with call header: </strong><%= integer_number(@call_count) %><br/>
           <% missing_count = @request_count - @call_count %>
-          <tr><td>Requests without call header:</td><td class='number'><%= integer_number(missing_count) %></td></tr>
-        </table>
+          <strong>Requests without call header: </strong><%= integer_number(missing_count) %>
       </div>
     </div>
   </div>

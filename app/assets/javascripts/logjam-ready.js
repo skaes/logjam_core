@@ -7,7 +7,7 @@ $(document).ready(function() {
   // bug in some browsers leaves the tooltips open and you can have more than one shown
   $(window).on("beforeunload", function(e){ $(".tipsy").remove(); });
 
-  $('tr.clickable[data-href]').click(function(event) {
+  $('.clickable[data-href]').click(function(event) {
     var href = $(this).data("href");
     if (event.which == 2 || event.metaKey) {
       window.open(href);

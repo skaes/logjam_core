@@ -2,8 +2,8 @@
   codes_above_400 = @dataset.response_code_summary["4xx"] + @dataset.response_code_summary["5xx"]
 %>
 
-<div class="item clickable">
-  <%= link_to({:action => "response_code_overview"}, :title => "show response code timeline") do %>
+<div class="item icon-action">
+  <%= link_to({:action => "response_code_overview"}) do %>
     <h2>Error Responses</h2>
     <span class="value"><%= codes_above_400 %></span>
 

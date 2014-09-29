@@ -18,5 +18,6 @@
   *= require layouts
   *= require charts
   *= require tipsy
+  *= require tooltip
   *= require media-queries
  */

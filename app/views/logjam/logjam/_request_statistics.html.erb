@@ -1,7 +1,7 @@
 <% resource_type = Logjam::Resource.resource_type(resource) -%>
 <% requests.each do |request| -%>
   <% request_url = clean_url_for(:action => "show", :id => request["_id"]) -%>
-  <tr class="full_stats clickable" data-href="<%= request_url %>" title="view request">
+  <tr class="clickable" data-href="<%= request_url %>" title="view request">
     <% severity = request["severity"] %>
     <td><%= severity_icon(severity, :title => nil) %> <%= format_severity(severity) %></td>
     <td><%= request["response_code"] %></td>
