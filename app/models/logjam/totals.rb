@@ -237,6 +237,7 @@ module Logjam
       @sum_sq = {}
       @stddev = {}
       @count = {}
+      @apdex_hash = {}
     end
 
     def the_pages
@@ -292,7 +293,14 @@ module Logjam
       proper << combine_pages(rest)
     end
 
-    def count(resource = 'total_time')
+    def count(resource_or_section = 'total_time')
+      if resource_or_section == :frontend
+        resource = 'page_time'
+      elsif resource_or_section == :backend
+        resource = 'total_time'
+      else
+        resource = resource_or_section
+      end
       @count[resource] ||= the_pages.inject(0){|n,p| n += p.count(resource)}
     end
 
@@ -340,13 +348,14 @@ module Logjam
         end
     end
 
-    def apdex
-      @apdex_hash ||= the_pages.inject(Hash.new(0)){|h,p| p.apdex.each{|k,v| h[k] += v}; h}
+    def apdex(section = :backend)
+      @apdex_hash[section] ||=
+        begin
+          method = section == :frontend ? :fapdex : :apdex
+          the_pages.inject(Hash.new(0)){|h,p| p.send(method).each{|k,v| h[k] += v}; h}
+        end
     end
-
-    def fapdex
-      @fapdex_hash ||= the_pages.inject(Hash.new(0)){|h,p| p.fapdex.each{|k,v| h[k] += v}; h}
-    end
+    alias :fapdex :apdex
 
     def response_codes
       @response_hash ||= the_pages.inject(Hash.new(0)){|h,p| p.response.each{|k,v| h[k.to_i] += v.to_i}; h}
@@ -396,40 +405,40 @@ module Logjam
       end
     end
 
-    def happy_count
-      apdex["happy"].to_i
+    def happy_count(section = :backend)
+      apdex(section)["happy"].to_i
     end
 
-    def happy
-      happy_count / count.to_f
+    def happy(section = :backend)
+      happy_count(section) / count(section).to_f
     end
 
-    def satisfied_count
-      apdex["satisfied"].to_i
+    def satisfied_count(section = :backend)
+      apdex(section)["satisfied"].to_i
     end
 
-    def satisfied
-      satisfied_count / count.to_f
+    def satisfied(section = :backend)
+      satisfied_count(section) / count(section).to_f
     end
 
-    def tolerating_count
-      apdex["tolerating"].to_i
+    def tolerating_count(section = :backend)
+      apdex(section)["tolerating"].to_i
     end
 
-    def tolerating
-      tolerating_count / count.to_f
+    def tolerating(section = :backend)
+      tolerating_count(section) / count(section).to_f
     end
 
-    def frustrated_count
-      apdex["frustrated"].to_i
+    def frustrated_count(section = :backend)
+      apdex(section)["frustrated"].to_i
     end
 
-    def frustrated
-      frustrated_count / count.to_f
+    def frustrated(section = :backend)
+      frustrated_count(section) / count(section).to_f
     end
 
-    def apdex_score
-      satisfied + tolerating / 2.0
+    def apdex_score(section = :backend)
+      satisfied(section) + tolerating(section) / 2.0
     end
 
     protected

@@ -21,6 +21,8 @@ module Logjam
       @pattern = "::#{@pattern}" if page_names.include?("::#{pattern}")
       @pattern = Regexp.new(/#{@pattern}/) unless @pattern == "all_pages" || page_names.include?(@pattern)
       @counter_name = (@resources & Resource.frontend_resources).empty? ? "count" : "page_count"
+      @apdex = {}
+      @apdex_score = {}
       compute(interval)
     end
 
@@ -52,25 +54,22 @@ module Logjam
       @js_exception_summary ||= js_exceptions.each_with_object(Hash.new(0)){|(_,h),s| h.each{|m,c| s[m] += c}}
     end
 
-    def apdex
-      @apdex ||= extract_sub_hash('apdex')
+    def apdex(section = :backend)
+      @apdex[section] ||=
+        begin
+          sub_hash_name = section == :frontend ? 'fapdex' : 'apdex'
+          extract_sub_hash(sub_hash_name)
+        end
     end
 
-    def fapdex
-      @apdex ||= extract_sub_hash('fapdex')
-    end
+    alias :fapdex :apdex
 
-    def apdex_score
-      @apdex_score ||= @minutes.keys.each_with_object(Hash.new(0)) do |m,h|
-        h[m] = ((apdex["satisfied"][m] + apdex["tolerating"][m]/2.0) / counts[m])/@interval.to_f
+    def apdex_score(section = :backend)
+      @apdex_score[section] ||= @minutes.keys.each_with_object(Hash.new(0)) do |m,h|
+        h[m] = ((apdex(section)["satisfied"][m] + apdex(section)["tolerating"][m]/2.0) / counts[m])/@interval.to_f
       end
     end
-
-    def fapdex_score
-      @fapdex_score ||= @minutes.keys.each_with_object(Hash.new(0)) do |m,h|
-        h[m] = ((fapdex["satisfied"][m] + fapdex["tolerating"][m]/2.0) / counts[m])/@interval.to_f
-      end
-    end
+    alias :fapdex_score :apdex_score
 
     private
 
