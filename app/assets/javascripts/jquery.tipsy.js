@@ -213,7 +213,7 @@
     offset: 0,
     offsetX: 0,
     offsetY: 0,
-    opacity: 0.8,
+    opacity: 1,
     title: 'title',
     trigger: 'hover',
     follow: false

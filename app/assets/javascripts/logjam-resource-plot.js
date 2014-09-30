@@ -291,7 +291,6 @@ function logjam_resource_plot(params) {
     offsetY: -20,
     gravity: 's',
     html: false,
-    opacity: 0.7,
     title: function() { return request_tooltip_text; }
   });
 
@@ -357,7 +356,6 @@ function logjam_resource_plot(params) {
     offsetY: -20,
     gravity: 's',
     html: false,
-    opacity: 0.7,
     title: function() { return layer_tooltip_text; }
   });
 

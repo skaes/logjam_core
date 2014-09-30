@@ -111,7 +111,6 @@ function logjam_history_bar_chart(data, metric, params) {
     offsetY: -20,
     gravity: 's',
     html: false,
-    opacity: 0.8,
     title: function() { return bar_tooltip_text; }
   });
 }

@@ -38,13 +38,15 @@ $(document).ready(initialize_header);
 
   <% unless @only_one_env %>
     <div class="enviroment-chooser">
-      <% @envs.map do |env| %>
-        <% if params[:env] == env %>
-          <button type="submit" class="btn active" onclick="view_selected_pages()" value="<%= env %>"><%= env %></button>
-        <% else %>
-          <button type="submit" class="btn" onclick="view_selected_pages()" value="<%= env %>"><%= env %></button>
+      <div class="btn-group">
+        <% @envs.map do |env| %>
+          <% if params[:env] == env %>
+            <button type="submit" class="btn active" onclick="view_selected_pages()" value="<%= env %>"><%= env %></button>
+          <% else %>
+            <button type="submit" class="btn" onclick="view_selected_pages()" value="<%= env %>"><%= env %></button>
+          <% end %>
         <% end %>
-      <% end %>
+      </div>
     </div>
   <% end %>
 
