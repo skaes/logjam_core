@@ -92,6 +92,10 @@ a.disabled {
   top: 10px;
   right: 10px;
 
+  &.btn-group {
+    border: 0;
+  }
+
   li {
     display: inline
   }

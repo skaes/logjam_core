@@ -400,6 +400,7 @@ function logjam_live_stream_chart(params){
 
   /* toggle stream conection */
   function toggle_stream(button) {
+    button.toggleClass('active');
     if (button.val() == "resume") {
       button.val("pause");
       connect_chart();
@@ -411,6 +412,7 @@ function logjam_live_stream_chart(params){
 
   /* toggle warning level */
   function toggle_warnings(button) {
+    button.toggleClass('active');
     if (button.val() == "show warnings") {
       button.val("hide warnings");
       warning_level = 2;
@@ -422,6 +424,7 @@ function logjam_live_stream_chart(params){
 
   /* toggle smoothness */
   function toggle_smoothness(button) {
+    button.toggleClass('active');
     if (button.val() == "smooth updates") {
       button.val("discrete updates");
       update_interval = 1000;
@@ -432,7 +435,7 @@ function logjam_live_stream_chart(params){
   }
 
   /* automatically connect to the data stream when the ducoment is ready */
-  $(document).ready(function(){
+  $(function(){
     $("#stream-toggle").on("click", function(){ toggle_stream($(this)); });
     $("#warnin-toggle").on("click", function(){ toggle_warnings($(this)); });
     $("#smooth-toggle").on("click", function(){ toggle_smoothness($(this)) ;});
