@@ -27,7 +27,7 @@
       <div class="tabs">
         <a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/?app=<%= params[:app] %>&section=backend" data-menu="backend-menu" class="btn<% if params[:section] == 'backend' %> active<% end %>">Backend</a>
         <% klass = @dataset && @dataset.has_frontend? ? " enabled" : " disabled" %>
-        <a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/frontend_overview/?app=<%= params[:app] %>&section=frontend" data-menu="frontend-menu" class="btn<% if params[:section] == 'frontend' %> active<% end %> <%=klass%>">Frontend</a>
+        <a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/?app=<%= params[:app] %>&section=frontend" data-menu="frontend-menu" class="btn<% if params[:section] == 'frontend' %> active<% end %> <%=klass%>">Frontend</a>
       </div>
 
       <ul class="logjam-menu<% if params[:section] == 'backend' %> active<% end %>" id="backend-menu">
