@@ -284,7 +284,13 @@ module Logjam
     def apdex_overview
       redirect_on_empty_dataset and return
       @title = "Apdex Overview"
-      @resources = %w(apdex)
+
+      if params[:section] == 'frontend'
+        @resources = %w(fapdex)
+      else
+        @resources = %w(apdex)
+      end
+
       @totals = Totals.new(@db, @resources, @page.blank? ? 'all_pages' : @page)
       @minutes = Minutes.new(@db, @resources, @page, @totals.page_names, 2)
     end
