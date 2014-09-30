@@ -1,5 +1,9 @@
-<div class="item<% if "%.2f" % @dataset.fapdex >= "0.94" %> apdex-ok<% end %><% if "%.2f" % @dataset.fapdex < "0.94" %> apdex-fail<% end %>">
+<div class="item icon-action<% if "%.2f" % @dataset.fapdex >= "0.94" %> apdex-ok<% end %><% if "%.2f" % @dataset.fapdex < "0.94" %> apdex-fail<% end %>">
+  <%= link_to(:action => "apdex_overview", :section => :frontend) do %>
   <h2>Apdex Frontend</h2>
   <span class="value"><%= "%.2f" % @dataset.fapdex %></span>
+  <% end %>
 </div>
+
+
 

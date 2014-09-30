@@ -12,13 +12,9 @@
       <th class="right" <%= raw html_attributes_for_grouping_function("sum", "sum") %>>sum <%= resource_name %></th>
       <% if @dataset.accumulates_time? -%>
         <% options.merge!(:resource_total => @dataset.sum(resource))-%>
-        <th class="right">% of overall <%= raw resource_name.gsub(' ', '&nbsp;') %></th>
-        <% if resource.to_sym != :total_time -%>
-          <% options.merge!(:total_time => @dataset.sum("total_time")) -%>
-          <th class="right">% of total time</th>
-        <% else %>
-          <th class="right" <%= raw html_attributes_for_grouping_function("apdex", "apdex score") %>>apdex</th>
-          <th class="right">errors/warnings</th>
+        <th class="right" <%= raw html_attributes_for_grouping_function("apdex", "apdex score") %>>apdex</th>
+        <% if backend? -%>
+        <th class="right">errors/warnings</th>
         <% end -%>
       <% end -%>
   </tr>

@@ -107,8 +107,8 @@ module Logjam
       count_requests(resource) == 0
     end
 
-    def count_requests(resource = 'total_time')
-      @request_counts[resource] ||= totals.count(resource).to_i
+    def count_requests(section = :backend)
+      @request_counts[section] ||= totals.count(section).to_i
     end
 
     def count(section = :backend)
@@ -127,7 +127,7 @@ module Logjam
       do_the_query.size
     end
 
-    def do_the_query
+    def do_the_query(section = :backend)
       @query_result ||=
         if grouping == "request"
           query_opts = {start_minute: @start_minute, end_minute: @end_minute, skip: @offset, limit: @limit}

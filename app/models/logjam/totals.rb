@@ -60,12 +60,16 @@ module Logjam
         end
     end
 
-    def apdex
-      @page_info["apdex"] ||= {}
+    def apdex(section = :backend)
+      if section == :backend
+        @page_info["apdex"] ||= {}
+      else
+        @page_info["fapdex"] ||= {}
+      end
     end
 
-    def apdex_score
-      (apdex["satisfied"].to_f + apdex["tolerating"].to_f / 2.0) / count('total_time').to_f
+    def apdex_score(section = :backend)
+      (apdex(section)["satisfied"].to_f + apdex(section)["tolerating"].to_f / 2.0) / count(section).to_f
     end
 
     def fapdex
@@ -282,11 +286,11 @@ module Logjam
         when :count
           pages.sort_by!{|r| -r.count('total_time')}
         when :apdex
-          pages.sort_by!{|r| r.apdex_score}
+          pages.sort_by!{|r| v = r.apdex_score(:frontend); v.nan? ? 1.1 : v}
         else
           raise "unknown sort method: #{order}" unless order.to_s =~ /^(.+)_(sum|avg|stddev)$/
           resource, function = $1, $2
-          pages.sort_by!{|r| -r.send(function, resource)}
+          pages.sort_by!{|r| v = r.send(function, resource); v.is_a?(Float) && v.nan? ? 0 : -v}
         end
       end
       return pages if pages.size <= limit

@@ -24,7 +24,7 @@ module Logjam
         format.html do
           redirect_on_empty_dataset and return
           @resources, @js_data, @js_events, @js_max, @request_counts, @gc_time, @js_zoom = @dataset.plot_data
-          if params[:section] == "frontend"
+          if @section == :frontend
             render :template => "logjam/logjam/frontend_overview"
           end
         end
@@ -271,7 +271,7 @@ module Logjam
       redirect_on_empty_dataset and return
       @title = "Apdex Overview"
 
-      if params[:section] == 'frontend'
+      if @section == :frontend
         @resources = %w(fapdex)
       else
         @resources = %w(apdex)
@@ -511,6 +511,7 @@ module Logjam
 
     def prepare_params
       get_date
+      params[:section] ||= 'backend'
       params[:start_minute] ||= FilteredDataset::DEFAULTS[:start_minute]
       params[:end_minute] ||= FilteredDataset::DEFAULTS[:end_minute]
       params[:resource] ||= params[:section] == "frontend" ? 'page_time' : FilteredDataset::DEFAULTS[:resource]
@@ -518,6 +519,7 @@ module Logjam
       params[:grouping_function] ||= FilteredDataset::DEFAULTS[:grouping_function]
       params[:interval] ||= FilteredDataset::DEFAULTS[:interval]
       params[:time_range] ||= 'date'
+      @section = params[:section] == "frontend" ? :frontend : :backend
       @plot_kind = Resource.resource_type(params[:resource])
       @attributes = Resource.resources_for_type(@plot_kind)
       @collected_resources = Totals.new(@db).collected_resources
@@ -530,6 +532,7 @@ module Logjam
         :date => @date,
         :app => @app,
         :env => @env,
+        :section => @section,
         :interval => params[:interval].to_i,
         :page => strip_namespace ? (@page.to_s).sub(/\A::/,'') : (@page.blank? ? '::' : @page),
         :plot_kind => @plot_kind,
@@ -538,7 +541,6 @@ module Logjam
         :grouping => params[:grouping],
         :grouping_function => (params[:grouping_function] || :avg).to_sym,
         :start_minute => params[:start_minute].to_i,
-        :section => params[:section] || 'backend',
         :end_minute => params[:end_minute].to_i)
     end
 

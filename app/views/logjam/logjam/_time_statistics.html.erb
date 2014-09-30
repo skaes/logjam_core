@@ -14,14 +14,9 @@
     <td class="number"><%= number_with_precision(page.avg(resource), :precision => 0, :delimiter => ",") %></td>
     <td class="number"><%= sometimes_link_stddev(page, resource) %></td>
     <td class="number"><%= seconds_to_human(page.sum(resource).to_f / 1000) %></td>
-    <td class="number"><%= number_to_percentage(page.sum(resource).to_f / resource_total * 100, :precision => 2) %></td>
-    <% if resource == "total_time" -%>
-      <td class="number <%= apdex_class(page.apdex_score, 'apdex') %>">
-        <%= clean_link_to(number_with_precision(page.apdex_score, :precision => 2), :action => "apdex_overview", :page => page.page) %>
-      </td>
-      <td class="number"><%= sometimes_link_errors(page) %></td>
-    <% else -%>
-      <td class="number"><%= number_to_percentage(page.sum(resource).to_f / total_time * 100, :precision => 2) %></td>
-    <% end -%>
+    <td class="number <%= apdex_class(page.apdex_score, 'apdex') %>">
+      <%= clean_link_to(number_with_precision(page.apdex_score, :precision => 2), :action => "apdex_overview", :page => page.page) %>
+    </td>
+    <td class="number"><%= sometimes_link_errors(page) %></td>
   </tr>
 <% end -%>

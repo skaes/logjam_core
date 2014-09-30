@@ -3,6 +3,14 @@ module Logjam
 
   # Methods added to this helper will be available to all templates in the application.
   module LogjamHelper
+    def frontend?
+      @section == :frontend
+    end
+
+    def backend?
+      @section == :backend
+    end
+
     def default_header_parameters
       FilteredDataset::DEFAULTS.merge(:time_range => 'date')
     end
@@ -157,7 +165,7 @@ module Logjam
     end
 
     def sometimes_link_requests(result, grouping, options)
-      n = number_with_delimiter(result.count.to_i)
+      n = number_with_delimiter(result.count(@section).to_i)
       if :page == grouping.to_sym && result.page != "Others..."
         clean_link_to(n, options.merge(:action => "index"), :"data-tooltip" => "show requests")
       else
@@ -318,7 +326,7 @@ module Logjam
     end
 
     def apdex_class(v, gf = params[:grouping_function])
-      if  gf == "apdex"
+      if gf == "apdex" && !v.to_f.nan?
         v > 0.94 ? "apdex-ok" : "apdex-fail"
       else
         ""
@@ -328,7 +336,7 @@ module Logjam
     def page_percent(pages, page, resource)
       case gf = params[:grouping_function]
       when "apdex"
-        page.apdex_score.to_f * 100
+        page.apdex_score(@section).to_f * 100
       when "sum"
         div_percent(page.sum(resource) , pages.first.sum(resource))
       when "avg"

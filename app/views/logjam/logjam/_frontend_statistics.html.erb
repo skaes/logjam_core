@@ -4,7 +4,7 @@
     <td class="group-thing">
       <div class="gbg">
         <div class="gct"><%= sometimes_link_grouping_result(page, :page, :page => page.page) %></div>
-        <div class="gbox <%= apdex_class(page.apdex_score) %>" style="width:<%= page_percent(pages, page, resource) %>%"></div>
+        <div class="gbox <%= apdex_class(page.apdex_score(:frontend)) %>" style="width:<%= page_percent(pages, page, resource) %>%"></div>
         <% if sorted_by_apdex %>
           <div class="apdex-box"></div>
         <% end %>
@@ -14,14 +14,11 @@
     <td class="number"><%= number_with_precision(page.avg(resource), :precision => 1, :delimiter => ",") %></td>
     <td class="number"><%= sometimes_link_stddev(page, resource) %></td>
     <td class="number"><%= seconds_to_human(page.sum(resource).to_f / 1000) %></td>
-    <td class="number"><%= number_to_percentage(page.sum(resource).to_f / resource_total * 100, :precision => 2) %></td>
-    <% if resource == "total_time" -%>
-      <td class="number <%= apdex_class(page.apdex_score, 'apdex') %>">
-        <%= clean_link_to(number_with_precision(page.apdex_score, :precision => 2), :action => "apdex_overview", :page => page.page) %>
-      </td>
-      <td class="number"><%= sometimes_link_errors(page) %></td>
-    <% else -%>
-      <td class="number"><%= number_to_percentage(page.sum(resource).to_f / total_time * 100, :precision => 2) %></td>
-    <% end -%>
+    <td class="number <%= apdex_class(page.apdex_score(:frontend), 'apdex') %>">
+      <%= clean_link_to(number_with_precision(page.apdex_score(:frontend), :precision => 2), :action => "apdex_overview", :page => page.page) %>
+    </td>
+    <% if backend? %>
+    <td class="number"><%= sometimes_link_errors(page) %></td>
+    <% end %>
   </tr>
 <% end -%>
