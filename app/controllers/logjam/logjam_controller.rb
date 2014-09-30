@@ -24,6 +24,9 @@ module Logjam
         format.html do
           redirect_on_empty_dataset and return
           @resources, @js_data, @js_events, @js_max, @request_counts, @gc_time, @js_zoom = @dataset.plot_data
+          if params[:section] == "frontend"
+            render :template => "logjam/logjam/frontend_overview"
+          end
         end
         format.json do
           prepare_params
