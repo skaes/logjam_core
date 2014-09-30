@@ -13,27 +13,33 @@
 
     <% else -%>
 
-    <div class="app-overview">
-      <%= render "frontend_apdex" %>
-      <%= render "frontend_dom_nodes" %>
-      <%= render "frontend_dom_style_nodes" %>
-      <%= render "frontend_dom_script_nodes" %>
-      <%= render "frontend_javascript_errors" %>
-    </div>
-
-    <div class="app-overview">
-      <div class="item has-action">
-        <h2>
-          showing
-          <%= number_with_delimiter @dataset.count_requests('page_time') %> of <%= number_with_delimiter @dataset.count(:frontend) %> requests
-        </h2>
-        <%= render "navicons" %>
-        <%= render :partial => "frontend_resource_plot", :locals => {:width => 450, :height => 150} %>
-        <div class="action">
-          <%= clean_link_to("view enlarged plot", { :page => without_module(@page), :action => "enlarged_plot", :interval => 1 }, :title => "view enlarged plot") %>
-          </div>
+      <div class="app-overview">
+        <%= render "frontend_apdex" %>
+        <%= render "frontend_dom_nodes" %>
+        <%= render "frontend_dom_style_nodes" %>
+        <%= render "frontend_dom_script_nodes" %>
+        <%= render "frontend_javascript_errors" %>
       </div>
-    </div>
+
+      <div class="app-overview">
+        <div class="item has-action">
+          <h2>showing <%= number_with_delimiter @dataset.count_requests %> of <%= number_with_delimiter @dataset.count %> requests</h2>
+          <%= render "navicons" %>
+          <%= render :partial => "resource_plot", :locals => {:width => 450, :height => 150} %>
+          <h2><%= @dataset.description %>
+            <%- if params[:grouping] == "request" -%>
+              between <%= minute_to_human(@dataset.start_minute) %>
+              and <%= minute_to_human(@dataset.end_minute) %>
+            <%- end -%>
+          </h2>
+          <div id="pagetimes">
+            <%= render "page_times" %>
+          </div>
+          <div class="action">
+            <%= sometimes_link_all_pages %>
+          </div>
+        </div>
+      </div>
     <% end %>
   </div>
 </di>

@@ -54,7 +54,6 @@ function logjam_apdex_chart(params) {
     offsetY: -20,
     gravity: 's',
     html: false,
-    opacity: 0.8,
     title: function() { return tooltip_text; }
   });
 

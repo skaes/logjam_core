@@ -41,6 +41,30 @@
     color: $white;
   }
 }
+
+.btn-group {
+  > .btn {
+    margin: 0;
+    display: inline;
+    float: left;
+    border-radius: 0;
+    border-left: 0;
+
+    &.active:first-child {
+      border-color: $xing-green;
+    }
+
+    &:first-child {
+      border-radius: 3px 0 0 3px;
+      border-left: 1px solid $light-grey;
+    }
+
+    &:last-child {
+      border-radius: 0 3px 3px 0;
+    }
+  }
+}
+
 a.btn {
   line-height: 31px;
 }

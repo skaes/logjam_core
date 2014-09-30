@@ -105,7 +105,13 @@
       </ul>
 
       <ul class="logjam-menu<% if params[:section] == 'frontend' %> active<% end %>" id="frontend-menu">
-        <li><i class="fa fa-bar-chart"></i> <%= clean_link_to("Overview", {:action => "frontend_overview"}, :title => "Overview") %></li>
+        <li>
+          <a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/?app=<%= params[:app] %>&section=frontend">
+            <i class="fa fa-tachometer"></i>
+            Dashboard
+          </a>
+        </li>
+
         <li><i class="fa fa-warning"></i> <%= clean_link_to("Errors", {:action => "js_exception_types"}, :title => "Errors") %></li>
       </ul>
 

@@ -60,7 +60,6 @@ function logjam_echart(params) {
     offsetY: -20,
     gravity: 's',
     html: false,
-    opacity: 0.8,
     title: function() { return tooltip_text; }
   });
 
