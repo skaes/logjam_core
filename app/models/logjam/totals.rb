@@ -32,6 +32,8 @@ module Logjam
         ajax_count
       elsif FE_RESOURCE_TYPES.include?(Resource.resource_type(resource))
         page_count
+      elsif resource == :frontend
+        ajax_count + page_count
       else
         backend_count
       end
@@ -293,14 +295,7 @@ module Logjam
       proper << combine_pages(rest)
     end
 
-    def count(resource_or_section = 'total_time')
-      if resource_or_section == :frontend
-        resource = 'page_time'
-      elsif resource_or_section == :backend
-        resource = 'total_time'
-      else
-        resource = resource_or_section
-      end
+    def count(resource = 'total_time')
       @count[resource] ||= the_pages.inject(0){|n,p| n += p.count(resource)}
     end
 

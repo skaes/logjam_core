@@ -20,7 +20,7 @@ module Logjam
       @pattern = "all_pages" if @pattern.blank? || @pattern == "::"
       @pattern = "::#{@pattern}" if page_names.include?("::#{pattern}")
       @pattern = Regexp.new(/#{@pattern}/) unless @pattern == "all_pages" || page_names.include?(@pattern)
-      @counter_name = (@resources & Resource.frontend_resources).empty? ? "count" : "page_count"
+      @counters = (@resources & (["fapdex"]+Resource.frontend_resources)).empty? ? ["count"] : ["page_count", "ajax_count"]
       @apdex = {}
       @apdex_score = {}
       compute(interval)
@@ -91,14 +91,14 @@ module Logjam
     def compute(interval)
       logger.debug "pattern: #{@pattern}, resources: #{@resources.inspect}"
       selector = {:page => @pattern}
-      fields = {:fields => ["minute", @counter_name].concat(@resources)}
+      fields = {:fields => ["minute"].concat(@counters).concat(@resources)}
 
       query = "Minutes.find(#{selector.inspect},#{fields.inspect})"
       rows = with_conditional_caching(query) do |payload|
         rs = []
         @collection.find(selector, fields.clone).each do |row|
           row.delete("_id")
-          rs << row if row[@counter_name].to_i > 0
+          rs << row if @counters.any?{|c| row[c].to_i > 0}
           # puts row.inspect
         end
         payload[:rows] = rs.size
@@ -111,7 +111,7 @@ module Logjam
       counter_resources = @resources - compound_resources
       hashed_resources = @resources & compound_resources
       while row = rows.shift
-        count = row[@counter_name] || 0.0
+        count = @counters.map{|c| row[c].to_i}.sum || 0.0
         slot = row["minute"] / interval
         counts[slot] += count
         sum_sofar = (sums[slot] ||= Hash.new(0.0))
