@@ -11,7 +11,7 @@ function logjam_live_stream_chart(params){
   var w = parseInt(document.getElementById('live-stream-chart').offsetWidth - 100, 10),
       h = 300,
       slice = 10,
-      x = d3.scale.linear().domain([0, w]).range([0, w]),
+      x = d3.scale.linear().domain([0, 600]).range([0, w]),
       y = d3.scale.linear().domain([0, 100]).range([h, 0]).nice(),
       y2 = d3.scale.linear([0, 0]).range([50,0]).nice(),
       color_map = d3.scale.ordinal().domain(colors);
