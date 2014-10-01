@@ -18,7 +18,7 @@ function logjam_live_stream_chart(params){
   var c = color_map.range();
 
   /* Data */
-  function zeros(){ return d3.range(w/slice+2).map(function(){ return 0;}); }
+  function zeros(){ return d3.range(600/slice+2).map(function(){ return 0;}); }
   var data = d3.range(resources.length).map(zeros);
   var request_counts = zeros();
 
