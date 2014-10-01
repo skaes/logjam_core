@@ -31,6 +31,10 @@ module Logjam
       url_for(params.slice(:year, :month, :day, :app, :env).merge(:action => "auto_complete_for_controller_action_page"))
     end
 
+    def collected_frontend_time_resources
+      Logjam::Resource.frontend_resources & @collected_resources
+    end
+
     def collected_time_resources
       Logjam::Resource.time_resources & @collected_resources
     end

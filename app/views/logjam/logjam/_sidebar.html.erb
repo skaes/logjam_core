@@ -19,17 +19,7 @@
   <% action = action_name == "index" ? "" : action_name %>
   <%= form_tag(params.except(:id).merge(:action => action), :method => :get, :id => "filter-form", :autocomplete => "off") do -%>
 
-    <div class="sidebar-search">
-      <input id="page-field" class="autocomplete" placeholder="Search Namespace / Action" name="page" size="45" type="text" value="<%= @page %>" onchange="view_selected_pages()" />
-    </div>
-
     <div class="menu-wrapper">
-      <div class="tabs">
-        <a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/?app=<%= params[:app] %>&section=backend" data-menu="backend-menu" class="btn<% if params[:section] == 'backend' %> active<% end %>">Backend</a>
-        <% klass = @dataset && @dataset.has_frontend? ? " enabled" : " disabled" %>
-        <a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/?app=<%= params[:app] %>&section=frontend" data-menu="frontend-menu" class="btn<% if params[:section] == 'frontend' %> active<% end %> <%=klass%>">Frontend</a>
-      </div>
-
       <ul class="logjam-menu<% if params[:section] == 'backend' %> active<% end %>" id="backend-menu">
 
         <li>
@@ -111,8 +101,16 @@
             Dashboard
           </a>
         </li>
-
         <li><i class="fa fa-warning"></i> <%= clean_link_to("Errors", {:action => "js_exception_types"}, :title => "Errors") %></li>
+        <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:time) %>><i class="fa fa-clock-o"></i> Time</a>
+          <ul>
+            <% collected_frontend_time_resources.reverse.each do |r| %>
+              <li <% if params[:resource] == r %>class="active"<% end %>>
+                <a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a>
+              </li>
+            <% end %>
+          </ul>
+        </li>
       </ul>
 
       <ul class="admin">
@@ -127,6 +125,7 @@
 
     <input type="hidden" id="app" name="app" value="<%= params[:app] %>" />
     <input type="hidden" id="env" name="env" value="<%= params[:env] %>" />
+    <input type="hidden" id="page" name="page" value="<%= params[:page] %>" />
     <input type="hidden" id="auto_refresh" name="auto_refresh" value="<%= params[:auto_refresh] %>" />
     <input type="hidden" id="section" name="section" value="<%= params[:section] %>" />
     <input type="hidden" id="time-range" name="time_range" value="<%= params[:time_range] %>" />
