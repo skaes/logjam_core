@@ -206,8 +206,13 @@ module Logjam
       YLABELS[plot_kind] || ""
     end
 
+    POTENTIALLY_EXCLUDED_FROM_PLOT = %w(total_time allocated_memory requests heap_growth ajax_time page_time)
     def resources_excluded_from_plot
-      %w(total_time allocated_memory requests heap_growth ajax_time page_time)
+      if @resource == 'ajax_time'
+        Resource.frontend_resources - %w(ajax_time)
+      else
+        POTENTIALLY_EXCLUDED_FROM_PLOT
+      end
     end
 
     def plotted_resources
