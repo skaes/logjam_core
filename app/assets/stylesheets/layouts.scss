@@ -63,8 +63,8 @@
       overflow: hidden;
       overflow-x: auto;
 
-      &.apdex-ok { background-color: rgba(0,255,0,0.2) !important; }
-      &.apdex-fail { background-color: rgba(255,0,0,0.2) !important; }
+      &.apdex-ok { background-color: $apdex-ok !important; }
+      &.apdex-fail { background-color: $apdex-fail !important; }
 
       &.has-action {
         padding-bottom: 40px;
@@ -216,8 +216,8 @@ th.sorted {
       text-align: center;
     }
 
-    &.apdex-ok a { background-color: rgba(0,255,0,0.2) !important; }
-    &.apdex-fail a { background-color: rgba(255,0,0,0.2) !important; }
+    &.apdex-ok a { background-color: $apdex-ok !important; margin: 0 5px; }
+    &.apdex-fail a { background-color: $apdex-fail !important; margin: 0 5px; }
 
     a {
       display: block;

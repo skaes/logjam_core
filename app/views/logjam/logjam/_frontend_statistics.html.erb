@@ -14,7 +14,7 @@
     <td class="number"><%= number_with_precision(page.avg(resource), :precision => 1, :delimiter => ",") %></td>
     <td class="number"><%= sometimes_link_stddev(page, resource) %></td>
     <td class="number"><%= seconds_to_human(page.sum(resource).to_f / 1000) %></td>
-    <td class="number <%= apdex_class(page.apdex_score(:frontend), 'apdex') %>">
+    <td class="center <%= apdex_class(page.apdex_score(:frontend), 'apdex') %>">
       <%= clean_link_to(number_with_precision(page.apdex_score(:frontend), :precision => 2), :action => "apdex_overview", :page => page.page) %>
     </td>
     <% if backend? %>

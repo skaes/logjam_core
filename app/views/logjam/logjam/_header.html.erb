@@ -14,7 +14,7 @@ $(document).ready(initialize_header);
 <% action = action_name == "index" ? "" : action_name %>
 
 <header id="logjam-header">
-  <h1 class="logo"><a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/dashboard">LOGJAM</a></h1>
+  <h1 class="logo">LOGJAM</h1>
   <% unless @only_one_app %>
     <div class="application-chooser">
       <% if params[:action] == 'dashboard' || !params[:app] %>
