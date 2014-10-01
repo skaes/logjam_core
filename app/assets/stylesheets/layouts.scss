@@ -256,11 +256,14 @@ th.sorted {
   height: 18px;
   z-index: -100;
   border-radius: 0 1px 1px 0;
+
+  &.apdex-ok { background-color: $apdex-ok !important; }
+  &.apdex-fail { background-color: $apdex-fail !important; }
 }
 .apdex-box {
   z-index: 100;
   width: 1px;
-  height: 110%;
+  height: 120%;
   left: 94%;
   background: red;
   position: absolute;
