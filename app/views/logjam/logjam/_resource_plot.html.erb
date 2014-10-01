@@ -1,28 +1,26 @@
 <div id='resource-plot'>
 <%
-   js_params = {
-     :events   => @js_events.map { |event| [event["minute"], event["label"]] },
-     :data     => @js_data,
-     :interval => params[:interval].to_i,
-     :colors   => (@resources.reverse+[@gc_time&&"gc_time"]).compact.map{|r| Logjam::Resource.color(r,0.8)}+["rgba(128,128,128,0.2)"],
-     :legend   => (@resources.reverse+[@gc_time&&"gc_time"]+%w(requests/second)).compact.map{|c| c.gsub(/_/,' ')},
-     :request_counts => @request_counts.reverse.drop_while{|d|d==0}.reverse,
-     :gc_time => @gc_time ? @gc_time.reverse.drop_while{|_,d| d==0}.reverse : nil,
-     :max_y => @js_max,
-     :zoomed_max_y => @js_zoom * 1.5,
-     :selected_slice => params[:start_minute].to_i,
-     :selected_slice_width => params[:end_minute].to_i - params[:start_minute].to_i + 1,
-     :w => width,
-     :h => height,
-     :plot_kind => @dataset.plot_kind,
-     :ylabel => @dataset.ylabel,
-     :container => "#resource-plot",
-}
+  js_params = {
+    :events   => @js_events.map { |event| [event["minute"], event["label"]] },
+    :data     => @js_data,
+    :interval => params[:interval].to_i,
+    :colors   => (@resources.reverse+[@gc_time&&"gc_time"]).compact.map{|r| Logjam::Resource.color(r,0.8)}+["rgba(128,128,128,0.2)"],
+    :legend   => (@resources.reverse+[@gc_time&&"gc_time"]+%w(requests/second)).compact.map{|c| c.gsub(/_/,' ')},
+    :request_counts => @request_counts.reverse.drop_while{|d|d==0}.reverse,
+    :gc_time => @gc_time ? @gc_time.reverse.drop_while{|_,d| d==0}.reverse : nil,
+    :max_y => @js_max,
+    :zoomed_max_y => @js_zoom * 1.5,
+    :selected_slice => params[:start_minute].to_i,
+    :selected_slice_width => params[:end_minute].to_i - params[:start_minute].to_i + 1,
+    :w => width,
+    :h => height,
+    :plot_kind => @dataset.plot_kind,
+    :ylabel => @dataset.ylabel,
+    :container => "#resource-plot"
+  }
 -%>
 
 </div>
-  <script type="text/javascript">
-    $(function(){
-        logjam_resource_plot(<%=raw Oj.dump(js_params) %>)
-    });
-  </script>
+<script type="text/javascript">
+  logjam_resource_plot(<%=raw Oj.dump(js_params) %>)
+</script>

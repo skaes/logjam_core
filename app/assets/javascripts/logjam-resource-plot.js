@@ -1,17 +1,16 @@
 function logjam_resource_plot(params) {
-
-  var events   = params.events;
-  var data     = params.data;
-  var interval = params.interval;
-  var colors   = params.colors;
-  var legend   = params.legend;
-  var request_counts = params.request_counts;
-  var gc_time = params.gc_time;
-  var max_y = params.max_y;
-  var zoomed_max_y = params.zoomed_max_y;
-  var selected_slice = params.selected_slice;
-  var selected_slice_width = params.selected_slice_width;
-  var max_request_count = d3.max(request_counts);
+  var events               = params.events,
+      data                 = params.data,
+      interval             = params.interval,
+      colors               = params.colors,
+      legend               = params.legend,
+      request_counts       = params.request_counts,
+      gc_time              = params.gc_time,
+      max_y                = params.max_y,
+      zoomed_max_y         = params.zoomed_max_y,
+      selected_slice       = params.selected_slice,
+      selected_slice_width = params.selected_slice_width,
+      max_request_count    = d3.max(request_counts);
 
   /* Animation */
   var zoom_interval = 1;

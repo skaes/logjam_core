@@ -63,6 +63,9 @@
       overflow: hidden;
       overflow-x: auto;
 
+      &.apdex-ok { background-color: rgba(0,255,0,0.2) !important; }
+      &.apdex-fail { background-color: rgba(255,0,0,0.2) !important; }
+
       &.has-action {
         padding-bottom: 40px;
       }
@@ -191,7 +194,7 @@ th.sorted {
 
   tr {
     &:hover {
-      background: $lighter-grey;
+      background: $lightest-grey;
     }
 
     &:nth-child(2) td {
@@ -209,23 +212,25 @@ th.sorted {
       padding-left: 10px;
     }
 
+    &.apdex {
+      text-align: center;
+    }
+
+    &.apdex-ok a { background-color: rgba(0,255,0,0.2) !important; }
+    &.apdex-fail a { background-color: rgba(255,0,0,0.2) !important; }
+
     a {
       display: block;
       overflow: hidden;
       text-overflow: ellipsis;
-      white-space: nowrap
+      white-space: nowrap;
+      border-radius: 1px;
     }
   }
 
   .number {
     a {display: inline;}
   }
-}
-
-#column-right td.group-thing {
-  min-width: 25em;
-  max-width: 30em;
-  overflow: hidden;
 }
 
 .gbg {
@@ -244,15 +249,23 @@ th.sorted {
 .gbox {
   position: absolute;
   left:0;
-  top: -1px;
+  top: 0;
   background-color: rgba(112, 195, 255, 0.5);
   width: 0;
   min-width:1px;
-  height: 21px;
+  height: 18px;
   z-index: -100;
+  border-radius: 0 1px 1px 0;
 }
-.apdex-ok { background-color: rgba(0,255,0,0.2) !important; }
-.apdex-fail { background-color: rgba(255,0,0,0.2) !important; }
+.apdex-box {
+  z-index: 100;
+  width: 1px;
+  height: 110%;
+  left: 94%;
+  background: red;
+  position: absolute;
+  top: 0;
+}
 
 td.number {
   text-align: right;
@@ -260,18 +273,6 @@ td.number {
 
 .new_error td{
   background-color:pink;
-}
-
-#plot-details-col1,
-#plot-details-col2,
-#plot-details-col3 {
-  float: left;
-  margin-left: 0;
-}
-
-#plot-details-col2,
-#plot-details-col3 {
-  margin-left:30px;
 }
 
 .stats {

@@ -62,6 +62,7 @@
       font-family: "Open Sans";
       width: 160px;
       z-index: 10000;
+      border-bottom: 1px solid $lightest-grey;
 
       &:focus {
         outline: none;
