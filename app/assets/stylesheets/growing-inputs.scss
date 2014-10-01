@@ -1,0 +1,11 @@
+.ghost-container {
+  position: absolute;
+  top: -10000px;
+  left: -10000px;
+  width: auto !important;
+  /* padding-left: 10px; */
+}
+
+.growing-input {
+  transition: width 0.1s
+}

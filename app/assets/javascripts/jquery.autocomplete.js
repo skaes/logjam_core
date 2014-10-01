@@ -238,7 +238,7 @@
             offset = that.el.offset();
 
             $(that.suggestionsContainer).css({
-                top: (offset.top + that.el.outerHeight()) + 'px',
+                top: 50 + 'px',
                 left: offset.left + 'px'
             });
         },

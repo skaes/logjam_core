@@ -19,5 +19,6 @@
   *= require charts
   *= require tipsy
   *= require tooltip
+  *= require growing-inputs
   *= require media-queries
  */

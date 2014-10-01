@@ -12,7 +12,7 @@ $(document).on('keydown', function(event){
    */
   if(event.ctrlKey && event.keyCode === 83) {
     event.preventDefault();
-    $('#page-field').focus();
+    $('#namespace-suggest').focus();
   }
 
   /**

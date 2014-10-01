@@ -22,5 +22,7 @@
 
 </div>
 <script type="text/javascript">
-  logjam_resource_plot(<%=raw Oj.dump(js_params) %>)
+  $(function(){
+    logjam_resource_plot(<%=raw Oj.dump(js_params) %>)
+  })
 </script>

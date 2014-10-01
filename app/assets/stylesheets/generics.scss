@@ -22,7 +22,7 @@
   border-color: $light-grey;
   color: $light-grey;
   border-radius: 1px;
-  height: 31px;
+  height: 24px;
   font-size: 12px;
   font-family: "Open Sans", "Helvetica", Verdana, Arial;
   text-transform: uppercase;
@@ -41,6 +41,9 @@
     background: $xing-green;
     color: $white;
   }
+}
+a.btn {
+  line-height: 17px;
 }
 
 .btn-group {
@@ -67,7 +70,8 @@
 }
 
 a.btn {
-  line-height: 31px;
+  line-height: 22px;
+  height: 22px;
 }
 
 a.disabled {
@@ -141,7 +145,7 @@ a.disabled {
 }
 
 .autocomplete-suggestions {
-  border:1px solid $lighter-grey;
+  box-shadow: 1px 1px 14px -7px rgba(0, 0, 0, 0.5) inset, 0 6px 15px -5px rgba(0,0,0,0.5);
   background:$white;
   cursor:default;
   text-align:left;

@@ -38,6 +38,7 @@ function go_home() {
 }
 
 function view_selected_pages(){
+
   if (parameters.time_range == "date") {
     $("#filter-form").attr("action", self_url);
   }
@@ -101,10 +102,14 @@ function initialize_header() {
           error_out_of_range: "No data for that date."});
   }
 
-  $("#page-field").autocomplete({
-     serviceUrl: auto_complete_url,
-     minChars: 1,
-     maxHeight: 600,
-     onSelect: function(value, data){ submit_filter_form(); }
+  $("#namespace-suggest").autocomplete({
+    serviceUrl: auto_complete_url,
+    minChars: 1,
+    maxHeight: 600,
+    onSelect: function(value){
+      console.log(value);
+      $('#page').val( value.value );
+      submit_filter_form();
+    }
    });
 }

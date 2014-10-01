@@ -31,3 +31,4 @@
 //= require logjam-ready
 //= require logjam-mobile
 //= require logjam-keyboard-controls
+//= require logjam-growing-inputs

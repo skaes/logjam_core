@@ -37,21 +37,33 @@ a {
 }
 
 pre {
-    margin: 1px 0!important;
-    padding: 4px!important;
-    font-size: 11px;
-    white-space: pre-wrap;
+  margin: 1px 0!important;
+  padding: 4px!important;
+  font-size: 11px;
+  white-space: pre-wrap;
+
+  a {
+    color: blue;
+
+    :hover {
+      color: blue;
+    }
+  }
 }
 
-pre a { color: blue; }
-pre a:hover { color: blue; }
-
 table {
-  tr:nth-child(1) {
-    border-bottom: 1px solid $lighter-grey !important;
-    text-align: left !important;
-    background: none !important;
+  thead {
+    tr {
+      background: none !important;
+    }
   }
+  tbody {
+    tr:nth-child(1) {
+      border-bottom: 1px solid $lighter-grey !important;
+      text-align: left !important;
+    }
+  }
+
 }
 
 svg {

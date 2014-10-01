@@ -42,7 +42,7 @@
 }
 
 .app-dashboard {
-  margin: 10px !important;
+  margin: 5px !important;
   flex-direction: row;
 
   .app-overview {
@@ -51,13 +51,19 @@
     -webkit-flex-direction: row;
     flex-direction: row;
     width: 100%;
+    flex-wrap: wrap;
+
+    > h2 {
+      display: none;
+    }
 
     .item {
+      flex: 1;
       background: $white;
       border-radius: 2px;
       border: 1px solid $lighter-grey;
       padding: 10px;
-      margin: 10px;
+      margin: 5px;
       width: 100%;
       position: relative;
       overflow: hidden;
@@ -75,6 +81,9 @@
         text-transform: uppercase;
         color: $xing-green;
         margin-bottom: 10px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
       }
 
       .value {

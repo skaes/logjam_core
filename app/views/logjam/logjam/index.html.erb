@@ -13,7 +13,7 @@
 
     <% else -%>
 
-      <div class="app-overview">
+      <div class="app-overview size-xxl-small-width size-xxl-no-flex">
         <% if @dataset.has_frontend? %>
           <%= render "frontend_apdex" %>
         <% end %>
@@ -46,8 +46,8 @@
       </div>
 
       <% if params[:grouping] == "page" -%>
-        <h2>Resources (avg)</h2>
-        <div class="app-overview">
+        <div class="app-overview size-xxl-medium-width size-xxl-no-flex">
+          <h2>Resources (avg)</h2>
           <%= render "breakdown" %>
         </div>
       <% end -%>

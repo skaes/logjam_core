@@ -20,8 +20,14 @@
   height: $header-height;
   background: $header-bg-color;
   box-shadow: 1px 0 2px 0 rgba(0, 0, 0, 0.5);
-  position: relative;
   z-index: 10000;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+  width: 100%;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
 
   .logo {
     background-image: image-url('icon.png');
@@ -30,24 +36,22 @@
     padding-left: 25px;
     font-weight: 300;
     line-height: 20px;
-    margin-left: 20px;
-    margin-top: 20px;
+    margin: 15px 10px 0 20px;
     float: left;
     background-repeat: no-repeat;
     background-position: 0 0;
     height: auto;
     width: auto;
   }
+  > div {
+    line-height: 55px;
+    font-weight: 300;
+    text-transform: lowercase;
+    position: relative;
+    margin-right: 20px;
+  }
 
   .application-chooser {
-    position: absolute;
-    left: 140px;
-    font-size: 18px;
-    height: 60px;
-    line-height: 65px;
-    font-weight: 300;
-    text-transform: uppercase;
-
     &.active {
       .dropdown-menu {
         display: -webkit-flex;
@@ -55,14 +59,16 @@
       }
     }
 
-    .application-suggest {
+    .application-suggest,
+    #application-chooser-ghost {
       border: 0;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 300;
       font-family: "Open Sans";
-      width: 160px;
       z-index: 10000;
-      border-bottom: 1px solid $lightest-grey;
+      width: 10px;
+      border-bottom: 1px solid $light-grey;
+      text-transform: lowercase;
 
       &:focus {
         outline: none;
@@ -99,8 +105,6 @@
           display: block;
           padding: 5px;
 
-
-
           &:before {
             margin-right: 5px;
           }
@@ -117,30 +121,39 @@
     }
   }
 
+  .namespace-chooser {
+    #namespace-suggest,
+    #namespace-suggest-ghost {
+      text-transform: lowercase;
+      border: 0;
+      font-size: 16px;
+      font-weight: 300;
+      font-family: "Open Sans";
+      z-index: 10000;
+      border-bottom: 1px solid $light-grey;
+
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+
+  .section-chooser,
   .enviroment-chooser {
-    position: absolute;
-    top: 15px;
-    left: 450px;
+    margin-top: 14px;
     font-size: 18px;
+    margin-right: 20px;
   }
 
   .date-chooser {
-    position: absolute;
-    right: 20px;
-    top: 15px;
-    font-size: 16px;
-
-    a {
-      margin-top: 7px;
-      float: left;
-    }
-
     #datepicker {
       border: 0;
       font-size: 16px;
-      width: 100px;
+      font-weight: 300;
       font-family: "Open Sans";
-      float: left;
+      width: 100px;
+      z-index: 10000;
+      border-bottom: 1px solid $light-grey;
     }
     .jdpicker_w {
       display: inline;
@@ -153,9 +166,8 @@
   }
 
   #auto-refresh {
-    position: absolute;
-    right: 200px;
-    top: 20px;
+    position: relative;
+    margin-top: 15px;
     cursor: pointer;
     font-size: 16px;
   }
