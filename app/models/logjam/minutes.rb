@@ -24,6 +24,8 @@ module Logjam
         @counters = ["page_count", "ajax_count"]
       elsif resources.include? "ajax_time"
         @counters = ["ajax_count"]
+      elsif !(resources & Resource.dom_resources).empty?
+        @counters = ["page_count"]
       else
         @counters = (@resources & Resource.frontend_resources).empty? ? ["count"] : ["page_count"]
       end

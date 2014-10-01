@@ -35,6 +35,10 @@ module Logjam
       Logjam::Resource.frontend_resources & @collected_resources
     end
 
+    def collected_dom_resources
+      Logjam::Resource.dom_resources & @collected_resources
+    end
+
     def collected_time_resources
       Logjam::Resource.time_resources & @collected_resources
     end
