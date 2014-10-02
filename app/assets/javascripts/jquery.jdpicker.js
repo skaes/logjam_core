@@ -127,9 +127,9 @@ jdPicker.prototype = {
 		this.date_min = "";
 
     var monthNav = $('<p class="month_nav">' +
-      '<span class="button prev" title="[Page-Up]">&#171;</span>' +
+      '<span class="button prev" title="[Page-Up]"><i class="fa fa-angle-left"></i></span>' +
       ' <span class="month_name"></span> ' +
-      '<span class="button next" title="[Page-Down]">&#187;</span>' +
+      '<span class="button next" title="[Page-Down]"><i class="fa fa-angle-right"></i></span>' +
       '</p>');
 
     this.monthNameSpan = $(".month_name", monthNav);
@@ -144,9 +144,9 @@ jdPicker.prototype = {
 	}));
 
     var yearNav = $('<p class="year_nav">' +
-      '<span class="button prev" title="[Ctrl+Page-Up]">&#171;</span>' +
+      '<span class="button prev" title="[Ctrl+Page-Up]"><i class="fa fa-angle-left"></i></span>' +
       ' <span class="year_name" id="year_name"></span> ' +
-      '<span class="button next" title="[Ctrl+Page-Down]">&#187;</span>' +
+      '<span class="button next" title="[Ctrl+Page-Down]"><i class="fa fa-angle-right"></i></span>' +
       '</p>');
 
     this.yearNameSpan = $(".year_name", yearNav);

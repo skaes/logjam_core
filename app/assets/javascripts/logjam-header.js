@@ -99,7 +99,8 @@ function initialize_header() {
     $("#datepicker").jdPicker({
       date_format: "YYYY-mm-dd",
       selectable: selectable_days,
-      error_out_of_range: "No data for that date."});
+      error_out_of_range: "No data for that date."
+    });
   }
 
   $("#namespace-suggest").autocomplete({
