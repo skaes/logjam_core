@@ -91,15 +91,15 @@ function sort_by(order){
 
 function initialize_header() {
   $("#filter-form").on("submit", function(event) {
-      event.preventDefault();
-      submit_filter_form();
-      });
+    event.preventDefault();
+    submit_filter_form();
+  });
 
   if (parameters.time_range == "date") {
     $("#datepicker").jdPicker({
-          date_format: "YYYY-mm-dd",
-          selectable: selectable_days,
-          error_out_of_range: "No data for that date."});
+      date_format: "YYYY-mm-dd",
+      selectable: selectable_days,
+      error_out_of_range: "No data for that date."});
   }
 
   $("#namespace-suggest").autocomplete({

@@ -198,9 +198,9 @@ module Logjam
 
     def sometimes_link_all_pages
       if params[:grouping] == "page"
-        clean_link_to("show all actions", { :action => "totals_overview", :page => @page }, :"data-tooltip" => "show all actions")
+        clean_link_to("show all actions", { :action => "totals_overview", :page => @page })
       elsif params[:grouping] == "request"
-        clean_link_to("browse requests", { :action => "request_overview", :page => @page }, :"data-tooltip" => "browse requests")
+        clean_link_to("browse requests", { :action => "request_overview", :page => @page })
       end
     end
 

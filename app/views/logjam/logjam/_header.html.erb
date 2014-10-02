@@ -42,13 +42,16 @@ $(document).ready(initialize_header);
     <div id="namespace-suggest-ghost" class="ghost-container"></div>
     <%
       if params[:page]
-        placeholder = params[:page]
+        value = params[:page]
       else
-        placeholder = 'namespace'
+        value = 'by namspace or action'
       end
     %>
     <label for="namespace-suggest">Filter: </label>
-    <input tabindex="3" id="namespace-suggest" class="autocomplete growing-input" data-ghost-container="#namespace-suggest-ghost" placeholder="<%= placeholder %>" name="page" type="text" onchange="view_selected_pages()" />
+    <input tabindex="3" id="namespace-suggest" class="autocomplete growing-input" data-ghost-container="#namespace-suggest-ghost" placeholder="<%= value %>" name="page" type="text" onchange="view_selected_pages()" />
+    <% if value != '' %>
+      <i class="fa fa-times"></i>
+    <% end %>
   </div>
 
   <% if @dataset && @dataset.has_frontend? %>
@@ -81,6 +84,12 @@ $(document).ready(initialize_header);
     $('.enviroment-chooser .btn', '#logjam-header').on('mousedown', function(event){
       $('#env').val( $(this).val() );
     });
+
+    /* remove namespace filter */
+    $('.namespace-chooser .fa.fa-times').on('click', function(){
+      $('#page').val('');
+      submit_filter_form();
+    })
   });
 
 </script>
