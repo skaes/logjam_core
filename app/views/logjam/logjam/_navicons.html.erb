@@ -1,4 +1,5 @@
 <ul class="navicons">
+<!--
   <li>
     <% if params[:interval].to_s == "5" %>
       <%= clean_link_to(fa_icon("search-plus", :title => "increase plot resolution"), :page => without_module(@page), :action => "index", :interval => 1) %>
@@ -6,6 +7,7 @@
       <%= clean_link_to(fa_icon("search-minus", :title => "decrease plot resolution"), :page => without_module(@page), :action => "index", :interval => 5) %>
     <% end %>
   </li>
+-->
   <li>
     <%= clean_link_to(fa_icon("expand", :title => "view enlarged plot"), :page => without_module(@page), :action => "enlarged_plot", :interval => 1, :section => params[:section]) %>
   </li>
