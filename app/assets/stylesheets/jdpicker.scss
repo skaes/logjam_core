@@ -175,7 +175,8 @@
   cursor: pointer;
   background: #333;
   border:1px solid transparent;
-  color:#fff
+  color:#fff;
+  border-radius: 1px;
 }
 .jdpicker_w .date_selector td.selected, .jdpicker_w .date_selector tr.selected  td {
   background: #006567;
