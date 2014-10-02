@@ -48,7 +48,7 @@ $(document).ready(initialize_header);
         placeholder = 'namespace'
       end
     %>
-    <input tabindex="3" id="namespace-suggest" class="autocomplete growing-input" data-ghost-container="#namespace-suggest-ghost" placeholder="<%= placeholder %>" name="page" type="text" " onchange="view_selected_pages()" />
+    <input tabindex="3" id="namespace-suggest" class="autocomplete growing-input" data-ghost-container="#namespace-suggest-ghost" placeholder="<%= placeholder %>" name="page" type="text" onchange="view_selected_pages()" />
   </div>
 
   <% if @dataset && @dataset.has_frontend? %>

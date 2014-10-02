@@ -111,6 +111,15 @@
             <% end %>
           </ul>
         </li>
+        <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:dom) %>><i class="fa fa-tree"></i> Dom</a>
+          <ul>
+            <% collected_dom_resources.reverse.each do |r| %>
+            <li <% if params[:resource] == r %>class="active"<% end %>>
+              <a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a>
+            </li>
+            <% end %>
+          </ul>
+        </li>
       </ul>
 
       <ul class="admin">
