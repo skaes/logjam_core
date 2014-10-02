@@ -412,7 +412,7 @@ jdPicker.prototype = {
   setPosition: function() {
     var offset = this.input.offset();
     this.rootLayers.css({
-      top: 39,
+      top: 22,
       left: 0 // offset.left
     });
 
