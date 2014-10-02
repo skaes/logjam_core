@@ -4,13 +4,13 @@
 
 $(document).on('keydown', function(event){
 
-  console.log(event.keyCode);
+  console.log(event.shiftKey);
 
   /**
    * search field
    * CTRL + S
    */
-  if(event.ctrlKey && event.keyCode === 70) {
+  if(event.ctrlKey && !event.shiftKey && event.keyCode === 70) {
     event.preventDefault();
     $('#namespace-suggest').focus();
   }
@@ -21,8 +21,7 @@ $(document).on('keydown', function(event){
    */
   if(event.ctrlKey && event.keyCode === 65 && $('.application-chooser').length > -1) {
     event.preventDefault();
-
-    $('.application-suggest').focus();
+    $('#application-suggest').focus();
   }
 
   /**
@@ -47,18 +46,21 @@ $(document).on('keydown', function(event){
    * Go to backend Dashboard
    * CTRL + B
    */
-  if(event.ctrlKey && event.keyCode === 66) {
+  if(event.ctrlKey && event.shiftKey && event.keyCode === 66) {
     event.preventDefault();
-    $('#auto-refresh').click();
+    $('#section').val('backend');
+    submit_filter_form();
   }
 
   /**
    * Go to frontend Dashboard
    * CTRL + F
    */
-  if(event.ctrlKey && event.keyCode === 70) {
+  if(event.ctrlKey && event.shiftKey && event.keyCode === 70) {
     event.preventDefault();
-    $('#auto-refresh').click();
+    $('#section').val('frontend');
+    submit_filter_form();
+
   }
 
 })
