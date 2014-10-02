@@ -91,6 +91,8 @@
       text-transform: lowercase;
       margin: 0;
       padding: 0;
+      -webkit-appearance: none;
+      border-radius: 0;
 
       &:focus {
         outline: none;

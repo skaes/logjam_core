@@ -17,7 +17,7 @@ function logjam_resource_plot(params) {
 
   /* Sizing and scales. */
   var w = document.getElementById('resource-plot').offsetWidth - 60,
-      h = $('#resource-plot').parent('.item').height() - 80,
+      h = ($('#resource-plot').parent('.item').height() - 80 > 170) ? $('#resource-plot').parent('.item').height() - 80 : 170,
       xticks = d3.range(25).map(function(h){ return h/interval*60; }),
       x      = d3.scale.linear().domain([0, 1440/interval]).range([0, w]),
       y      = d3.scale.linear().domain([0, zoomed_max_y]).range([h, 0]).nice(),

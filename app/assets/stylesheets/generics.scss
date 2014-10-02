@@ -153,6 +153,9 @@ a.disabled {
   background: $dark-grey;
   color: $white;
   position: relative;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  min-width: 150px;
 
   &:before {
     content: " ";

@@ -104,8 +104,10 @@ function initialize_header() {
 
   $("#namespace-suggest").autocomplete({
     serviceUrl: action_auto_complete_url,
-    minChars: 1,
-    maxHeight: 600,
+    minChars: 0,
+    maxHeight: 300,
+    width: 250,
+    autoSelectFirst: true,
     onSelect: function(value){
       $('#page').val( value.value );
       submit_filter_form();
@@ -114,8 +116,10 @@ function initialize_header() {
 
   $("#application-suggest").autocomplete({
     serviceUrl: application_auto_complete_url,
-    minChars: 1,
-    maxHeight: 600,
+    minChars: 0,
+    maxHeight: 300,
+    width: 150,
+    autoSelectFirst: true,
     onSelect: function(value){
       $('#app').val( value.value );
       $('#page').val( '' );
