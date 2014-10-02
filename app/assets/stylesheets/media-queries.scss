@@ -23,6 +23,9 @@
     }
 
     .size-xxl-medium-width {
+      max-width: 300px;
+    }
+    .size-xxl-large-width {
       max-width: 400px;
     }
 
@@ -32,6 +35,16 @@
       .item {
         width: auto !important;
       }
+    }
+
+    .size-xxl-flex-order-first {
+      order: 1;
+    }
+    .size-xxl-flex-order-second {
+      order: 2;
+    }
+    .size-xxl-flex-order-third {
+      order: 3;
     }
 
     .app-overview {
@@ -44,12 +57,23 @@
 }
 
 @media all and (max-width: 1100px) {
+  body {
+    overflow: hidden;
+  }
+
   #logjam-container {
     display: block;
     overflow: hidden;
     box-sizing: border-box;
     width: auto;
     margin-right: 0px;
+  }
+
+  #logjam-header,
+  #logjam-content {
+    transition: left 0.5s;
+    left: 0;
+    position: relative;
   }
 
   .app-dashboard {
@@ -77,10 +101,11 @@
   }
 
   #logjam-sidebar {
+    box-shadow: 0 0 0 0 rgba(0,0,0,0);
     left: -220px !important;
-    position: absolute !important;
+    position: fixed !important;
     z-index: 10000 !important;
-    transition: left 0.5s;
+    transition: all 0.5s;
     top: 0;
     bottom: 0;
     overflow-y: scroll; /* has to be scroll, not auto */
@@ -96,8 +121,13 @@
       }
     }
 
+    #logjam-header,
+    #logjam-content {
+      left: 100px;
+    }
     #logjam-sidebar {
       left: 0 !important;
+      box-shadow: 0 0 100px -10px rgba(0,0,0,0.8);
     }
   }
 

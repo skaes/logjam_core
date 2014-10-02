@@ -43,24 +43,16 @@
     height: auto;
     width: auto;
   }
-  > div {
+  > .filter-item {
     line-height: 55px;
     font-weight: 300;
     text-transform: lowercase;
     position: relative;
     margin-right: 20px;
-  }
 
-  .application-chooser {
-    &.active {
-      .dropdown-menu {
-        display: -webkit-flex;
-        display: flex;
-      }
-    }
-
-    .application-suggest,
-    #application-chooser-ghost {
+    input,
+    #application-chooser-ghost,
+    #namespace-suggest-ghost {
       border: 0;
       font-size: 16px;
       font-weight: 300;
@@ -73,6 +65,20 @@
       &:focus {
         outline: none;
       }
+    }
+  }
+
+  .application-chooser {
+    &.active {
+      .dropdown-menu {
+        display: -webkit-flex;
+        display: flex;
+      }
+    }
+
+    .application-suggest,
+    #application-chooser-ghost {
+
     }
 
     .dropdown-menu {
@@ -117,23 +123,6 @@
         &.hide {
           display: none;
         }
-      }
-    }
-  }
-
-  .namespace-chooser {
-    #namespace-suggest,
-    #namespace-suggest-ghost {
-      text-transform: lowercase;
-      border: 0;
-      font-size: 16px;
-      font-weight: 300;
-      font-family: "Open Sans";
-      z-index: 10000;
-      border-bottom: 1px solid $light-grey;
-
-      &:focus {
-        outline: none;
       }
     }
   }

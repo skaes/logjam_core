@@ -118,7 +118,7 @@ function logjam_resource_plot(params) {
   vis.append("svg:text")
     .attr("class", "label")
     .attr("dy", -25)
-    .attr("dx", -w/2+140)
+    .attr("dx", -104)
     .style("font", "12px open sans")
     .attr("text-anchor", "middle")
     .attr("transform", "rotate(270)")

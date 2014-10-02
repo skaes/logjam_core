@@ -16,7 +16,7 @@ $(document).ready(initialize_header);
 <header id="logjam-header">
   <h1 class="logo">LOGJAM</h1>
   <% unless @only_one_app %>
-    <div class="application-chooser">
+    <div class="application-chooser filter-item">
       <div id="application-chooser-ghost" class="ghost-container"></div>
       <% if params[:action] == 'dashboard' || !params[:app] %>
         <input tabindex="1" class="application-suggest growing-input" data-ghost-container="#application-chooser-ghost" type="text" placeholder="Choose Application">
@@ -31,7 +31,7 @@ $(document).ready(initialize_header);
     </div>
   <% end %>
 
-  <div class="date-chooser">
+  <div class="date-chooser filter-item">
       <% if params[:time_range] == "date" %>
         <input tabindex="2" size="11" type="text" value="<%= @date %>" id="datepicker" onchange="submit_filter_form()" />
       <% else %>
@@ -39,7 +39,7 @@ $(document).ready(initialize_header);
       <% end %>
   </div>
 
-  <div class="namespace-chooser ">
+  <div class="namespace-chooser filter-item">
     <div id="namespace-suggest-ghost" class="ghost-container"></div>
     <%
       if params[:page]
@@ -52,7 +52,7 @@ $(document).ready(initialize_header);
   </div>
 
   <% if @dataset && @dataset.has_frontend? %>
-    <div class="section-chooser">
+    <div class="section-chooser filter-item">
       <div class="btn-group">
         <a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/?app=<%= params[:app] %>&section=backend" data-menu="backend-menu" class="btn<% if params[:section] == 'backend' %> active<% end %>">Backend</a>
         <a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/?app=<%= params[:app] %>&section=frontend" data-menu="frontend-menu" class="btn<% if params[:section] == 'frontend' %> active<% end %>">Frontend</a>
@@ -61,7 +61,7 @@ $(document).ready(initialize_header);
   <% end %>
 
   <% unless @only_one_env %>
-    <div class="enviroment-chooser">
+    <div class="enviroment-chooser filter-item">
       <div class="btn-group">
         <% @envs.map do |env| %>
           <% if params[:env] == env %>
@@ -74,7 +74,7 @@ $(document).ready(initialize_header);
     </div>
   <% end %>
 <!--
-  <div id="auto-refresh">
+  <div id="auto-refresh" class="filter-item">
     <% if params[:auto_refresh] == "1" %>
       <i class="fa fa-toggle-on"></i>
     <% else %>
