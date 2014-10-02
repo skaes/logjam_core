@@ -66,6 +66,11 @@ table {
 
 }
 
+#pagetimes .gct {
+    width: 25em;
+    text-overflow: ellipsis;
+}
+
 svg {
     -webkit-user-select: none; /* webkit (safari, chrome) browsers */
     -moz-user-select: none; /* mozilla browsers */

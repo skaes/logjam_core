@@ -216,7 +216,8 @@ th.sorted {
   td,
   th {
     &:first-child {
-      max-width: 300px;
+      // max-width: 300px;
+      overflow: hidden;
     }
 
     &.echart {
