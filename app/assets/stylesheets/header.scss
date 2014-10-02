@@ -27,6 +27,8 @@
   width: 100%;
   -webkit-flex-wrap: wrap;
   flex-wrap: wrap;
+  position: fixed;
+  top: 0;
 
   .logo {
     margin: 0;

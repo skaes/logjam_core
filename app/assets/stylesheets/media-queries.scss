@@ -57,6 +57,12 @@
 }
 
 @media all and (max-width: 1100px) {
+  #logjam-header {
+    position: static;
+  }
+  #logjam-container {
+    margin-top: 0;
+  }
   #logjam-container {
     display: block;
     overflow: hidden;
