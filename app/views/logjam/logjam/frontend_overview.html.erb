@@ -27,18 +27,18 @@
           <%= render "navicons" %>
           <%= render :partial => "resource_plot", :locals => {:width => 450, :height => 200} %>
         </div>
-        <div class="item has-action">
+        <div class="item">
           <h2><%= @dataset.description %>
             <%- if params[:grouping] == "request" -%>
               between <%= minute_to_human(@dataset.start_minute) %>
               and <%= minute_to_human(@dataset.end_minute) %>
             <%- end -%>
           </h2>
+          <ul class="navicons">
+            <li><%= sometimes_link_all_pages %></li>
+          </ul>
           <div id="pagetimes">
             <%= render "page_times" %>
-          </div>
-          <div class="action">
-            <%= sometimes_link_all_pages %>
           </div>
         </div>
       </div>
