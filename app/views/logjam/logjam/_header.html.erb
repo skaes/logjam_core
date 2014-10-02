@@ -7,7 +7,8 @@ var history_url = '<%= raw history_url %>';
   <% if @days %>
   var selectable_days = <%= raw Oj.dump(@days.map(&:to_s)) %>;
   <% end %>
-var auto_complete_url = '<%= raw auto_complete_url_for_action_page %>';
+var action_auto_complete_url = '<%= raw auto_complete_url_for_action_page %>';
+var application_auto_complete_url = '<%= raw auto_complete_url_for_application_page %>';
 $(document).ready(initialize_header);
 <% end %>
 
@@ -18,25 +19,23 @@ $(document).ready(initialize_header);
   <% unless @only_one_app %>
     <div class="application-chooser filter-item">
       <div id="application-chooser-ghost" class="ghost-container"></div>
-      <% if params[:action] == 'dashboard' || !params[:app] %>
-        <input tabindex="1" class="application-suggest growing-input" data-ghost-container="#application-chooser-ghost" type="text" placeholder="Choose Application">
-      <% else %>
-        <input tabindex="1" class="application-suggest growing-input" data-ghost-container="#application-chooser-ghost" type="text" placeholder="<%= params[:app] %>">
-      <% end %>
-      <ul class="dropdown-menu">
-        <% @apps.map do |app| %>
-          <li class="dropdown-header" data-app="<%= app %>"><a <% if params[:app] == app %>class="active"<% end %> href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/?app=<%= app %>&section=<%= params[:section] %>"><i class="fa fa-angle-right"></i> <%= app %></a></li>
+        <label for="application-suggest">Application: </label>
+        <% if params[:action] == 'dashboard' || !params[:app] %>
+          <input tabindex="1" id="application-suggest" class="application-suggest growing-input" data-ghost-container="#application-chooser-ghost" type="text" placeholder="Choose Application">
+        <% else %>
+          <input tabindex="1" id="application-suggest" class="application-suggest growing-input" data-ghost-container="#application-chooser-ghost" type="text" placeholder="<%= params[:app] %>">
         <% end %>
-      </ul>
+      </label>
     </div>
   <% end %>
 
   <div class="date-chooser filter-item">
-      <% if params[:time_range] == "date" %>
-        <input tabindex="2" size="11" type="text" value="<%= @date %>" id="datepicker" onchange="submit_filter_form()" />
-      <% else %>
-        <input tabindex="2" size="11" type="text" value="<%= @date %>" id="datepicker" readonly="readonly" disabled="disabled" />
-      <% end %>
+    <label for="datepicker">Date: </label>
+    <% if params[:time_range] == "date" %>
+      <input tabindex="2" size="11" type="text" value="<%= @date %>" id="datepicker" onchange="submit_filter_form()" />
+    <% else %>
+      <input tabindex="2" size="11" type="text" value="<%= @date %>" id="datepicker" readonly="readonly" disabled="disabled" />
+    <% end %>
   </div>
 
   <div class="namespace-chooser filter-item">
@@ -48,11 +47,12 @@ $(document).ready(initialize_header);
         placeholder = 'namespace'
       end
     %>
+    <label for="namespace-suggest">Filter: </label>
     <input tabindex="3" id="namespace-suggest" class="autocomplete growing-input" data-ghost-container="#namespace-suggest-ghost" placeholder="<%= placeholder %>" name="page" type="text" onchange="view_selected_pages()" />
   </div>
 
   <% if @dataset && @dataset.has_frontend? %>
-    <div class="section-chooser filter-item">
+    <div class="section-chooser filter-item no-background">
       <div class="btn-group">
         <a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/?app=<%= params[:app] %>&section=backend" data-menu="backend-menu" class="btn<% if params[:section] == 'backend' %> active<% end %>">Backend</a>
         <a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/?app=<%= params[:app] %>&section=frontend" data-menu="frontend-menu" class="btn<% if params[:section] == 'frontend' %> active<% end %>">Frontend</a>
@@ -61,7 +61,7 @@ $(document).ready(initialize_header);
   <% end %>
 
   <% unless @only_one_env %>
-    <div class="enviroment-chooser filter-item">
+    <div class="enviroment-chooser filter-item no-background">
       <div class="btn-group">
         <% @envs.map do |env| %>
           <% if params[:env] == env %>
@@ -73,96 +73,15 @@ $(document).ready(initialize_header);
       </div>
     </div>
   <% end %>
-<!--
-  <div id="auto-refresh" class="filter-item">
-    <% if params[:auto_refresh] == "1" %>
-      <i class="fa fa-toggle-on"></i>
-    <% else %>
-      <i class="fa fa-toggle-off"></i>
-    <% end %>
-     Autorefresh
-  </div>
--->
-
 </header>
 
 <script>
   $(function(){
-    $('#auto-refresh').on('click', function(){
-      if( $('#auto_refresh').val() == '1' ) {
-        $('#auto_refresh').val('0');
-        submit_filter_form();
-      }
-      else {
-        $('#auto_refresh').val('1');
-        submit_filter_form();
-      }
-    })
-
     /* choose the enviroment */
     $('.enviroment-chooser .btn', '#logjam-header').on('mousedown', function(event){
       $('#env').val( $(this).val() );
     });
-
-
-    /* Application suggest */
-    $('.application-suggest').on('focus', function(event) {
-      $('.application-chooser').addClass('active');
-      $('.dropdown-menu li', '.application-chooser').removeClass('hide');
-    });
-
-    $('.application-suggest').on('blur', function(event) {
-      setTimeout(function(){
-        $('.application-chooser').removeClass('active');
-        $('.dropdown-menu li', '.application-chooser').removeClass('active');
-      }, 200)
-    });
-
-
-    $('.application-suggest').on('keyup', function(event) {
-
-      /* close on ESC */
-      if( event.keyCode == 27) {
-        $(this).blur();
-      }
-
-      /* don't highlight anything if input is empty */
-      $('.dropdown-menu li', '.application-chooser').removeClass('active');
-      if( $(this).val().length == 0 ) {
-        $('.dropdown-menu li', '.application-chooser').removeClass('hide');
-        return;
-      }
-
-      var app = $(this).val().toLowerCase();
-      $('.dropdown-menu li', '.application-chooser').each(function(){
-        if( $(this).data('app').toLowerCase().indexOf(app) === -1 ) {
-          $(this).addClass('hide');
-        }
-        else {
-          $(this).removeClass('hide');
-        }
-      });
-
-      $('.dropdown-menu li:not(.hide)', '.application-chooser').first().addClass('active');
-
-      if( event.keyCode == 40 ) {
-        var $current = $('.dropdown-menu li.active', '.application-chooser');
-        $current.removeClass('active')
-                .next(':not(.hide)').addClass('active');
-      }
-
-      if( event.keyCode == 38 ) {
-        var $current = $('.dropdown-menu li.active', '.application-chooser');
-        $current.removeClass('active')
-                .prev(':not(.hide)').addClass('active');
-      }
-
-      if( event.keyCode == 13 && $('.dropdown-menu li.active a', '.application-chooser').length > 0 ) {
-        location.href = $('.dropdown-menu li.active a', '.application-chooser').attr('href');
-      }
-
-
-    });
   });
 
 </script>
+

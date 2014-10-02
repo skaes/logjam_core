@@ -122,6 +122,15 @@
         </li>
       </ul>
 
+      <div id="auto-refresh" class="filter-item">
+        <% if params[:auto_refresh] == "1" %>
+          <i class="fa fa-toggle-on"></i>
+        <% else %>
+          <i class="fa fa-toggle-off"></i>
+        <% end %>
+         Autorefresh
+      </div>
+
       <ul class="admin">
         <li>
           <i class="fa fa-file-text-o"></i> <%= clean_link_to("API Response", params.merge(:format => :json)) %>
@@ -150,6 +159,19 @@
 </section>
 
 <script>
+
+  $(function(){
+    $('#auto-refresh').on('click', function(){
+      if( $('#auto_refresh').val() == '1' ) {
+        $('#auto_refresh').val('0');
+        submit_filter_form();
+      }
+      else {
+        $('#auto_refresh').val('1');
+        submit_filter_form();
+      }
+    })
+  });
 
   $('.sidebar-collapse', '#logjam-sidebar').on('click', function(){
     $('#logjam-sidebar').toggleClass('closed');

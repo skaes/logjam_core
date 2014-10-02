@@ -14,8 +14,8 @@
   }
 }
 
-@media all and (min-width: 1300px) {
-  .app-dashboard {
+@media all and (min-width: 1500px) {
+  .xxl-view .app-dashboard {
     display: flex;
 
     .size-xxl-small-width {
@@ -49,7 +49,7 @@
 
     .app-overview {
       .item {
-        flex: initial;
+        flex: 1 100%
       }
     }
   }

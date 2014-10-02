@@ -103,12 +103,22 @@ function initialize_header() {
   }
 
   $("#namespace-suggest").autocomplete({
-    serviceUrl: auto_complete_url,
+    serviceUrl: action_auto_complete_url,
     minChars: 1,
     maxHeight: 600,
     onSelect: function(value){
-      console.log(value);
       $('#page').val( value.value );
+      submit_filter_form();
+    }
+   });
+
+  $("#application-suggest").autocomplete({
+    serviceUrl: application_auto_complete_url,
+    minChars: 1,
+    maxHeight: 600,
+    onSelect: function(value){
+      $('#app').val( value.value );
+      $('#page').val( '' );
       submit_filter_form();
     }
    });

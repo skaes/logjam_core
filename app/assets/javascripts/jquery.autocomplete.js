@@ -231,14 +231,11 @@
                 offset;
 
             // Don't adjsut position if custom container has been specified:
-            if (that.options.appendTo !== 'body') {
-                return;
-            }
+            if (that.options.appendTo !== 'body') { return; }
 
             offset = that.el.offset();
-
             $(that.suggestionsContainer).css({
-                top: 50 + 'px',
+                top: offset.top + that.el[0].offsetHeight + 10 + 'px',
                 left: offset.left + 'px'
             });
         },

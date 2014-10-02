@@ -1,4 +1,4 @@
-<div id='resource-plot'>
+<div id='resource-plot'></div>
 <%
   js_params = {
     :events   => @js_events.map { |event| [event["minute"], event["label"]] },
@@ -20,7 +20,7 @@
   }
 -%>
 
-</div>
+
 <script type="text/javascript">
   $(function(){
     logjam_resource_plot(<%=raw Oj.dump(js_params) %>)

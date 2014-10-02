@@ -1,5 +1,5 @@
 <%= render "header" %>
-<div id="logjam-container">
+<div id="logjam-container" class="xxl-view">
   <%= render "sidebar" %>
   <div id="logjam-content" class="app-dashboard">
 
@@ -22,14 +22,16 @@
         <%= render "errors" %>
       </div>
 
-      <div class="app-overview size-xxl-flex-order-second">
-        <div class="item has-action">
+      <div class="app-overview size-xxl-flex-order-second size-xxl-no-flex">
+        <div class="item">
           <h2>
             showing
             <%= number_with_delimiter @dataset.count_requests(@section) %> of <%= number_with_delimiter @dataset.count(@section) %> requests
           </h2>
           <%= render "navicons" %>
           <%= render :partial => "resource_plot", :locals => {:width => 450, :height => 200} %>
+        </div>
+        <div class="item has-action">
           <h2><%= @dataset.description %>
             <%- if params[:grouping] == "request" -%>
             between <%= minute_to_human(@dataset.start_minute) %>

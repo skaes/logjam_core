@@ -19,6 +19,18 @@ module Logjam
       render :json => {query: query, suggestions: completions}
     end
 
+    def auto_complete_for_applications_page
+
+      #prepare_params
+      #show_modules = [":", "::"].include?(@page)
+      #re = show_modules ? /^::/ : /#{@page}/i
+      #pages = Totals.new(@db).page_names.select {|name| name =~ re && name != 'all_pages'}
+      #pages.collect!{|p| p.gsub(/^::/,'')}
+      #completions = pages.sort  # [0..34]
+      suggestions = @apps.select{|a| a.start_with?(params[:query]) }
+      render :json => {query: params[:query], suggestions: suggestions }
+    end
+
     def index
       respond_to do |format|
         format.html do

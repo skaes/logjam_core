@@ -29,36 +29,68 @@
   flex-wrap: wrap;
 
   .logo {
-    background-image: image-url('icon.png');
     margin: 0;
     padding: 0;
     padding-left: 25px;
     font-weight: 300;
-    line-height: 20px;
-    margin: 15px 10px 0 20px;
-    background-repeat: no-repeat;
-    background-position: 0 0;
+    line-height: 45px;
+    margin-right: 20px;
+    margin-left: 10px;
     height: auto;
     width: auto;
+    position: relative;
+
+    &:before {
+      content: " ";
+      background-image: image-url('icon.png');
+      height: 20px;
+      width: 20px;
+      position: absolute;
+      left: 0;
+      top: 12px;
+    }
   }
+
   > .filter-item {
-    line-height: 55px;
+    line-height: 19px;
+    height: 19px;
     font-weight: 300;
     text-transform: lowercase;
     position: relative;
     margin-right: 20px;
+    border-radius: 3px;
+    background: $lightest-grey;
+    font-size: 16px;
+    font-weight: 300;
+    padding: 1px 5px 5px 5px;
+    margin-top: 10px;
+    cursor: pointer;
+
+    &.no-background {
+      background: transparent;
+      padding: 0;
+    }
+
+    label {
+      font-weight: 700;
+      font-size: 14px;
+    }
 
     input,
     #application-chooser-ghost,
     #namespace-suggest-ghost {
       border: 0;
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 300;
       font-family: "Open Sans";
-      z-index: 10000;
+      font-weight: 300;
       width: 10px;
+      margin-left: 5px;
+      background: $lightest-grey;
       border-bottom: 1px solid $light-grey;
       text-transform: lowercase;
+      margin: 0;
+      padding: 0;
 
       &:focus {
         outline: none;
@@ -74,22 +106,17 @@
       }
     }
 
-    .application-suggest,
-    #application-chooser-ghost {
-
-    }
-
     .dropdown-menu {
       box-shadow: 1px 1px 14px -7px rgba(0, 0, 0, 0.5) inset, 0 6px 15px -5px rgba(0,0,0,0.5);
       font-size: 14px;
       text-transform: capitalize;
-      height: 340px;
-      width: 600px;
+      max-height: 340px;
+      max-width: 600px;
       overflow: hidden;
       position: absolute;
-      left: -10px;
+      left: 0;
       padding: 8px;
-      margin-top: -5px;
+      margin-top: 5px;
       flex-direction: column;
       align-items: flex-start;
       -webkit-align-items: flex-start;
@@ -127,20 +154,13 @@
 
   .section-chooser,
   .enviroment-chooser {
-    margin-top: 14px;
     font-size: 18px;
     margin-right: 20px;
   }
 
   .date-chooser {
     #datepicker {
-      border: 0;
-      font-size: 16px;
-      font-weight: 300;
-      font-family: "Open Sans";
-      width: 100px;
-      z-index: 10000;
-      border-bottom: 1px solid $light-grey;
+      width: 80px;
     }
     .jdpicker_w {
       display: inline;

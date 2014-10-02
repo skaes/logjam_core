@@ -10,7 +10,7 @@ $(document).on('keydown', function(event){
    * search field
    * CTRL + S
    */
-  if(event.ctrlKey && event.keyCode === 83) {
+  if(event.ctrlKey && event.keyCode === 70) {
     event.preventDefault();
     $('#namespace-suggest').focus();
   }
