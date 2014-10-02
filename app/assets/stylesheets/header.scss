@@ -17,7 +17,6 @@
 }
 
 #logjam-header {
-  height: $header-height;
   background: $header-bg-color;
   box-shadow: 1px 0 2px 0 rgba(0, 0, 0, 0.5);
   z-index: 10000;
@@ -37,7 +36,6 @@
     font-weight: 300;
     line-height: 20px;
     margin: 15px 10px 0 20px;
-    float: left;
     background-repeat: no-repeat;
     background-position: 0 0;
     height: auto;

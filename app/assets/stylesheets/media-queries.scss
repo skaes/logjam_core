@@ -57,23 +57,12 @@
 }
 
 @media all and (max-width: 1100px) {
-  body {
-    overflow: hidden;
-  }
-
   #logjam-container {
     display: block;
     overflow: hidden;
     box-sizing: border-box;
     width: auto;
     margin-right: 0px;
-  }
-
-  #logjam-header,
-  #logjam-content {
-    transition: left 0.5s;
-    left: 0;
-    position: relative;
   }
 
   .app-dashboard {
@@ -120,14 +109,9 @@
         content: "\f00d";
       }
     }
-
-    #logjam-header,
-    #logjam-content {
-      left: 100px;
-    }
     #logjam-sidebar {
       left: 0 !important;
-      box-shadow: 0 0 100px -10px rgba(0,0,0,0.8);
+      box-shadow: 0 0 50px 0 rgba(0,0,0,0.8);
     }
   }
 
@@ -162,11 +146,7 @@
   }
 
   #logjam-header {
-    height: 110px;
-
     .enviroment-chooser {
-      top: 60px;
-      left: 10px;
     }
 
     #auto-refresh {
@@ -177,7 +157,6 @@
     }
 
     .date-chooser {
-      top: 71px;
     }
   }
 
@@ -202,8 +181,6 @@
   }
 
   #logjam-header {
-    height: 110px;
-
     .application-chooser {
       margin-left: 10px;
       position: static;
@@ -237,16 +214,25 @@
 /* smartphone portrait */
 @media all and (max-width: 320px) {
   #logjam-header {
-    height: 150px;
+    display: block;
+
+    .section-chooser,
+    .enviroment-chooser {
+      overflow: hidden;
+    }
+
+    .filter-item {
+      display: block;
+      line-height: normal;
+      margin-top: 0;
+      margin-top: 5px;
+      margin-left: 10px;
+    }
 
     #auto-refresh {
       width: 120px;
       left: 10px;
       top: 110px;
-    }
-
-    .date-chooser {
-      top: 104px;
     }
   }
 }

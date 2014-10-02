@@ -29,7 +29,7 @@
             <%= number_with_delimiter @dataset.count_requests(@section) %> of <%= number_with_delimiter @dataset.count(@section) %> requests
           </h2>
           <%= render "navicons" %>
-          <%= render :partial => "resource_plot", :locals => {:width => 450, :height => 150} %>
+          <%= render :partial => "resource_plot", :locals => {:width => 450, :height => 200} %>
           <h2><%= @dataset.description %>
             <%- if params[:grouping] == "request" -%>
             between <%= minute_to_human(@dataset.start_minute) %>
