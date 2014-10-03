@@ -448,3 +448,8 @@ table.zebra {
     flex: 170px 1;
   }
 }
+
+td.js-exception {
+    max-width: 400px;
+    overflow: hidden;
+}
