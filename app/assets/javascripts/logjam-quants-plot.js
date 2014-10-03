@@ -1,7 +1,16 @@
 function logjam_quants_plot(params) {
+
+  function get_height() {
+    var height = $('#distribution-plot').height() - 100;
+    if (height > 0)
+      return height;
+    else
+      return 500;
+  }
+
 var
     w = document.getElementById('distribution-plot').offsetWidth - 100,
-    h  = 500,
+    h  = get_height(),
     x = d3.scale.log().domain([params.xmin, params.max_x]).range([0, w]).nice(),
     y = d3.scale.log().domain([1, params.max_y]).range([0, h]).nice(),
     legend = params.legend,
@@ -69,7 +78,7 @@ vis.selectAll(".xlabel")
 /* Y-label */
 vis.append("svg:text")
     .attr("dy", -40)
-    .attr("dx", -w/2+100)
+    .attr("dx", -h/2)
     .style("font", "12px sans-serif")
     .attr("text-anchor", "middle")
     .attr("transform", "rotate(270)")
