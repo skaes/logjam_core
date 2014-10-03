@@ -5,6 +5,11 @@
 
     <div class="app-overview size-xxl-small-width size-xxl-no-flex size-xxl-flex-order-first">
       <%= render "apdex" %>
+      <% if params[:grouping] == "request" %>
+      <%= render "action_info" %>
+      <% else %>
+      <%= render "request_info" %>
+      <% end %>
       <%= render "response_codes" %>
       <%= render "errors" %>
     </div>

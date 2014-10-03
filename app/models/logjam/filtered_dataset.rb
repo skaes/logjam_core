@@ -128,11 +128,18 @@ module Logjam
       do_the_query(section).size
     end
 
-    def do_the_query(section = :backend)
-      @query_result[:section] ||=
-        if grouping == "request"
+    def requests
+      @requests ||=
+        begin
           query_opts = {start_minute: @start_minute, end_minute: @end_minute, skip: @offset, limit: @limit}
           Requests.new(@db, resource, page, query_opts).all
+        end
+    end
+
+    def do_the_query(section = :backend, grouping = self.grouping)
+      @query_result[[section, grouping]] ||=
+        if grouping == "request"
+          requests
         else
           if grouping_function.to_sym == :count
             sort_by = "count"
@@ -167,7 +174,8 @@ module Logjam
     def namespaces?(section = :backend)
       totals.page_names.any?{|pn| pn =~ /\A::/}
       # TODO: this breaks apdex sorting. why?
-      # do_the_query(section).all?{|p| p.page == 'Others...' || p.page =~ /\A::/}
+      #pages = do_the_query(:backend, "action")
+      #pages.all?{|p| p.page == 'Others...' || p.page =~ /\A::/}
     end
 
     def action?

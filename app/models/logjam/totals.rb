@@ -270,7 +270,7 @@ module Logjam
       section = options[:section] || :backend
       limit = options[:limit] || 1000
       filter = options[:filter]
-      pages = self.the_pages
+      pages = self.the_pages.clone
       pages.reject!{|p| !filter.call(p.page)} if filter
       if order = options[:order]
         case order.to_sym
@@ -292,6 +292,19 @@ module Logjam
 
     def count(resource = 'total_time')
       @count[resource] ||= the_pages.inject(0){|n,p| n += p.count(resource)}
+    end
+
+    def actions
+      page = pattern.to_s.sub(/\A::/,'')
+      match =
+        case
+        when page.is_a?(Regexp) then page
+        when page.blank? then /\#/
+        when page_names.include?(page) then /^#{page}$/
+        when page_names.grep(/^#{page}/).size > 0 then /^#{page}/
+        else /#{page}/
+        end
+      page_names.select{|p| p =~ match }
     end
 
     KNOWN_SECTIONS = %i(backend frontend)
