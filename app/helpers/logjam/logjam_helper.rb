@@ -286,7 +286,7 @@ module Logjam
 
     def link_js_exception_list(n, html_options={})
       page = (@page||'').gsub(/^::/,'')
-      params = { :page => page, :action => "js_exception_types" }
+      params = { :page => page, :action => "js_exception_types", :section => :frontend }
       clean_link_to(integer_number(n), params, html_options)
     end
 

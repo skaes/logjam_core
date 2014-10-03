@@ -14,9 +14,6 @@
     <% else -%>
 
       <div class="app-overview size-xxl-small-width size-xxl-no-flex size-xxl-flex-order-first">
-        <% if @dataset.has_frontend? %>
-          <%= render "frontend_apdex" %>
-        <% end %>
         <%= render "apdex" %>
         <%= render "response_codes" %>
         <%= render "errors" %>
