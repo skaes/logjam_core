@@ -9,26 +9,34 @@ module Logjam
     after_filter :allow_cross_domain_ajax
 
     def auto_complete_for_controller_action_page
-      query = params[:page] = params.delete(:query)
-      prepare_params
-      show_modules = [":", "::"].include?(@page)
-      re = show_modules ? /^::/ : /#{@page}/i
-      pages = Totals.new(@db).page_names.select {|name| name =~ re && name != 'all_pages'}
-      pages.collect!{|p| p.gsub(/^::/,'')}
-      completions = pages.sort  # [0..34]
-      render :json => {query: query, suggestions: completions}
+      respond_to do |format|
+        format.json do
+          query = params[:page] = params.delete(:query)
+          prepare_params
+          show_modules = [":", "::"].include?(@page)
+          re = show_modules ? /^::/ : /#{@page}/i
+          pages = Totals.new(@db).page_names.select {|name| name =~ re && name != 'all_pages'}
+          pages.collect!{|p| p.gsub(/^::/,'')}
+          completions = pages.sort  # [0..34]
+          render :json => {query: query, suggestions: completions}
+        end
+      end
     end
 
     def auto_complete_for_applications_page
-
+      # TODO: throw away this code?
       #prepare_params
       #show_modules = [":", "::"].include?(@page)
       #re = show_modules ? /^::/ : /#{@page}/i
       #pages = Totals.new(@db).page_names.select {|name| name =~ re && name != 'all_pages'}
       #pages.collect!{|p| p.gsub(/^::/,'')}
       #completions = pages.sort  # [0..34]
-      suggestions = @apps.select{|a| a.start_with?(params[:query]) }
-      render :json => {query: params[:query], suggestions: suggestions }
+      respond_to do |format|
+        format.json do
+          suggestions = @apps.select{|a| a.start_with?(params[:query]) }
+          render :json => {query: params[:query], suggestions: suggestions }
+        end
+      end
     end
 
     def index
@@ -165,139 +173,175 @@ module Logjam
 
     def errors
       redirect_on_empty_dataset and return
-      @page_size = 25
-      case params[:error_type]
-      when "internal"
-        @title = "Internal Server Errors"
-        q = Requests.new(@db, "minute", @page, :response_code => 500, :limit => @page_size, :skip => params[:offset].to_i)
-        @error_count = @dataset.response_codes[500]
-      when "exceptions"
-        @title = "Requests with exception «#{params[:exception]}»"
-        q = Requests.new(@db, "minute", @page, :exceptions => params[:exception], :limit => @page_size, :skip => params[:offset].to_i)
-        @error_count = @dataset.exceptions[params[:exception]]
-      else
-        severity, @title, @error_count = case params[:error_type]
-                   when "logged_warning"; then [2, "Logged Warnings", @dataset.logged_error_count(2)]
-                   when "logged_error"; then [3, "Logged Errors", @dataset.logged_error_count_above(3)]
-                   when "logged_fatal"; then [4, "Logged Fatal Errors", @dataset.logged_error_count_above(4)]
-                   else [3, "Logged Errors", @dataset.logged_error_count_above(3)]
-                   end
-        q = Requests.new(@db, "minute", @page, :severity => severity, :limit => @page_size, :skip => params[:offset].to_i)
+      respond_to do |format|
+        format.html do
+          @page_size = 25
+          case params[:error_type]
+          when "internal"
+            @title = "Internal Server Errors"
+            q = Requests.new(@db, "minute", @page, :response_code => 500, :limit => @page_size, :skip => params[:offset].to_i)
+            @error_count = @dataset.response_codes[500]
+          when "exceptions"
+            @title = "Requests with exception «#{params[:exception]}»"
+            q = Requests.new(@db, "minute", @page, :exceptions => params[:exception], :limit => @page_size, :skip => params[:offset].to_i)
+            @error_count = @dataset.exceptions[params[:exception]]
+          else
+            severity, @title, @error_count = case params[:error_type]
+                                             when "logged_warning"; then [2, "Logged Warnings", @dataset.logged_error_count(2)]
+                                             when "logged_error"; then [3, "Logged Errors", @dataset.logged_error_count_above(3)]
+                                             when "logged_fatal"; then [4, "Logged Fatal Errors", @dataset.logged_error_count_above(4)]
+                                             else [3, "Logged Errors", @dataset.logged_error_count_above(3)]
+                                             end
+            q = Requests.new(@db, "minute", @page, :severity => severity, :limit => @page_size, :skip => params[:offset].to_i)
+          end
+          @requests = q.all
+          offset = params[:offset].to_i
+          @page_count = @error_count/@page_size + 1
+          @current_page = offset/@page_size + 1
+          @last_page = @page_count
+          @last_page_offset = @error_count/@page_size*@page_size
+          @next_page_offset = offset + @page_size
+          @previous_page_offset = [offset - @page_size, 0].max
+        end
       end
-      @requests = q.all
-      offset = params[:offset].to_i
-      @page_count = @error_count/@page_size + 1
-      @current_page = offset/@page_size + 1
-      @last_page = @page_count
-      @last_page_offset = @error_count/@page_size*@page_size
-      @next_page_offset = offset + @page_size
-      @previous_page_offset = [offset - @page_size, 0].max
     end
 
     def js_exceptions
-      redirect_on_empty_dataset and return
-      @page_size = 25
-      offset = params[:offset].to_i
+      respond_to do |format|
+        format.html do
+          redirect_on_empty_dataset and return
+          @page_size = 25
+          offset = params[:offset].to_i
 
-      exceptions = JsExceptions.new(@db)
-      description = JsExceptions.description_from_key(params[:js_exception])
+          exceptions = JsExceptions.new(@db)
+          description = JsExceptions.description_from_key(params[:js_exception])
 
-      @title = "Javascript Exceptions"
-      options = { selector: { description: description } }
-      @error_count = exceptions.count(options)
-      options[:skip] = offset
-      options[:limit] = @page_size
+          @title = "Javascript Exceptions"
+          options = { selector: { description: description } }
+          @error_count = exceptions.count(options)
+          options[:skip] = offset
+          options[:limit] = @page_size
 
-      @exceptions = exceptions.find(options)
-      @current_page = offset/@page_size + 1
-      @page_count = @error_count/@page_size + 1
-      @last_page = @page_count
-      @last_page_offset = @error_count/@page_size*@page_size
-      @next_page_offset = offset + @page_size
-      @previous_page_offset = [offset - @page_size, 0].max
+          @exceptions = exceptions.find(options)
+          @current_page = offset/@page_size + 1
+          @page_count = @error_count/@page_size + 1
+          @last_page = @page_count
+          @last_page_offset = @error_count/@page_size*@page_size
+          @next_page_offset = offset + @page_size
+          @previous_page_offset = [offset - @page_size, 0].max
+        end
+      end
     end
 
     def response_codes
-      redirect_on_empty_dataset and return
-      @page_size = 25
-      @page = params[:page]
-      if (@response_code = params[:above].to_i) >= 400
-        @title = "Requests with response code above #{@response_code}"
-        @error_count = @dataset.response_codes_above(@response_code)
-      else
-        @response_code = params[:response_code].to_i
-        @title = "Requests with response code #{@response_code}"
-        @error_count = @dataset.response_codes[@response_code] || 0
+      respond_to do |format|
+        format.html do
+          redirect_on_empty_dataset and return
+          @page_size = 25
+          @page = params[:page]
+          if (@response_code = params[:above].to_i) >= 400
+            @title = "Requests with response code above #{@response_code}"
+            @error_count = @dataset.response_codes_above(@response_code)
+          else
+            @response_code = params[:response_code].to_i
+            @title = "Requests with response code #{@response_code}"
+            @error_count = @dataset.response_codes[@response_code] || 0
+          end
+          q = Requests.new(@db, "minute", @page, :response_code => @response_code, :limit => @page_size, :skip => params[:offset].to_i, :above => params[:above].present?)
+          @requests = q.all
+          offset = params[:offset].to_i
+          @page_count = @error_count/@page_size + 1
+          @current_page = offset/@page_size + 1
+          @last_page = @page_count
+          @last_page_offset = @error_count/@page_size*@page_size
+          @next_page_offset = offset + @page_size
+          @previous_page_offset = [offset - @page_size, 0].max
+          render "errors"
+        end
       end
-      q = Requests.new(@db, "minute", @page, :response_code => @response_code, :limit => @page_size, :skip => params[:offset].to_i, :above => params[:above].present?)
-      @requests = q.all
-      offset = params[:offset].to_i
-      @page_count = @error_count/@page_size + 1
-      @current_page = offset/@page_size + 1
-      @last_page = @page_count
-      @last_page_offset = @error_count/@page_size*@page_size
-      @next_page_offset = offset + @page_size
-      @previous_page_offset = [offset - @page_size, 0].max
-      render "errors"
     end
 
     def totals_overview
-      redirect_on_empty_dataset(true) and return
-      @dataset.limit = 100_000
+      respond_to do |format|
+        format.html do
+          redirect_on_empty_dataset(true) and return
+          @dataset.limit = 100_000
+        end
+      end
     end
 
     def request_overview
-      redirect_on_empty_dataset and return
-      @page_size = 25
-      offset = params[:offset].to_i
-      @dataset.limit = @page_size
-      @dataset.offset = offset
-      @requests = @dataset.do_the_query(@section)
-      @request_count = @dataset.count_requests
-      @page_count = @request_count/@page_size + 1
-      @current_page = offset/@page_size + 1
-      @last_page = @page_count
-      @last_page_offset = @request_count/@page_size*@page_size
-      @next_page_offset = offset + @page_size
-      @previous_page_offset = [offset - @page_size, 0].max
-      @skip_last = true
+      respond_to do |format|
+        format.html do
+          redirect_on_empty_dataset and return
+          @page_size = 25
+          offset = params[:offset].to_i
+          @dataset.limit = @page_size
+          @dataset.offset = offset
+          @requests = @dataset.do_the_query(@section)
+          @request_count = @dataset.count_requests
+          @page_count = @request_count/@page_size + 1
+          @current_page = offset/@page_size + 1
+          @last_page = @page_count
+          @last_page_offset = @request_count/@page_size*@page_size
+          @next_page_offset = offset + @page_size
+          @previous_page_offset = [offset - @page_size, 0].max
+          @skip_last = true
+        end
+      end
     end
 
     def error_overview
-      redirect_on_empty_dataset and return
-      @title = "Problem Overview"
-      @resources = %w(exceptions js_exceptions severity response)
-      @totals = Totals.new(@db, @resources, @page.blank? ? 'all_pages' : @page)
-      @minutes = Minutes.new(@db, @resources, @page, @totals.page_names, 2)
+      respond_to do |format|
+        format.html do
+          redirect_on_empty_dataset and return
+          @title = "Problem Overview"
+          @resources = %w(exceptions js_exceptions severity response)
+          @totals = Totals.new(@db, @resources, @page.blank? ? 'all_pages' : @page)
+          @minutes = Minutes.new(@db, @resources, @page, @totals.page_names, 2)
+        end
+      end
     end
 
     def response_code_overview
-      redirect_on_empty_dataset and return
-      @title = "Response Code Overview"
-      @resources = %w(response)
-      @totals = Totals.new(@db, @resources, @page.blank? ? 'all_pages' : @page)
-      @minutes = Minutes.new(@db, @resources, @page, @totals.page_names, 2)
+      respond_to do |format|
+        format.html do
+          redirect_on_empty_dataset and return
+          @title = "Response Code Overview"
+          @resources = %w(response)
+          @totals = Totals.new(@db, @resources, @page.blank? ? 'all_pages' : @page)
+          @minutes = Minutes.new(@db, @resources, @page, @totals.page_names, 2)
+        end
+      end
     end
 
     def apdex_overview
-      redirect_on_empty_dataset and return
-      @title = "Apdex Overview"
+      respond_to do |format|
+        format.html do
+          redirect_on_empty_dataset and return
+          @title = "Apdex Overview"
 
-      if @section == :frontend
-        @resources = %w(fapdex)
-      else
-        @resources = %w(apdex)
+          if @section == :frontend
+            @resources = %w(fapdex)
+          else
+            @resources = %w(apdex)
+          end
+
+          @totals = Totals.new(@db, @resources, @page.blank? ? 'all_pages' : @page)
+          @minutes = Minutes.new(@db, @resources, @page, @totals.page_names, 2)
+        end
       end
-
-      @totals = Totals.new(@db, @resources, @page.blank? ? 'all_pages' : @page)
-      @minutes = Minutes.new(@db, @resources, @page, @totals.page_names, 2)
     end
 
     def exceptions
-      redirect_on_empty_dataset and return
-      @title = "Logged Exceptions"
-      @totals = Totals.new(@db, ["exceptions"], @page.blank? ? 'all_pages' : @page)
-      @minutes = Minutes.new(@db, ["exceptions"], @page, @totals.page_names, 2)
+      respond_to do |format|
+        format.html do
+          redirect_on_empty_dataset and return
+          @title = "Logged Exceptions"
+          @totals = Totals.new(@db, ["exceptions"], @page.blank? ? 'all_pages' : @page)
+          @minutes = Minutes.new(@db, ["exceptions"], @page, @totals.page_names, 2)
+        end
+      end
     end
 
     def callers
@@ -420,57 +464,85 @@ module Logjam
     end
 
     def call_graph
-      render :layout => false
+      respond_to do |format|
+        format.html do
+          render :layout => false
+        end
+      end
     end
 
     def js_exception_types
-      redirect_on_empty_dataset and return
-      @title = "Logged JavaScript Exceptions"
-      @totals = Totals.new(@db, ["js_exceptions"], @page.blank? ? 'all_pages' : @page)
-      @minutes = Minutes.new(@db, ["js_exceptions"], @page, @totals.page_names, 2)
+      respond_to do |format|
+        format.html do
+          redirect_on_empty_dataset and return
+          @title = "Logged JavaScript Exceptions"
+          @totals = Totals.new(@db, ["js_exceptions"], @page.blank? ? 'all_pages' : @page)
+          @minutes = Minutes.new(@db, ["js_exceptions"], @page, @totals.page_names, 2)
+        end
+      end
     end
 
     def enlarged_plot
-      redirect_on_empty_dataset and return
-      @resources, @js_data, @js_events, @js_max, @request_counts, @gc_time, @js_zoom = @dataset.plot_data
+      respond_to do |format|
+        format.html do
+          redirect_on_empty_dataset and return
+          @resources, @js_data, @js_events, @js_max, @request_counts, @gc_time, @js_zoom = @dataset.plot_data
+        end
+      end
     end
 
     def request_time_distribution
-      redirect_on_empty_dataset and return
-      @resources = Logjam::Resource.time_resources
-      @dataset.get_data_for_distribution_plot(:request_time)
-      @xmin = 100
-      @xlabel = "Request time"
-      render 'quants_plot'
+      respond_to do |format|
+        format.html do
+          redirect_on_empty_dataset and return
+          @resources = Logjam::Resource.time_resources
+          @dataset.get_data_for_distribution_plot(:request_time)
+          @xmin = 100
+          @xlabel = "Request time"
+          render 'quants_plot'
+        end
+      end
     end
 
     def allocated_objects_distribution
-      redirect_on_empty_dataset and return
-      @resources = Logjam::Resource.memory_resources
-      @dataset.get_data_for_distribution_plot(:allocated_objects)
-      @xmin = 10000
-      @xlabel = "Allocated objects"
-      render 'quants_plot'
+      respond_to do |format|
+        format.html do
+          redirect_on_empty_dataset and return
+          @resources = Logjam::Resource.memory_resources
+          @dataset.get_data_for_distribution_plot(:allocated_objects)
+          @xmin = 10000
+          @xlabel = "Allocated objects"
+          render 'quants_plot'
+        end
+      end
     end
 
     def allocated_size_distribution
-      redirect_on_empty_dataset and return
-      @resources = Logjam::Resource.memory_resources
-      @dataset.get_data_for_distribution_plot(:allocated_bytes)
-      @xmin = 100000
-      @xlabel = "Allocated memory (bytes)"
-      render 'quants_plot'
+      respond_to do |format|
+        format.html do
+          redirect_on_empty_dataset and return
+          @resources = Logjam::Resource.memory_resources
+          @dataset.get_data_for_distribution_plot(:allocated_bytes)
+          @xmin = 100000
+          @xlabel = "Allocated memory (bytes)"
+          render 'quants_plot'
+        end
+      end
     end
 
     def live_stream
-      get_app_env
-      redirect_on_empty_dataset and return
-      @resources = Logjam::Resource.time_resources-%w(total_time gc_time)
-      ws_port = RUBY_PLATFORM =~ /darwin/ ? 9608 : 8080
-      @socket_url = "ws://#{request.host}:#{ws_port}/"
-      @key = params[:page].to_s
-      @key = "all_pages" if @key.blank? || @key == "::"
-      @key = @key.sub(/^::/,'').downcase
+      respond_to do |format|
+        format.html do
+          get_app_env
+          redirect_on_empty_dataset and return
+          @resources = Logjam::Resource.time_resources-%w(total_time gc_time)
+          ws_port = RUBY_PLATFORM =~ /darwin/ ? 9608 : 8080
+          @socket_url = "ws://#{request.host}:#{ws_port}/"
+          @key = params[:page].to_s
+          @key = "all_pages" if @key.blank? || @key == "::"
+          @key = @key.sub(/^::/,'').downcase
+        end
+      end
     end
 
     def database_information
@@ -558,11 +630,16 @@ module Logjam
 
     def redirect_on_empty_dataset(strip_namespace = false)
       dataset_from_params(strip_namespace)
-      if @dataset.empty? && !@dataset.top_level? && !request.referer.to_s.include?("app=#{@app}")
-        new_params = FilteredDataset.clean_url_params(params.merge(:page => '',
-                                                                   :default_app => @default_app,
-                                                                   :default_env => @default_env))
-        redirect_to new_params
+      logger.debug "DATASET BE EMTPTY = #{@dataset.empty?}"
+      if @dataset.empty?
+        if !@dataset.top_level? && !request.referer.to_s.include?("app=#{@app}")
+          new_params = FilteredDataset.clean_url_params(params.merge(:page => '',
+                                                                     :default_app => @default_app,
+                                                                     :default_env => @default_env))
+          redirect_to new_params
+        else
+          render "empty_dataset"
+        end
         return true
       else
         return false

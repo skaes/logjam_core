@@ -15,6 +15,14 @@ module Logjam
       FilteredDataset::DEFAULTS.merge(:time_range => 'date')
     end
 
+    def date_to_params(date)
+      {
+        :day => sprintf("%02d", date.day),
+        :month => sprintf("%02d", date.month),
+        :year => sprintf("%04d", date.year)
+      }
+    end
+
     def home_url
       url_for(params.except(:id).merge(:action => ''))
     end
