@@ -22,7 +22,7 @@
         <% end -%>
       </tr>
     </thead>
-    <%= render "#{resource_type}_statistics", options.merge(:pages => @dataset.do_the_query) %>
+    <%= render "#{resource_type}_statistics", options.merge(:pages => @dataset.do_the_query(@section)) %>
 
   <% else -%>
     </thead>
@@ -34,7 +34,7 @@
         <th class="sorted right"><%= resource_name %></th>
       </tr>
     </thead>
-    <%= render "request_statistics", options.merge(:requests => @dataset.do_the_query) %>
+    <%= render "request_statistics", options.merge(:requests => @dataset.do_the_query(@section)) %>
 
   <% end -%>
 </table>

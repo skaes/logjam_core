@@ -51,6 +51,7 @@ module Logjam
       @offset = options[:offset] || 0
       @request_counts = {}
       @count = {}
+      @query_result = {}
     end
 
     def grouping_name
@@ -123,12 +124,12 @@ module Logjam
       totals.the_pages.size == 1
     end
 
-    def size
-      do_the_query.size
+    def size(section = :backend)
+      do_the_query(section).size
     end
 
     def do_the_query(section = :backend)
-      @query_result ||=
+      @query_result[:section] ||=
         if grouping == "request"
           query_opts = {start_minute: @start_minute, end_minute: @end_minute, skip: @offset, limit: @limit}
           Requests.new(@db, resource, page, query_opts).all
@@ -140,7 +141,7 @@ module Logjam
           else
             sort_by = "#{resource}_#{grouping_function}"
           end
-          totals.pages(:order => sort_by, :limit => limit)
+          totals.pages(:order => sort_by, :limit => limit, :section => section)
         end
     end
 
@@ -163,8 +164,10 @@ module Logjam
       totals.page_names.include?("::#{page.sub(/\A::/,'')}")
     end
 
-    def namespaces?
-      do_the_query.all?{|p| p.page == 'Others...' || p.page =~ /\A::/}
+    def namespaces?(section = :backend)
+      totals.page_names.any?{|pn| pn =~ /\A::/}
+      # TODO: this breaks apdex sorting. why?
+      # do_the_query(section).all?{|p| p.page == 'Others...' || p.page =~ /\A::/}
     end
 
     def action?
@@ -298,81 +301,40 @@ module Logjam
       points
     end
 
-    def happy_count
-      totals.apdex["happy"].to_i
+    def happy_count(section = :backend)
+      totals.apdex(section)["happy"].to_i
     end
 
-    def happy
-      happy_count / totals.count.to_f
+    def happy(section = :backend)
+      happy_count(section) / totals.count(section).to_f
     end
 
-    def satisfied_count
-      totals.apdex["satisfied"].to_i
+    def satisfied_count(section = :backend)
+      totals.apdex(section)["satisfied"].to_i
     end
 
-    def satisfied
-      satisfied_count / totals.count.to_f
+    def satisfied(section = :backend)
+      satisfied_count(section) / totals.count(section).to_f
     end
 
-    def tolerating_count
-      totals.apdex["tolerating"].to_i
+    def tolerating_count(section = :backend)
+      totals.apdex(section)["tolerating"].to_i
     end
 
-    def tolerating
-      tolerating_count / totals.count.to_f
+    def tolerating(section = :backend)
+      tolerating_count(section) / totals.count(section).to_f
     end
 
-    def frustrated_count
-      totals.apdex["frustrated"].to_i
+    def frustrated_count(section = :backend)
+      totals.apdex(section)["frustrated"].to_i
     end
 
-    def frustrated
-      frustrated_count / totals.count.to_f
+    def frustrated(section = :backend)
+      frustrated_count(section) / totals.count(section).to_f
     end
 
-    def apdex
-      satisfied + tolerating / 2.0
-    end
-
-    # frontend apdex
-    def f_count
-      f_satisfied_count + f_tolerating_count + f_frustrated_count
-    end
-
-    def f_happy_count
-      totals.fapdex["happy"].to_i
-    end
-
-    def f_happy
-      f_happy_count / f_count.to_f
-    end
-
-    def f_satisfied_count
-      totals.fapdex["satisfied"].to_i
-    end
-
-    def f_satisfied
-      f_satisfied_count / f_count.to_f
-    end
-
-    def f_tolerating_count
-      totals.fapdex["tolerating"].to_i
-    end
-
-    def f_tolerating
-      f_tolerating_count / f_count.to_f
-    end
-
-    def f_frustrated_count
-      totals.fapdex["frustrated"].to_i
-    end
-
-    def f_frustrated
-      f_frustrated_count / f_count.to_f
-    end
-
-    def fapdex
-      f_satisfied + f_tolerating / 2.0
+    def apdex(section = :backend)
+      satisfied(section) + tolerating(section) / 2.0
     end
 
     def error_count

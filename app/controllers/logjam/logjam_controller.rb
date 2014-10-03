@@ -252,7 +252,7 @@ module Logjam
       offset = params[:offset].to_i
       @dataset.limit = @page_size
       @dataset.offset = offset
-      @requests = @dataset.do_the_query
+      @requests = @dataset.do_the_query(@section)
       @request_count = @dataset.count_requests
       @page_count = @request_count/@page_size + 1
       @current_page = offset/@page_size + 1

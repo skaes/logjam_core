@@ -68,20 +68,10 @@ module Logjam
       end
     end
 
+    def fapdex; apdex(:frontend); end
+
     def apdex_score(section = :backend)
       (apdex(section)["satisfied"].to_f + apdex(section)["tolerating"].to_f / 2.0) / count(section).to_f
-    end
-
-    def fapdex
-      @page_info["fapdex"] ||= {}
-    end
-
-    def fcount
-      @page_info['page_count'] + @page_info['ajax_count']
-    end
-
-    def fapdex_score
-      (fapdex["satisfied"].to_f + fapdex["tolerating"].to_f / 2.0) / fcount.to_f
     end
 
     def response
@@ -277,6 +267,7 @@ module Logjam
     end
 
     def pages(options)
+      section = options[:section] || :backend
       limit = options[:limit] || 1000
       filter = options[:filter]
       pages = self.the_pages
@@ -286,7 +277,7 @@ module Logjam
         when :count
           pages.sort_by!{|r| -r.count('total_time')}
         when :apdex
-          pages.sort_by!{|r| v = r.apdex_score(:frontend); v.nan? ? 1.1 : v}
+          pages.sort_by!{|r| v = r.apdex_score(section); v.nan? ? 1.1 : v}
         else
           raise "unknown sort method: #{order}" unless order.to_s =~ /^(.+)_(sum|avg|stddev)$/
           resource, function = $1, $2
@@ -348,13 +339,8 @@ module Logjam
     end
 
     def apdex(section = :backend)
-      @apdex_hash[section] ||=
-        begin
-          method = section == :frontend ? :fapdex : :apdex
-          the_pages.inject(Hash.new(0)){|h,p| p.send(method).each{|k,v| h[k] += v}; h}
-        end
+      @apdex_hash[section] ||= the_pages.inject(Hash.new(0)){|h,p| p.apdex(section).each{|k,v| h[k] += v}; h}
     end
-    alias :fapdex :apdex
 
     def response_codes
       @response_hash ||= the_pages.inject(Hash.new(0)){|h,p| p.response.each{|k,v| h[k.to_i] += v.to_i}; h}
