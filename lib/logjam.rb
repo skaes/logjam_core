@@ -1,3 +1,4 @@
+require 'erb'
 require 'mongo'
 require 'oj'
 
@@ -483,6 +484,6 @@ module Logjam
 
   @@database_config ||= {}
   def database_config(env = Rails.env)
-    @@database_config[env] ||= YAML.load_file("#{Rails.root}/config/logjam_database.yml")[env]
+    @@database_config[env] ||= YAML.load(ERB.new(File.read("#{Rails.root}/config/logjam_database.yml")).result)[env]
   end
 end
