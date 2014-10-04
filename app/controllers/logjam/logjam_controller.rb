@@ -504,6 +504,19 @@ module Logjam
       end
     end
 
+    def frontend_time_distribution
+      respond_to do |format|
+        format.html do
+          redirect_on_empty_dataset and return
+          @resources = Logjam::Resource.frontend_resources
+          @dataset.get_data_for_distribution_plot(:frontend_time)
+          @xmin = 100
+          @xlabel = "Frontend response time"
+          render 'quants_plot'
+        end
+      end
+    end
+
     def allocated_objects_distribution
       respond_to do |format|
         format.html do

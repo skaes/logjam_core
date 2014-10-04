@@ -284,7 +284,7 @@ module Logjam
     end
 
     def has_distribution_plot?
-      [:time, :memory].include?(plot_kind)
+      [:time, :memory, :frontend].include?(plot_kind)
     end
 
     def get_data_for_distribution_plot(what_to_plot)
@@ -292,6 +292,9 @@ module Logjam
       when :request_time
         resources = Resource.time_resources
         kind = "t"
+      when :frontend_time
+        resources = Resource.frontend_resources
+        kind = "f"
       when :allocated_objects
         resources = %w(allocated_objects)
         kind = "m"

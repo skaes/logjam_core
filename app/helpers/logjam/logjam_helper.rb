@@ -144,6 +144,8 @@ module Logjam
         else
           :allocated_size_distribution
         end
+      when :frontend
+        :frontend_time_distribution
       else
         nil
       end
