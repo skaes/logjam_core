@@ -7,11 +7,12 @@
     <div class="app-overview">
 
       <div class="item">
-        <p id="spinner">Please stand by while we fetch your data ...
+        <p id="spinner" class="warning">Please stand by while we fetch your data ...
         <%= image_tag("spinner24.gif") %>
         </p>
 
         <div id="request-history">
+          <% if @section == :backend %>
           <div id="apdex_score"></div>
           <div id="total_time"></div>
           <div id="request_count"></div>
@@ -22,10 +23,18 @@
           <div id="calls"></div>
           <div id="memory"></div>
           <div id="heap"></div>
+          <% else %>
+          <div id="fapdex_score"></div>
+          <div id="page_time"></div>
+          <div id="ajax_time"></div>
+          <div id="frontend"></div>
+          <div id="dom"></div>
+          <% end %>
         </div>
 
         <%
-           js_params = {
+          js_params = {
+             section: @section.to_s,
              week_end_colors: Logjam::Resource.colors_with_transparency(0.6).except("total_time"),
              week_day_colors: Logjam::Resource.colors_with_transparency(0.9).except("total_time")
            }
@@ -36,18 +45,24 @@
           var js_params = <%= raw Oj.dump(js_params) %>;
           response.data.forEach(function(d){ d.date = new Date(d.date); })
           if (response.data.length < 2) {
-            $("#spinner").text("You have only " + response.data.length + " days of history. This view requires at least two days of data.");
+            $("#spinner").text("Shiver me timbers! You have only " + response.data.length + " days worth o' data. This view requires at least two days o' data.");
           }
           else {
-            logjam_history_bar_chart(response.data, "apdex_score", js_params);
-            logjam_history_bar_chart(response.data, "request_count", js_params);
-            logjam_history_bar_chart(response.data, "total_time", js_params);
-            logjam_history_bar_chart(response.data, "errors", js_params);
-            logjam_history_bar_chart(response.data, "warnings", js_params);
-            logjam_history_bar_chart(response.data, "exceptions", js_params);
+            if (js_params.section == "backend") {
+              logjam_history_bar_chart(response.data, "apdex_score", js_params);
+              logjam_history_bar_chart(response.data, "request_count", js_params);
+              logjam_history_bar_chart(response.data, "total_time", js_params);
+              logjam_history_bar_chart(response.data, "errors", js_params);
+              logjam_history_bar_chart(response.data, "warnings", js_params);
+              logjam_history_bar_chart(response.data, "exceptions", js_params);
+            } else {
+              logjam_history_bar_chart(response.data, "fapdex_score", js_params);
+              logjam_history_bar_chart(response.data, "page_time", js_params);
+              logjam_history_bar_chart(response.data, "ajax_time", js_params);
+            }
             for (g in response.resources) {
               response.resources[g].forEach(function(m){
-                 if (m != "total_time") {
+                 if (m != "total_time" && m != "page_time" && m != "ajax_time") {
                    $("#" + g).append("<div id='" + m + "'></div>");
                    logjam_history_bar_chart(response.data, m, js_params);
                  }

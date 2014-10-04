@@ -2,6 +2,9 @@ function logjam_history_bar_chart(data, metric, params) {
 
   var week_end_colors = params.week_end_colors;
   var week_day_colors = params.week_day_colors;
+  var title = metric.replace(/_/g,' ').replace(/fapdex/,'apdex');
+  if (title == 'apdex score')
+    title += ' ' + params.section;
 
   function week_day(date) {
     var day = date.getDay();
@@ -80,7 +83,7 @@ function logjam_history_bar_chart(data, metric, params) {
       .attr("x", 1)
       .attr("dy", ".71em")
       .style("text-anchor", "begin")
-      .text(metric.replace(/_/g,' '));
+      .text(title);
 
   var bar_tooltip_text = "";
   var tooltip_formatter = d3.format(",.3r");

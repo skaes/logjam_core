@@ -103,7 +103,7 @@ module Logjam
           page = /^#{page}$/ if @page =~ /\A::/ && page_names.include?(page)
           page = /^::#{page}$/ if @page !~ /\A::/ && page_names.include?("::#{page}")
           page = 'all_pages' if @page == '' || @page == '::'
-          resources = %w(apdex severity exceptions total_time) + Resource.all_resources - Resource.frontend_resources - Resource.dom_resources
+          resources = %w(apdex fapdex severity exceptions total_time) + Resource.all_resources
           databases = Logjam.grep(Logjam.databases, :app => @app, :env => @env)
           data = []
           today = Date.today
@@ -119,10 +119,10 @@ module Logjam
                 :errors => summary.error_count,
                 :warnings => summary.warning_count,
                 :exceptions => summary.exception_count,
-                :apdex_score => summary.apdex_score
+                :apdex_score => summary.apdex_score(:backend),
+                :fapdex_score => summary.apdex_score(:frontend)
               }
-              # TODO: FE
-              (Resource.all_resources - Resource.frontend_resources - Resource.dom_resources).each do |r|
+              Resource.all_resources.each do |r|
                 if (v = summary.avg(r)) != 0
                   hash[r.to_sym] = v
                 end
@@ -137,17 +137,19 @@ module Logjam
           collected_resources = data.inject(Set.new){|s,d| s.union(d.keys)}
           resources.reject!{|r| !collected_resources.include?(r.to_sym)}
           # logger.debug @data.inspect
+          data = data.select{|d| d.keys.size > 1 }
           json_hash = {
             :resources => {
               :time => Resource.time_resources.reverse & resources,
               :calls => Resource.call_resources.reverse & resources,
               :memory => Resource.memory_resources & resources,
               :heap => Resource.heap_resources & resources,
-              # :frontend => Resource.frontend_resources & resources,
-              # :dom => Resource.dom_resources & resources
+              :frontend => Resource.frontend_resources & resources,
+              :dom => Resource.dom_resources & resources
             },
             :data => data
           }
+          # logger.debug json_hash.inspect
           render :json => Oj.dump(json_hash, :mode => :compat)
         end
       end
