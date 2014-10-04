@@ -28,6 +28,9 @@ function logjam_history_bar_chart(data, metric, params) {
   var data_min = d3.min(relevant_data, function(d){ return d[metric]; }),
       data_max = d3.max(relevant_data, function(d){ return d[metric]; });
 
+  if (data_min == data_max)
+    data_min = 0;
+
   /*
   if (metric == "apdex_score") {
     data_max = 1.0;
