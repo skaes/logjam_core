@@ -35,13 +35,13 @@
         </li>
 
         <li>
-          <a <%= raw html_attributes_for_time_range("history") %>><i class="fa fa-history"></i> History</a>
+          <%= clean_link_to(fa_icon("history", :title => "Performace History") + " History", :action => "history") %>
         </li>
 
         <% klass = @dataset && @dataset.has_distribution_plot? ? "enabled" : "disabled" %>
         <li class="<%= klass %>">
           <% scatter_title = "view #{distribution_kind(@dataset.resource).to_s.gsub(/_/," ")} plot" %>
-            <%= clean_link_to(fa_icon("signal flip-horizontal", :title => scatter_title) + " Distribution Plot" ,:page => without_module(@page), :action => distribution_kind(@dataset.resource)) %>
+            <%= clean_link_to(fa_icon("signal flip-horizontal", :title => scatter_title) + " Distribution Plot", :page => without_module(@page), :action => distribution_kind(@dataset.resource)) %>
         </li>
 
         <% unless @only_one_app %>
@@ -107,7 +107,7 @@
           <%= link_to(fa_icon("play-circle", :title => "view live stream") + " Live View", clean_params(params.slice(:app,:env,:page).merge(:action => "live_stream"))) %>
         </li>
         <li class="disabled">
-          <a <%= raw html_attributes_for_time_range("history") %>><i class="fa fa-history"></i> History</a>
+          <%= clean_link_to(fa_icon("history", :title => "Performace History") + " History", :action => "history") %>
         </li>
         <% klass = @dataset && @dataset.has_distribution_plot? ? "enabled" : "disabled" %>
         <li class="<%= klass %>">
