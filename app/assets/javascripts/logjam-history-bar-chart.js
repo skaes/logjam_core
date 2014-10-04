@@ -19,8 +19,8 @@ function logjam_history_bar_chart(data, metric, params) {
     return (week_day(date) ? "bar weekday" : "bar weekend");
   }
 
-  var margin = {top: 20, right: 20, bottom: 50, left: 40},
-      width = 1100 - margin.left - margin.right,
+  var margin = {top: 25, right: 80, bottom: 50, left: 80},
+      width = document.getElementById('request-history').offsetWidth - margin.left - margin.right - 80,
       height = 150 - margin.top - margin.bottom;
 
   var date_min = d3.min(data, function(d){ return d.date; }),
