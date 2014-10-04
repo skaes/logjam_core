@@ -120,12 +120,15 @@ module Logjam
                 :warnings => summary.warning_count,
                 :exceptions => summary.exception_count,
                 :apdex_score => summary.apdex_score(:backend),
-                :fapdex_score => summary.apdex_score(:frontend)
               }
+              if (v = summary.apdex_score(:frontend)) && v.to_f.finite?
+                hash[:fapdex_score] = v
+              end
               Resource.all_resources.each do |r|
-                if (v = summary.avg(r)) != 0
-                  hash[r.to_sym] = v
-                end
+                 v = summary.avg(r)
+                 if v > 0 && v.to_f.finite?
+                   hash[r.to_sym] = v
+                 end
               end
             else
               hash = { :date => date_str }
