@@ -75,9 +75,13 @@ module Logjam
     alias :fapdex :apdex
 
     def apdex_score(section = :backend)
-      @apdex_score[section] ||= @minutes.keys.each_with_object(Hash.new(0)) do |m,h|
-        h[m] = ((apdex(section)["satisfied"][m] + apdex(section)["tolerating"][m]/2.0) / counts[m])/@interval.to_f
-      end
+      @apdex_score[section] ||=
+        begin
+          counts = @counts[section == :frontend ? "frontend_count" : "count"]
+          @minutes.keys.each_with_object(Hash.new(0)) do |m,h|
+             h[m] = ((apdex(section)["satisfied"][m] + apdex(section)["tolerating"][m]/2.0) / counts[m])/@interval.to_f
+          end
+        end
     end
     alias :fapdex_score :apdex_score
 
