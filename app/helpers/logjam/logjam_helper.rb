@@ -197,7 +197,11 @@ module Logjam
 
     def sometimes_link_stddev(page, resource)
       stddev = page.stddev(resource)
-      n = number_with_precision(stddev, :precision => 0 , :delimiter => ',')
+      if stddev.to_f.finite?
+        n = number_with_precision(stddev, :precision => 0 , :delimiter => ',')
+      else
+        n = stddev.to_s
+      end
       if stddev > 0 && page.page != "Others..."
         params = { :app => @app, :env => @env, :page => without_module(page.page), :action => distribution_kind(resource) }
         clean_link_to(n, params, :"data-tooltip" => distribution_kind(resource).to_s.gsub(/_/,' '))
