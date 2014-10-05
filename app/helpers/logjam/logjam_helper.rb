@@ -508,6 +508,14 @@ module Logjam
       lines.map{0}
     end
 
+    def apdex_bounds
+      if @section == :frontend
+        {:happy => 0.5, :satisfied => 2, :tolerating => 8}
+      else
+        {:happy => 0.1, :satisfied => 0.5, :tolerating => 2}
+      end
+    end
+
     # human resource name (escaped)
     def hrn(s)
       s.gsub(/_/, ' ').gsub('∙','.')
