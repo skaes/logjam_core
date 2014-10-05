@@ -3,7 +3,7 @@
 %>
 
 <div class="item icon-action">
-  <%= link_to({:action => "error_overview"}) do %>
+  <%= link_to(params.merge(:action => "error_overview")) do %>
 
     <h2>Problems</h2>
     <span class="value"><%= number_with_delimiter total_problems %></span>
