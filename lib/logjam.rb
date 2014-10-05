@@ -397,6 +397,28 @@ module Logjam
     update_known_databases if dropped > 0
   end
 
+  def self.drop_frontend_fields_from_db(db)
+    counts = %w(frontend_countajax_count page_count)
+    metrics = %w(frontend_time ajax_time page_time load_time processing_time response_time request_time connect_time style_nodes script_nodes html_nodes)
+    metrics_sq = metrics.map{|m| "#{m}_sq"}
+    fields = counts + metrics + metrics_sq + %w(fapdex)
+    fields = fields.each_with_object({}){|f,h| h[f] = true}
+    %w[totals minutes].each do |collection|
+      db[collection].update({}, {'$unset' => fields}, :multi => true)
+    end
+    db["quants"].remove({"kind" => "f"})
+  end
+
+  def self.drop_frontend_fields(date, delay=5)
+    dbs = grep(databases, :date => date)
+    dbs.each do |db_name|
+      db = connection_for(db_name).db(db_name)
+      puts "dropping frontend fields from #{db_name}"
+      drop_frontend_fields_from_db(db)
+      sleep delay
+    end
+  end
+
   def list_databases_without_requests()
     db_info = []
     databases_sorted_by_date.each do |db_name|
