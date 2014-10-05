@@ -324,7 +324,7 @@ module Logjam
       respond_to do |format|
         format.html do
           redirect_on_empty_dataset and return
-          @title = "Apdex Overview"
+          @title = "Apdex Overview #{@section.to_s.capitalize}"
 
           if @section == :frontend
             @resources = %w(fapdex)
