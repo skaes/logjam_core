@@ -43,6 +43,10 @@ module Logjam
         resource_map["heap_resources"].map{|r| r.keys}.flatten
       end
 
+      def backend_resources
+        time_resources + call_resources + memory_resources + heap_resources
+      end
+
       def frontend_resources
         resource_map["frontend_resources"].map{|r| r.keys}.flatten
       end

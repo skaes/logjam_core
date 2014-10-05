@@ -622,6 +622,13 @@ module Logjam
       params[:interval] ||= FilteredDataset::DEFAULTS[:interval]
       params[:time_range] ||= 'date'
       @section = params[:section] == "frontend" ? :frontend : :backend
+      if @section == :frontend && !Resource.frontend_resources.include?(params[:resource])
+        redirect_to params.to_hash.merge(:resource => 'frontend_time')
+        return false
+      elsif @section == :backend && !Resource.backend_resources.include?(params[:resource])
+        redirect_to params.to_hash.merge(:resource => 'total_time')
+        return false
+      end
       @plot_kind = Resource.resource_type(params[:resource])
       @attributes = Resource.resources_for_type(@plot_kind)
       @collected_resources = Totals.new(@db).collected_resources
@@ -629,7 +636,7 @@ module Logjam
     end
 
     def dataset_from_params(strip_namespace = false)
-      prepare_params
+      prepare_params or return false
       @dataset = FilteredDataset.new(
         :date => @date,
         :app => @app,
@@ -647,7 +654,7 @@ module Logjam
     end
 
     def redirect_on_empty_dataset(strip_namespace = false)
-      dataset_from_params(strip_namespace)
+      dataset_from_params(strip_namespace) or return true
       logger.debug "DATASET BE EMTPTY = #{@dataset.empty?}"
       if @dataset.empty?
         if !@dataset.top_level? && !request.referer.to_s.include?("app=#{@app}")
@@ -658,6 +665,9 @@ module Logjam
         else
           render "empty_dataset"
         end
+        return true
+      elsif @section == :frontend && !@dataset.has_frontend?
+        redirect_to params.to_hash.merge(:section => "backend")
         return true
       else
         return false
