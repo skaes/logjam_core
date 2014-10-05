@@ -24,7 +24,7 @@
           <tr class='full_stats apdex happy'>
             <td><b>Happy</b><br />(t &lt; <%= apdex_bounds[:happy] %>s)</td>
             <td class='number'>
-              <%= integer_number(@totals.apdex(section)["happy"]) %><br /><%= "%.2f" % (100.0 * @dataset.happy) %>%
+              <%= integer_number(@totals.apdex(section)["happy"]) %><br /><%= "%.2f" % (100.0 * @dataset.happy(section)) %>%
             </td>
             <td class='echart' id='<%= "echart-#{i+=1}" %>'>
               <%= render "echart", exceptions: @minutes.apdex(section)["happy"], i: i, url: nil, height: 90 %>
@@ -33,7 +33,7 @@
           <tr class='full_stats apdex satisfied'>
             <td><b>Satisfied</b><br />(t &lt; <%= apdex_bounds[:satisfied] %>s)</td>
             <td class='number'>
-              <%= integer_number(@totals.apdex(section)["satisfied"]) %><br /><%= "%.2f" % (100.0 * @dataset.satisfied) %>%
+              <%= integer_number(@totals.apdex(section)["satisfied"]) %><br /><%= "%.2f" % (100.0 * @dataset.satisfied(section)) %>%
             </td>
             <td class='echart' id='<%= "echart-#{i+=1}" %>'>
               <%= render "echart", exceptions: @minutes.apdex(section)["satisfied"], i: i, url: nil, height: 90 %>
@@ -42,7 +42,7 @@
           <tr class='full_stats apdex tolerating'>
             <td><b>Tolerating</b><br />(<%= apdex_bounds[:satisfied] %>s &le; t &lt; <%= apdex_bounds[:tolerating] %>s)</td>
             <td class='number'>
-              <%= integer_number(@totals.apdex(section)["tolerating"]) %><br /><%= "%.2f" % (100.0 * @dataset.tolerating) %>%
+              <%= integer_number(@totals.apdex(section)["tolerating"]) %><br /><%= "%.2f" % (100.0 * @dataset.tolerating(section)) %>%
             </td>
             <td class='echart' id='<%= "echart-#{i+=1}" %>'>
               <%= render "echart", exceptions: @minutes.apdex(section)["tolerating"], i: i, url: nil, height: 90 %>
@@ -51,7 +51,7 @@
           <tr class='full_stats apdex frustrated'>
             <td><b>Frustrated</b><br />(t &ge; <%= apdex_bounds[:tolerating] %>s)</td>
             <td class='number'>
-              <%= integer_number(@totals.apdex(section)["frustrated"]) %><br /><%= "%.2f" % (100.0 * @dataset.frustrated) %>%
+              <%= integer_number(@totals.apdex(section)["frustrated"]) %><br /><%= "%.2f" % (100.0 * @dataset.frustrated(section)) %>%
             </td>
             <td class='echart' id='<%= "echart-#{i+=1}" %>'>
               <%= render "echart", exceptions: @minutes.apdex(section)["frustrated"], i: i, url: nil, height: 90 %>
