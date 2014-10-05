@@ -43,7 +43,7 @@ module Logjam
       respond_to do |format|
         format.html do
           redirect_on_empty_dataset and return
-          @resources, @js_data, @js_events, @js_max, @request_counts, @gc_time, @js_zoom = @dataset.plot_data
+          @resources, @js_data, @js_events, @js_max, @request_counts, @gc_time, @js_zoom = @dataset.plot_data(@section)
           if @section == :frontend
             render :template => "logjam/logjam/frontend_overview"
           end
@@ -61,7 +61,7 @@ module Logjam
       respond_to do |format|
         format.html do
           redirect_on_empty_dataset and return
-          @resources, @js_data, @js_events, @js_max, @request_counts, @gc_time, @js_zoom = @dataset.plot_data
+          @resources, @js_data, @js_events, @js_max, @request_counts, @gc_time, @js_zoom = @dataset.plot_data(@section)
         end
         format.json do
           prepare_params
@@ -491,7 +491,7 @@ module Logjam
       respond_to do |format|
         format.html do
           redirect_on_empty_dataset and return
-          @resources, @js_data, @js_events, @js_max, @request_counts, @gc_time, @js_zoom = @dataset.plot_data
+          @resources, @js_data, @js_events, @js_max, @request_counts, @gc_time, @js_zoom = @dataset.plot_data(@section)
         end
       end
     end
@@ -616,7 +616,7 @@ module Logjam
       params[:section] ||= 'backend'
       params[:start_minute] ||= FilteredDataset::DEFAULTS[:start_minute]
       params[:end_minute] ||= FilteredDataset::DEFAULTS[:end_minute]
-      params[:resource] ||= params[:section] == "frontend" ? 'page_time' : FilteredDataset::DEFAULTS[:resource]
+      params[:resource] ||= params[:section] == "frontend" ? 'frontend_time' : FilteredDataset::DEFAULTS[:resource]
       params[:grouping] ||= FilteredDataset::DEFAULTS[:grouping]
       params[:grouping_function] ||= FilteredDataset::DEFAULTS[:grouping_function]
       params[:interval] ||= FilteredDataset::DEFAULTS[:interval]

@@ -109,7 +109,7 @@ module Logjam
         when :call       then resource_exists?('db_calls') ? 'db_calls' : call_resources.first
         when :memory     then 'allocated_objects'
         when :heap       then 'heap_size'
-        when :frontend   then 'page_time'
+        when :frontend   then 'frontend_time'
         when :dom        then 'html_nodes'
         end
       end

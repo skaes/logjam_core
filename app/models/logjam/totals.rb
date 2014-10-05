@@ -7,9 +7,10 @@ module Logjam
 
     def initialize(page_info, resources)
       @page_info = page_info
-      @page_info['count'] ||= 0
-      @page_info['page_count'] ||= 0
-      @page_info['ajax_count'] ||= 0
+      @page_info["count"] ||= 0
+      @page_info["page_count"] ||= 0
+      @page_info["ajax_count"] ||= 0
+      @page_info["frontend_count"] ||= 0
       @resources = resources
     end
 
@@ -23,17 +24,20 @@ module Logjam
 
     FE_RESOURCE_TYPES = %i(frontend dom)
 
+    def backend_count; @page_info["count"]; end
+    def frontend_count; @page_info["frontend_count"]; end
     def ajax_count; @page_info["ajax_count"]; end
     def page_count; @page_info["page_count"]; end
-    def backend_count; @page_info["count"]; end
 
-    def count(resource='total_time')
-      if resource == 'ajax_time'
+    def count(resource="total_time")
+      if resource == "ajax_time"
         ajax_count
+      elsif resource == "frontend_time"
+        frontend_count
       elsif FE_RESOURCE_TYPES.include?(Resource.resource_type(resource))
         page_count
       elsif resource == :frontend
-        ajax_count + page_count
+        frontend_count
       else
         backend_count
       end
@@ -125,6 +129,7 @@ module Logjam
       @page_info["count"] += other.backend_count
       @page_info["page_count"] += other.page_count
       @page_info["ajax_count"] += other.ajax_count
+      @page_info["frontend_count"] += other.frontend_count
       @resources.each do |r|
         begin
           @page_info[r] = sum(r) + other.sum(r)
@@ -294,14 +299,17 @@ module Logjam
     def request_count(section = :backend)
       raise ArgumentErrror.new("unknown section: #{section}") unless KNOWN_SECTIONS.include?(section)
       unless @request_counts
-        query = "Totals.request_count(count,page_count,ajax_count)"
+        fields = %w(count page_count ajax_count frontend_count)
+        query = "Totals.request_count(#{fields.join(',')})"
         @request_counts = with_conditional_caching(query) do |payload|
           counts = Hash.new(0)
-          rows = @collection.find({:page=>"all_pages"},{:fields=>["count","page_count","ajax_count"]}).to_a
+          rows = @collection.find({:page=>"all_pages"},{:fields=>fields}).to_a
           payload[:rows] = rows.size
           if rows.size > 0
             counts[:backend] = rows.first["count"].to_i
-            counts[:frontend] = rows.first["ajax_count"].to_i + rows.first["page_count"].to_i
+            counts[:frontend] = rows.first["frontend_count"].to_i
+            counts[:ajax] = rows.first["ajax_count"].to_i
+            counts[:page] = rows.first["page_count"].to_i
           end
           counts
         end
@@ -435,7 +443,7 @@ module Logjam
     end
 
     def compute
-      all_fields = ["page", "count", "page_count", "ajax_count", @apdex, @fapdex, @response, @severity, @exceptions, @js_exceptions, @callers].compact + @resources
+      all_fields = ["page", "count", "page_count", "ajax_count", "frontend_count", @apdex, @fapdex, @response, @severity, @exceptions, @js_exceptions, @callers].compact + @resources
       sq_fields = @resources.map{|r| "#{r}_sq"}
       fields = {:fields => all_fields.concat(sq_fields)}
 

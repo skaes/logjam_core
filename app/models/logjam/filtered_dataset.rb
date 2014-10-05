@@ -52,6 +52,7 @@ module Logjam
       @request_counts = {}
       @count = {}
       @query_result = {}
+      @plot_data = {}
     end
 
     def grouping_name
@@ -217,30 +218,26 @@ module Logjam
       YLABELS[plot_kind] || ""
     end
 
-    POTENTIALLY_EXCLUDED_FROM_PLOT = %w(total_time allocated_memory requests heap_growth ajax_time page_time)
-    def resources_excluded_from_plot
-      if @resource == 'ajax_time'
-        Resource.frontend_resources - %w(ajax_time)
-      else
-        POTENTIALLY_EXCLUDED_FROM_PLOT
-      end
-    end
+    RESOURCES_EXCLUDED_FROM_PLOT = %w(total_time allocated_memory requests heap_growth page_time frontend_time)
+    LINE_PLOTTED_RESOURCES = %w(ajax_time gc_time)
 
     def plotted_resources
-      (Resource.resources_for_type(plot_kind) & @collected_resources) - resources_excluded_from_plot
+      (Resource.resources_for_type(plot_kind) & @collected_resources) - RESOURCES_EXCLUDED_FROM_PLOT
     end
 
-    def plot_data
-      @plot_data ||=
+    def plot_data(section)
+      @plot_data[section] ||=
         begin
           resources = plotted_resources
           events = Events.new(@db).events
           mins = Minutes.new(@db, resources, page, totals.page_names, interval)
           minutes = mins.minutes
-          counts = mins.counts
+          counts = section == :frontend ? mins.counts["frontend_count"] : mins.counts["count"]
           max_total = 0
           plot_resources = resources.clone
-          plot_resources += ["gc_time"] if plot_resources.delete("gc_time")
+          LINE_PLOTTED_RESOURCES.each do |r|
+            plot_resources += [r] if plot_resources.delete(r)
+          end
           plot_resources.unshift("free_slots") if plot_resources.delete("heap_size")
           zero = Hash.new(0.0)
           results = plot_resources.inject({}){|h,r| h[r] = {}; h}
@@ -257,7 +254,7 @@ module Logjam
               else
                 # Rails.logger.error("found #{v} for resource #{r} minute #{i}")
               end
-              total += v unless r == "gc_time"
+              total += v unless LINE_PLOTTED_RESOURCES.include?(r)
               results[r][i] = v
             end
             totals << total if total > 0
@@ -265,11 +262,14 @@ module Logjam
             nonzero += 1 if total > 0
           end
           plot_data = data_for_proto_vis(results, plot_resources).reverse
-          gc_time = plot_data.shift if resources.include?("gc_time")
+          lines = []
+          LINE_PLOTTED_RESOURCES.each do |r|
+            lines << plot_data.shift if resources.include?(r)
+          end
           request_counts = []
           intervals_per_day.times{|i| request_counts << (counts[i] || 0) / 60.0}
           y_zoom = totals.sort[(totals.size*0.9).to_i].to_f
-          [plot_resources-["gc_time"], plot_data, events, max_total, request_counts, gc_time, y_zoom]
+          [plot_resources-LINE_PLOTTED_RESOURCES, plot_data, events, max_total, request_counts, lines.first, y_zoom]
         end
     end
 
