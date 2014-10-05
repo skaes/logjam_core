@@ -5,7 +5,7 @@
 <div class="item icon-action">
   <%= link_to({:action => "response_code_overview"}) do %>
     <h2>Error Responses</h2>
-    <span class="value"><%= codes_above_400 %></span>
+    <span class="value"><%= number_with_delimiter codes_above_400 %></span>
 
     <table class="collapse-table">
       <% @dataset.response_code_summary.keys.sort.each do |rc| %>
