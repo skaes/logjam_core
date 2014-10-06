@@ -257,6 +257,9 @@ module Logjam
               total += v unless LINE_PLOTTED_RESOURCES.include?(r)
               results[r][i] = v
             end
+            if total == 0 && section == :frontend && (ajax_time = row["ajax_time"])
+              total = ajax_time.to_f
+            end
             totals << total if total > 0
             max_total = total if max_total < total
             nonzero += 1 if total > 0
