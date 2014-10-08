@@ -70,10 +70,8 @@
     width: auto;
     margin-right: 0px;
   }
-
-  .app-dashboard {
-    margin: 0 !important;
-    box-sizing: border-box;
+  #logjam-content {
+    width: auto;
   }
 
   #mobile-trigger {
@@ -109,7 +107,7 @@
 
   .sidebar-visible {
     #mobile-trigger {
-      padding-left: 230px;
+      padding-left: 200px;
 
       &:before {
         content: "\f00d";
@@ -121,19 +119,13 @@
     }
   }
 
-  .app-overview {
-     overflow-x: scroll; /* has to be scroll, not auto */
-    -webkit-overflow-scrolling: touch;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    flex-direction: row !important;
+  .size-l-no-flex {
+    display: block !important;
 
     .item {
-      min-width: 250px;
+      width: auto !important;
     }
   }
-
 }
 
 /* iPad Portrait  */
@@ -161,11 +153,7 @@
       left: auto;
       top: 24px;
     }
-
-    .date-chooser {
-    }
   }
-
 }
 /* smartphone landscape */
 @media all and (max-width: 750px) {
