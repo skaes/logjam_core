@@ -3,6 +3,7 @@
 
 #logjam-container {
   width: 100%;
+  display: -webkit-flex;
   display: flex;
   flex-direction: row;
   margin-top: 45px;
