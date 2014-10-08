@@ -49,7 +49,7 @@ $(document).ready(initialize_header);
     %>
     <label for="namespace-suggest">Filter: </label>
     <input tabindex="3" id="namespace-suggest" class="autocomplete growing-input" data-ghost-container="#namespace-suggest-ghost" placeholder="<%= value %>" name="page" type="text" onchange="view_selected_pages()" />
-    <% if value != '' %>
+    <% if value != 'by namespace or action' %>
       <i class="fa fa-times"></i>
     <% end %>
   </div>
