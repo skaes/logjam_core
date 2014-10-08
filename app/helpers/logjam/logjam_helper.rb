@@ -165,8 +165,12 @@ module Logjam
       FilteredDataset.clean_url_params(params.merge :default_app => @default_app, :default_env => @default_app)
     end
 
-    def clean_link_to(name, options, html_options = {})
-      link_to(name, clean_params(params.merge(options)), html_options)
+    def clean_link_to(name, options, html_options = {}, &block)
+      if block_given?
+        link_to(capture(&block), clean_params(params.merge(options)), html_options)
+      else
+        link_to(name, clean_params(params.merge(options)), html_options)
+      end
     end
 
     def clean_url_for(options)
@@ -210,11 +214,13 @@ module Logjam
       end
     end
 
-    def sometimes_link_all_pages
+    def sometimes_link_all_pages(&block)
       if params[:grouping] == "page"
-        clean_link_to(fa_icon("expand", :title => "show all actions"), { :action => "totals_overview", :page => @page })
+        clean_link_to(nil, :action => "totals_overview", :page => @page, &block)
       elsif params[:grouping] == "request"
-        clean_link_to(fa_icon("expand", :title => "browse requests"), { :action => "request_overview", :page => @page })
+        clean_link_to(nil, :action => "request_overview", :page => @page, &block)
+      else
+        capture(&block) if block_given?
       end
     end
 

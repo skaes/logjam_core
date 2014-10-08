@@ -2,16 +2,5 @@
   <%= link_to(:action => "js_exception_types", :section => :frontend) do %>
     <h2>Javascript Errors</h2>
     <span class="value"><%= @dataset.js_exception_count %></span>
-
-    <% if @dataset.js_exception_count > 0 %>
-    <table class="collapse-table">
-        <tr>
-          <td>javascript exceptions</td>
-          <td class="number">
-            <%= link_js_exception_list(@dataset.js_exception_count, :class => "error", :title => "show javascript errors") %>
-          </td>
-        </tr>
-    </table>
-    <% end %>
   <% end %>
 </div>

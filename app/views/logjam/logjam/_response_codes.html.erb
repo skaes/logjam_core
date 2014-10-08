@@ -4,16 +4,16 @@
 
 <div class="item icon-action">
   <%= link_to(params.merge(:action => "response_code_overview")) do %>
-    <h2>Error Responses</h2>
-    <span class="value"><%= number_with_delimiter codes_above_400 %></span>
-
-    <table class="collapse-table">
-      <% @dataset.response_code_summary.keys.sort.each do |rc| %>
-      <tr>
-        <td class="number-left"><%= rc %></td>
-        <td class="number"><%= sometimes_link_response_code(rc, @dataset.response_code_summary[rc]) %></td>
-      </tr>
-      <% end %>
-    </table>
+    <h2>Responses</h2>
   <% end %>
+  <table class="collapse-table">
+    <% @dataset.response_code_summary.keys.sort.each do |rc| %>
+    <% cnt = @dataset.response_code_summary[rc] %>
+    <% next if cnt == 0 && rc == "1xx" %>
+    <tr>
+      <td class="number-left"><%= rc %></td>
+      <td class="number"><%= sometimes_link_response_code(rc, cnt) %></td>
+    </tr>
+    <% end %>
+  </table>
 </div>

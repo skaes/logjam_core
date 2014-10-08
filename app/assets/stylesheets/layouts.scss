@@ -27,16 +27,14 @@
 }
 
 .icon-action {
-  &:after {
+  h2:after {
     content: "\f105";
     font-family: fontAwesome;
     position: absolute;
     right: 10px;
-    top: 37%;
-    color: $grey;
-    font-size: 30px;
+    color: $xing-green;
+    font-size: 24px;
   }
-
   a {
     display: block;
   }
@@ -90,7 +88,7 @@
       .value {
         font-size: 22px;
         font-weight: 400;
-        display: block;
+        display: inline;
       }
 
       table {
@@ -98,7 +96,7 @@
       }
 
       .collapse-table {
-        display: none;
+        // display: none;
       }
     }
 
