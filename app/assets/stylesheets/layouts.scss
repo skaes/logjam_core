@@ -27,16 +27,14 @@
 }
 
 .icon-action {
-  &:after {
+  h2:after {
     content: "\f105";
     font-family: fontAwesome;
     position: absolute;
     right: 10px;
-    top: 37%;
-    color: $grey;
-    font-size: 30px;
+    color: $xing-green;
+    font-size: 24px;
   }
-
   a {
     display: block;
   }
@@ -90,7 +88,7 @@
       .value {
         font-size: 22px;
         font-weight: 400;
-        display: block;
+        display: inline;
       }
 
       table {
@@ -98,7 +96,7 @@
       }
 
       .collapse-table {
-        display: none;
+        // display: none;
       }
     }
 
@@ -216,7 +214,8 @@ th.sorted {
   td,
   th {
     &:first-child {
-      max-width: 300px;
+      // max-width: 300px;
+      overflow: hidden;
     }
 
     &.echart {
@@ -391,6 +390,10 @@ tr {
   margin-top: 20px;
 }
 
+#recent-errors-container {
+    min-height: 50px;
+}
+
 #recent-errors-title {
   clear: both;
   padding-top: 10px;
@@ -442,4 +445,17 @@ table.zebra {
     -webkit-flex: 170px 1;
     flex: 170px 1;
   }
+}
+
+td.js-exception {
+    max-width: 400px;
+    overflow: hidden;
+}
+
+#enlarged-plot {
+    height: 80vh;
+}
+
+#distribution-plot {
+    height: 80vh;
 }

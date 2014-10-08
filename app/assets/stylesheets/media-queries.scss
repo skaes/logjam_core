@@ -3,8 +3,6 @@
 
  /* Retina Display  */
 @media only screen and (-webkit-min-device-pixel-ratio: 2) {
-
-
   th.sorted {
     background-image: image-url('table_sorted_desc2x.png');
 
@@ -53,7 +51,6 @@
       }
     }
   }
-
 }
 
 @media all and (max-width: 1100px) {
@@ -70,8 +67,22 @@
     width: auto;
     margin-right: 0px;
   }
+
   #logjam-content {
     width: auto;
+  }
+
+  #enlarged-plot {
+    height: 70vh;
+  }
+
+  #distribution-plot {
+    height: 65vh;
+  }
+
+  .app-dashboard {
+    margin: 0 !important;
+    box-sizing: border-box;
   }
 
   #mobile-trigger {
@@ -123,6 +134,7 @@
     display: block !important;
 
     .item {
+      min-width: 220px;
       width: auto !important;
     }
   }
@@ -138,15 +150,12 @@
     -webkit-overflow-scrolling: touch;
 
     .item {
-      min-width: 250px;
+      min-width: 220px;
 
     }
   }
 
   #logjam-header {
-    .enviroment-chooser {
-    }
-
     #auto-refresh {
       width: 120px;
       right: 30px;

@@ -6,7 +6,11 @@
     <div class="app-overview">
       <div class="item">
         <table class="full_stats">
-          <tr><th>Type</th><th>Count</th><th>Distribution over time (0-24h, 2 minute intervals)</th></tr>
+          <tr>
+            <th>Type</th>
+            <th>Count</th>
+            <th class="echart">Distribution over time (0-24h, 2 minute intervals)</th>
+          </tr>
           <% i = 0 %>
           <tr class="full_stats">
             <% url = clean_url_for(:action => "errors", :error_type => "internal") %>

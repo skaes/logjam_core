@@ -21,13 +21,15 @@ module Logjam
       @pattern = "::#{@pattern}" if page_names.include?("::#{pattern}")
       @pattern = Regexp.new(/#{@pattern}/) unless @pattern == "all_pages" || page_names.include?(@pattern)
       if resources == ["fapdex"]
-        @counters = ["page_count", "ajax_count"]
-      elsif resources.include? "ajax_time"
-        @counters = ["ajax_count"]
-      elsif !(resources & Resource.dom_resources).empty?
-        @counters = ["page_count"]
+        @counters = ["frontend_count"]
       else
-        @counters = (@resources & Resource.frontend_resources).empty? ? ["count"] : ["page_count"]
+        if (resources & Resource.dom_resources).size > 0
+          @counters = ["page_count"]
+        elsif (@resources & Resource.frontend_resources).size > 0
+          @counters = ["page_count", "ajax_count", "frontend_count"]
+        else
+          @counters = ["count"]
+        end
       end
       @apdex = {}
       @apdex_score = {}
@@ -73,9 +75,13 @@ module Logjam
     alias :fapdex :apdex
 
     def apdex_score(section = :backend)
-      @apdex_score[section] ||= @minutes.keys.each_with_object(Hash.new(0)) do |m,h|
-        h[m] = ((apdex(section)["satisfied"][m] + apdex(section)["tolerating"][m]/2.0) / counts[m])/@interval.to_f
-      end
+      @apdex_score[section] ||=
+        begin
+          counts = @counts[section == :frontend ? "frontend_count" : "count"]
+          @minutes.keys.each_with_object(Hash.new(0)) do |m,h|
+             h[m] = ((apdex(section)["satisfied"][m] + apdex(section)["tolerating"][m]/2.0) / counts[m])/@interval.to_f
+          end
+        end
     end
     alias :fapdex_score :apdex_score
 
@@ -94,6 +100,24 @@ module Logjam
 
     def compound_resources
       %w(apdex fapdex exceptions js_exceptions severity callers response)
+    end
+
+    def self.counter_for_field(f)
+      if f == "apdex"
+        "frontend_count"
+      elsif f == "ajax_time"
+        "ajax_count"
+      elsif Resource.frontend_resources.include?(f)
+        "page_count"
+      elsif Resource.dom_resources.include?(f)
+        "page_count"
+      else
+        "count"
+      end
+    end
+
+    COUNTER_MAP = Resource.all_resources.each_with_object(Hash.new(0))do |r,h|
+      h[r] = counter_for_field r
     end
 
     def compute(interval)
@@ -115,15 +139,16 @@ module Logjam
 
       # aggregate values according to given interval
       sums = {}
-      counts = Hash.new(0.0)
-      counter_resources = @resources - compound_resources
+      counts = Hash.new{ |h,k| h[k] = Hash.new(0.0) }
+      counted_resources = @resources - compound_resources
       hashed_resources = @resources & compound_resources
       while row = rows.shift
-        count = @counters.map{|c| row[c].to_i}.sum || 0.0
         slot = row["minute"] / interval
-        counts[slot] += count
+        @counters.each do |c|
+          counts[c][slot] += row[c].to_i
+        end
         sum_sofar = (sums[slot] ||= Hash.new(0.0))
-        counter_resources.each do |f|
+        counted_resources.each do |f|
           v = row[f].to_f
           v /= 40 if f == "allocated_bytes" # HACK!!!
           sum_sofar[f] += v
@@ -141,17 +166,22 @@ module Logjam
       end
 
       @minutes = sums
-      sums.each do |m,r|
-        cnt = counts[m]
-        r.each_key do |f|
-          unless (v = r[f]).is_a?(Hash)
-            r[f] = v/cnt
+      sums.each do |minute, resource_hash|
+        resource_hash.each_key do |field|
+          counter = COUNTER_MAP[field]
+          cnt = counts[counter][minute]
+          unless (v = resource_hash[field]).is_a?(Hash)
+            resource_hash[field] = v/cnt
           end
         end
       end
 
       @counts = counts
-      counts.each_key { |m| counts[m] /= interval.to_f }
+      counts.each do |counter, minute_hash|
+        minute_hash.each_key do |minute|
+          minute_hash[minute] /= interval.to_f
+        end
+      end
 
       logger.debug "Minutes size #{@minutes.size}"
     end

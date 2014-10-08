@@ -43,6 +43,13 @@ namespace :logjam do
       Logjam.drop_applications(ENV['APPLICATIONS'].to_s.split(/\s*,\s*/), delay)
     end
 
+    desc "reomve frontend fields from all dbs DATE=yesterday DROP_DELAY=5"
+    task :drop_frontend_fields => :environment do
+      delay = (ENV['DROP_DELAY'] || 5).to_i
+      date = (ENV['DATE'] || Date.today-1).to_date
+      Logjam.drop_frontend_fields(date, delay)
+    end
+
     desc "drop all databases"
     task :drop_all_databases => :environment do
       puts "are you sure to drop all databases from #{Logjam.connections.keys.join(', ')}?"

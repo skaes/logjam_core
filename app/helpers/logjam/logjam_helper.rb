@@ -15,6 +15,14 @@ module Logjam
       FilteredDataset::DEFAULTS.merge(:time_range => 'date')
     end
 
+    def date_to_params(date)
+      {
+        :day => sprintf("%02d", date.day),
+        :month => sprintf("%02d", date.month),
+        :year => sprintf("%04d", date.year)
+      }
+    end
+
     def home_url
       url_for(params.except(:id).merge(:action => ''))
     end
@@ -136,6 +144,8 @@ module Logjam
         else
           :allocated_size_distribution
         end
+      when :frontend
+        :frontend_time_distribution
       else
         nil
       end
@@ -155,8 +165,12 @@ module Logjam
       FilteredDataset.clean_url_params(params.merge :default_app => @default_app, :default_env => @default_app)
     end
 
-    def clean_link_to(name, options, html_options = {})
-      link_to(name, clean_params(params.merge(options)), html_options)
+    def clean_link_to(name, options, html_options = {}, &block)
+      if block_given?
+        link_to(capture(&block), clean_params(params.merge(options)), html_options)
+      else
+        link_to(name, clean_params(params.merge(options)), html_options)
+      end
     end
 
     def clean_url_for(options)
@@ -187,7 +201,11 @@ module Logjam
 
     def sometimes_link_stddev(page, resource)
       stddev = page.stddev(resource)
-      n = number_with_precision(stddev, :precision => 0 , :delimiter => ',')
+      if stddev.to_f.finite?
+        n = number_with_precision(stddev, :precision => 0 , :delimiter => ',')
+      else
+        n = stddev.to_s
+      end
       if stddev > 0 && page.page != "Others..."
         params = { :app => @app, :env => @env, :page => without_module(page.page), :action => distribution_kind(resource) }
         clean_link_to(n, params, :"data-tooltip" => distribution_kind(resource).to_s.gsub(/_/,' '))
@@ -196,11 +214,13 @@ module Logjam
       end
     end
 
-    def sometimes_link_all_pages
+    def sometimes_link_all_pages(&block)
       if params[:grouping] == "page"
-        clean_link_to(fa_icon("expand", :title => "show all actions"), { :action => "totals_overview", :page => @page })
+        clean_link_to(nil, :action => "totals_overview", :page => @page, &block)
       elsif params[:grouping] == "request"
-        clean_link_to(fa_icon("expand", :title => "browse requests"), { :action => "request_overview", :page => @page })
+        clean_link_to(nil, :action => "request_overview", :page => @page, &block)
+      else
+        capture(&block) if block_given?
       end
     end
 
@@ -286,7 +306,7 @@ module Logjam
 
     def link_js_exception_list(n, html_options={})
       page = (@page||'').gsub(/^::/,'')
-      params = { :page => page, :action => "js_exception_types" }
+      params = { :page => page, :action => "js_exception_types", :section => :frontend }
       clean_link_to(integer_number(n), params, html_options)
     end
 
@@ -492,6 +512,14 @@ module Logjam
       end
     rescue
       lines.map{0}
+    end
+
+    def apdex_bounds
+      if @section == :frontend
+        {:happy => 0.5, :satisfied => 2, :tolerating => 8}
+      else
+        {:happy => 0.1, :satisfied => 0.5, :tolerating => 2}
+      end
     end
 
     # human resource name (escaped)

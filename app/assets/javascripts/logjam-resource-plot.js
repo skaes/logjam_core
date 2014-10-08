@@ -15,9 +15,17 @@ function logjam_resource_plot(params) {
   /* Animation */
   var zoom_interval = 1;
 
+  function get_height() {
+    var enlarged_size = $('#enlarged-plot').height() - 80;
+    if (enlarged_size > 0)
+      return enlarged_size;
+    var parent_height = $('#resource-plot').parent('.item').height() - 80;
+    return parent_height > 170 ? parent_height : 170;
+  }
+
   /* Sizing and scales. */
   var w = document.getElementById('resource-plot').offsetWidth - 60,
-      h = ($('#resource-plot').parent('.item').height() - 80 > 170) ? $('#resource-plot').parent('.item').height() - 80 : 170,
+      h = get_height(),
       xticks = d3.range(25).map(function(h){ return h/interval*60; }),
       x      = d3.scale.linear().domain([0, 1440/interval]).range([0, w]),
       y      = d3.scale.linear().domain([0, zoomed_max_y]).range([h, 0]).nice(),
@@ -118,7 +126,7 @@ function logjam_resource_plot(params) {
   vis.append("svg:text")
     .attr("class", "label")
     .attr("dy", -25)
-    .attr("dx", -104)
+    .attr("dx", -h/2)
     .style("font", "12px open sans")
     .attr("text-anchor", "middle")
     .attr("transform", "rotate(270)")

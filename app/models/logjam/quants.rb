@@ -48,6 +48,8 @@ module Logjam
           end
         end
       end
+
+      # logger.debug("QUANTS(#{@pattern.inspect}): #{@quants.inspect}")
     end
 
   end

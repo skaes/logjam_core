@@ -53,7 +53,7 @@ function logjam_live_stream_chart(params){
 
   /* Vertical grid lines */
   vis.selectAll(".yrule")
-    .data(x.ticks(w/slice))
+    .data(x.ticks(600/slice))
     .enter()
     .append("line")
     .attr("class", "yrule")

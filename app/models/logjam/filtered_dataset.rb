@@ -51,6 +51,8 @@ module Logjam
       @offset = options[:offset] || 0
       @request_counts = {}
       @count = {}
+      @query_result = {}
+      @plot_data = {}
     end
 
     def grouping_name
@@ -123,15 +125,22 @@ module Logjam
       totals.the_pages.size == 1
     end
 
-    def size
-      do_the_query.size
+    def size(section = :backend)
+      do_the_query(section).size
     end
 
-    def do_the_query(section = :backend)
-      @query_result ||=
-        if grouping == "request"
+    def requests
+      @requests ||=
+        begin
           query_opts = {start_minute: @start_minute, end_minute: @end_minute, skip: @offset, limit: @limit}
           Requests.new(@db, resource, page, query_opts).all
+        end
+    end
+
+    def do_the_query(section = :backend, grouping = self.grouping)
+      @query_result[[section, grouping]] ||=
+        if grouping == "request"
+          requests
         else
           if grouping_function.to_sym == :count
             sort_by = "count"
@@ -140,7 +149,7 @@ module Logjam
           else
             sort_by = "#{resource}_#{grouping_function}"
           end
-          totals.pages(:order => sort_by, :limit => limit)
+          totals.pages(:order => sort_by, :limit => limit, :section => section)
         end
     end
 
@@ -163,8 +172,11 @@ module Logjam
       totals.page_names.include?("::#{page.sub(/\A::/,'')}")
     end
 
-    def namespaces?
-      do_the_query.all?{|p| p.page == 'Others...' || p.page =~ /\A::/}
+    def namespaces?(section = :backend)
+      totals.page_names.any?{|pn| pn =~ /\A::/}
+      # TODO: this breaks apdex sorting. why?
+      #pages = do_the_query(:backend, "action")
+      #pages.all?{|p| p.page == 'Others...' || p.page =~ /\A::/}
     end
 
     def action?
@@ -206,30 +218,26 @@ module Logjam
       YLABELS[plot_kind] || ""
     end
 
-    POTENTIALLY_EXCLUDED_FROM_PLOT = %w(total_time allocated_memory requests heap_growth ajax_time page_time)
-    def resources_excluded_from_plot
-      if @resource == 'ajax_time'
-        Resource.frontend_resources - %w(ajax_time)
-      else
-        POTENTIALLY_EXCLUDED_FROM_PLOT
-      end
-    end
+    RESOURCES_EXCLUDED_FROM_PLOT = %w(total_time allocated_memory requests heap_growth page_time frontend_time)
+    LINE_PLOTTED_RESOURCES = %w(ajax_time gc_time)
 
     def plotted_resources
-      (Resource.resources_for_type(plot_kind) & @collected_resources) - resources_excluded_from_plot
+      (Resource.resources_for_type(plot_kind) & @collected_resources) - RESOURCES_EXCLUDED_FROM_PLOT
     end
 
-    def plot_data
-      @plot_data ||=
+    def plot_data(section)
+      @plot_data[section] ||=
         begin
           resources = plotted_resources
           events = Events.new(@db).events
           mins = Minutes.new(@db, resources, page, totals.page_names, interval)
           minutes = mins.minutes
-          counts = mins.counts
+          counts = section == :frontend ? mins.counts["frontend_count"] : mins.counts["count"]
           max_total = 0
           plot_resources = resources.clone
-          plot_resources += ["gc_time"] if plot_resources.delete("gc_time")
+          LINE_PLOTTED_RESOURCES.each do |r|
+            plot_resources += [r] if plot_resources.delete(r)
+          end
           plot_resources.unshift("free_slots") if plot_resources.delete("heap_size")
           zero = Hash.new(0.0)
           results = plot_resources.inject({}){|h,r| h[r] = {}; h}
@@ -246,19 +254,25 @@ module Logjam
               else
                 # Rails.logger.error("found #{v} for resource #{r} minute #{i}")
               end
-              total += v unless r == "gc_time"
+              total += v unless LINE_PLOTTED_RESOURCES.include?(r)
               results[r][i] = v
+            end
+            if total == 0 && section == :frontend && (ajax_time = row["ajax_time"])
+              total = ajax_time.to_f
             end
             totals << total if total > 0
             max_total = total if max_total < total
             nonzero += 1 if total > 0
           end
           plot_data = data_for_proto_vis(results, plot_resources).reverse
-          gc_time = plot_data.shift if resources.include?("gc_time")
+          lines = []
+          LINE_PLOTTED_RESOURCES.each do |r|
+            lines << plot_data.shift if resources.include?(r)
+          end
           request_counts = []
           intervals_per_day.times{|i| request_counts << (counts[i] || 0) / 60.0}
           y_zoom = totals.sort[(totals.size*0.9).to_i].to_f
-          [plot_resources-["gc_time"], plot_data, events, max_total, request_counts, gc_time, y_zoom]
+          [plot_resources-LINE_PLOTTED_RESOURCES, plot_data, events, max_total, request_counts, lines.first, y_zoom]
         end
     end
 
@@ -273,7 +287,7 @@ module Logjam
     end
 
     def has_distribution_plot?
-      [:time, :memory].include?(plot_kind)
+      [:time, :memory, :frontend].include?(plot_kind)
     end
 
     def get_data_for_distribution_plot(what_to_plot)
@@ -281,6 +295,9 @@ module Logjam
       when :request_time
         resources = Resource.time_resources
         kind = "t"
+      when :frontend_time
+        resources = Resource.frontend_resources
+        kind = "f"
       when :allocated_objects
         resources = %w(allocated_objects)
         kind = "m"
@@ -298,81 +315,40 @@ module Logjam
       points
     end
 
-    def happy_count
-      totals.apdex["happy"].to_i
+    def happy_count(section = :backend)
+      totals.apdex(section)["happy"].to_i
     end
 
-    def happy
-      happy_count / totals.count.to_f
+    def happy(section = :backend)
+      happy_count(section) / totals.count(section).to_f
     end
 
-    def satisfied_count
-      totals.apdex["satisfied"].to_i
+    def satisfied_count(section = :backend)
+      totals.apdex(section)["satisfied"].to_i
     end
 
-    def satisfied
-      satisfied_count / totals.count.to_f
+    def satisfied(section = :backend)
+      satisfied_count(section) / totals.count(section).to_f
     end
 
-    def tolerating_count
-      totals.apdex["tolerating"].to_i
+    def tolerating_count(section = :backend)
+      totals.apdex(section)["tolerating"].to_i
     end
 
-    def tolerating
-      tolerating_count / totals.count.to_f
+    def tolerating(section = :backend)
+      tolerating_count(section) / totals.count(section).to_f
     end
 
-    def frustrated_count
-      totals.apdex["frustrated"].to_i
+    def frustrated_count(section = :backend)
+      totals.apdex(section)["frustrated"].to_i
     end
 
-    def frustrated
-      frustrated_count / totals.count.to_f
+    def frustrated(section = :backend)
+      frustrated_count(section) / totals.count(section).to_f
     end
 
-    def apdex
-      satisfied + tolerating / 2.0
-    end
-
-    # frontend apdex
-    def f_count
-      f_satisfied_count + f_tolerating_count + f_frustrated_count
-    end
-
-    def f_happy_count
-      totals.fapdex["happy"].to_i
-    end
-
-    def f_happy
-      f_happy_count / f_count.to_f
-    end
-
-    def f_satisfied_count
-      totals.fapdex["satisfied"].to_i
-    end
-
-    def f_satisfied
-      f_satisfied_count / f_count.to_f
-    end
-
-    def f_tolerating_count
-      totals.fapdex["tolerating"].to_i
-    end
-
-    def f_tolerating
-      f_tolerating_count / f_count.to_f
-    end
-
-    def f_frustrated_count
-      totals.fapdex["frustrated"].to_i
-    end
-
-    def f_frustrated
-      f_frustrated_count / f_count.to_f
-    end
-
-    def fapdex
-      f_satisfied + f_tolerating / 2.0
+    def apdex(section = :backend)
+      satisfied(section) + tolerating(section) / 2.0
     end
 
     def error_count

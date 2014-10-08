@@ -44,7 +44,7 @@ $(document).ready(initialize_header);
       if params[:page]
         value = params[:page]
       else
-        value = 'by namspace or action'
+        value = 'by namespace or action'
       end
     %>
     <label for="namespace-suggest">Filter: </label>
@@ -57,8 +57,10 @@ $(document).ready(initialize_header);
   <% if @dataset && @dataset.has_frontend? %>
     <div class="section-chooser filter-item no-background">
       <div class="btn-group">
-        <a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/?app=<%= params[:app] %>&section=backend" data-menu="backend-menu" class="btn<% if params[:section] == 'backend' %> active<% end %>">Backend</a>
-        <a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/?app=<%= params[:app] %>&section=frontend" data-menu="frontend-menu" class="btn<% if params[:section] == 'frontend' %> active<% end %>">Frontend</a>
+        <%= clean_link_to("Backend", params.merge(:section => "backend"),
+                         {"data-menu" => "backend-menu", "class" => "btn#{' active' if params[:section] == 'backend'}"}) %>
+        <%= clean_link_to("Frontend", params.merge(:section => "frontend"),
+                         {"data-menu" => "frontend--menu", "class" => "btn#{' active' if params[:section] == 'frontend'}"}) %>
       </div>
     </div>
   <% end %>

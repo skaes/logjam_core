@@ -1,52 +1,41 @@
-<%
-  total_problems = @dataset.error_count + @dataset.logged_error_count(4) + @dataset.logged_error_count(3) + @dataset.logged_error_count(2) + @dataset.exception_count
-%>
-
 <div class="item icon-action">
-  <%= link_to({:action => "error_overview"}) do %>
-
-    <h2>Problems</h2>
-    <span class="value"><%= number_with_delimiter total_problems %></span>
-
-    <table class="collapse-table">
-      <tr>
-        <td>internal server errors</td>
-        <td class="number">
-          <%= sometimes_link_error_list(@dataset.error_count, "internal", :class => "error", :title => "show internal server errors") %>
-        </td>
-      </tr>
-      <tr>
-        <td>fatals</td>
-        <td class="number">
-          <%= sometimes_link_error_list(@dataset.logged_error_count(4), "logged_fatal", :class => "error", :title => "show logged fatals") %>
-        </td>
-      </tr>
-      <tr>
-        <td>errors</td>
-        <td class="number">
-          <%= sometimes_link_error_list(@dataset.logged_error_count(3),"logged_error", :class => "error", :title => "show logged errors")%>
-        </td>
-      </tr>
-      <tr>
-        <td>warnings</td>
-        <td class="number">
-          <%= sometimes_link_error_list(@dataset.logged_error_count(2), "logged_warning", :class => "warn", :title => "show logged warnings") %>
-        </td>
-      </tr>
-      <tr>
-        <td>exceptions</td>
-        <td class="number">
-          <%= sometimes_link_exception_list(@dataset.exception_count, :class => "error", :title => "show exceptions") %>
-        </td>
-      </tr>
-      <% if @dataset.js_exception_count > 0 %>
-        <tr>
-          <td>javascript exceptions</td>
-          <td class="number">
-            <%= link_js_exception_list(@dataset.js_exception_count, :class => "error", :title => "show javascript errors") %>
-          </td>
-        </tr>
-      <% end %>
-    </table>
+  <%= link_to(params.merge(:action => "error_overview")) do %>
+  <h2>Problems</h2>
   <% end %>
+  <table class="collapse-table">
+    <tr>
+      <td>fatals</td>
+      <td class="number">
+        <%= sometimes_link_error_list(@dataset.logged_error_count(4), "logged_fatal", :class => "error", :title => "show logged fatals") %>
+      </td>
+    </tr>
+    <tr>
+      <td>errors</td>
+      <td class="number">
+        <%= sometimes_link_error_list(@dataset.logged_error_count(3),"logged_error", :class => "error", :title => "show logged errors")%>
+      </td>
+    </tr>
+    <tr>
+      <td>warnings</td>
+      <td class="number">
+        <%= sometimes_link_error_list(@dataset.logged_error_count(2), "logged_warning", :class => "warn", :title => "show logged warnings") %>
+      </td>
+    </tr>
+    <tr>
+      <td>exceptions</td>
+      <td class="number">
+        <%= sometimes_link_exception_list(@dataset.exception_count, :class => "error", :title => "show exceptions") %>
+      </td>
+    </tr>
+    <!---
+        <% if @dataset.js_exception_count > 0 %>
+          <tr>
+            <td>javascript exceptions</td>
+            <td class="number">
+              <%= link_js_exception_list(@dataset.js_exception_count, :class => "error", :title => "show javascript errors") %>
+            </td>
+          </tr>
+        <% end %>
+        -->
+  </table>
 </div>
