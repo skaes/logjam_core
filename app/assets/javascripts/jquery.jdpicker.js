@@ -133,7 +133,7 @@ jdPicker.prototype = {
       '</p>');
 
     this.monthNameSpan = $(".month_name", monthNav);
-    $(".prev", monthNav).click(this.bindToObj(function() { this.moveMonthBy(-1); }));
+    $(".prev", monthNav).click(this.bindToObj(function() { this.moveMonthBy(-1); return false}));
     $(".next", monthNav).click(this.bindToObj(function() { this.moveMonthBy(1); }));
 
 	this.monthNameSpan.dblclick(this.bindToObj(function(){
