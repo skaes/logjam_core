@@ -67,6 +67,10 @@ module Logjam
       Logjam::Resource.heap_resources & @collected_resources
     end
 
+    def collected_dom_resources
+      Logjam::Resource.dom_resources & @collected_resources
+    end
+
     def grouping_options
       options_for_select(Logjam::Resource.grouping_options, params[:grouping])
     end

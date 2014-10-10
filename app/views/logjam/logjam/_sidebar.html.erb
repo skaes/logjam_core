@@ -124,6 +124,7 @@
             <% end %>
           </ul>
         </li>
+        <% unless collected_dom_resources.empty? %>
         <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:dom) %>><i class="fa fa-tree"></i> Dom</a>
           <ul>
             <% collected_dom_resources.reverse.each do |r| %>
@@ -133,6 +134,7 @@
             <% end %>
           </ul>
         </li>
+        <% end %>
       </ul>
 
       <div id="auto-refresh" class="filter-item">
