@@ -12,21 +12,21 @@
     </div>
 
     <div class="app-overview">
-      <div class="item">
+      <div class="item icon-action">
+        <%= link_to(clean_params(:action => "enlarged_plot", :interval => 1, :section => params[:section])) do %>
         <h2>showing <%= number_with_delimiter @dataset.count_requests(@section) %> of <%= number_with_delimiter @dataset.count(@section) %> requests</h2>
-        <%= render "navicons" %>
+        <% end %>
         <%= render :partial => "resource_plot", :locals => {:width => 450, :height => 200} %>
       </div>
-      <div class="item">
+      <div class="item icon-action">
+        <%= sometimes_link_all_pages do %>
         <h2><%= @dataset.description %>
           <%- if params[:grouping] == "request" -%>
           between <%= minute_to_human(@dataset.start_minute) %>
           and <%= minute_to_human(@dataset.end_minute) %>
           <%- end -%>
         </h2>
-        <ul class="navicons">
-          <li><%= sometimes_link_all_pages %></li>
-        </ul>
+        <% end %>
         <div id="pagetimes">
           <%= render "page_times" %>
         </div>
