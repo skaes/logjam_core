@@ -276,7 +276,7 @@ module Logjam
         [nil, {}]
       else code.to_s =~ /xx\z/
         params[:above] = code.to_s.sub('xx', '00')
-        [clean_params(params), {:tr_class => "clickable", :class => "error", :title => "show requests with response #{code}"}]
+        [ clean_url_for(params), {:tr_class => "clickable", :class => "error", :title => "show requests with response #{code}"}]
       end
     end
 
