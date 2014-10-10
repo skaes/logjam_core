@@ -38,7 +38,7 @@ function logjam_apdex_chart(params) {
   ;
 
   var area = d3.svg.area()
-        .interpolate("cardinal")
+        .interpolate("monotone")
         .x(function(d,i) { return x(d[0]); })
         .y0(function(d) { return y(0); })
         .y1(function(d) { return y(d[1]); })

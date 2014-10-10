@@ -211,7 +211,7 @@ function logjam_resource_plot(params) {
 
 
   var request_area = d3.svg.area()
-        .interpolate("cardinal")
+        .interpolate("monotone")
         .x(function(d) { return x(d.x+0.5); })
         .y0(function(d) { return y2(d.y0); })
         .y1(function(d) { return y2(d.y + d.y0); });
@@ -311,7 +311,7 @@ function logjam_resource_plot(params) {
     .style("fill", "rgba(255,0,0,0.3)");
 
   var area = d3.svg.area()
-        .interpolate("cardinal")
+        .interpolate("monotone")
         .x(function(d) { return x(d.x+.5); })
         .y0(function(d) { return y(d.y0); })
         .y1(function(d) { return y(d.y+d.y0); });

@@ -46,7 +46,7 @@ function logjam_echart(params) {
   ;
 
   var line = d3.svg.line()
-        .interpolate("cardinal")
+        .interpolate("monotone")
         .x(function(d,i) { return x(d[0]); })
         .y(function(d) { return y(d[1]); })
   ;

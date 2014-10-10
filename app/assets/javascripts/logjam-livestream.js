@@ -101,7 +101,7 @@ function logjam_live_stream_chart(params){
     .text("Response time (ms)");
 
   var area = d3.svg.area()
-        .interpolate("cardinal")
+        .interpolate("monotone")
         .x(function(d) { return x(d.x*slice); })
         .y0(function(d) { return y(d.y0); })
         .y1(function(d) { return y(d.y + d.y0); });
@@ -137,7 +137,7 @@ function logjam_live_stream_chart(params){
 
   /* Request counts. */
   var request_area = d3.svg.area()
-        .interpolate("cardinal")
+        .interpolate("monotone")
         .x(function(d) { return x(d.x*slice); })
         .y0(function(d) { return y2(d.y0); })
         .y1(function(d) { return y2(d.y + d.y0); });
