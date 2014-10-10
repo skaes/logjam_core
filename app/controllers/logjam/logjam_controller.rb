@@ -500,23 +500,17 @@ module Logjam
       respond_to do |format|
         format.html do
           redirect_on_empty_dataset and return
-          @resources = Logjam::Resource.time_resources
-          @dataset.get_data_for_distribution_plot(:request_time)
-          @xmin = 100
-          @xlabel = "Request time"
-          render 'quants_plot'
-        end
-      end
-    end
-
-    def frontend_time_distribution
-      respond_to do |format|
-        format.html do
-          redirect_on_empty_dataset and return
-          @resources = Logjam::Resource.frontend_resources
-          @dataset.get_data_for_distribution_plot(:frontend_time)
-          @xmin = 100
-          @xlabel = "Frontend response time"
+          if @section == :frontend
+            @resources = Logjam::Resource.frontend_resources
+            @dataset.get_data_for_distribution_plot(:frontend_time)
+            @xmin = 100
+            @xlabel = "Frontend response time"
+          else
+            @resources = Logjam::Resource.time_resources
+            @dataset.get_data_for_distribution_plot(:request_time)
+            @xmin = 100
+            @xlabel = "Request time"
+          end
           render 'quants_plot'
         end
       end

@@ -135,7 +135,7 @@ module Logjam
 
     def distribution_kind(resource)
       case Resource.resource_type(resource)
-      when :time
+      when :time, :frontend
         :request_time_distribution
       when :memory
         case resource
@@ -144,8 +144,6 @@ module Logjam
         else
           :allocated_size_distribution
         end
-      when :frontend
-        :frontend_time_distribution
       else
         nil
       end
