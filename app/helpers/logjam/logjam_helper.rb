@@ -270,6 +270,16 @@ module Logjam
       end
     end
 
+    def response_code_link_options(code, n)
+      params = { :app => @app, :env => @env, :action => "response_codes", :page => @page }
+      if n == 0 || code.to_s =~ /[0-3]xx\z/
+        [nil, {}]
+      else code.to_s =~ /xx\z/
+        params[:above] = code.to_s.sub('xx', '00')
+        [clean_params(params), {:tr_class => "clickable", :class => "error", :title => "show requests with response #{code}"}]
+      end
+    end
+
     def sometimes_link_response_code(code, n)
       text = memory_number(n)
       params = { :app => @app, :env => @env, :action => "response_codes", :page => @page }
@@ -292,8 +302,28 @@ module Logjam
       clean_link_to(integer_number(n), params, html_options)
     end
 
+    def error_link_options(n, error_type, html_options)
+      if n > 0
+        page = (@page||'').gsub(/^::/,'')
+        params = { :page => page, :action => "errors", :error_type => error_type }
+        [ clean_url_for(params), html_options.merge(:class => "error", :tr_class => "clickable") ]
+      else
+        [ nil, {} ]
+      end
+    end
+
     def sometimes_link_error_list(n, error_type, html_options={})
       n == 0 ? integer_number(n) : link_error_list(n, error_type, html_options)
+    end
+
+    def exception_link_options(n, html_options)
+      if n > 0
+        page = (@page||'').gsub(/^::/,'')
+        params = { :page => page, :action => "exceptions" }
+        [ clean_url_for(params), html_options.merge(:class => "error", :tr_class => "clickable") ]
+      else
+        [ nil, {} ]
+      end
     end
 
     def link_exception_list(n, html_options={})

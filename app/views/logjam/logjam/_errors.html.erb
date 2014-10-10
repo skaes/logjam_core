@@ -2,29 +2,37 @@
   <%= link_to(params.merge(:action => "error_overview")) do %>
   <h2>Problems</h2>
   <% end %>
-  <table class="collapse-table">
-    <tr>
+  <table class="collapse-table full_stats">
+    <% n = @dataset.logged_error_count(4) %>
+    <% error_url, error_options = error_link_options(n, :logged_fatal, :title => "show logged fatals") %>
+    <tr class="<%= error_options[:tr_class] %>" data-href="<%= error_url %>" title="<%= error_options[:title] %>">
       <td>fatals</td>
-      <td class="number">
-        <%= sometimes_link_error_list(@dataset.logged_error_count(4), "logged_fatal", :class => "error", :title => "show logged fatals") %>
+      <td class="number <%= error_options[:class] %>">
+        <%= integer_number(n) %>
       </td>
     </tr>
-    <tr>
+    <% n = @dataset.logged_error_count(3) %>
+    <% error_url, error_options = error_link_options(n, :logged_error, :title => "show logged errors") %>
+    <tr class="<%= error_options[:tr_class] %>" data-href="<%= error_url %>" title="<%= error_options[:title] %>">
       <td>errors</td>
-      <td class="number">
-        <%= sometimes_link_error_list(@dataset.logged_error_count(3),"logged_error", :class => "error", :title => "show logged errors")%>
+      <td class="number <%= error_options[:class] %>">
+        <%= integer_number(n) %>
       </td>
     </tr>
-    <tr>
+    <% n = @dataset.logged_error_count(2) %>
+    <% error_url, error_options = error_link_options(n, :logged_warning, :title => "show logged warnings") %>
+    <tr class="<%= error_options[:tr_class] %>" data-href="<%= error_url %>" title="<%= error_options[:title] %>">
       <td>warnings</td>
-      <td class="number">
-        <%= sometimes_link_error_list(@dataset.logged_error_count(2), "logged_warning", :class => "warn", :title => "show logged warnings") %>
+      <td class="number <%= error_options[:class] %>">
+        <%= integer_number(n) %>
       </td>
     </tr>
-    <tr>
+    <% n = @dataset.exception_count %>
+    <% error_url, error_options = exception_link_options(n, :title => "show exceptions") %>
+    <tr class="<%= error_options[:tr_class] %>" data-href="<%= error_url %>" title="<%= error_options[:title] %>">
       <td>exceptions</td>
-      <td class="number">
-        <%= sometimes_link_exception_list(@dataset.exception_count, :class => "error", :title => "show exceptions") %>
+      <td class="number <%= error_options[:class] %>">
+        <%= integer_number(n) %>
       </td>
     </tr>
     <!---

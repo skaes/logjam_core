@@ -1,18 +1,15 @@
-<%
-  codes_above_400 = @dataset.response_code_summary["4xx"] + @dataset.response_code_summary["5xx"]
-%>
-
 <div class="item icon-action">
   <%= link_to(params.merge(:action => "response_code_overview")) do %>
     <h2>Responses</h2>
   <% end %>
-  <table class="collapse-table">
+  <table class="collapse-table full_stats">
     <% @dataset.response_code_summary.keys.sort.each do |rc| %>
     <% cnt = @dataset.response_code_summary[rc] %>
-    <% next if cnt == 0 && rc == "1xx" %>
-    <tr>
+    <% next if cnt == 0 && rc =~ /[01]xx/ %>
+    <% url, options = response_code_link_options(rc, cnt) %>
+    <tr class="<%= options[:tr_class] %>" data-href="<%= url %>" title="<%= options[:title] %>">
       <td class="number-left"><%= rc %></td>
-      <td class="number"><%= sometimes_link_response_code(rc, cnt) %></td>
+      <td class="number <%= options[:class] %>"><%= integer_number(cnt) %></td>
     </tr>
     <% end %>
   </table>
