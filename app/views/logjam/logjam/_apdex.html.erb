@@ -1,22 +1,30 @@
 <div class="item icon-action<% if "%.2f" % @dataset.apdex >= "0.94" %> apdex-ok<% end %><% if "%.2f" % @dataset.apdex < "0.94" %> apdex-fail<% end %>">
   <%= link_to(params.merge(:action => "apdex_overview")) do %>
-    <h2>Apdex Backend: <span class="number"><%= "%.2f" % @dataset.apdex %></span></h2>
+    <h2>Apdex Backend: <span class="number"><%= "%.2f" % @dataset.apdex(:backend) %></span></h2>
     <table class="collapse-table">
       <tr>
         <td>happy&nbsp;(t&nbsp;&lt;&nbsp;0.1s)</td>
-        <td class="number" title="<%= integer_number @dataset.happy_count %>"><%= "%.2f" % (100.0 * @dataset.happy) %>%</td>
+        <td class="number" title="<%= integer_number @dataset.happy_count(:backend) %>">
+          <%= "%.2f" % (100.0 * @dataset.happy(:backend)) %>%
+        </td>
       </tr>
       <tr>
         <td>satisfied&nbsp;(t&nbsp;&lt;&nbsp;0.5s)</td>
-        <td class="number" title="<%= integer_number @dataset.satisfied_count %>"><%= "%.2f" % (100.0 * @dataset.satisfied) %>%</td>
+        <td class="number" title="<%= integer_number @dataset.satisfied_count(:backend) %>">
+          <%= "%.2f" % (100.0 * @dataset.satisfied(:backend)) %>%
+        </td>
       </tr>
       <tr>
         <td>tolerating&nbsp;(0.5s&nbsp;&le;&nbsp;t&nbsp;&lt;&nbsp;2s)</td>
-        <td class="number" title="<%= integer_number @dataset.tolerating_count %>"><%= "%.2f" % (100.0 * @dataset.tolerating) %>%</td>
+        <td class="number" title="<%= integer_number @dataset.tolerating_count(:backend) %>">
+          <%= "%.2f" % (100.0 * @dataset.tolerating(:backend)) %>%
+        </td>
       </tr>
       <tr>
         <td>frustrated&nbsp;(t&nbsp;&ge;&nbsp;2s)</td>
-        <td class="number" title="<%= integer_number @dataset.frustrated_count %>"><%= "%.2f" % (100.0 * @dataset.frustrated) %>%</td>
+        <td class="number" title="<%= integer_number @dataset.frustrated_count(:backend) %>">
+          <%= "%.2f" % (100.0 * @dataset.frustrated(:backend)) %>%
+        </td>
       </tr>
     </table>
   <% end %>
