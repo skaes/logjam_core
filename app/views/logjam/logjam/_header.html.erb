@@ -59,7 +59,7 @@ $(document).ready(initialize_header);
       <div class="btn-group">
         <%= clean_link_to("Backend", params.merge(:section => "backend"),
                          {"data-menu" => "backend-menu", "class" => "btn#{' active' if params[:section] == 'backend'}"}) %>
-        <%= clean_link_to("Frontend", params.merge(:section => "frontend"),
+        <%= clean_link_to("Frontend", params.merge(:section => "frontend", :grouping => "page"),
                          {"data-menu" => "frontend--menu", "class" => "btn#{' active' if params[:section] == 'frontend'}"}) %>
       </div>
     </div>
