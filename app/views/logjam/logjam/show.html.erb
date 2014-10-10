@@ -12,9 +12,11 @@
   pie_colors = Logjam::Resource.colors_with_transparency(0.7)
 
   # TODO: fix it
-  other_keys = @request.keys - all_resources
-  other_keys.reject!{|k| k =~ /(^_id|lines|minute|page|_sq|request_info)$/}
-  sorted_time_resources = @request.slice(*time_resources).sort { |a, b| b.last <=> a.last }
+  if @request.present?
+    other_keys = @request.keys - all_resources
+    other_keys.reject!{|k| k =~ /(^_id|lines|minute|page|_sq|request_info)$/}
+    sorted_time_resources = @request.slice(*time_resources).sort { |a, b| b.last <=> a.last }
+  end
   size = 75
 -%>
 
@@ -129,12 +131,12 @@
                h["free_slots"] = h.delete("heap_size") - h["live_data_set_size"]
                resources << "free_slots"
             -%>
-            <%= render :partial => "simple_pie", :locals => {
-                  :data => h.values_at(*resources),
-                  :legend => resources,
-                  :container => "heap",
-                  :size => size,
-                  :colors => pie_colors.values_at(*resources) } %>
+                            <%= render :partial => "simple_pie", :locals => {
+                                  :data => h.values_at(*resources),
+                                  :legend => resources,
+                                  :container => "heap",
+                                  :size => size,
+                                  :colors => pie_colors.values_at(*resources) } %>
           </div>
           <table id="request-details-heap">
             <% heap_resource_values.each do |name, value| -%>
@@ -170,73 +172,72 @@
         </div>
       </div>
     <% end %>
+  <% end %>
 
 
-    <% if @js_exceptions.present? -%>
-      <h2>Javascript Exceptions</h2>
+  <% if @js_exceptions.present? -%>
+    <h2>Javascript Exceptions</h2>
+    <div class="app-overview">
+      <di class="item">
+        <table>
+          <% @js_exceptions.each.with_index do |e, i| -%>
+            <% unless i == 0 -%>
+              <tr><td colspan=2><hr /></td></tr>
+            <% end -%>
+            <%
+              # 'logjam_request_id' is redundant information
+              # 'controller' and 'action' are just the controller and action of
+              #   the rails-app that was the recipiant of the error report
+              # 'minute' is injected by the logjam code and isn't useful in this context
+              # 'description' will be added back at the beginning of the list
+              keys_to_reject = %w(description logjam_request_id controller action minute).join('|')
+              keys = e.keys.reject{|k| k =~ /^_|^(#{keys_to_reject})$/}
+              keys = ['description'] + keys
+              keys.each do |key|
+            -%>
+              <tr><td><%= key %></td><td><%= e[key] %></td></tr>
+            <% end -%>
+          <% end -%>
+        </table>
+      </di>
+    </div>
+  <% end -%>
+
+  <% if @request.present? %>
+    <% if info = @request["request_info"] -%>
+      <h2>Additional Request Info</h2>
       <div class="app-overview">
-        <di class="item">
-          <table>
-            <% @js_exceptions.each.with_index do |e, i| -%>
-              <% unless i == 0 -%>
-                <tr><td colspan=2><hr /></td></tr>
-              <% end -%>
-              <%
-                # 'logjam_request_id' is redundant information
-                # 'controller' and 'action' are just the controller and action of
-                #   the rails-app that was the recipiant of the error report
-                # 'minute' is injected by the logjam code and isn't useful in this context
-                # 'description' will be added back at the beginning of the list
-                keys_to_reject = %w(description logjam_request_id controller action minute).join('|')
-                keys = e.keys.reject{|k| k =~ /^_|^(#{keys_to_reject})$/}
-                keys = ['description'] + keys
-                keys.each do |key|
-              -%>
-                <tr><td><%= key %></td><td><%= e[key] %></td></tr>
-              <% end -%>
+        <div class="item">
+          <table id="request-info" class="">
+            <% %w(url method query_parameters body_parameters headers custom).each do |name| -%>
+              <% next if (value = info[name]).blank?  -%>
+              <tr>
+                <td class="resource_name"><%= hrn name %></td>
+                <td><%= raw(value.is_a?(Hash) ? format_hash(value) : h(value)) %></td>
+              </tr>
             <% end -%>
           </table>
-        </di>
+        </div>
       </div>
     <% end -%>
-
-    <% if @request.present? %>
-      <% if info = @request["request_info"] -%>
-        <h2>Additional Request Info</h2>
-        <div class="app-overview">
-          <div class="item">
-            <table id="request-info" class="">
-              <% %w(url method query_parameters body_parameters headers custom).each do |name| -%>
-                <% next if (value = info[name]).blank?  -%>
-                <tr>
-                  <td class="resource_name"><%= hrn name %></td>
-                  <td><%= raw(value.is_a?(Hash) ? format_hash(value) : h(value)) %></td>
-                </tr>
-              <% end -%>
-            </table>
-          </div>
-        </div>
-      <% end -%>
-    <% end -%>
-
-  <% end %>
+  <% end -%>
 
   <%= content_for(:page_scripts) do %>
     $(document).ready(function(){
-      install_logjam_lines_filter();
-      var resizable = $('.resource-fields.resize');
-      var max = d3.max(resizable.map(function(){ return $(this).height(); }));
-      resizable.each(function(){ $(this).height(max); });
-      $(".logline").dblclick(function(){
-          var text = $(this).find('.lb').text().replace(/[\u200B]/g ,'');
-          var ref = text.match(/http:\/\/[^\s]+/);
-          if (ref != null) {
-            window.prompt("Extracted Curl Command:", "curl '" + ref + "'");
-          } else {
-            window.prompt("Raw log line:", text);
-          }
+       install_logjam_lines_filter();
+       var resizable = $('.resource-fields.resize');
+       var max = d3.max(resizable.map(function(){ return $(this).height(); }));
+       resizable.each(function(){ $(this).height(max); });
+       $(".logline").dblclick(function(){
+         var text = $(this).find('.lb').text().replace(/[\u200B]/g ,'');
+         var ref = text.match(/http:\/\/[^\s]+/);
+         if (ref != null) {
+           window.prompt("Extracted Curl Command:", "curl '" + ref + "'");
+         } else {
+           window.prompt("Raw log line:", text);
+         }
        });
-    });
+     });
   <% end %>
 
   </div>
