@@ -22,25 +22,13 @@ module Logjam
       @page_info["page"] = page
     end
 
-    FE_RESOURCE_TYPES = %i(frontend dom)
-
     def backend_count; @page_info["count"]; end
     def frontend_count; @page_info["frontend_count"]; end
     def ajax_count; @page_info["ajax_count"]; end
     def page_count; @page_info["page_count"]; end
 
     def count(resource="total_time")
-      if resource == "ajax_time"
-        ajax_count
-      elsif resource == "frontend_time"
-        frontend_count
-      elsif FE_RESOURCE_TYPES.include?(Resource.resource_type(resource))
-        page_count
-      elsif resource == :frontend
-        frontend_count
-      else
-        backend_count
-      end
+      @page_info[Apdex.counter(resource)]
     end
 
     def sum(resource)
@@ -65,14 +53,12 @@ module Logjam
     end
 
     def apdex(section = :backend)
-      if section == :backend
-        @page_info["apdex"] ||= {}
-      else
-        @page_info["fapdex"] ||= {}
-      end
+      @page_info[Apdex.apdex(section)] ||= {}
     end
 
     def fapdex; apdex(:frontend); end
+    def papdex; apdex(:page); end
+    def xapdex; apdex(:ajax); end
 
     def apdex_score(section = :backend)
       (apdex(section)["satisfied"].to_f + apdex(section)["tolerating"].to_f / 2.0) / count(section).to_f
@@ -141,6 +127,8 @@ module Logjam
       end
       other.apdex.each {|x,y| apdex[x] = (apdex[x]||0) + y}
       other.fapdex.each {|x,y| fapdex[x] = (fapdex[x]||0) + y}
+      other.papdex.each {|x,y| papdex[x] = (papdex[x]||0) + y}
+      other.xapdex.each {|x,y| xapdex[x] = (xapdex[x]||0) + y}
       other.response.each {|x,y| response[x] = (response[x]||0) + y}
       other.severity.each {|x,y| severity[x] = (severity[x]||0) + y}
       other.exceptions.each {|x,y| exceptions[x] = (exceptions[x]||0) + y}
@@ -153,6 +141,8 @@ module Logjam
       res.page_info = pi = @page_info.clone
       pi["apdex"] = pi["apdex"].clone if pi["apdex"]
       pi["fapdex"] = pi["fapdex"].clone if pi["fapdex"]
+      pi["papdex"] = pi["papdex"].clone if pi["papdex"]
+      pi["xapdex"] = pi["xapdex"].clone if pi["xapdex"]
       pi["response"] = pi["response"].clone if pi["response"]
       pi["severity"] = pi["severity"].clone if pi["severity"]
       pi["exceptions"] = pi["exceptions"].clone if pi["exceptions"]
@@ -209,6 +199,8 @@ module Logjam
       @resources = resources.dup
       @apdex = @resources.delete("apdex")
       @fapdex = @resources.delete("fapdex")
+      @papdex = @resources.delete("papdex")
+      @xapdex = @resources.delete("xapdex")
       @response = @resources.delete("response")
       @severity = @resources.delete("severity")
       @exceptions = @resources.delete("exceptions")
@@ -255,17 +247,19 @@ module Logjam
     end
 
     def pages(options)
-      section = options[:section] || :backend
+      # section = options[:section]
+      resource = options[:resource]
       limit = options[:limit] || 1000
       filter = options[:filter]
       pages = self.the_pages.clone
       pages.reject!{|p| !filter.call(p.page)} if filter
+      pages.reject!{|p| c = p.count(resource); puts "#{p.page}: count(#{resource})=#{c}";  c == 0 }
       if order = options[:order]
         case order.to_sym
         when :count
-          pages.sort_by!{|r| -r.count('total_time')}
+          pages.sort_by!{|r| -r.count(resource)}
         when :apdex
-          pages.sort_by!{|r| v = r.apdex_score(section); v.nan? ? 1.1 : v}
+          pages.sort_by!{|r| v = r.apdex_score(resource); v.nan? ? 1.1 : v}
         else
           raise "unknown sort method: #{order}" unless order.to_s =~ /^(.+)_(sum|avg|stddev)$/
           resource, function = $1, $2
@@ -443,7 +437,9 @@ module Logjam
     end
 
     def compute
-      all_fields = ["page", "count", "page_count", "ajax_count", "frontend_count", @apdex, @fapdex, @response, @severity, @exceptions, @js_exceptions, @callers].compact + @resources
+      all_fields = ["page", "count", "page_count", "ajax_count", "frontend_count"] +
+        [@apdex, @fapdex, @papdex, @xapdex, @response, @severity, @exceptions, @js_exceptions, @callers].compact + @resources
+
       sq_fields = @resources.map{|r| "#{r}_sq"}
       fields = {:fields => all_fields.concat(sq_fields)}
 

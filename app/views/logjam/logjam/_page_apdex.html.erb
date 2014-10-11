@@ -1,0 +1,33 @@
+<div class="item icon-action<% if "%.2f" % @dataset.apdex(:page) >= "0.94" %> apdex-ok<% end %><% if "%.2f" % @dataset.apdex(:page) < "0.94" %> apdex-fail<% end %>">
+  <%= link_to(params.merge(:action => "apdex_overview", :section => :frontend, :resource => 'page_time')) do %>
+    <h2>Apdex Pages: <span class="number"><%= "%.2f" % @dataset.apdex(:page) %></span></h2>
+  <% end %>
+  <table class="collapse-table full_stats">
+    <tr>
+      <td>happy&nbsp;(t&nbsp;&lt;&nbsp;0.5s)</td>
+      <td class="number" title="<%= integer_number @dataset.happy_count(:page) %>">
+        <%= "%.2f" % (100.0 * @dataset.happy(:page)) %>%
+      </td>
+    </tr>
+    <tr>
+      <td>satisfied&nbsp;(t&nbsp;&lt;&nbsp;2s)</td>
+      <td class="number" title="<%= integer_number @dataset.satisfied_count(:page) %>">
+        <%= "%.2f" % (100.0 * @dataset.satisfied(:page)) %>%
+      </td>
+    </tr>
+    <tr>
+      <td>tolerating&nbsp;(2s&nbsp;&le;&nbsp;t&nbsp;&lt;&nbsp;8s)</td>
+      <td class="number" title="<%= integer_number @dataset.tolerating_count(:page) %>">
+        <%= "%.2f" % (100.0 * @dataset.tolerating(:page)) %>%
+      </td>
+    </tr>
+    <tr>
+      <td>frustrated&nbsp;(t&nbsp;&ge;&nbsp;8s)</td>
+      <td class="number" title="<%= integer_number @dataset.frustrated_count(:page) %>">
+        <%= "%.2f" % (100.0 * @dataset.frustrated(:page)) %>%
+      </td>
+    </tr>
+  </table>
+</div>
+
+

@@ -1,4 +1,4 @@
-<% section = @section %>
+<% section = @section == :backend ? :backend  : (params[:resource] == 'ajax_time' ? :ajax : :page)  %>
 
 <%= render "header" %>
 <div id="logjam-container">

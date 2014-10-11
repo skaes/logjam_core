@@ -1,7 +1,9 @@
-<% resource = @dataset.resource
+<%
+  resource = @dataset.resource
   resource_type = Logjam::Resource.resource_type(@dataset.resource)
   resource_name = hrn(resource)
   options = {:resource => resource}
+  data = @dataset.do_the_query(@section, options)
 -%>
 
 <table class='full_stats'>
@@ -22,7 +24,7 @@
         <% end -%>
       </tr>
     </thead>
-    <%= render "#{resource_type}_statistics", options.merge(:pages => @dataset.do_the_query(@section)) %>
+    <%= render "#{resource_type}_statistics", options.merge(:pages => data) %>
 
   <% else -%>
     </thead>
@@ -34,7 +36,7 @@
         <th class="sorted right"><%= resource_name %></th>
       </tr>
     </thead>
-    <%= render "request_statistics", options.merge(:requests => @dataset.do_the_query(@section)) %>
+    <%= render "request_statistics", options.merge(:requests => data) %>
 
   <% end -%>
 </table>

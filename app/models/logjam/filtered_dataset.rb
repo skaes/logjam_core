@@ -90,7 +90,7 @@ module Logjam
     def accumulates_time?
       [:time, :frontend].include?(Resource.resource_type(resource)) &&
         grouping? &&
-        [:sum, :avg, :stddev, :count, :apdex, :fapdex].include?(grouping_function.to_sym)
+        [:sum, :avg, :stddev, :count, :apdex, :fapdex, :papdex, :xapdex].include?(grouping_function.to_sym)
     end
 
     def intervals_per_day
@@ -137,8 +137,11 @@ module Logjam
         end
     end
 
-    def do_the_query(section = :backend, grouping = self.grouping)
-      @query_result[[section, grouping]] ||=
+    def do_the_query(section = :backend, options = {})
+      options = {:grouping => self.grouping, :resource => self.resource}.merge!(options)
+      grouping = options[:grouping]
+      resource = options[:resource]
+      @query_result[[section, grouping, resource]] ||=
         if grouping == "request"
           requests
         else
@@ -149,7 +152,7 @@ module Logjam
           else
             sort_by = "#{resource}_#{grouping_function}"
           end
-          totals.pages(:order => sort_by, :limit => limit, :section => section)
+          totals.pages(:order => sort_by, :limit => limit, :section => section, :resource =>resource)
         end
     end
 
@@ -165,7 +168,7 @@ module Logjam
     end
 
     def totals
-      @totals ||= Totals.new(@db, %w(apdex fapdex response severity exceptions js_exceptions) + resource_fields, page)
+      @totals ||= Totals.new(@db, %w(apdex fapdex papdex xapdex response severity exceptions js_exceptions) + resource_fields, page)
     end
 
     def namespace?
@@ -175,7 +178,7 @@ module Logjam
     def namespaces?(section = :backend)
       totals.page_names.any?{|pn| pn =~ /\A::/}
       # TODO: this breaks apdex sorting. why?
-      #pages = do_the_query(:backend, "action")
+      #pages = do_the_query(:backend, :grouping => "action")
       #pages.all?{|p| p.page == 'Others...' || p.page =~ /\A::/}
     end
 
@@ -191,7 +194,7 @@ module Logjam
       @summary ||=
         begin
           all_resources = Resource.time_resources + Resource.call_resources + Resource.memory_resources + Resource.heap_resources + Resource.frontend_resources + Resource.dom_resources
-          resources = (all_resources & @collected_resources) - %w(heap_growth) + %w(apdex fapdex response callers)
+          resources = (all_resources & @collected_resources) - %w(heap_growth) + %w(apdex fapdex papdex xapdex response callers)
           Totals.new(@db, resources, page, totals.page_names)
         end
     end
@@ -296,7 +299,7 @@ module Logjam
         resources = Resource.time_resources
         kind = "t"
       when :frontend_time
-        resources = Resource.frontend_resources
+        resources = Resource.frontend_resources - %w(frontend_time)
         kind = "f"
       when :allocated_objects
         resources = %w(allocated_objects)

@@ -324,10 +324,17 @@ module Logjam
       respond_to do |format|
         format.html do
           redirect_on_empty_dataset and return
-          @title = "Apdex Overview #{@section.to_s.capitalize}"
+          @title = "Apdex Overview «#{params[:resource].humanize}»"
 
           if @section == :frontend
-            @resources = %w(fapdex)
+            case params[:resource]
+            when 'page_time'
+              @resources = %w(papdex)
+            when 'ajax_time'
+              @resources = %w(xapdex)
+            when 'frontend_time'
+              @resources = %w(fapdex)
+            end
           else
             @resources = %w(apdex)
           end
@@ -501,7 +508,7 @@ module Logjam
         format.html do
           redirect_on_empty_dataset and return
           if @section == :frontend
-            @resources = Logjam::Resource.frontend_resources
+            @resources = Logjam::Resource.frontend_resources - %w(frontend_time)
             @dataset.get_data_for_distribution_plot(:frontend_time)
             @xmin = 100
             @xlabel = "Frontend response time"
@@ -610,7 +617,7 @@ module Logjam
       params[:section] ||= 'backend'
       params[:start_minute] ||= FilteredDataset::DEFAULTS[:start_minute]
       params[:end_minute] ||= FilteredDataset::DEFAULTS[:end_minute]
-      params[:resource] ||= params[:section] == "frontend" ? 'frontend_time' : FilteredDataset::DEFAULTS[:resource]
+      params[:resource] ||= params[:section] == "frontend" ? Resource.default_resource(:frontend) : FilteredDataset::DEFAULTS[:resource]
       params[:grouping] ||= FilteredDataset::DEFAULTS[:grouping]
       params[:grouping_function] ||= FilteredDataset::DEFAULTS[:grouping_function]
       params[:interval] ||= FilteredDataset::DEFAULTS[:interval]

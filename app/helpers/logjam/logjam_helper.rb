@@ -44,7 +44,7 @@ module Logjam
     end
 
     def collected_frontend_time_resources
-      Logjam::Resource.frontend_resources & @collected_resources
+      (Logjam::Resource.frontend_resources - %w[frontend_time]) & @collected_resources
     end
 
     def collected_dom_resources
@@ -200,8 +200,16 @@ module Logjam
       end
     end
 
+    def apdex_section
+      if @section == :frontend
+        params[:resource] == 'ajax_time' ? :ajax : :page
+      else
+        :backend
+      end
+    end
+
     def sometimes_link_requests(result, grouping, options)
-      n = number_with_delimiter(result.count(@section).to_i)
+      n = number_with_delimiter(result.count(params[:resource]).to_i)
       if :page == grouping.to_sym && result.page != "Others..."
         clean_link_to(n, options.merge(:action => "index"), :"data-tooltip" => "show requests")
       else
@@ -408,7 +416,7 @@ module Logjam
     def page_percent(pages, page, resource)
       case gf = params[:grouping_function]
       when "apdex"
-        page.apdex_score(@section).to_f * 100
+        page.apdex_score(resource).to_f * 100
       when "sum"
         div_percent(page.sum(resource) , pages.first.sum(resource))
       when "avg"

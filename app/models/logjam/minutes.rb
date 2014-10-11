@@ -22,6 +22,10 @@ module Logjam
       @pattern = Regexp.new(/#{@pattern}/) unless @pattern == "all_pages" || page_names.include?(@pattern)
       if resources == ["fapdex"]
         @counters = ["frontend_count"]
+      elsif resources == ["papdex"]
+        @counters = ["page_count"]
+      elsif resources == ["xapdex"]
+        @counters = ["ajax_count"]
       else
         if (resources & Resource.dom_resources).size > 0
           @counters = ["page_count"]
@@ -67,7 +71,7 @@ module Logjam
     def apdex(section = :backend)
       @apdex[section] ||=
         begin
-          sub_hash_name = section == :frontend ? 'fapdex' : 'apdex'
+          sub_hash_name = Apdex.apdex(section)
           extract_sub_hash(sub_hash_name)
         end
     end
@@ -77,7 +81,7 @@ module Logjam
     def apdex_score(section = :backend)
       @apdex_score[section] ||=
         begin
-          counts = @counts[section == :frontend ? "frontend_count" : "count"]
+          counts = @counts[Apdex.counter(section)]
           @minutes.keys.each_with_object(Hash.new(0)) do |m,h|
              h[m] = ((apdex(section)["satisfied"][m] + apdex(section)["tolerating"][m]/2.0) / counts[m])/@interval.to_f
           end
@@ -99,11 +103,11 @@ module Logjam
     end
 
     def compound_resources
-      %w(apdex fapdex exceptions js_exceptions severity callers response)
+      %w(apdex fapdex papdex xapdex exceptions js_exceptions severity callers response)
     end
 
     def self.counter_for_field(f)
-      if f == "apdex"
+      if f == "frontend_time"
         "frontend_count"
       elsif f == "ajax_time"
         "ajax_count"
