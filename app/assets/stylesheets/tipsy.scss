@@ -3,7 +3,7 @@
 
 .tipsy {
   font-size: 10px;
-  font-weight: bold;
+  font-weight: normal;
   position: absolute;
   padding: 5px;
   z-index: 100000;
@@ -12,7 +12,7 @@
     background-color: rgba(0,0,0,0.7);
     border-radius: 3px;
     color: #fff;
-    max-width: 200px;
+    max-width: 400px;
     min-width: 2em;
     padding: 5px 8px 4px 8px;
     text-align: center;
