@@ -253,7 +253,7 @@ module Logjam
       filter = options[:filter]
       pages = self.the_pages.clone
       pages.reject!{|p| !filter.call(p.page)} if filter
-      pages.reject!{|p| c = p.count(resource); puts "#{p.page}: count(#{resource})=#{c}";  c == 0 }
+      pages.reject!{|p| p.count(resource) == 0 }
       if order = options[:order]
         case order.to_sym
         when :count
