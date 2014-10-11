@@ -398,7 +398,7 @@ module Logjam
   end
 
   def self.drop_frontend_fields_from_db(db)
-    counts = %w(frontend_countajax_count page_count)
+    counts = %w(frontend_count ajax_count page_count)
     metrics = %w(frontend_time ajax_time page_time load_time processing_time response_time request_time connect_time style_nodes script_nodes html_nodes)
     metrics_sq = metrics.map{|m| "#{m}_sq"}
     fields = counts + metrics + metrics_sq + %w(fapdex papdex xapdex)
