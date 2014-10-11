@@ -401,7 +401,7 @@ module Logjam
     counts = %w(frontend_countajax_count page_count)
     metrics = %w(frontend_time ajax_time page_time load_time processing_time response_time request_time connect_time style_nodes script_nodes html_nodes)
     metrics_sq = metrics.map{|m| "#{m}_sq"}
-    fields = counts + metrics + metrics_sq + %w(fapdex)
+    fields = counts + metrics + metrics_sq + %w(fapdex papdex xapdex)
     fields = fields.each_with_object({}){|f,h| h[f] = true}
     %w[totals minutes].each do |collection|
       db[collection].update({}, {'$unset' => fields}, :multi => true)
