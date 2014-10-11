@@ -262,11 +262,11 @@ th.sorted {
 .gbox {
   position: absolute;
   left:0;
-  top: 0;
+  top: -2px;
   background-color: rgba(112, 195, 255, 0.5);
   width: 0;
   min-width:1px;
-  height: 18px;
+  height: 20px;
   z-index: -100;
   border-radius: 0 1px 1px 0;
 
@@ -280,7 +280,7 @@ th.sorted {
   left: 94%;
   background: red;
   position: absolute;
-  top: 0;
+  top: -2px;
 }
 
 td.number {
