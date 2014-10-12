@@ -3,27 +3,27 @@
     <h2>Apdex Ajax: <span class="number"><%= "%.2f" % @dataset.apdex(:ajax) %></span></h2>
   <% end %>
   <table class="collapse-table full_stats">
-    <tr>
-      <td>happy&nbsp;(t&nbsp;&lt;&nbsp;0.5s)</td>
-      <td class="number" title="<%= integer_number @dataset.happy_count(:ajax) %>">
+    <tr title="<%= integer_number @dataset.happy_count(:ajax) %> requests">
+      <td>happy</td>
+      <td class="number">
         <%= "%.2f" % (100.0 * @dataset.happy(:ajax)) %>%
       </td>
     </tr>
-    <tr>
-      <td>satisfied&nbsp;(t&nbsp;&lt;&nbsp;2s)</td>
-      <td class="number" title="<%= integer_number @dataset.satisfied_count(:ajax) %>">
+    <tr title="<%= integer_number @dataset.satisfied_count(:ajax) %> requests">
+      <td>satisfied</td>
+      <td class="number">
         <%= "%.2f" % (100.0 * @dataset.satisfied(:ajax)) %>%
       </td>
     </tr>
-    <tr>
-      <td>tolerating&nbsp;(2s&nbsp;&le;&nbsp;t&nbsp;&lt;&nbsp;8s)</td>
-      <td class="number" title="<%= integer_number @dataset.tolerating_count(:ajax) %>">
+    <tr title="<%= integer_number @dataset.tolerating_count(:ajax) %> requests">
+      <td>tolerating</td>
+      <td class="number">
         <%= "%.2f" % (100.0 * @dataset.tolerating(:ajax)) %>%
       </td>
     </tr>
-    <tr>
-      <td>frustrated&nbsp;(t&nbsp;&ge;&nbsp;8s)</td>
-      <td class="number" title="<%= integer_number @dataset.frustrated_count(:ajax) %>">
+    <tr title="<%= integer_number @dataset.frustrated_count(:ajax) %>">
+      <td>frustrated</td>
+      <td class="number">
         <%= "%.2f" % (100.0 * @dataset.frustrated(:ajax)) %>%
       </td>
     </tr>
