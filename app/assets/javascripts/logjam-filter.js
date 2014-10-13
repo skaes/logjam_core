@@ -1,12 +1,9 @@
 function install_logjam_lines_filter() {
-  var
-  ALIAS_DATA_LOGJAM_TAGS = "data-logjam-tags",
-  ATTRIBUTE_SELECTOR_LOGJAM_TAGS = "[data-logjam-tags]",
-  CLASSNAME_LOGJAM_TAGS_FILTER_ROOT = "logjam-tags-filter-root",
-  CLASSNAME_SELECTOR_LOGJAM_TAGS_FILTER_ROOT = ".logjam-tags-filter-root",
-
-  regXWhiteSpaceSequence = (/\s+/)
-  ;
+  var ALIAS_DATA_LOGJAM_TAGS                     = "data-logjam-tags",
+      ATTRIBUTE_SELECTOR_LOGJAM_TAGS             = "[data-logjam-tags]",
+      CLASSNAME_LOGJAM_TAGS_FILTER_ROOT          = "logjam-tags-filter-root",
+      CLASSNAME_SELECTOR_LOGJAM_TAGS_FILTER_ROOT = ".logjam-tags-filter-root",
+      regXWhiteSpaceSequence                     = (/\s+/);
 
   function createTagNameListFromItems(itemList) {
     var tagNameTable = {};
