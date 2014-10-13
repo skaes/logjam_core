@@ -34,7 +34,7 @@
     margin: 0;
     padding: 0;
     padding-left: 25px;
-    font-weight: 300;
+    font-weight: normal;
     line-height: 45px;
     margin-right: 20px;
     margin-left: 10px;
@@ -56,14 +56,14 @@
   > .filter-item {
     line-height: 19px;
     height: 19px;
-    font-weight: 300;
+    font-weight: normal;
     text-transform: lowercase;
     position: relative;
     margin-right: 20px;
     border-radius: 3px;
     background: $lightest-grey;
     font-size: 16px;
-    font-weight: 300;
+    font-weight: normal;
     padding: 1px 5px 5px 5px;
     margin-top: 10px;
     cursor: pointer;
@@ -74,7 +74,7 @@
     }
 
     label {
-      font-weight: 700;
+      font-weight: bold;
       font-size: 14px;
     }
 
@@ -83,9 +83,8 @@
     #namespace-suggest-ghost {
       border: 0;
       font-size: 14px;
-      font-weight: 300;
       font-family: "Helvetica Neue";
-      font-weight: 300;
+      font-weight: normal;
       width: 10px;
       margin-left: 5px;
       background: $lightest-grey;
