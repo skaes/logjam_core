@@ -14,25 +14,25 @@
       i = -1
       @resources.reverse.each do |r|
         rd = @dataset.histogram_data(r)
-        next if rd == []
+        next if rd[:points].blank?
         resources << r
         colors << Logjam::Resource.color(r,0.7)
         shapes << (r == "gc_time" ? "cross" : available_shapes[(i+=1) % num_shapes])
         data[r] = rd
-        max_x = [max_x, rd.map(&:first).max].max
-        max_y = [max_y, rd.map(&:second).max].max
+        max_x = [max_x, rd[:points].map(&:first).max].max
+        max_y = [max_y, rd[:points].map(&:second).max].max
       end
       js_params = {
-      xmin: @xmin,
-      max_y: max_y,
-      max_x: max_x,
-      data: data,
-      legend: resources.map{|r| r.gsub(/_/,' ')},
-      shapes: shapes,
-      colors: colors,
-      resources: resources,
-      xlabel: @xlabel,
-      title: "#{@xlabel} distribution on #{@dataset.date} for #{@dataset.page_description}",
+        xmin: @xmin,
+        max_y: max_y,
+        max_x: max_x,
+        data: data,
+        legend: resources.map{|r| r.gsub(/_/,' ')},
+        shapes: shapes,
+        colors: colors,
+        resources: resources,
+        xlabel: @xlabel,
+        title: "#{@xlabel} distribution on #{@dataset.date} for #{@dataset.page_description}",
       }
     %>
 

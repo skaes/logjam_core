@@ -28,7 +28,7 @@ var vis = d3.select("#distribution-plot")
 
 /* Title */
 vis.append("svg:text")
-    .attr("dy", -10)
+    .attr("dy", -30)
     .attr("dx", w/2)
     .attr("text-anchor", "middle")
     .style("font", "16px sans-serif")
@@ -115,11 +115,44 @@ var yaxis = vis.append("svg:line")
     .style("font", "8px sana-serif")
     .text(formatter);
 
+function draw_percentile(r,i,key){
+  // percentiles
+  var xp = params.data[r][key];
+  var a = [x(xp), 0];
+  var b = [x(xp), h];
+  var p90 = vis.append("svg:line")
+    .style("fill", colors(i))
+    .style("stroke", colors(i))
+    .attr("x1", a[0])
+    .attr("y1", a[1])
+    .attr("x2", b[0])
+    .attr("y2", b[1]);
+
+  vis.append("svg:path")
+    .attr("transform", "translate(" + a[0] + "," + a[1] + ")")
+    .attr("d", d3.svg.symbol().type(shapes[i]).size(64))
+    .style("stroke", colors(i))
+    .style("fill", colors(i));
+
+  vis.append("svg:text")
+    .attr("dx", a[0])
+    .attr("dy", a[1]-8)
+    .attr("text-anchor", "middle")
+    .style("font", "8px sans-serif")
+    .text("~"+key);
+}
 
 params.resources.forEach(function(r,i){
   var klazz = "shape" + i;
+  if (r == 'total_time' || r == 'page_time' || r == 'ajax_time') {
+    draw_percentile(r, i,'p90');
+    draw_percentile(r, i,'p95');
+    draw_percentile(r, i,'p99');
+  }
+
+  // quants
   vis.selectAll("."+klazz)
-    .data(params.data[r])
+    .data(params.data[r].points)
     .enter().append("svg:path")
     .attr("class", klazz)
     .attr("transform", function(d) { return "translate(" + x(d[0]) + "," + (h-y(d[1])) + ")"; })
@@ -134,7 +167,7 @@ vis.selectAll(".legend")
     .enter().append("svg:text")
     .attr("class", "legend")
     .attr("x", w-60)
-    .attr("y", function(d,i){return 20+14*i})
+    .attr("y", function(d,i){return 20+14*i; })
     .style("font", "12px sans-serif")
     .text(String);
 
