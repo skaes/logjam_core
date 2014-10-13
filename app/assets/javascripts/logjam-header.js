@@ -109,7 +109,6 @@ function initialize_header() {
     maxHeight: 300,
     width: 250,
     zIndex:100000,
-    autoSelectFirst: true,
     onSelect: function(value){
       $('#page').val( value.value );
       submit_filter_form();
@@ -122,7 +121,8 @@ function initialize_header() {
     maxHeight: 300,
     width: 150,
     zIndex:100000,
-    autoSelectFirst: true,
+
+    tabDisabled: true,
     onSelect: function(value){
       $('#app').val( value.value );
       $('#page').val( '' );

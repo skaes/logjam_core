@@ -10,12 +10,13 @@
 // WARNING: THE FIRST BLANK LINE MARKS THE END OF WHAT'S TO BE PROCESSED, ANY BLANK LINE SHOULD
 // GO AFTER THE REQUIRES BELOW.
 //
-//= require d3.v3.min
 //= require jquery-1.11.1.min
+//= require logjam-growing-inputs
 //= require jquery-migrate-1.2.1.min
 //= require jquery.jdpicker
 //= require jquery.autocomplete
 //= require jquery.tipsy
+//= require d3.v3.min
 //= require logjam-filter
 //= require uri
 //= require logjam-header
@@ -31,4 +32,4 @@
 //= require logjam-ready
 //= require logjam-mobile
 //= require logjam-keyboard-controls
-//= require logjam-growing-inputs
+

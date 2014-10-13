@@ -9,7 +9,6 @@ var history_url = '<%= raw history_url %>';
   <% end %>
 var action_auto_complete_url = '<%= raw auto_complete_url_for_action_page %>';
 var application_auto_complete_url = '<%= raw auto_complete_url_for_application_page %>';
-$(document).ready(initialize_header);
 <% end %>
 
 <% action = action_name == "index" ? "" : action_name %>
@@ -81,6 +80,7 @@ $(document).ready(initialize_header);
 </header>
 
 <script>
+  initialize_header()
   $(function(){
     /* choose the enviroment */
     $('.enviroment-chooser .btn', '#logjam-header').on('mousedown', function(event){

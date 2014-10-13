@@ -8,8 +8,9 @@ body {
     padding: 0px;
 }
 
-body, p, ol, ul, td, input, .btn {
-    font-family: "Open Sans", "Helvetica Neue", "Arial", sans-serif;
+body, p, ol, ul, td {
+    font-family: "Helvetica Neue", verdana, arial, helvetica, sans-serif;
+    font-weight: 300;
     font-size:   12px;
     line-height: 18px;
 }

@@ -1,37 +1,57 @@
 <%= render "header" %>
-
-<div id="logjam-container">
-
-  <%= render "dashboard_apdex_overview" %>
+<div id="logjam-container" class="xxl-view">
+  <%= render "sidebar" %>
   <div id="logjam-content" class="app-dashboard">
 
-    <h2>Platform status</h2>
-    <div class="app-overview">
+    <div class="app-overview size-xxl-small-width size-xxl-no-flex size-xxl-flex-order-first">
+      <%= render "apdex" %>
+      <%= render "page_apdex" %>
+      <%= render "ajax_apdex" %>
+      <% if params[:grouping] == "request" %>
+      <%= render "action_info" %>
+      <% else %>
+      <%= render "request_info" %>
+      <% end %>
+      <%= render "response_codes" %>
+      <%= render "errors" %>
 
-      <div class="item">
-        <h2>Apdex Frontend</h2>
-        <span class="value">0.98</span>
-      </div>
-
-      <div class="item">
-        <h2>Apdex Backend</h2>
-        <span class="value">0.94</span>
-      </div>
-
-      <div class="item">
-        <h2>Requests</h2>
-        <span class="value">7535125</span>
-      </div>
-
-      <div class="item break">
-        <h2>Errors</h2>
-        <span class="value">125345</span>
-      </div>
-
+      <%= render "frontend_javascript_errors" %>
+      <%= render "frontend_dom_nodes" %>
+      <%= render "frontend_dom_style_nodes" %>
+      <%= render "frontend_dom_script_nodes" %>
     </div>
 
+    <div class="app-overview size-xxl-flex-order-second size-xxl-no-flex size-l-no-flex">
+      <div class="item icon-action">
+        <%= link_to(clean_params(:action => "enlarged_plot", :interval => 1, :section => params[:section])) do %>
+        <h2>
+          showing
+          <%= number_with_delimiter @dataset.count_requests(@section) %> of <%= number_with_delimiter @dataset.count(@section) %> requests
+        </h2>
+        <% end %>
+        <%= render :partial => "resource_plot", :locals => {:width => 450, :height => 200} %>
+      </div>
+      <div class="item icon-action">
+        <%= sometimes_link_all_pages do %>
+        <h2><%= @dataset.description %>
+          <%- if params[:grouping] == "request" -%>
+          between <%= minute_to_human(@dataset.start_minute) %>
+          and <%= minute_to_human(@dataset.end_minute) %>
+          <%- end -%>
+        </h2>
+        <% end %>
+        <div id="pagetimes">
+          <%= render "page_times" %>
+        </div>
+      </div>
+    </div>
+
+    <% if params[:grouping] == "page" -%>
+      <div class="app-overview size-xxl-large-width size-xxl-no-flex size-xxl-flex-order-third">
+        <h2>Resources (avg)</h2>
+        <%= render "breakdown" %>
+      </div>
+    <% end -%>
 
   </div>
-
 </div>
-

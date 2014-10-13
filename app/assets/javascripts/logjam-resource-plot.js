@@ -76,7 +76,7 @@ function logjam_resource_plot(params) {
     .attr("class", "label")
     .attr("dy", h+30)
     .attr("dx", w/2)
-    .style("font", "12px open sans")
+    .style("font", "12px Helvetica Neue")
     .attr("text-anchor", "middle")
     .text("Time of day");
 
@@ -119,7 +119,7 @@ function logjam_resource_plot(params) {
     .attr("dx", 0)
     .attr("dy", 12)
     .attr("text-anchor", "middle")
-    .style("font", "8px open sans")
+    .style("font", "8px Helvetica Neue")
     .text(function(d){return (d*interval)/60;});
 
   /* Y-label */
@@ -127,7 +127,7 @@ function logjam_resource_plot(params) {
     .attr("class", "label")
     .attr("dy", -25)
     .attr("dx", -h/2)
-    .style("font", "12px open sans")
+    .style("font", "12px Helvetica Neue")
     .attr("text-anchor", "middle")
     .attr("transform", "rotate(270)")
     .text(params.ylabel);
@@ -154,7 +154,7 @@ function logjam_resource_plot(params) {
       .attr("dx", -10)
       .attr("dy", 3)
       .attr("text-anchor", "middle")
-      .style("font", "8px open sans")
+      .style("font", "8px Helvetica Neue")
       .text(y_ticks_formatter);
     vlabels.exit().remove();
 
@@ -179,7 +179,7 @@ function logjam_resource_plot(params) {
     .attr("x", function(d,i){ return 10+(120*(Math.floor(i))); })
     .attr("y", function(d,i){ return h+50; })
     .on("click", function(d,i){ submit_resource(legend[i]); })
-    .style("font", "10px open sans")
+    .style("font", "10px Helvetica Neue")
     .style("cursor", "pointer")
     .text(String);
 
@@ -203,7 +203,7 @@ function logjam_resource_plot(params) {
     .enter()
     .append("text")
     .attr("class", "rlabel")
-    .style("font", "10px open sans")
+    .style("font", "10px Helvetica Neue")
     .attr("text-anchor", "end")
     .attr("y", function(d,i){ return 50-i*25-1 })
     .attr("x", w-1)
