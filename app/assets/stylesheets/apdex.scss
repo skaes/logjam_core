@@ -1,0 +1,5 @@
+@import 'mixins.scss';
+@import 'constants.scss';
+
+.apdex-ok { background-color: $apdex-ok !important; }
+.apdex-fail { background-color: $apdex-fail !important; }
