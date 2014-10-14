@@ -20,47 +20,38 @@ function handleTouchStart(event) {
 function handleTouchMove(event) {
     var evt = event.originalEvent;
 
-    var touchElement = $('#logjam-sidebar, #mobile-trigger');
-
     if ( ! xDown || ! yDown ) {
-        return;
+      return;
     }
 
     if (evt.touches) {
-      var xUp = evt.touches[0].clientX;
-      var yUp = evt.touches[0].clientY;
+      var xUp = evt.touches[0].clientX,
+          yUp = evt.touches[0].clientY;
     } else {
-      var xUp = evt.clientX;
-      var yUp = evt.clientY;
+      var xUp = evt.clientX,
+          yUp = evt.clientY;
     }
 
-    var xDiff = xDown - xUp;
-    var yDiff = yDown - yUp;
+    var xDiff = xDown - xUp,
+        yDiff = yDown - yUp;
 
     if ( Math.abs( xDiff ) > Math.abs( yDiff ) ) {/*most significant*/
-        if ( xDiff > 0 ) {
-            /* left swipe */
-          if (touchTarget === touchElement[0] || $.contains(touchElement[0], touchTarget)) {
-            $(document).trigger("swipeLeft");
-          }
-        } else {
-            /* right swipe */
-          if (touchTarget === touchElement[0]) {
-            $(document).trigger("swipeRight");
-          }
-        }
+      if ( xDiff > 0 ) {
+        /* left swipe */
+        $(document).trigger("swipeLeft");
+      } else {
+        /* right swipe */
+        $(document).trigger("swipeRight");
+      }
     } else {
-        if ( yDiff > 0 ) {
-            /* up swipe */
-          if (touchTarget == touchElement[0]) {
-            $(document).trigger("swipeUp");
-          }
-        } else {
-            /* down swipe */
-          if (touchTarget == touchElement[0]) {
-            $(document).trigger("swipeUp");
-          }
+      if ( yDiff > 0 ) {
+        /* up swipe */
+        $(document).trigger("swipeUp");
         }
+      } else {
+        /* down swipe */
+        $(document).trigger("swipeUp");
+      }
     }
     /* reset values */
     xDown = null;
@@ -79,6 +70,15 @@ $(function(){
   $("#mobile-trigger").on("click", function(event){
     event.preventDefault();
     $("body").toggleClass("sidebar-visible");
+  });
+
+  $(document).on('click', function(event){
+    console.log(event.target);
+    if( $('body').hasClass('sidebar-visible') && $(event.target).parent().attr('id') != 'mobile-trigger' ) {
+      console.log('bar2');
+      event.preventDefault();
+      $("body").removeClass("sidebar-visible");
+    }
   });
 });
 

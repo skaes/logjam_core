@@ -86,22 +86,14 @@
   }
 
   #mobile-trigger {
-    background: $dark-grey;
-    font-size: 16px;
-    color: $white;
-    line-height: 44px;
-    height: 44px;
+    color: $dark-grey;
     display: block;
     transition: padding 0.5s;
     padding-left: 0;
-
-
-    &:before {
-      content: "\f0c9";
-      font-family: fontAwesome;
-      margin-right: 5px;
-      margin-left: 5px;
-    }
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 32px;
   }
 
   #logjam-sidebar {
@@ -112,18 +104,12 @@
     transition: all 0.5s;
     top: 0;
     bottom: 0;
+    min-height: 0;
     overflow-y: scroll; /* has to be scroll, not auto */
     -webkit-overflow-scrolling: touch;
   }
 
   .sidebar-visible {
-    #mobile-trigger {
-      padding-left: 200px;
-
-      &:before {
-        content: "\f00d";
-      }
-    }
     #logjam-sidebar {
       left: 0 !important;
       box-shadow: 0 0 50px 0 rgba(0,0,0,0.8);
@@ -169,16 +155,10 @@
   .app-dashboard {
     margin: 0 !important;
 
-    .app-overview {
+    .flex {
       display: block;
-      flex-direction: initial;
-      padding: 10px;
-      box-sizing: border-box;
-
+      padding-right: 5px;
       .item {
-        margin: 10px 0;
-        box-sizing: border-box;
-        min-width: 0;
       }
     }
   }
