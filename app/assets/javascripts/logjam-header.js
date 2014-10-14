@@ -116,7 +116,7 @@ function initialize_header() {
       $('#page').val( value.value );
       submit_filter_form();
     }
-   });
+  });
 
   $("#application-suggest").autocomplete({
     serviceUrl: application_auto_complete_url,
@@ -131,5 +131,5 @@ function initialize_header() {
       $('#page').val( '' );
       submit_filter_form();
     }
-   });
+  });
 }
