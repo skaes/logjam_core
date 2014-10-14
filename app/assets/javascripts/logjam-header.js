@@ -101,6 +101,9 @@ function initialize_header() {
       selectable: selectable_days,
       error_out_of_range: "No data for that date."
     });
+    $("#datepicker").on('blur', function(){
+      $(this).parent().find('.date_selector').hide();
+    })
   }
 
   $("#namespace-suggest").autocomplete({
