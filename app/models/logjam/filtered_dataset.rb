@@ -315,7 +315,29 @@ module Logjam
       quantized = @the_quants.quants(resource)
       points = []
       quantized.keys.sort.each{|x| points << [x, quantized[x]] } unless quantized.blank?
-      points
+      count = points.map(&:second).sum
+      return {} if count == 0
+      c90 = count * 0.90
+      c95 = count * 0.95
+      c99 = count * 0.99
+      n = i = 0
+      l = points.size
+      while n < c90 && i < l
+        n += points[i][1]
+        i += 1
+      end
+      p90 = points[i-1][0]
+      while n < c95 && i < l
+        n += points[i][1]
+        i += 1
+      end
+      p95 = points[i-1][0]
+      while n < c99 && i < l
+        n += points[i][1]
+        i += 1
+      end
+      p99 = points[i-1][0]
+      {points: points, p90: p90, p95: p95, p99: p99}
     end
 
     def happy_count(section = :backend)

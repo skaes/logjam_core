@@ -15,7 +15,7 @@
   }
 
   h2 {
-    font-weight: 300;
+    font-weight: normal;
     font-size: 22px;
   }
 
@@ -32,7 +32,7 @@
     font-size: 12px;
 
     label {
-      font-weight: 300;
+      font-weight: normal;
       color: $white;
       text-transform: uppercase;
     }
@@ -108,7 +108,7 @@
         margin-top: 5px;
         margin-bottom: 20px;
         font-size: 11px;
-        font-weight: 400;
+        font-weight: normal;
         text-transform: uppercase;
 
         a:hover {
@@ -160,7 +160,7 @@
         position: absolute;
         z-index: 20;
         left: 10px;
-        font-weight: 900;
+        font-weight: bold;
         opacity: 0.5
       }
 
@@ -168,7 +168,7 @@
         position: absolute;
         z-index: 20;
         left: 30px;
-        font-weight: 700;
+        font-weight: bold;
       }
 
       .application-apdex {
