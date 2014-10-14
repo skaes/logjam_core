@@ -12,6 +12,7 @@
 #logjam-content {
   position: relative;
   width: 100%;
+  padding: 5px 0 0 5px;
 
   > h2 {
     margin: 20px 0 0 10px;
@@ -27,82 +28,39 @@
   }
 }
 
-.icon-action {
-  h2:after {
-    content: "\f105";
-    font-family: fontAwesome;
-    position: absolute;
-    right: 10px;
+
+.item {
+  flex: 1;
+  background: $white;
+  border-radius: 2px;
+  border: 1px solid $lighter-grey;
+  padding: 10px;
+  margin: 5px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  overflow-x: auto;
+
+  h2 {
+    font-size: 14px;
+    text-transform: uppercase;
     color: $xing-green;
-    font-size: 24px;
+    margin-bottom: 10px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
-  a {
+
+  .value {
+    font-size: 24px;
+    font-weight: 400;
     display: block;
+    text-align: center;
+
   }
 }
-
 .app-dashboard {
-  flex-direction: row;
-  margin: 5px !important;
-
   .app-overview {
-    display: -webkit-flex;
-    display: flex;
-    -webkit-flex-direction: row;
-    flex-direction: row;
-    width: 100%;
-    flex-wrap: wrap;
-
-    > h2 {
-      display: none;
-    }
-
-    .item {
-      flex: 1;
-      background: $white;
-      border-radius: 2px;
-      border: 1px solid $lighter-grey;
-      padding: 10px;
-      margin: 5px;
-      width: 100%;
-      position: relative;
-      overflow: hidden;
-      overflow-x: auto;
-
-      &.apdex-ok { background-color: $apdex-ok !important; }
-      &.apdex-fail { background-color: $apdex-fail !important; }
-
-      &.has-action {
-        padding-bottom: 40px;
-      }
-
-      h2 {
-        font-size: 14px;
-        text-transform: uppercase;
-        color: $xing-green;
-        margin-bottom: 10px;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-      }
-
-      .value {
-        font-size: 36px;
-        font-weight: normal;
-        display: block;
-        text-align: center;
-        margin-top: 36px;
-      }
-
-      table {
-        width: 100%;
-      }
-
-      .collapse-table {
-        // display: none;
-      }
-    }
-
     &.overview-wrap {
       -webkit-flex-wrap: wrap;
       flex-wrap: wrap;
@@ -330,7 +288,7 @@ td.number {
   }
 
 }
-
+table { width: 100%; }
 tr {
   &.full_stats.apdex:hover { background: $white; }
   &.apdex {

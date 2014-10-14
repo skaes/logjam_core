@@ -3,7 +3,7 @@
   <%= render "sidebar" %>
   <div id="logjam-content" class="app-dashboard">
 
-    <div class="app-overview size-xxl-small-width size-xxl-no-flex size-xxl-flex-order-first">
+    <div class="flex size-xxl-small-width size-xxl-no-flex size-xxl-flex-order-first">
       <%= render "apdex" %>
       <% if params[:grouping] == "request" %>
       <%= render "action_info" %>
@@ -14,7 +14,7 @@
       <%= render "errors" %>
     </div>
 
-    <div class="app-overview size-xxl-flex-order-second size-xxl-no-flex size-l-no-flex">
+    <div class="flex size-xxl-flex-order-second size-xxl-no-flex size-l-no-flex">
       <div class="item icon-action">
         <%= link_to(clean_params(:action => "enlarged_plot", :interval => 1, :section => params[:section])) do %>
         <h2>
@@ -40,8 +40,7 @@
     </div>
 
     <% if params[:grouping] == "page" -%>
-      <div class="app-overview size-xxl-large-width size-xxl-no-flex size-xxl-flex-order-third">
-        <h2>Resources (avg)</h2>
+      <div class="flex size-xxl-large-width size-xxl-no-flex size-xxl-flex-order-third">
         <%= render "breakdown" %>
       </div>
     <% end -%>

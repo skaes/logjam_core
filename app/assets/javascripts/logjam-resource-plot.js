@@ -173,7 +173,6 @@ function logjam_resource_plot(params) {
   draw_grid();
 
   /* Legend. */
-  /* Legend. */
   vis.selectAll(".legend")
     .data(legend)
     .enter().append("svg:text")

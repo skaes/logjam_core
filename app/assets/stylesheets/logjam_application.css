@@ -21,4 +21,6 @@
   *= require tooltip
   *= require growing-inputs
   *= require media-queries
+  *= require grid
+  *= require apdex
  */
