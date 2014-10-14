@@ -1,4 +1,6 @@
-<div class="item">
-  <h2>Dom Nodes</h2>
-  <span class="value"><%= "%.2f" % @dataset.summary.avg("html_nodes") %> </span>
-</div>
+<% if !@dataset.summary.avg("html_nodes").nan? %>
+  <div class="item col-8">
+    <h2>Dom Nodes</h2>
+    <span class="value"><%= "%.2f" % @dataset.summary.avg("html_nodes") %> </span>
+  </div>
+<% end  %>

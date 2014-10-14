@@ -1,4 +1,5 @@
-<div class="item icon-action<% if "%.2f" % @dataset.apdex >= "0.94" %> apdex-ok<% end %><% if "%.2f" % @dataset.apdex < "0.94" %> apdex-fail<% end %>">
+<% if !@dataset.apdex(:backend).nan? %>
+<div class="item col-5 icon-action<% if "%.2f" % @dataset.apdex >= "0.94" %> apdex-ok<% end %><% if "%.2f" % @dataset.apdex < "0.94" %> apdex-fail<% end %>">
   <%= link_to(params.merge(:action => "apdex_overview")) do %>
     <h2>Apdex Backend: <span class="number"><%= "%.2f" % @dataset.apdex(:backend) %></span></h2>
   <% end %>
@@ -29,4 +30,5 @@
     </tr>
   </table>
 </div>
+<% end %>
 

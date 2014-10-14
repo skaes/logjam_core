@@ -1,4 +1,4 @@
-<div class="item icon-action">
+<div class="item col-8 icon-action">
   <%= link_to(clean_params(params.merge(:action => "", :page => params[:page], :grouping => "page"))) do %>
   <h2>Actions</h2>
   <div class="value"><%= integer_number @dataset.totals.actions.size %></div>
