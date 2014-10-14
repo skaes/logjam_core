@@ -17,10 +17,11 @@ function logjam_resource_plot(params) {
   var zoom_interval = 1;
 
   function get_height() {
-    var enlarged_size = $('#enlarged-plot').height() - 80;
-    if (enlarged_size > 0)
+    var enlarged_size = $('#enlarged-plot').height() - 100;
+    if (enlarged_size > 0) {
       return enlarged_size;
-    var parent_height = $(container).parent('.item').height() - 80;
+    }
+    var parent_height = $(container).parent('.item').height() - 100;
     return parent_height > 170 ? parent_height : 170;
   }
   /* Sizing and scales. */
@@ -64,7 +65,7 @@ function logjam_resource_plot(params) {
   var vis = d3.select(params.container)
         .append("svg")
         .attr("width", w+50)
-        .attr("height", h+70)
+        .attr("height", h+80)
         .style("stroke", "#999")
         .style("strokeWidth", 1.0)
         .on("click", update_y_scale)
@@ -172,14 +173,15 @@ function logjam_resource_plot(params) {
   draw_grid();
 
   /* Legend. */
+  /* Legend. */
   vis.selectAll(".legend")
     .data(legend)
     .enter().append("svg:text")
     .attr("class", "legend")
-    .attr("x", function(d,i){ return 10+(6*(Math.floor(i))); })
-    .attr("y", function(d,i){ return h+50; })
+    .attr("x", function(d,i){return 10+(120*(Math.floor(i/2)));})
+    .attr("y", function(d,i){return h+50+14*(i%2);})
     .on("click", function(d,i){ submit_resource(legend[i]); })
-    .style("font", "10px Helvetica Neue")
+    .style("font", "10px sans-serif")
     .style("cursor", "pointer")
     .text(String);
 
@@ -188,8 +190,8 @@ function logjam_resource_plot(params) {
     .enter().append("svg:circle")
     .attr("class", "legendmark")
     .attr("transform", "translate(-7,-3)")
-    .attr("cx", function(d,i){return 10+(100*(Math.floor(i)));})
-    .attr("cy", function(d,i){ return h+50; })
+    .attr("cx", function(d,i){return 10+(120*(Math.floor(i/2)));})
+    .attr("cy", function(d,i){return h+50+14*(i%2);})
     .attr("r", 4)
     .on("click", function(d,i){ submit_resource(legend[i]); })
     .style("cursor", "pointer")
