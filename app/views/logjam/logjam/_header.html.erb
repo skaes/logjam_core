@@ -12,7 +12,6 @@ var application_auto_complete_url = '<%= raw auto_complete_url_for_application_p
 <% end %>
 
 <% action = action_name == "index" ? "" : action_name %>
-<%= raw Oj.dump(params) %>
 <header id="logjam-header">
   <h1 class="logo">LOGJAM</h1>
   <% unless @only_one_app %>
@@ -92,6 +91,14 @@ var application_auto_complete_url = '<%= raw auto_complete_url_for_application_p
     $('.namespace-chooser .fa.fa-times').on('click', function(){
       $('#page').val('');
       submit_filter_form();
+    })
+
+    /* fix for: https://github.com/skaes/logjam_core/issues/22 */
+    $('#namespace-suggest').on('keyup', function(event){
+      if(event.keyCode == 13) {
+        $('#page').val(event.target.value);
+        submit_filter_form();
+      }
     })
   });
 
