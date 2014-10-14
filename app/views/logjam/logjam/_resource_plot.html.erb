@@ -1,4 +1,10 @@
-<div id='resource-plot'></div>
+<%
+  if (defined?(section)).nil?
+    section = 'backend'
+  end
+%>
+
+
 <%
   line_attr = @section == :frontend ? "ajax_time" : "gc_time"
   js_params = {
@@ -17,13 +23,18 @@
     :h => height,
     :plot_kind => @dataset.plot_kind,
     :ylabel => @dataset.ylabel,
-    :container => "#resource-plot"
+    :container => "#resource-plot-#{section}"
   }
 -%>
 
-
-<script type="text/javascript">
+<div id="resource-plot-<%= section %>"></div>
+<script>
   $(function(){
+    logjam_resource_plot(<%=raw Oj.dump(js_params) %>)
+  })
+
+  $(window, document).on('resize', function(){
+    $('#resource-plot-<%= section %>').html('');
     logjam_resource_plot(<%=raw Oj.dump(js_params) %>)
   })
 </script>

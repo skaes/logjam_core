@@ -10,6 +10,7 @@ function logjam_resource_plot(params) {
       zoomed_max_y         = params.zoomed_max_y,
       selected_slice       = params.selected_slice,
       selected_slice_width = params.selected_slice_width,
+      container            = params.container;
       max_request_count    = d3.max(request_counts);
 
   /* Animation */
@@ -19,12 +20,11 @@ function logjam_resource_plot(params) {
     var enlarged_size = $('#enlarged-plot').height() - 80;
     if (enlarged_size > 0)
       return enlarged_size;
-    var parent_height = $('#resource-plot').parent('.item').height() - 80;
+    var parent_height = $(container).parent('.item').height() - 80;
     return parent_height > 170 ? parent_height : 170;
   }
-
   /* Sizing and scales. */
-  var w = document.getElementById('resource-plot').offsetWidth - 60,
+  var w = document.getElementById(container.slice(1)).offsetWidth - 60,
       h = get_height(),
       xticks = d3.range(25).map(function(h){ return h/interval*60; }),
       x      = d3.scale.linear().domain([0, 1440/interval]).range([0, w]),
@@ -176,7 +176,7 @@ function logjam_resource_plot(params) {
     .data(legend)
     .enter().append("svg:text")
     .attr("class", "legend")
-    .attr("x", function(d,i){ return 10+(120*(Math.floor(i))); })
+    .attr("x", function(d,i){ return 10+(6*(Math.floor(i))); })
     .attr("y", function(d,i){ return h+50; })
     .on("click", function(d,i){ submit_resource(legend[i]); })
     .style("font", "10px Helvetica Neue")
@@ -188,7 +188,7 @@ function logjam_resource_plot(params) {
     .enter().append("svg:circle")
     .attr("class", "legendmark")
     .attr("transform", "translate(-7,-3)")
-    .attr("cx", function(d,i){return 10+(120*(Math.floor(i)));})
+    .attr("cx", function(d,i){return 10+(100*(Math.floor(i)));})
     .attr("cy", function(d,i){ return h+50; })
     .attr("r", 4)
     .on("click", function(d,i){ submit_resource(legend[i]); })
