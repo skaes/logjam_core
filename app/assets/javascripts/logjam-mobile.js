@@ -47,7 +47,6 @@ function handleTouchMove(event) {
       if ( yDiff > 0 ) {
         /* up swipe */
         $(document).trigger("swipeUp");
-        }
       } else {
         /* down swipe */
         $(document).trigger("swipeUp");
