@@ -78,14 +78,12 @@
       font-size: 14px;
     }
 
-    input,
-    #application-chooser-ghost,
-    #namespace-suggest-ghost {
+    input {
       border: 0;
       font-size: 14px;
       font-family: "Helvetica Neue";
       font-weight: normal;
-      width: 10px;
+      width: 150px;
       margin-left: 5px;
       background: $lightest-grey;
       border-bottom: 1px solid $light-grey;

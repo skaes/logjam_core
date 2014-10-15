@@ -3,7 +3,7 @@
   <%= render "sidebar" %>
   <div id="logjam-content" class="app-dashboard">
 
-    <div class="app-overview size-xxl-small-width size-xxl-no-flex">
+    <div class="flex size-xxl-small-width size-xxl-no-flex">
       <%= render "page_apdex" %>
       <%= render "ajax_apdex" %>
       <%= render "frontend_javascript_errors" %>
@@ -12,7 +12,7 @@
       <%= render "frontend_dom_script_nodes" %>
     </div>
 
-    <div class="app-overview">
+    <div class="flex">
       <div class="item icon-action">
         <%= link_to(clean_params(:action => "enlarged_plot", :interval => 1, :section => params[:section])) do %>
         <h2>showing <%= number_with_delimiter @dataset.count_requests(@section) %> of <%= number_with_delimiter @dataset.count(@section) %> requests</h2>

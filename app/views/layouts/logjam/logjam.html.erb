@@ -12,9 +12,17 @@
   <%= javascript_include_tag "application" %>
 </head>
 <body>
+  <div id="loading"></div>
   <%= yield %>
   <script type="text/javascript">
   <%= yield :page_scripts %>
+
+  window.setTimeout(function(){
+      document.body.classList.add('loaded');
+      setTimeout(function(){
+        document.getElementById('loading').remove()
+      }, 100)
+  }, 50);
   </script>
 </body>
 </html>

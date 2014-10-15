@@ -2,9 +2,9 @@
 <div id="logjam-container">
   <%= render "sidebar" %>
   <div id="logjam-content" class="app-dashboard">
-    <h2>Timings</h2>
-    <div class="app-overview">
+    <div class="flex">
       <div id="enlarged-plot" class="item">
+        <h2>Timings</h2>
         <%= render :partial => "resource_plot", :locals => {:width => 1080, :height => 460} %>
       </div>
     </div>

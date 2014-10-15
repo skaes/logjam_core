@@ -5,7 +5,7 @@
   background: #2D353C;
   min-width: 190px;
   max-width: 190px;
-  min-height: 100vh;
+  min-height: calc(100vh - 45px);
   color: $white;
   flex-direction: row;
   position: relative;
@@ -24,32 +24,6 @@
 
     &:hover {
       background: none;
-    }
-  }
-
-  .sidebar-search {
-    margin: 10px 0;
-    font-size: 12px;
-
-    label {
-      font-weight: normal;
-      color: $white;
-      text-transform: uppercase;
-    }
-
-    input[type=text] {
-      background: #555555;
-      border: 0;
-      padding: 7px 5px;
-      width: 188px;
-      color: $white;
-      font-size: 12px;
-      border: 1px solid transparent;
-
-      &:focus {
-        outline: none;
-        border: 1px solid #c9c9c9
-      }
     }
   }
 

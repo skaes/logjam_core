@@ -1,9 +1,9 @@
 <h2><%= title %></h2>
-<div class="app-overview overview-wrap">
+<div class="flex">
   <% max = fields.length %>
   <% fields.each do |name, value| -%>
     <% next if value.blank? -%>
-    <div class="item">
+    <div class="item col-7">
       <h2><%= hrn name %></h2>
       <%= value %>
     </div>

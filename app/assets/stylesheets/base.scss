@@ -67,9 +67,12 @@ table {
 
 }
 
-#pagetimes .gct {
-    width: 25em;
-    text-overflow: ellipsis;
+td.group-thing {
+  max-width: 250px;
+  min-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 svg {
@@ -86,4 +89,21 @@ input[type="text"]:disabled
 
 #mobile-trigger {
     display: none;
+}
+
+#loading {
+  background-color: $white;
+  background-image: url(spinner24.gif);
+  background-position: center center;
+  background-repeat: no-repeat;
+  z-index: 100000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transition: opacity 0.1s;
+}
+.loaded #loading {
+  opacity: 0;
 }

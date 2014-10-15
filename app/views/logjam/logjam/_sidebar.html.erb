@@ -1,4 +1,4 @@
-<a id="mobile-trigger">Menu</a>
+<a id="mobile-trigger"><i class="fa fa-bars"></i></a>
 
 <section id="logjam-sidebar" class="open">
 
@@ -9,7 +9,7 @@
       <ul class="logjam-menu<% if params[:section] == 'backend' %> active<% end %>" id="backend-menu">
 
         <li>
-          <a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/dashboard/?app=<%= params[:app] %>&section=backend">
+          <a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/?app=<%= params[:app] %>&section=backend">
             <i class="fa fa-tachometer"></i>
             Dashboard
           </a>

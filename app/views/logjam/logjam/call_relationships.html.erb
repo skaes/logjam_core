@@ -2,10 +2,9 @@
 <div id="logjam-container">
   <%= render "sidebar" %>
   <div id="logjam-content" class="app-dashboard">
-
-    <h2><%= @title %> (<span id="call-count"><%= @data.size %></span>)</h2>
-    <div class="app-overview">
+    <div class="flex">
       <div class="controls item">
+        <h2><%= @title %> (<span id="call-count"><%= @data.size %></span>)</h2>
         <%= form_tag(params, :method => :get) do %>
           <%= hidden_field_tag :app, @app %>
           <%= hidden_field_tag :env, @env %>
@@ -37,10 +36,14 @@
       </div>
     </div>
 
-    <div class="app-overview">
+    <div class="flex">
       <div id="callers" class="item">
-        <table class="full_stats">
-          <tr><th>Caller</th><th>Callee</th><th>#Calls</th></tr>
+        <table class="full_stats" style="max-width: 500px;>
+          <tr>
+            <th>Caller</th>
+            <th>Callee</th>
+            <th class="right">#Calls</th>
+          </tr>
           <% @data.each do |h| %>
             <% caller, callee, count = h.values_at(:source, :target, :count) %>
             <tr class='full_stats'>

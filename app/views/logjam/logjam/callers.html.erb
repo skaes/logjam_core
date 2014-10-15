@@ -2,9 +2,9 @@
 <div id="logjam-container">
   <%= render "sidebar" %>
   <div id="logjam-content" class="app-dashboard">
-    <h2><%= @title %> <%= hpn("of") %> (<%= @callers.size %>)</h2>
-    <div class="app-overview" id="callers">
+    <div class="flex" id="callers">
       <div class="controls item">
+        <h2><%= @title %> <%= hpn("of") %> (<%= @callers.size %>)</h2>
         <%= form_tag(params, :method => :get) do %>
           <%= hidden_field_tag :app, @app %>
           <%= hidden_field_tag :env, @env %>

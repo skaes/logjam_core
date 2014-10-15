@@ -25,7 +25,7 @@ function logjam_resource_plot(params) {
     return parent_height > 170 ? parent_height : 170;
   }
   /* Sizing and scales. */
-  var w = document.getElementById(container.slice(1)).offsetWidth - 60,
+  var w = (document.getElementById(container.slice(1)).offsetWidth - 60 < 400) ? 626 : document.getElementById(container.slice(1)).offsetWidth - 60,
       h = get_height(),
       xticks = d3.range(25).map(function(h){ return h/interval*60; }),
       x      = d3.scale.linear().domain([0, 1440/interval]).range([0, w]),
@@ -437,7 +437,6 @@ function logjam_resource_plot(params) {
     offsetY: 20,
     gravity: 'w',
     html: false,
-    opacity: 0.7,
     title: function() { return event_tooltip_text; }
   };
 

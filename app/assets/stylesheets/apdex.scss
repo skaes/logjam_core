@@ -3,3 +3,9 @@
 
 .apdex-ok { background-color: $apdex-ok !important; }
 .apdex-fail { background-color: $apdex-fail !important; }
+
+.full_stats .apdex-ok,
+.full_stats .apdex-fail { background: none !important; }
+
+.apdex-ok > a { background-color: $apdex-ok !important; margin: 0 5px; }
+.apdex-fail > a { background-color: $apdex-fail !important; margin: 0 5px; }

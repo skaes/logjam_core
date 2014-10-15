@@ -41,6 +41,10 @@
   overflow: hidden;
   overflow-x: auto;
 
+  &.has-action {
+    padding-bottom: 40px !important;
+  }
+
   h2 {
     font-size: 14px;
     text-transform: uppercase;
@@ -186,9 +190,6 @@ th.sorted {
     &.apdex {
       text-align: center;
     }
-
-    &.apdex-ok a { background-color: $apdex-ok !important; margin: 0 5px; }
-    &.apdex-fail a { background-color: $apdex-fail !important; margin: 0 5px; }
 
     a {
       display: block;

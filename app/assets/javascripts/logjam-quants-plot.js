@@ -9,7 +9,7 @@ function logjam_quants_plot(params) {
   }
 
 var
-    w = document.getElementById('distribution-plot').offsetWidth - 100,
+    w = document.getElementById('distribution-plot').offsetWidth - 120,
     h  = get_height(),
     x = d3.scale.log().domain([params.xmin, params.max_x]).range([0, w]).nice(),
     y = d3.scale.log().domain([1, params.max_y]).range([0, h]).nice(),
