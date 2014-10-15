@@ -10,10 +10,9 @@
 // WARNING: THE FIRST BLANK LINE MARKS THE END OF WHAT'S TO BE PROCESSED, ANY BLANK LINE SHOULD
 // GO AFTER THE REQUIRES BELOW.
 //
-//= require jquery-1.11.1.min
-//= require logjam-growing-inputs
+//= require jquery-2.1.1
 //= require jquery-migrate-1.2.1.min
-//= require jquery.jdpicker
+//= require jquery.jdpicker.1.1
 //= require jquery.autocomplete
 //= require jquery.tipsy
 //= require d3.v3.min

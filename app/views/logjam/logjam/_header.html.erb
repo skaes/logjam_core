@@ -16,12 +16,11 @@ var parameters = <%= raw Oj.dump(params) %>,
   <h1 class="logo">LOGJAM</h1>
   <% unless @only_one_app %>
     <div class="application-chooser filter-item">
-      <div id="application-chooser-ghost" class="ghost-container"></div>
         <label for="application-suggest">Application: </label>
-        <% if params[:action] == 'dashboard' || !params[:app] %>
-          <input tabindex="1" id="application-suggest" class="application-suggest growing-input" data-ghost-container="#application-chooser-ghost" type="text" placeholder="Choose Application">
+        <% if !params[:app] %>
+          <input tabindex="1" id="application-suggest" class="application-suggest " type="text" placeholder="Choose Application">
         <% else %>
-          <input tabindex="1" id="application-suggest" class="application-suggest growing-input" data-ghost-container="#application-chooser-ghost" type="text" placeholder="<%= params[:app] %>">
+          <input tabindex="1" id="application-suggest" class="application-suggest " type="text" placeholder="<%= params[:app] %>">
         <% end %>
       </label>
     </div>
@@ -37,7 +36,6 @@ var parameters = <%= raw Oj.dump(params) %>,
   </div>
 
   <div class="namespace-chooser filter-item">
-    <div id="namespace-suggest-ghost" class="ghost-container"></div>
     <%
       if params[:page]
         value = params[:page]
@@ -46,7 +44,7 @@ var parameters = <%= raw Oj.dump(params) %>,
       end
     %>
     <label for="namespace-suggest">Filter: </label>
-    <input tabindex="3" id="namespace-suggest" class="autocomplete growing-input" data-ghost-container="#namespace-suggest-ghost" placeholder="<%= value %>" name="page" type="text" onchange="view_selected_pages()" />
+    <input tabindex="3" id="namespace-suggest" class="autocomplete " data-ghost-container="#namespace-suggest-ghost" placeholder="<%= value %>" name="page" type="text" />
     <% if value != 'by namespace or action' %>
       <i class="fa fa-times"></i>
     <% end %>
@@ -93,8 +91,8 @@ var parameters = <%= raw Oj.dump(params) %>,
     })
 
     /* fix for: https://github.com/skaes/logjam_core/issues/22 */
-    $('#namespace-suggest').on('keyup', function(event){
-      if(event.keyCode == 13) {
+    $('#namespace-suggest').on('keyup blur', function(event){
+      if((event.keyCode == 13 || event.type == 'blur') && event.target.value.length > 0) {
         $('#page').val(event.target.value);
         submit_filter_form();
       }
