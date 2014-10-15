@@ -6,7 +6,7 @@
   <%= form_tag(params.except(:id).merge(:action => action), :method => :get, :id => "filter-form", :autocomplete => "off") do -%>
 
     <div class="menu-wrapper">
-      <ul class="logjam-menu<% if params[:section] == 'backend' %> active<% end %>" id="backend-menu">
+      <ul class="logjam-menu" id="backend-menu">
 
         <li>
           <a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/?app=<%= params[:app] %>&section=backend">
@@ -27,22 +27,44 @@
         <% klass = @dataset && @dataset.has_distribution_plot? ? "enabled" : "disabled" %>
         <li class="<%= klass %>">
           <% scatter_title = "view #{distribution_kind(@dataset.resource).to_s.gsub(/_/," ")} plot" %>
-            <%= clean_link_to(fa_icon("signal flip-horizontal", :title => scatter_title) + " Distribution Plot", :page => without_module(@page), :action => distribution_kind(@dataset.resource)) %>
+            <%= link_to(:page => without_module(@page), :action => distribution_kind(@dataset.resource)) do %>
+            <i class="fa fa-signal"></i> Distribution Plot
+            <% end %>
         </li>
 
         <% unless @only_one_app %>
           <% klass = @dataset && @dataset.has_callers? ? "enabled" : "disabled" %>
           <li class="<%= klass %>">
-            <%= clean_link_to(fa_icon("phone", :title => "Show Callers") + " Callers", :action =>"callers") %>
+            <%= link_to(:action =>"callers") do %>
+            <i class="fa fa-phone"></i> Callers
+            <% end %>
           </li>
           <li>
-            <%= clean_link_to(fa_icon("cloud", :title => "analyze call relationships") + " Call Relationships", :action => "call_relationships", :filter => @app) %>
+            <%= link_to(:action => "call_relationships", :filter => @app) do %>
+              <i class="fa fa-cloud"></i> Call relationships
+            <% end %>
           </li>
         <% end %>
 
-        <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:time) %>><i class="fa fa-clock-o"></i> Time</a>
+        <li>
+          <%= link_to(:action => "error_overview") do %>
+            <i class="fa fa-warning"></i> Problems
+          <% end %>
+        </li>
+
+        <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:time) %>><i class="fa fa-clock-o"></i> Backend Time</a>
           <ul>
             <% collected_time_resources.reverse.each do |r| %>
+              <li <% if params[:resource] == r %>class="active"<% end %>>
+                <a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a>
+              </li>
+            <% end %>
+          </ul>
+        </li>
+
+        <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:frontend) %>><i class="fa fa-clock-o"></i> Frontend Time</a>
+          <ul>
+            <% collected_frontend_time_resources.reverse.each do |r| %>
               <li <% if params[:resource] == r %>class="active"<% end %>>
                 <a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a>
               </li>
@@ -79,47 +101,17 @@
             </ul>
           </li>
         <% end %>
-      </ul>
 
-      <ul class="logjam-menu<% if params[:section] == 'frontend' %> active<% end %>" id="frontend-menu">
-        <li>
-          <a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/?app=<%= params[:app] %>&section=frontend">
-            <i class="fa fa-tachometer"></i>
-            Dashboard
-          </a>
-        </li>
-        <% klass = (@dataset && @dataset.live_stream? && false) ? "enabled" : "disabled" %>
-        <li class="<%= klass %>">
-          <%= link_to(fa_icon("play-circle", :title => "view live stream") + " Live View", clean_params(params.slice(:app,:env,:page).merge(:action => "live_stream"))) %>
-        </li>
-        <li>
-          <%= clean_link_to(fa_icon("history", :title => "Performace History") + " History", :action => "history") %>
-        </li>
-        <% klass = @dataset && @dataset.has_distribution_plot? ? "enabled" : "disabled" %>
-        <li class="<%= klass %>">
-          <% scatter_title = "view #{distribution_kind(@dataset.resource).to_s.gsub(/_/," ")} plot" %>
-          <%= clean_link_to(fa_icon("signal flip-horizontal", :title => scatter_title) + " Distribution Plot" ,:page => without_module(@page), :action => distribution_kind(@dataset.resource)) %>
-        </li>
-        <li><i class="fa fa-warning"></i> <%= clean_link_to("JavaScript Errors", {:action => "js_exception_types"}, :title => "JavaScript Errors") %></li>
-        <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:time) %>><i class="fa fa-clock-o"></i> Time</a>
-          <ul>
-            <% collected_frontend_time_resources.reverse.each do |r| %>
+        <% unless collected_dom_resources.empty? %>
+          <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:dom) %>><i class="fa fa-tree"></i> HTML</a>
+            <ul>
+              <% collected_dom_resources.reverse.each do |r| %>
               <li <% if params[:resource] == r %>class="active"<% end %>>
                 <a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a>
               </li>
-            <% end %>
-          </ul>
-        </li>
-        <% unless collected_dom_resources.empty? %>
-        <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:dom) %>><i class="fa fa-tree"></i> Dom</a>
-          <ul>
-            <% collected_dom_resources.reverse.each do |r| %>
-            <li <% if params[:resource] == r %>class="active"<% end %>>
-              <a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a>
-            </li>
-            <% end %>
-          </ul>
-        </li>
+              <% end %>
+            </ul>
+          </li>
         <% end %>
       </ul>
 
@@ -174,8 +166,9 @@
     })
   });
 
-  $('.sidebar-collapse', '#logjam-sidebar').on('click', function(){
-    $('#logjam-sidebar').toggleClass('closed');
-  })
+/*  $('.dropdown a', '#logjam-sidebar').on('click', function(event){
+    event.preventDefault();
+    $('ul', $(this).parent()).toggle();
+  })*/
 
 </script>

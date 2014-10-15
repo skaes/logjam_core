@@ -10,10 +10,6 @@
   flex-direction: row;
   position: relative;
 
-  form {
-    margin: 10px 10px 10px 20px;
-  }
-
   h2 {
     font-weight: normal;
     font-size: 22px;
@@ -27,39 +23,14 @@
     }
   }
 
-  .menu-wrapper {
-    .tabs {
-      border-bottom: 1px solid $white;
-      margin-bottom: 13px;
-
-      .btn {
-        color: $grey;
-        border-color: $grey;
-        background: none;
-        border-color: transparent;
-        border-bottom: none;
-
-        &.active {
-          color: $white;
-          border-color: $white;
-        }
-      }
-    }
-  }
-
   .logjam-menu {
-    display: none;
-
-    &.active {
-      display: block;
-    }
-
     a {
       color: $lighter-grey;
     }
 
     .active a {
       color: $white;
+      text-decoration: underline;
     }
 
     .disabled a {
@@ -70,20 +41,39 @@
 
     > li {
       display: block;
-      margin-top: 10px;
       font-size: 14px;
+      text-indent: 10px;
+
+      &.dropdown ul {
+        display: none;
+      }
+
+      a {
+        display: block;
+        line-height: 28px;
+      }
+      a.active {
+        background: #3b4751;
+
+      }
+      a.active + ul {
+        display: block;
+      }
 
       &:before {
         margin-right: 5px;
       }
 
       ul {
-        margin-left: 20px;
-        margin-top: 5px;
-        margin-bottom: 20px;
+        padding: 10px 10px 10px 30px;
         font-size: 11px;
         font-weight: normal;
         text-transform: uppercase;
+        background: #212121;
+
+        li a {
+          line-height: 18px;
+        }
 
         a:hover {
           text-decoration: underline;

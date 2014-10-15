@@ -50,17 +50,6 @@ var parameters = <%= raw Oj.dump(params) %>,
     <% end %>
   </div>
 
-  <% if @dataset && @dataset.has_frontend? %>
-    <div class="section-chooser filter-item no-background">
-      <div class="btn-group">
-        <%= clean_link_to("Backend", params.merge(:section => "backend"),
-                         {"data-menu" => "backend-menu", "class" => "btn#{' active' if params[:section] == 'backend'}"}) %>
-        <%= clean_link_to("Frontend", params.merge(:section => "frontend", :grouping => "page"),
-                         {"data-menu" => "frontend--menu", "class" => "btn#{' active' if params[:section] == 'frontend'}"}) %>
-      </div>
-    </div>
-  <% end %>
-
   <% unless @only_one_env %>
     <div class="enviroment-chooser filter-item no-background">
       <div class="btn-group">

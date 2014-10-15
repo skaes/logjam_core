@@ -623,13 +623,15 @@ module Logjam
       params[:interval] ||= FilteredDataset::DEFAULTS[:interval]
       params[:time_range] ||= 'date'
       @section = params[:section] == "frontend" ? :frontend : :backend
-      if @section == :frontend && !Resource.frontend_resources.include?(params[:resource])
-        redirect_to params.to_hash.merge(:resource => 'frontend_time')
-        return false
-      elsif @section == :backend && !Resource.backend_resources.include?(params[:resource])
-        redirect_to params.to_hash.merge(:resource => 'total_time')
-        return false
-      end
+
+      # TODO
+      #if @section == :frontend && (!Resource.frontend_resources.include?(params[:resource]) || !Resource.dom_resources.include?(params[:resource]))
+      #  redirect_to params.to_hash.merge(:resource => 'frontend_time')
+      #  return false
+      #elsif @section == :backend && !Resource.backend_resources.include?(params[:resource])
+      #  redirect_to params.to_hash.merge(:resource => 'total_time')
+      #  return false
+      #end
       @plot_kind = Resource.resource_type(params[:resource])
       @attributes = Resource.resources_for_type(@plot_kind)
       @collected_resources = Totals.new(@db).collected_resources
