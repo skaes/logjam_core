@@ -1,11 +1,12 @@
 function logjam_echart(params) {
-  var data   = params.data;
+  var data   = params.data,
       url    = params.url,
       max_y  = params.max_y,
       max_x  = params.max_x,
       h      = params.height,
       w      = $(params.parent).width(),
-      x      = d3.scale.linear().domain([0, w]).range([0, w]),
+      w_r    = w - 30,
+      x      = d3.scale.linear().domain([0, 1440/2]).range([0, w_r]),
       y      = d3.scale.linear().domain([0, max_y]).range([h, 0]).nice(),
 
       tooltip_formatter = d3.format(",3d"),
@@ -29,7 +30,7 @@ function logjam_echart(params) {
         .style("stroke", "#999")
         .attr("x1", 0)
         .attr("y1", h)
-        .attr("x2", w)
+        .attr("x2", w_r)
         .attr("y2", h)
   ;
 
