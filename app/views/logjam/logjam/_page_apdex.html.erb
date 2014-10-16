@@ -1,6 +1,6 @@
 <% if !@dataset.apdex(:page).nan? %>
   <div class="item col-5 icon-action<% if "%.2f" % @dataset.apdex(:page) >= "0.94" %> apdex-ok<% end %><% if "%.2f" % @dataset.apdex(:page) < "0.94" %> apdex-fail<% end %>">
-    <%= link_to(params.merge(:action => "apdex_overview", :section => :frontend, :resource => 'page_time')) do %>
+    <%= clean_link_to("", :action => "apdex_overview", :section => :frontend, :resource => 'page_time') do %>
       <h2>Apdex Pages: <span class="number"><%= "%.2f" % @dataset.apdex(:page) %></span></h2>
     <% end %>
     <table class="collapse-table full_stats">
