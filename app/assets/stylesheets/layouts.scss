@@ -352,6 +352,8 @@ tr {
 
 #recent-errors-container {
     min-height: 50px;
+    // WTF?
+    width: calc(100% - 35px);
 }
 
 #recent-errors-title {
