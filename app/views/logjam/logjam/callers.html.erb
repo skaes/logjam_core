@@ -3,7 +3,7 @@
   <%= render "sidebar" %>
   <div id="logjam-content" class="app-dashboard">
     <div class="flex" id="callers">
-      <div class="controls item">
+      <div class="controls item col-2">
         <h2><%= @title %> <%= hpn("of") %> (<%= @callers.size %>)</h2>
         <%= form_tag(params, :method => :get) do %>
           <%= hidden_field_tag :app, @app %>
@@ -15,38 +15,45 @@
           <%= select_tag 'sort', options_for_select(callers_sorting_options, params[:sort]), :onchange => "form.submit()" %>
         <% end %>
       </div>
-    </div>
 
-    <div class="app-overview">
-      <div class="item">
-        <table class="full_stats">
-          <tr>
-            <th>Application</th>
-            <th>Action</th>
-            <th class="right">Calls</th>
-            <th class="echart">Distribution over time (0-24h, 2 minute intervals)</th>
-          </tr>
-          <% @callers.each_with_index do |(caller, count), i| %>
-            <% app, controller = caller.split('-') %>
-            <% url = url_for(params.merge(:app => app, :page => controller)) unless controller.blank? %>
-            <tr>
-              <td><%= app %></td>
-              <td><%= link_to(controller, url) unless controller.blank? %></td>
-              <td class="number"><%= integer_number(count) %></td>
-              <td class='echart' id='<%= "echart-#{i}" %>'>
-                  <%= render "echart", :exceptions => @caller_minutes[caller], :i => i, :url => url %>
-              </td>
-            </tr>
-          <% end %>
-        </table>
+      <div class="item col-2">
+        <h2>Call Header Information</h2>
+        <strong>Requests with call header: </strong><%= integer_number(@call_count) %><br/>
+        <% missing_count = @request_count - @call_count %>
+        <strong>Requests without call header: </strong><%= integer_number(missing_count) %>
       </div>
-    </div>
-    <h2>Call Header Information</h2>
-    <div class="app-overview">
-      <div class="item">
-          <strong>Requests with call header: </strong><%= integer_number(@call_count) %><br/>
-          <% missing_count = @request_count - @call_count %>
-          <strong>Requests without call header: </strong><%= integer_number(missing_count) %>
+
+      <div class="item col-1">
+        <table class="full_stats">
+          <colgroup>
+            <col span="1" style="width: 150px;">
+            <col span="1" style="width: 150px;">
+            <col span="1" style="width: 50px;">
+            <col span="1">
+          </colgroup>
+          <thead>
+            <tr>
+              <th class="left">Application</th>
+              <th class="left">Action</th>
+              <th class="right">Calls</th>
+              <th class="left">Distribution over time (0-24h, 2 minute intervals)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @callers.each_with_index do |(caller, count), i| %>
+              <% app, controller = caller.split('-') %>
+              <% url = url_for(params.merge(:app => app, :page => controller)) unless controller.blank? %>
+              <tr>
+                <td><%= app %></td>
+                <td><%= link_to(controller, url) unless controller.blank? %></td>
+                <td class="number"><%= integer_number(count) %></td>
+                <td class='echart' id='<%= "echart-#{i}" %>'>
+                    <%= render "echart", :exceptions => @caller_minutes[caller], :i => i, :url => url %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
