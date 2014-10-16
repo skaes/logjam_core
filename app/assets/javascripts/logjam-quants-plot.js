@@ -26,14 +26,6 @@ var vis = d3.select("#distribution-plot")
      .append("g")
        .attr("transform", "translate(50,50)");
 
-/* Title */
-vis.append("svg:text")
-    .attr("dy", -30)
-    .attr("dx", w/2)
-    .attr("text-anchor", "middle")
-    .style("font", "16px sans-serif")
-    .text(params.title);
-
 /* X-label */
 vis.append("svg:text")
     .attr("dy", h+40)
