@@ -1,15 +1,15 @@
 function logjam_echart(params) {
-  var data  = params.data;
-  var url   = params.url;
-  var max_y = params.max_y;
-  var max_x = params.max_x;
-  var h     = params.height;
-  var w     = 1440/2;
-  var x     = d3.scale.linear().domain([0, w]).range([0, w]);
-  var y     = d3.scale.linear().domain([0, max_y]).range([h, 0]).nice();
+  var data   = params.data;
+      url    = params.url,
+      max_y  = params.max_y,
+      max_x  = params.max_x,
+      h      = params.height,
+      w      = $(params.parent).width(),
+      x      = d3.scale.linear().domain([0, w]).range([0, w]),
+      y      = d3.scale.linear().domain([0, max_y]).range([h, 0]).nice(),
 
-  var tooltip_formatter = d3.format(",3d");
-  var tooltip_timeformatter = d3.format("02d");
+      tooltip_formatter = d3.format(",3d"),
+      tooltip_timeformatter = d3.format("02d");
 
   var vis = d3.select(params.parent)
      .append("svg")
@@ -38,7 +38,7 @@ function logjam_echart(params) {
     .enter()
     .append("text")
     .attr("class", "rlabel")
-    .style("font", "8px sans-serif")
+    .style("font", "8px Helvetica Neue")
     .attr("text-anchor", "end")
     .attr("dy", ".75em")
     .attr("x", w-1)
@@ -46,9 +46,9 @@ function logjam_echart(params) {
   ;
 
   var line = d3.svg.line()
-        .interpolate("monotone")
-        .x(function(d,i) { return x(d[0]); })
-        .y(function(d) { return y(d[1]); })
+    .interpolate("cardinal")
+    .x(function(d,i) { return x(d[0]); })
+    .y(function(d) { return y(d[1]); })
   ;
 
   var tooltip = $(params.parent + ' svg');
@@ -85,7 +85,7 @@ function logjam_echart(params) {
 
   vis.append("svg:path")
     .attr("d", line(data))
-    .style("stroke", "steelblue")
+    .style("stroke", "#006567")
     .style("fill", "none")
   ;
 
