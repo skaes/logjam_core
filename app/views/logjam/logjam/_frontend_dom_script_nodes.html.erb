@@ -1,6 +1,6 @@
 <% if !@dataset.summary.avg("html_nodes").nan? %>
   <div class="item col-8">
-    <h2>Dom JavaScript Nodes</h2>
+    <h2>Script Nodes</h2>
     <span class="value"><%= "%.2f" % @dataset.summary.avg("script_nodes") %> </span>
   </div>
 <% end %>
