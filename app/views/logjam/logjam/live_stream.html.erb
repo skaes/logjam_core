@@ -5,18 +5,20 @@
     <div class="flex">
       <div class="item">
         <h2>Livestream</h2>
+        <div class="navicons btn-group">
+          <button id="stream-toggle" class="btn">pause</button>
+          <button id="warnin-toggle" class="btn">show warnings</button>
+          <!--
+              currently broken, maybe remove altogether
+              <button id="smooth-toggle" class="btn">smooth updates</button>
+          -->
+        </div>
         <div id="live-stream-chart"></div>
         <div id="anomaly-score">
           <p id="anomaly-score-title">Anomaly Score:</p>
           <p id="anomaly-score-value"></p>
         </div>
       </div>
-    </div>
-
-    <div class="navicons btn-group">
-      <button id="stream-toggle" class="btn">pause</button>
-      <button id="warnin-toggle" class="btn">show warnings</button>
-      <button id="smooth-toggle" class="btn">smooth updates</button>
     </div>
 
     <h2 id="recent-errors-title">Recent Warnings/Errors</h2>
