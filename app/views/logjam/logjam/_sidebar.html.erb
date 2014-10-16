@@ -8,13 +8,17 @@
     <div class="menu-wrapper">
       <ul class="logjam-menu" id="backend-menu">
 
-        <li>
-          <a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/?app=<%= params[:app] %>&section=backend">
-            <i class="fa fa-tachometer"></i>
-            Dashboard
-          </a>
+        <% klass = params[:section] == "backend" ? "enabled" : "disabled" %>
+        <% active1, active2 = params[:grouping] == "request" ? %w(active inactive) : %w(inactive active) %>
+        <li class="<%= klass %>">
+          <%= clean_link_to(fa_icon("tachometer", :title => "Actions") + " Actions", {:action => '', :grouping => "page"}, :class => active2) %>
         </li>
+        <li class="<%= klass %>">
+          <%= clean_link_to(fa_icon("list", :title => "Requests") + " Requests", {:action => '', :section => "backend", :grouping => "request"}, :class => active1) %>
+        </li>
+      </ul>
 
+      <ul class="logjam-menu separator">
         <% klass = (@dataset && @dataset.live_stream?) ? "enabled" : "disabled" %>
         <li class="<%= klass %>">
           <%= link_to(fa_icon("play-circle", :title => "view live stream") + " Live View", clean_params(params.slice(:app,:env,:page).merge(:action => "live_stream"))) %>
@@ -52,6 +56,9 @@
           <% end %>
         </li>
 
+      </ul>
+
+      <ul class="logjam-menu separator">
         <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:time) %>><i class="fa fa-clock-o"></i> Backend Time</a>
           <ul>
             <% collected_time_resources.reverse.each do |r| %>
@@ -115,22 +122,19 @@
         <% end %>
       </ul>
 
-      <ul class="admin">
+      <ul class="logjam-menu separator">
         <li>
-          <div id="auto-refresh" class="filter-item">
-            <% if params[:auto_refresh] == "1" %>
-              <i class="fa fa-toggle-on"></i>
-            <% else %>
-              <i class="fa fa-toggle-off"></i>
-            <% end %>
-             Autorefresh
-          </div>
+          <% if params[:auto_refresh] == "1" %>
+            <%= clean_link_to(fa_icon("toggle-on") + " Autorefresh", :auto_refresh => 0) %>
+          <% else %>
+            <%= clean_link_to(fa_icon("toggle-off") + " Autorefresh", :auto_refresh => 1) %>
+          <% end %>
         </li>
         <li>
-          <i class="fa fa-file-text-o"></i> <%= clean_link_to("API Response", params.merge(:format => :json)) %>
+          <%= clean_link_to(fa_icon("file-text-o") + " API Response", :format => :json) %>
         </li>
         <li>
-          <i class="fa fa-cogs"></i> <%= link_to("Admin Space", admin_storage_path, :title => "admin stuff") %>
+          <%= link_to(fa_icon("cogs") + " Admin Space", admin_storage_path, :title => "Admin stuff") %>
         </li>
       </ul>
   </div>
