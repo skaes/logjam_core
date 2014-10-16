@@ -3,15 +3,13 @@
 
 #logjam-container {
   width: 100%;
-  display: -webkit-flex;
-  display: flex;
-  flex-direction: row;
   margin-top: 45px;
 }
 
 #logjam-content {
   position: relative;
-  width: 100%;
+  width: calc(100% - 195px);
+  margin-left: 190px;
   padding: 5px 0 0 5px;
 
   > h2 {
