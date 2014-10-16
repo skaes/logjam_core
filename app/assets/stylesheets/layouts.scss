@@ -413,9 +413,9 @@ td.js-exception {
 }
 
 #enlarged-plot {
-    height: 80vh;
+    height: calc(100vh - 60px);
 }
 
 #distribution-plot {
-    height: 80vh;
+    height: calc(100vh - 60px);
 }

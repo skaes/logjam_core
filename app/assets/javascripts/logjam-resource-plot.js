@@ -10,14 +10,14 @@ function logjam_resource_plot(params) {
       zoomed_max_y         = params.zoomed_max_y,
       selected_slice       = params.selected_slice,
       selected_slice_width = params.selected_slice_width,
-      container            = params.container;
+      container            = params.container,
       max_request_count    = d3.max(request_counts);
 
   /* Animation */
   var zoom_interval = 1;
 
   function get_height() {
-    var enlarged_size = $('#enlarged-plot').height() - 100;
+    var enlarged_size = $('#enlarged-plot').height() - 130;
     if (enlarged_size > 0) {
       return enlarged_size;
     }

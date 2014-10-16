@@ -1,7 +1,7 @@
 function logjam_quants_plot(params) {
 
   function get_height() {
-    var height = $('#distribution-plot').height() - 100;
+    var height = $('#distribution-plot').height() - 150;
     if (height > 0)
       return height;
     else
