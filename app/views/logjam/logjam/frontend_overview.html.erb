@@ -8,8 +8,6 @@
       <%= render "ajax_apdex" %>
       <%= render "frontend_javascript_errors" %>
       <%= render "frontend_dom_nodes" %>
-      <%= render "frontend_dom_style_nodes" %>
-      <%= render "frontend_dom_script_nodes" %>
     </div>
 
     <div class="flex size-xxl-flex-order-second size-xxl-no-flex size-l-no-flex">
@@ -33,5 +31,12 @@
         </div>
       </div>
     </div>
+
+    <% if params[:grouping] == "page" -%>
+      <div class="flex size-xxl-large-width size-xxl-no-flex size-xxl-flex-order-third">
+        <%= render "frontend_breakdown" %>
+      </div>
+    <% end -%>
+
   </div>
 </di>
