@@ -4,7 +4,7 @@
   <div id="logjam-content" class="app-dashboard">
     <div class="flex">
       <div id="enlarged-plot" class="item">
-        <h2>Timings</h2>
+        <h2>Timings <%= hpn("for") %></h2>
         <%= render :partial => "resource_plot", :locals => {:width => 1080, :height => 460} %>
       </div>
     </div>
