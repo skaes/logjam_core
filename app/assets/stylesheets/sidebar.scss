@@ -5,10 +5,11 @@
   background: #2D353C;
   min-width: 190px;
   max-width: 190px;
-  min-height: calc(100vh - 45px);
+  position: fixed;
+  top: 45px;
+  bottom: 0;
   color: $white;
-  flex-direction: row;
-  position: relative;
+  overflow-y: auto;
 
   h2 {
     font-weight: normal;
@@ -65,7 +66,7 @@
       }
 
       ul {
-        padding: 10px 10px 10px 30px;
+        padding: 10px 10px 10px 20px;
         font-size: 11px;
         font-weight: normal;
         text-transform: uppercase;
@@ -88,9 +89,10 @@
 
   .admin {
     border-top: 1px solid $dark-grey;
-    margin-top: 20px;
     padding-top: 10px;
+    margin: 10px;
     text-transform: uppercase;
+
   }
 
   &.dashboard-apdex-overview {

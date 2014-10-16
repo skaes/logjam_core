@@ -10,19 +10,28 @@
   <title>Logjam</title>
   <%= stylesheet_link_tag "application" %>
   <%= javascript_include_tag "application" %>
+
 </head>
 <body>
   <div id="loading"></div>
   <%= yield %>
-  <script type="text/javascript">
-  <%= yield :page_scripts %>
+  <script async>
+    <%= yield :page_scripts %>
 
-  window.setTimeout(function(){
-      document.body.classList.add('loaded');
-      setTimeout(function(){
-        document.getElementById('loading').remove()
-      }, 100)
-  }, 50);
+    window.setTimeout(function(){
+        document.body.classList.add('loaded');
+        setTimeout(function(){
+          document.getElementById('loading').style.zIndex = -1;
+        }, 100)
+    }, 50);
+
+    window.addEventListener('beforeunload', function(){
+      document.getElementById('loading').style.zIndex = 100000;
+      document.body.classList.remove('loaded');
+    })
+
   </script>
+
+
 </body>
 </html>
