@@ -92,7 +92,7 @@ function logjam_live_stream_chart(params){
   vis.append("svg:text")
     .attr("class", "label")
     .attr("dy", -25)
-    .attr("dx", -w/2+140)
+    .attr("dx", -h/2)
     .style("font", "14px open sans")
     .style("fill", "#999")
     .style("stroke", "none")
