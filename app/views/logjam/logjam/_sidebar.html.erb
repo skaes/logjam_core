@@ -39,19 +39,19 @@
         <% unless @only_one_app %>
           <% klass = @dataset && @dataset.has_callers? ? "enabled" : "disabled" %>
           <li class="<%= klass %>">
-            <%= clean_link_to("", :action =>"callers") do %>
+            <%= clean_link_to(:action =>"callers") do %>
             <i class="fa fa-phone"></i> Callers
             <% end %>
           </li>
           <li>
-            <%= clean_link_to("", :action => "call_relationships", :filter => @app) do %>
+            <%= clean_link_to(:action => "call_relationships", :filter => @app) do %>
               <i class="fa fa-cloud"></i> Call relationships
             <% end %>
           </li>
         <% end %>
 
         <li>
-          <%= clean_link_to("", :action => "error_overview") do %>
+          <%= clean_link_to(:action => "error_overview") do %>
             <i class="fa fa-warning"></i> Problems
           <% end %>
         </li>

@@ -24,7 +24,7 @@
 
     <div class="flex size-xxl-flex-order-second size-xxl-no-flex size-l-no-flex">
       <div class="item icon-action col-2">
-        <%= clean_link_to("", :action => "enlarged_plot", :interval => 1, :section => params[:section]) do %>
+        <%= clean_link_to(:action => "enlarged_plot", :interval => 1, :section => params[:section]) do %>
         <h2>
           showing
           <%= number_with_delimiter @dataset.count_requests(@section) %> of <%= number_with_delimiter @dataset.count(@section) %> requests

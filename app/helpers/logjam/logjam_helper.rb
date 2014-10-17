@@ -167,11 +167,18 @@ module Logjam
       FilteredDataset.clean_url_params(params.merge :default_app => @default_app, :default_env => @default_app)
     end
 
-    def clean_link_to(name, options, html_options = {}, &block)
+    def clean_link_to(*args, &block)
       if block_given?
-        link_to(capture(&block), clean_params(params.merge(options)), html_options)
+        options      = args[0] || {}
+        html_options = args[1]
+        cleaned_options = clean_params(params.merge(options))
+        clean_link_to(capture(&block), cleaned_options, html_options)
       else
-        link_to(name, clean_params(params.merge(options)), html_options)
+        name         = args[0]
+        options      = args[1] || {}
+        html_options = args[2]
+        cleaned_options = clean_params(params.merge(options))
+        link_to(name, cleaned_options, html_options)
       end
     end
 

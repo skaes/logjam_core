@@ -1,6 +1,6 @@
 <% if !@dataset.apdex(:ajax).nan? %>
   <div class="item col-5 icon-action<% if "%.2f" % @dataset.apdex(:ajax) >= "0.94" %> apdex-ok<% end %><% if "%.2f" % @dataset.apdex(:ajax) < "0.94" %> apdex-fail<% end %>">
-    <%= clean_link_to("", :action => "apdex_overview", :section => :frontend, :resource => 'ajax_time') do %>
+    <%= clean_link_to(:action => "apdex_overview", :section => :frontend, :resource => 'ajax_time') do %>
       <h2>Apdex Ajax: <span class="number"><%= "%.2f" % @dataset.apdex(:ajax) %></span></h2>
     <% end %>
     <table class="collapse-table full_stats">
