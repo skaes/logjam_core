@@ -8,7 +8,7 @@
     <div class="menu-wrapper">
       <ul class="logjam-menu">
         <li>
-          <%= clean_link_to(fa_icon("home", :title => "Home") + " Home", {:action => '', :grouping => "page"}) %>
+          <%= link_to(fa_icon("home", :title => "Home") + " Home", {}, {:href=> '#', :onclick => "go_home()"}) %>
         </li>
       </ul>
 
