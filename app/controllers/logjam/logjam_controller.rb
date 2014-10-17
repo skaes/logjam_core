@@ -614,6 +614,7 @@ module Logjam
       params[:grouping] ||= FilteredDataset::DEFAULTS[:grouping]
       params[:grouping_function] ||= FilteredDataset::DEFAULTS[:grouping_function]
       params[:interval] ||= FilteredDataset::DEFAULTS[:interval]
+      params[:auto_refresh] ||= '0'
       params[:time_range] ||= 'date'
       @section = params[:section] == "frontend" ? :frontend : :backend
 

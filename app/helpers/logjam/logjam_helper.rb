@@ -12,7 +12,7 @@ module Logjam
     end
 
     def default_header_parameters
-      FilteredDataset::DEFAULTS.merge(:time_range => 'date')
+      FilteredDataset::DEFAULTS.merge(:time_range => 'date', :auto_refresh => '0')
     end
 
     def date_to_params(date)

@@ -7,7 +7,7 @@ module Logjam
     :plot_kind, :resource, :grouping, :grouping_function,
     :start_minute, :end_minute, :date, :limit, :offset
 
-    DEFAULTS = {:plot_kind => :time, :interval => '5',
+    DEFAULTS = {:plot_kind => :time, :interval => '5', :section => 'backend',
       :grouping => 'page', :resource => 'total_time', :grouping_function => 'sum',
       :start_minute => '0', :end_minute => '1440', :page => ''}
 
