@@ -30,19 +30,7 @@
   padding-top: 6px;
   padding-bottom: 6px;
 }
-
 .item {
-  flex: 1;
-  background: $white;
-  border-radius: 2px;
-  border: 1px solid $lighter-grey;
-  padding: 10px;
-  margin: 5px;
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-  overflow-x: auto;
-
   &.has-action {
     padding-bottom: 40px !important;
   }
@@ -70,17 +58,7 @@
   }
 }
 .app-dashboard {
-  .app-overview {
-    &.overview-wrap {
-      -webkit-flex-wrap: wrap;
-      flex-wrap: wrap;
 
-      .item {
-        -webkit-flex: 250px 1;
-        flex: 250px 1;
-      }
-    }
-  }
   .action {
     color: $xing-green;
     text-align: right;

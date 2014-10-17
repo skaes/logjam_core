@@ -17,9 +17,9 @@ var parameters = <%= raw Oj.dump(params) %>,
   <% unless @only_one_app %>
     <div class="application-chooser filter-item">
         <% if !params[:app] %>
-          <input tabindex="1" id="application-suggest" class="application-suggest " type="text" placeholder="Choose Application">
+          <input tabindex="1" id="application-suggest" type="text" placeholder="Choose Application">
         <% else %>
-          <input tabindex="1" id="application-suggest" class="application-suggest " type="text" placeholder="<%= params[:app] %>">
+          <input tabindex="1" id="application-suggest" type="text" placeholder="<%= params[:app] %>">
         <% end %>
       </label>
     </div>
@@ -35,13 +35,13 @@ var parameters = <%= raw Oj.dump(params) %>,
 
   <div class="namespace-chooser filter-item">
     <%
-      if params[:page]
+      unless params[:page].blank?
         value = params[:page]
       else
         value = 'by namespace or action'
       end
     %>
-    <input tabindex="3" id="namespace-suggest" class="autocomplete " placeholder="<%= value %>" name="page" type="text">
+    <input tabindex="3" id="namespace-suggest" placeholder="<%= value %>" name="page" type="text">
     <% if value != 'by namespace or action' %>
       <i class="fa fa-times"></i>
     <% end %>

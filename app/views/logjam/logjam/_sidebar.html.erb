@@ -6,6 +6,12 @@
   <%= form_tag(params.except(:id).merge(:action => action), :method => :get, :id => "filter-form", :autocomplete => "off") do -%>
 
     <div class="menu-wrapper">
+      <ul class="logjam-menu">
+        <li>
+          <%= clean_link_to(fa_icon("home", :title => "Home") + " Home", {:action => '', :grouping => "page"}) %>
+        </li>
+      </ul>
+
       <ul class="logjam-menu" id="backend-menu">
 
         <% klass = params[:section] == "backend" ? "enabled" : "disabled" %>
