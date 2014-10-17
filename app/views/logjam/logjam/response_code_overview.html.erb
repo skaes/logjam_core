@@ -6,21 +6,30 @@
       <div class="item">
         <h2><%= @title %> <%= hpn("for") %></h2>
         <table class="full_stats">
-          <tr>
-            <th>Type</th>
-            <th>Count</th>
-            <th class="echart">Distribution over time (0-24h, 2 minute intervals)</th>
-          </tr>
-          <% @totals.response_codes.keys.sort.each_with_index do |rc,i| %>
-          <tr class='full_stats'>
-            <% url = clean_url_for(:action => "response_codes", :response_code => rc) if rc.to_i >= 400 %>
-            <td><%= rc.to_i < 400 ? raw("<span class='dead-link'>#{rc}</span>") : link_to(rc, url) %></td>
-            <td class='number'><%= sometimes_link_response_code(rc, @totals.response_codes[rc]) %></td>
-            <td class='echart' id='<%= "echart-#{i+=1}" %>'>
-              <%= render "echart", exceptions: @minutes.response[rc.to_s], i: i, url: url %>
-            </td>
-          </tr>
-          <% end %>
+          <colgroup>
+            <col span="1" style="width: 50px;">
+            <col span="1" style="width: 50px;">
+            <col span="1">
+          </colgroup>
+          <thead>
+            <tr>
+              <th class="left">Type</th>
+              <th class="right">Count</th>
+              <th class="echart">Distribution over time (0-24h, 2 minute intervals)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @totals.response_codes.keys.sort.each_with_index do |rc,i| %>
+            <tr class='full_stats'>
+              <% url = clean_url_for(:action => "response_codes", :response_code => rc) if rc.to_i >= 400 %>
+              <td><%= rc.to_i < 400 ? raw("<span class='dead-link'>#{rc}</span>") : link_to(rc, url) %></td>
+              <td class='number'><%= sometimes_link_response_code(rc, @totals.response_codes[rc]) %></td>
+              <td class='echart' id='<%= "echart-#{i+=1}" %>'>
+                <%= render "echart", exceptions: @minutes.response[rc.to_s], i: i, url: url %>
+              </td>
+            </tr>
+            <% end %>
+          </tbody>
         </table>
       </div>
     </div>
