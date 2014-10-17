@@ -112,7 +112,7 @@
             </tr>
             <tr class="full_stats">
               <% url = clean_url_for(:action => "exceptions") %>
-              <td><%= link_to "Logged Exceptions", url %></td>
+              <td><%= link_to "Backend Exceptions", url %></td>
               <td class="number"><%= link_to integer_number(@totals.exception_count), url %></td>
               <td class="echart" id='<%= "echart-#{i+=1}" %>'>
                 <%= render "echart", exceptions: @minutes.exception_summary, i: i, url: url %>
