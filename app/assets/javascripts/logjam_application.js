@@ -15,7 +15,7 @@
 //= require jquery.jdpicker.1.1
 //= require jquery.autocomplete
 //= require jquery.tipsy
-//= require select2.min
+//= require select2
 //= require d3.v3.min
 //= require logjam-filter
 //= require uri
