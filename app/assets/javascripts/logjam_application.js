@@ -21,7 +21,6 @@
 //= require uri
 //= require logjam-header
 //= require logjam-echart
-//= require logjam-timeframe-chart
 //= require logjam-apdex-chart
 //= require logjam-page-pie
 //= require logjam-simple-pie
