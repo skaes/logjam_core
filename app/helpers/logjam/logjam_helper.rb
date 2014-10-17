@@ -395,7 +395,6 @@ module Logjam
 
     def html_attributes_for_resource_type(resource_type)
       resource = Resource.default_resource(resource_type)
-      logger.debug("!!!!!#{resource} #{params[:resource]}")
       # TODO: add switch between resources (frontend|backend)
       if Resource.resource_type(params[:resource]) == resource_type.to_sym
         "class='active' onclick=\"view_resource('#{resource}')\""
