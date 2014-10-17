@@ -36,10 +36,15 @@
       }
     %>
 
-      <div id="distribution-plot" class="item">
+      <div class="item">
         <h2>Distribution Plot</h2>
+        <div id="distribution-plot"></div>
         <script type="text/javascript">
           logjam_quants_plot(<%=raw Oj.dump(js_params)%>);
+          $(window).on('resize', function(){
+            $('#distribution-plot').html('');
+            logjam_quants_plot(<%=raw Oj.dump(js_params)%>);
+          })
         </script>
       </div>
     </div>
