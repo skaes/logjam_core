@@ -3,7 +3,7 @@
   <%= render "sidebar" %>
   <div id="logjam-content" class="app-dashboard">
     <div class="flex">
-      <div class="item">
+      <div class="item col-1">
         <h2>Livestream <%= hpn("for") %></h2>
         <div class="navicons btn-group">
           <button id="stream-toggle" class="btn">pause</button>
@@ -19,30 +19,27 @@
           <p id="anomaly-score-value"></p>
         </div>
       </div>
-    </div>
 
     <h2 id="recent-errors-title">Recent Warnings/Errors</h2>
-    <div class="app-overview">
-      <div class="item" id="recent-errors-container">
-        <table id="recent-errors" class="full_stats">
-          <tr id="recent-errors-head"><th>Severity</th><th>RC</th><th>Time</th><th>Action</th><th>Log Excerpt</th></tr>
-        </table>
+    <div class="item col-1" id="recent-errors-container">
+      <table id="recent-errors" class="full_stats">
+        <tr id="recent-errors-head"><th>Severity</th><th>RC</th><th>Time</th><th>Action</th><th>Log Excerpt</th></tr>
+      </table>
 
-        <%
-           js_params = {
-             colors: @resources.reverse.map{|r| Logjam::Resource.color(r,0.7)}+["rgba(128,128,128,0.3)"],
-             resources: @resources.reverse,
-             legend: (@resources.reverse+%w(requests/second)).map{|r| r.gsub(/_/,' ')},
-             socket_url: @socket_url,
-             socket_greeting: "#{@app}-#{@env},#{@key}",
-             app_env: "app=#{@app}&env=#{@env}",
-             transparent_ico_path: asset_path("t.png")
-           }
-        %>
-        <script type="text/javascript">
-          logjam_live_stream_chart(<%=raw Oj.dump(js_params) %>);
-        </script>
-      </div>
+      <%
+        js_params = {
+          colors: @resources.reverse.map{|r| Logjam::Resource.color(r,0.7)}+["rgba(128,128,128,0.3)"],
+          resources: @resources.reverse,
+          legend: (@resources.reverse+%w(requests/second)).map{|r| r.gsub(/_/,' ')},
+          socket_url: @socket_url,
+          socket_greeting: "#{@app}-#{@env},#{@key}",
+          app_env: "app=#{@app}&env=#{@env}",
+          transparent_ico_path: asset_path("t.png")
+        }
+      %>
+      <script type="text/javascript">
+        logjam_live_stream_chart(<%=raw Oj.dump(js_params) %>);
+      </script>
     </div>
   </div>
 </div>
