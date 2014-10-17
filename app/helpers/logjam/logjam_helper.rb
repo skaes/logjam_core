@@ -455,20 +455,7 @@ module Logjam
 
     def severity_icon(severity, params = {})
       img = format_severity(severity).downcase
-      icon = ""
-
-      case img
-        when "error"
-          icon = "fa-exclamation-triangle "+ img
-        when "warn"
-          icon = "fa-exclamation-triangle "+ img
-        when "fatal"
-          icon = "fa-minus-circle "+ img
-        when "info"
-          icon = "fa-info-circle "+ img
-        end
-
-      content_tag(:i, "",{:class => "fa #{icon}"})
+      image_tag("#{img}.svg", params.reverse_merge(:class => "lj-ico", :title => "log severity: #{img}"))
     end
 
     def extract_error(log_lines, exception)
