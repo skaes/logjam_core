@@ -19,7 +19,7 @@
 #logjam-header {
   background: $header-bg-color;
   box-shadow: 1px 0 2px 0 rgba(0, 0, 0, 0.5);
-  z-index: 10000;
+  z-index: 1000;
   display: -webkit-flex;
   display: flex;
   -webkit-flex-direction: row;
@@ -54,19 +54,7 @@
   }
 
   > .filter-item {
-    line-height: 19px;
-    height: 19px;
-    font-weight: normal;
-    text-transform: lowercase;
-    position: relative;
-    margin-right: 20px;
-    border-radius: 3px;
-    background: $lightest-grey;
-    font-size: 16px;
-    font-weight: normal;
-    padding: 1px 5px 5px 5px;
-    margin-top: 10px;
-    cursor: pointer;
+    margin: 10px;
 
     &.no-background {
       background: transparent;
@@ -77,91 +65,41 @@
       font-weight: bold;
       font-size: 14px;
     }
-
-    input {
-      border: 0;
-      font-size: 14px;
-      font-family: "Helvetica Neue";
-      font-weight: normal;
-      width: 150px;
-      margin-left: 5px;
-      background: $lightest-grey;
-      border-bottom: 1px solid $light-grey;
-      text-transform: lowercase;
-      margin: 0;
-      padding: 0;
-      -webkit-appearance: none;
-      border-radius: 0;
-
-      &:focus {
-        outline: none;
-      }
-    }
-  }
-
-  .application-chooser {
-    &.active {
-      .dropdown-menu {
-        display: -webkit-flex;
-        display: flex;
-      }
-    }
-
-    .dropdown-menu {
-      box-shadow: 1px 1px 14px -7px rgba(0, 0, 0, 0.5) inset, 0 6px 15px -5px rgba(0,0,0,0.5);
-      font-size: 14px;
-      text-transform: capitalize;
-      max-height: 340px;
-      max-width: 600px;
-      overflow: hidden;
-      position: absolute;
-      left: 0;
-      padding: 8px;
-      margin-top: 5px;
-      flex-direction: column;
-      align-items: flex-start;
-      -webkit-align-items: flex-start;
-      -webkit-flex-flow: column wrap;
-      flex-flow: column wrap;
-      z-index: 10000;
-
-      li {
-        width: 120px;
-        margin-right: 20px;
-        float: left;
-        font-size: 12px;
-        display: block;
-        border-radius: 1px;
-
-        a {
-          display: block;
-          padding: 5px;
-
-          &:before {
-            margin-right: 5px;
-          }
-        }
-
-        &:hover a,
-        &.active a {
-          background: $lighter-grey;
-        }
-        &.hide {
-          display: none;
-        }
-      }
-    }
   }
 
   .section-chooser,
   .enviroment-chooser {
-    font-size: 18px;
+    font-size: 16px;
     margin-right: 20px;
   }
 
   .date-chooser {
     #datepicker {
       width: 80px;
+      display: block;
+      height: 23px;
+      padding: 0 0 0 8px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid #aaa;
+      white-space: nowrap;
+      line-height: 23px;
+      color: #444;
+      text-decoration: none;
+      border-radius: 3px;
+      background-clip: padding-box;
+
+      -webkit-touch-callout: none;
+        -webkit-user-select: none;
+           -moz-user-select: none;
+            -ms-user-select: none;
+                user-select: none;
+
+      background-color: #fff;
+      background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #eee), color-stop(0.5, #fff));
+      background-image: -webkit-linear-gradient(center bottom, #eee 0%, #fff 50%);
+      background-image: -moz-linear-gradient(center bottom, #eee 0%, #fff 50%);
+      background-image: linear-gradient(to top, #eee 0%, #fff 50%);
     }
     .jdpicker_w {
       display: inline;

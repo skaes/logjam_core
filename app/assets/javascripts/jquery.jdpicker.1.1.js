@@ -64,7 +64,7 @@ jdPicker.prototype = {
 
   if(this.input.context.type!="hidden"){
     var clearer = $('<span class="date_clearer">&times;</span>');
-    clearer.click(this.bindToObj(function(){this.input.val(""); this.selectDate();}));
+    clearer.click(this.bindToObj(function(){this.selectDate();}));
     this.input.after(clearer);
   }
 
@@ -410,8 +410,8 @@ jdPicker.prototype = {
   setPosition: function() {
     var offset = this.input.offset();
     this.rootLayers.css({
-      top: offset.top + this.input.outerHeight() - 5,
-      left: 0
+      top: offset.top + this.input.outerHeight(),
+      left: offset.left
     });
 
     if (this.ieframe) {

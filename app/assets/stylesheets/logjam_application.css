@@ -12,6 +12,7 @@
   *= require_self
   *= require base
   *= require generics
+  *= require select2
   *= require header
   *= require jdpicker
   *= require sidebar

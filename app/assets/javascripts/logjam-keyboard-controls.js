@@ -12,7 +12,10 @@ $(document).on('keydown', function(event){
    */
   if(event.ctrlKey && !event.shiftKey && event.keyCode === 70) {
     event.preventDefault();
-    $('#namespace-suggest').focus();
+    $('.date_clearer').click()
+    $('#application-suggest').select2("close");
+    $('#namespace-suggest').select2("open");
+
   }
 
   /**
@@ -21,7 +24,9 @@ $(document).on('keydown', function(event){
    */
   if(event.ctrlKey && event.keyCode === 65 && $('.application-chooser').length > -1) {
     event.preventDefault();
-    $('#application-suggest').focus();
+    $('.date_clearer').click()
+    $('#namespace-suggest').select2("close");
+    $('#application-suggest').select2("open");
   }
 
   /**
@@ -30,6 +35,8 @@ $(document).on('keydown', function(event){
    */
   if(event.ctrlKey && event.keyCode === 68) {
     event.preventDefault();
+    $('#namespace-suggest').select2("close");
+    $('#application-suggest').select2("close");
     $('#datepicker').focus();
   }
 

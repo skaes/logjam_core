@@ -16,7 +16,6 @@ var parameters = <%= raw Oj.dump(params) %>,
   <h1 class="logo">LOGJAM</h1>
   <% unless @only_one_app %>
     <div class="application-chooser filter-item">
-        <label for="application-suggest">Application: </label>
         <% if !params[:app] %>
           <input tabindex="1" id="application-suggest" class="application-suggest " type="text" placeholder="Choose Application">
         <% else %>
@@ -27,7 +26,6 @@ var parameters = <%= raw Oj.dump(params) %>,
   <% end %>
 
   <div class="date-chooser filter-item">
-    <label for="datepicker">Date: </label>
     <% if params[:time_range] == "date" %>
       <input tabindex="2" size="11" type="text" value="<%= @date %>" id="datepicker" onchange="submit_filter_form()" />
     <% else %>
@@ -43,8 +41,7 @@ var parameters = <%= raw Oj.dump(params) %>,
         value = 'by namespace or action'
       end
     %>
-    <label for="namespace-suggest">Filter: </label>
-    <input tabindex="3" id="namespace-suggest" class="autocomplete " data-ghost-container="#namespace-suggest-ghost" placeholder="<%= value %>" name="page" type="text" />
+    <input tabindex="3" id="namespace-suggest" class="autocomplete " placeholder="<%= value %>" name="page" type="text">
     <% if value != 'by namespace or action' %>
       <i class="fa fa-times"></i>
     <% end %>

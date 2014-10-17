@@ -18,7 +18,7 @@ module Logjam
           pages = Totals.new(@db).page_names.select {|name| name =~ re && name != 'all_pages'}
           pages.collect!{|p| p.gsub(/^::/,'')}
           completions = pages.sort  # [0..34]
-          render :json => {query: query, suggestions: completions}
+          render :json => {query: params[:page], suggestions: completions}
         end
       end
     end

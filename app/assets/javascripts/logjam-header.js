@@ -111,7 +111,7 @@ function initialize_header() {
     });
   }
 
-  $("#namespace-suggest").autocomplete({
+/*  $("#namespace-suggest").autocomplete({
     serviceUrl: action_auto_complete_url,
     minChars: 0,
     maxHeight: 300,
@@ -121,9 +121,72 @@ function initialize_header() {
       $('#page').val( value.value );
       submit_filter_form();
     }
+  });*/
+
+  $("#namespace-suggest").select2({
+    width: 350,
+    minimumInputLength: 0,
+    ajax: {
+      url: action_auto_complete_url,
+      dataType: 'json',
+      data: function (term, page) {
+        return { query: term }
+      },
+      results: function (data, page) {
+        var array = [];
+        /* add the current term to the list */
+        if(data.query.length > 0) { array.push({id: 0, text: data.query}) }
+
+        data.suggestions.forEach(function(item, index){
+          array.push({id: index+1, text: item})
+        });
+        return {results: array};
+      }
+    }
   });
 
-  $("#application-suggest").autocomplete({
+  $("#namespace-suggest").on("change", function(value){
+    $('#page').val( value.added.text );
+    submit_filter_form();
+  });
+
+  $("#namespace-suggest").on("blur", function(value){
+    $("#namespace-suggest").select2('close');
+    submit_filter_form();
+  });
+
+  $("#application-suggest").select2({
+    width: 150,
+    minimumInputLength: 0,
+    ajax: {
+      url: application_auto_complete_url,
+      dataType: 'json',
+      data: function (term, page) {
+        return { query: term }
+      },
+      results: function (data, page) {
+        var array = [];
+        data.suggestions.forEach(function(item, index){
+          array.push({id: index, text: item})
+        });
+        return {results: array};
+      }
+    }
+  });
+
+  $("#application-suggest").on("change", function(value){
+      $('#app').val( value.added.text );
+      $('#page').val( '' );
+      submit_filter_form();
+  });
+
+  $("#application-suggest").on("blur", function(value){
+    console.log('blur');
+    $("#application-suggest").select2('close');
+    submit_filter_form();
+  });
+
+/*  $("#application-suggest").autocomplete({
     serviceUrl: application_auto_complete_url,
     minChars: 0,
     maxHeight: 300,
@@ -136,5 +199,5 @@ function initialize_header() {
       $('#page').val( '' );
       submit_filter_form();
     }
-  });
+  });*/
 }
