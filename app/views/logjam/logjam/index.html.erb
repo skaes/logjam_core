@@ -26,12 +26,13 @@
       </div>
       <div class="item icon-action">
         <%= sometimes_link_all_pages do %>
-        <h2><%= @dataset.description %>
-          <%- if params[:grouping] == "request" -%>
-          between <%= minute_to_human(@dataset.start_minute) %>
-          and <%= minute_to_human(@dataset.end_minute) %>
-          <%- end -%>
-        </h2>
+          <h2>
+            <%= @dataset.description %>
+            <%- if params[:grouping] == "request" -%>
+            between <%= minute_to_human(@dataset.start_minute) %>
+            and <%= minute_to_human(@dataset.end_minute) %>
+            <%- end -%>
+          </h2>
         <% end %>
         <div id="pagetimes">
           <%= render "page_times" %>

@@ -11,6 +11,7 @@
   width: 100%;
 
   .item {
+    -webkit-flex: 1;
     flex: 1;
     background: $white;
     border-radius: 2px;

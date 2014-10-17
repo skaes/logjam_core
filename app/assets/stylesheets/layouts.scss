@@ -62,7 +62,11 @@
     font-weight: 400;
     display: block;
     text-align: center;
-
+    position: absolute;
+    top: 50%;
+    margin-top: -12px;
+    width: 100%;
+    margin-left: -10px;
   }
 }
 .app-dashboard {
@@ -365,7 +369,7 @@ tr {
   padding-top: 10px;
 }
 
-#spinner {
+.spinner {
   font: 20px sans-serif;
   margin: 20px;
 }

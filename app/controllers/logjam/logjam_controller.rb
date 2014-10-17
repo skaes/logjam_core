@@ -24,13 +24,6 @@ module Logjam
     end
 
     def auto_complete_for_applications_page
-      # TODO: throw away this code?
-      #prepare_params
-      #show_modules = [":", "::"].include?(@page)
-      #re = show_modules ? /^::/ : /#{@page}/i
-      #pages = Totals.new(@db).page_names.select {|name| name =~ re && name != 'all_pages'}
-      #pages.collect!{|p| p.gsub(/^::/,'')}
-      #completions = pages.sort  # [0..34]
       respond_to do |format|
         format.json do
           suggestions = @apps.select{|a| a.start_with?(params[:query]) }
@@ -57,7 +50,7 @@ module Logjam
     end
 
     # TODO: jan controller dashboard
-    def dashboard
+    def monitoring
       respond_to do |format|
         format.html do
           redirect_on_empty_dataset and return

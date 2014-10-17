@@ -21,7 +21,7 @@
       <ul class="logjam-menu separator">
         <% klass = (@dataset && @dataset.live_stream?) ? "enabled" : "disabled" %>
         <li class="<%= klass %>">
-          <%= link_to(fa_icon("play-circle", :title => "view live stream") + " Live View", clean_params(params.slice(:app,:env,:page).merge(:action => "live_stream"))) %>
+          <%= link_to(fa_icon("play-circle", :title => "view live stream") + " Livestream", clean_params(params.slice(:app,:env,:page).merge(:action => "live_stream"))) %>
         </li>
 
         <li>
@@ -69,15 +69,17 @@
           </ul>
         </li>
 
-        <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:frontend) %>><i class="fa fa-clock-o"></i> Frontend Time</a>
-          <ul>
-            <% collected_frontend_time_resources.reverse.each do |r| %>
-              <li <% if params[:resource] == r %>class="active"<% end %>>
-                <a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a>
-              </li>
-            <% end %>
-          </ul>
-        </li>
+        <% unless collected_frontend_time_resources.empty? %>
+          <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:frontend) %>><i class="fa fa-clock-o"></i> Frontend Time</a>
+            <ul>
+              <% collected_frontend_time_resources.reverse.each do |r| %>
+                <li <% if params[:resource] == r %>class="active"<% end %>>
+                  <a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a>
+                </li>
+              <% end %>
+            </ul>
+          </li>
+        <% end %>
 
         <% unless collected_call_resources.empty? %>
           <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:call) %>><i class="fa fa-phone"></i> Calls</a>
@@ -134,7 +136,7 @@
           <%= clean_link_to(fa_icon("file-text-o") + " API Response", :format => :json) %>
         </li>
         <li>
-          <%= link_to(fa_icon("cogs") + " Admin Space", admin_storage_path, :title => "Admin stuff") %>
+          <%= link_to(fa_icon("cogs") + " Admin Space", admin_storage_path) %>
         </li>
       </ul>
   </div>

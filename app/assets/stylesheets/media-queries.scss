@@ -32,6 +32,11 @@
 
       .item {
         width: auto !important;
+
+        .value {
+          position: static;
+          margin: 5px 0
+        }
       }
     }
 

@@ -3,8 +3,8 @@
   <%= render "sidebar" %>
   <div id="logjam-content" class="app-dashboard">
     <div class="flex">
-      <div class="controls item">
-        <h2><%= @title %> (<span id="call-count"><%= @data.size %></span>)</h2>
+      <div class="controls item col-1">
+        <h2>Call relationships (<span id="call-count"><%= @data.size %></span>)</h2>
         <%= form_tag(params, :method => :get) do %>
           <%= hidden_field_tag :app, @app %>
           <%= hidden_field_tag :env, @env %>
@@ -34,11 +34,9 @@
           <%= submit_tag "Download CSV", :id => "download-button", :name => nil, :class => "btn" %>
         <% end %>
       </div>
-    </div>
 
-    <div class="flex">
-      <div id="callers" class="item">
-        <table class="full_stats" style="max-width: 500px;">
+      <div id="callers" class="item col-1">
+        <table class="full_stats" style="max-width: 500px;>
           <tr>
             <th>Caller</th>
             <th>Callee</th>

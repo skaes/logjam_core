@@ -25,6 +25,10 @@
   }
 
   .logjam-menu {
+    border-bottom: 1px solid $dark-grey;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+
     i {
       width: 28px;
     }
@@ -76,12 +80,16 @@
         text-transform: uppercase;
         background: #212121;
 
-        li a {
-          line-height: 18px;
-        }
+        li {
+          text-indent: 0;
+          margin: 3px 0;
+          a {
+            line-height: 18px;
 
-        a:hover {
-          text-decoration: underline;
+            &:hover {
+              text-decoration: underline;
+            }
+          }
         }
       }
 
@@ -89,11 +97,6 @@
         height: auto;
       }
     }
-  }
-
-  .separator {
-    border-top: 1px solid $dark-grey;
-    padding-top: 10px;
   }
 
   .admin {
