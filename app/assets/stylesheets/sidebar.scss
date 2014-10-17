@@ -58,6 +58,7 @@
 
       a {
         display: block;
+        position: relative;
         line-height: 28px;
       }
 
@@ -82,9 +83,22 @@
 
         li {
           text-indent: 0;
-          margin: 3px 0;
+          margin: 6px 0;
+          padding-left: 20px;
+
+          &.active a:before {
+              content: " ";
+              height: 6px;
+              width: 6px;
+              border-radius: 50%;
+              background: #fff;
+              position: absolute;
+              top: 50%;
+              margin-top: -3px;
+              left: -10px;
+            }
           a {
-            line-height: 18px;
+            line-height: 14px;
 
             &:hover {
               text-decoration: underline;
