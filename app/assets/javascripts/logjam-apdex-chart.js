@@ -4,7 +4,7 @@ function logjam_apdex_chart(params) {
   var max_x = params.max_x;
   var min_y = params.min_y;
   var h = params.height;
-  var w = 1440/2;
+  var w = $(params.parent).width();
   var x = d3.scale.linear().domain([0, w]).range([0, w]);
   var y = d3.scale.linear().domain([min_y, 1.0]).range([h, 0]).nice();
 
@@ -94,7 +94,7 @@ function logjam_apdex_chart(params) {
     .enter()
     .append("text")
     .attr("class", "rlabel")
-    .style("font", "8px sans-serif")
+    .style("font", "8px Helvetica Neue")
     .attr("text-anchor", "end")
     .attr("dy", ".75em")
     .attr("x", w-1)

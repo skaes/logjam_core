@@ -9,5 +9,7 @@
    js_params[:data] = (0..js_params[:max_x]).each_with_object({}){|i,h|h[i]=-1}.merge!(apdex_score).map{|k,v| [k,v]}
 %>
 <script type="text/javascript">
-logjam_apdex_chart(<%= raw Oj.dump(js_params) %>);
+  $(function(){
+    logjam_apdex_chart(<%= raw Oj.dump(js_params) %>);
+  })
 </script>

@@ -7,16 +7,29 @@
         <h2><%= @title %> <%= hpn("for") %> (<%= integer_number(@error_count) %>)</h2>
         <%= render "result_navigator" %>
         <table class='full_stats'>
-          <tr><th>Time</th><th>Action</th><th>Description</th></tr>
-          <% @exceptions.each do |r| %>
-          <tr class='full_stats'>
-            <% error_link_params = { :action =>"show", :id => Logjam::JsExceptions.request_id_from_exception(r) } %>
-            <% logjam_action_link = r['logjam_action'].to_s.sub(/\A(.+?)::([^#]*)\z/, '\1') %>
-            <td><%= clean_link_to(request_started_at(r), error_link_params, :title => "show exception") %></td>
-            <td><%= clean_link_to(r['logjam_action'], { :action => "index", :grouping => "page", :page => logjam_action_link }, :title => "show page stats") %></td>
-            <td><%= r["description"] %></td>
-          </tr>
-          <% end %>
+          <colgroup>
+            <col span="1" style="width: 75px;">
+            <col span="1" style="width: 200px;">
+            <col span="1">
+          </colgroup>
+          </thead>
+            <tr>
+              <th>Time</th>
+              <th>Action</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @exceptions.each do |r| %>
+            <tr class='full_stats'>
+              <% error_link_params = { :action =>"show", :id => Logjam::JsExceptions.request_id_from_exception(r) } %>
+              <% logjam_action_link = r['logjam_action'].to_s.sub(/\A(.+?)::([^#]*)\z/, '\1') %>
+              <td><%= clean_link_to(request_started_at(r), error_link_params, :title => "show exception") %></td>
+              <td><%= clean_link_to(r['logjam_action'], { :action => "index", :grouping => "page", :page => logjam_action_link }, :title => "show page stats") %></td>
+              <td><%= r["description"] %></td>
+            </tr>
+            <% end %>
+          </tbody>
         </table>
       </div>
 
