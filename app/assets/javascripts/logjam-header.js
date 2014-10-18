@@ -134,7 +134,7 @@ function initialize_header() {
       url: action_auto_complete_url,
       dataType: 'json',
       data: function (term, page) {
-        return { query: term }
+        return { query: term };
       },
       results: function (data, page) {
         var array = [];
@@ -142,7 +142,7 @@ function initialize_header() {
         if(data.query.length > 0) { array.push({id: 0, text: data.query}) }
 
         data.suggestions.forEach(function(item, index){
-          array.push({id: index+1, text: item})
+          array.push({id: index+1, text: item});
         });
         return {results: array};
       }
@@ -166,12 +166,12 @@ function initialize_header() {
       url: application_auto_complete_url,
       dataType: 'json',
       data: function (term, page) {
-        return { query: term }
+        return { query: term };
       },
       results: function (data, page) {
         var array = [];
         data.suggestions.forEach(function(item, index){
-          array.push({id: index, text: item})
+          array.push({id: index, text: item});
         });
         return {results: array};
       }
