@@ -317,20 +317,26 @@ module Logjam
       respond_to do |format|
         format.html do
           redirect_on_empty_dataset and return
-          @title = "Apdex Overview «#{params[:resource].humanize}»"
 
           if @section == :frontend
             case params[:resource]
             when 'page_time'
               @resources = %w(papdex)
+              resource = 'page_time'
             when 'ajax_time'
               @resources = %w(xapdex)
+              resource = 'ajax_time'
             when 'frontend_time'
               @resources = %w(fapdex)
+              resource = 'frontend_time'
+            else
+              resource = 'page_time'
             end
           else
+            resource = 'total_time'
             @resources = %w(apdex)
           end
+          @title = "Apdex Overview «#{resource.humanize}»"
 
           @totals = Totals.new(@db, @resources, @page.blank? ? 'all_pages' : @page)
           @minutes = Minutes.new(@db, @resources, @page, @totals.page_names, 2)
