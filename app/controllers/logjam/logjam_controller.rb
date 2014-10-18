@@ -510,12 +510,14 @@ module Logjam
             @resources = Logjam::Resource.frontend_resources - %w(frontend_time)
             @dataset.get_data_for_distribution_plot(:frontend_time)
             @xmin = 100
-            @xlabel = "Frontend response time"
+            @xlabel = "Response time"
+            @title = "Frontend Response Time Distribution"
           else
             @resources = Logjam::Resource.time_resources
             @dataset.get_data_for_distribution_plot(:request_time)
             @xmin = 100
-            @xlabel = "Request time"
+            @xlabel = "Response time"
+            @title = "Backend Response Time Distribution"
           end
           render 'quants_plot'
         end
@@ -530,6 +532,7 @@ module Logjam
           @dataset.get_data_for_distribution_plot(:allocated_objects)
           @xmin = 10000
           @xlabel = "Allocated objects"
+          @title = "Allocated Objects Distribution"
           render 'quants_plot'
         end
       end
@@ -543,6 +546,7 @@ module Logjam
           @dataset.get_data_for_distribution_plot(:allocated_bytes)
           @xmin = 100000
           @xlabel = "Allocated memory (bytes)"
+          @title = "Allocated Memory Distribution"
           render 'quants_plot'
         end
       end
