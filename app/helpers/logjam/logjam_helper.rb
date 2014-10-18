@@ -164,7 +164,8 @@ module Logjam
     end
 
     def clean_params(params)
-      FilteredDataset.clean_url_params(params.merge :default_app => @default_app, :default_env => @default_app)
+      params = params.merge(:default_app => @default_app, :default_env => @default_app)
+      FilteredDataset.clean_url_params(params, self.params)
     end
 
     def clean_link_to(*args, &block)

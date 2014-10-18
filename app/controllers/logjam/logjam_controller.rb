@@ -657,7 +657,7 @@ module Logjam
         if !@dataset.top_level? && !request.referer.to_s.include?("app=#{@app}")
           new_params = FilteredDataset.clean_url_params(params.merge(:page => '',
                                                                      :default_app => @default_app,
-                                                                     :default_env => @default_env))
+                                                                     :default_env => @default_env), params)
           redirect_to new_params
         else
           render "empty_dataset"
@@ -679,7 +679,7 @@ module Logjam
       selected_date = dd.to_s(:db) if params[:auto_refresh] == "1" && (dd.year != py || dd.month != pm || dd.day != pd)
       selected_date ||= dd.to_s(:db) unless (params[:year] && params[:month] && params[:day])
       if selected_date.to_s =~ /\A(\d\d\d\d)-(\d\d)-(\d\d)\z/ || params[:page] == '::'
-        new_params = FilteredDataset.clean_url_params(
+        new_params = FilteredDataset.clean_url_params({
           :auto_refresh => params[:auto_refresh] == "1" ? "1" : nil,
           :default_app => @default_app, :default_env => @default_env,
           :controller => params[:controller], :action => params[:action],
@@ -690,7 +690,7 @@ module Logjam
           :resource => params[:resource],
           :sort => params[:sort], :group => params[:group], :filter => params[:filter],
           :offset => params[:offset], :error_type => params[:error_type],
-          :grouping => params[:grouping], :grouping_function => params[:grouping_function])
+          :grouping => params[:grouping], :grouping_function => params[:grouping_function]}, params)
         redirect_to new_params
       end
     end
