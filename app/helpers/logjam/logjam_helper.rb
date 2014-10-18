@@ -241,9 +241,9 @@ module Logjam
 
     def sometimes_link_all_pages(&block)
       if params[:grouping] == "page"
-        clean_link_to(nil, :action => "totals_overview", :page => @page, &block)
+        clean_link_to(:action => "totals_overview", :page => @page, &block)
       elsif params[:grouping] == "request"
-        clean_link_to(nil, :action => "request_overview", :page => @page, &block)
+        clean_link_to(:action => "request_overview", :page => @page, &block)
       else
         capture(&block) if block_given?
       end
