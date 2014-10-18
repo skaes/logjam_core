@@ -185,7 +185,7 @@ function initialize_header() {
   });
 
   $("#application-suggest").on("blur", function(value){
-    console.log('blur');
+    // console.log('blur');
     $("#application-suggest").select2('close');
     submit_filter_form();
   });
