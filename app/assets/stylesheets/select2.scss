@@ -99,7 +99,7 @@ html[dir="rtl"] .select2-container .select2-choice > .select2-chosen {
     text-decoration: none;
 
     border: 0;
-    background: url('select2.png') right top no-repeat;
+    background: image-url('select2.png') right top no-repeat;
     cursor: pointer;
     outline: 0;
 }
@@ -202,7 +202,7 @@ html[dir="rtl"] .select2-container .select2-choice .select2-arrow {
     display: block;
     width: 100%;
     height: 100%;
-    background: url('select2.png') no-repeat 0 -1px;
+    background: image-url('select2.png') no-repeat 0 -1px;
 }
 
 html[dir="rtl"] .select2-container .select2-choice .select2-arrow b {
