@@ -24,4 +24,5 @@
   *= require media-queries
   *= require grid
   *= require apdex
+  *= require call-graph
  */
