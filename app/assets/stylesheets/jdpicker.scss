@@ -13,7 +13,7 @@
   font-size:12px;
 }
 .jdpicker_w .date_selector {
-  background: $dark-blue;
+  background: $dark-grey;
   color: $white;
   box-shadow: 1px 1px 14px -7px rgba(0, 0, 0, 0.5) inset, 0 6px 15px -5px rgba(0,0,0,0.5);
   padding: 5px;
@@ -129,8 +129,7 @@
   clear: both;
 }
 .jdpicker_w .date_selector th{
-  padding-top: 5px;
-  font-weight: 300;
+  padding-top:5px
 }
 
 .jdpicker_w .date_selector th, .jdpicker_w .date_selector td {
@@ -169,7 +168,7 @@
 }
 .jdpicker_w .date_selector td.unselected_month {
   color: #666;
-  background: $dark-blue;
+  background: #444;
   border-color: transparent;
 }
 .jdpicker_w .date_selector td.selectable_day, .jdpicker_w .date_selector tr.selectable_week td {
@@ -180,7 +179,7 @@
   border-radius: 1px;
 }
 .jdpicker_w .date_selector td.selected, .jdpicker_w .date_selector tr.selected  td {
-  background: $xing-green;
+  background: #006567;
   color: #FFFFFF;
 }
 .jdpicker_w .date_selector tr.selectable_week.hover td, .jdpicker_w .date_selector td.selectable_day.hover {
