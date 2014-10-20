@@ -92,7 +92,9 @@
           <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:call) %>><i class="fa fa-phone"></i> Calls</a>
             <ul>
               <% collected_call_resources.reverse.each do |r| %>
-                <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
+                <li <% if params[:resource] == r %>class="active"<% end %>>
+                  <a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a>
+                </li>
               <% end %>
             </ul>
           </li>
@@ -102,7 +104,9 @@
           <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:memory) %>><i class="fa fa-th"></i> Allocations</a>
             <ul>
               <% collected_memory_resources.reverse.each do |r| %>
-                <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
+                <li <% if params[:resource] == r %>class="active"<% end %>>
+                  <a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a>
+                </li>
               <% end %>
             </ul>
           </li>
@@ -112,7 +116,9 @@
           <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:heap) %>><i class="fa fa-bars"></i> Heap</a>
             <ul>
               <% collected_heap_resources.reverse.each do |r| %>
-                <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
+                <li <% if params[:resource] == r %>class="active"<% end %>>
+                  <a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a>
+                </li>
               <% end %>
             </ul>
           </li>
