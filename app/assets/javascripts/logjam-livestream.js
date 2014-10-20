@@ -443,8 +443,8 @@ function logjam_live_stream_chart(params){
 
     $(window).on('resize', function(){
       disconnect_chart();
-      $('#live-stream-chart').html('');
-      logjam_live_stream_chart();
-    })
+      $('#live-stream-chart svg').remove();
+      logjam_live_stream_chart(params);
+    });
   });
 }
