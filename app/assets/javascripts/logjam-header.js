@@ -161,21 +161,7 @@ function initialize_header() {
 
   $("#application-suggest").select2({
     width: 150,
-    minimumInputLength: 0,
-    ajax: {
-      url: application_auto_complete_url,
-      dataType: 'json',
-      data: function (term, page) {
-        return { query: term };
-      },
-      results: function (data, page) {
-        var array = [];
-        data.suggestions.forEach(function(item, index){
-          array.push({id: index, text: item});
-        });
-        return {results: array};
-      }
-    }
+    minimumInputLength: 0
   });
 
   $("#application-suggest").on("change", function(value){
