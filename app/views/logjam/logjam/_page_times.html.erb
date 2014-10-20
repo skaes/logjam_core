@@ -7,16 +7,7 @@
 -%>
 
 <table class='full_stats'>
-  <colgroup>
-    <col span="1">
-    <col span="1" style="width: 50px;">
-    <col span="1" style="width: 50px;">
-    <col span="1" style="width: 50px;">
-    <col span="1" style="width: 50px;">
-    <col span="1" style="width: 50px;">
-    <col span="1" style="width: 50px;">
-  </colgroup>
-  <% if @dataset.grouping? -%>
+    <% if @dataset.grouping? -%>
     <thead>
       <tr>
         <th><%= @dataset.grouping_name %></th>
