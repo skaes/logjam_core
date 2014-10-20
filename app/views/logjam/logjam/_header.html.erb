@@ -17,8 +17,8 @@ var parameters = <%= raw Oj.dump(params) %>,
   <% unless @only_one_app %>
     <div class="application-chooser filter-item">
         <select id="application-suggest">
-          <% @apps.each do |item| %>
-            <option value="<%= item %>"><%= item %></option>
+          <% @apps.each do |app| %>
+            <option value="<%= app %>" <% if params[:app] == app %>selected<% end %>><%= app %></option>
           <% end %>
         </select>
       </label>
