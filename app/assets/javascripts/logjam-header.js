@@ -15,11 +15,13 @@ function submit_filter_form() {
   uri.removeSearch("utf8")
      .removeSearch("page", parameter_defaults.page)
      .removeSearch("resource", parameter_defaults.resource)
+     .removeSearch("section", parameter_defaults.section)
      .removeSearch("time_range", parameter_defaults.time_range)
      .removeSearch("grouping", parameter_defaults.grouping)
      .removeSearch("grouping_function", parameter_defaults.grouping_function)
      .removeSearch("start_minute", parameter_defaults.start_minute)
      .removeSearch("end_minute", parameter_defaults.end_minute)
+     .removeSearch("auto_refresh", parameter_defaults.auto_refresh)
      .removeSearch("interval", parameter_defaults.interval);
   document.location.href = uri.toString();
 }
@@ -28,11 +30,13 @@ function go_home() {
   $("#page-field").val(parameter_defaults.page);
   $("#grouping").val(parameter_defaults.grouping);
   $("#resource").val(parameter_defaults.resource);
+  $("#section").val(parameter_defaults.section);
   $("#grouping-function").val(parameter_defaults.grouping_function);
   $("#start-minute").val(parameter_defaults.start_minute);
   $("#end-minute").val(parameter_defaults.end_minute);
   $("#interval").val(parameter_defaults.interval);
   $("#time-range").val(parameter_defaults.time_range);
+  $("#auto_refresh").val(parameter_defaults.auto_refresh);
   $("#filter-form").attr("action", home_url);
   $("#filter-form").submit();
 }
@@ -130,7 +134,7 @@ function initialize_header() {
       url: action_auto_complete_url,
       dataType: 'json',
       data: function (term, page) {
-        return { query: term }
+        return { query: term };
       },
       results: function (data, page) {
         var array = [];
@@ -138,7 +142,7 @@ function initialize_header() {
         if(data.query.length > 0) { array.push({id: 0, text: data.query}) }
 
         data.suggestions.forEach(function(item, index){
-          array.push({id: index+1, text: item})
+          array.push({id: index+1, text: item});
         });
         return {results: array};
       }
@@ -162,12 +166,12 @@ function initialize_header() {
       url: application_auto_complete_url,
       dataType: 'json',
       data: function (term, page) {
-        return { query: term }
+        return { query: term };
       },
       results: function (data, page) {
         var array = [];
         data.suggestions.forEach(function(item, index){
-          array.push({id: index, text: item})
+          array.push({id: index, text: item});
         });
         return {results: array};
       }
@@ -181,7 +185,7 @@ function initialize_header() {
   });
 
   $("#application-suggest").on("blur", function(value){
-    console.log('blur');
+    // console.log('blur');
     $("#application-suggest").select2('close');
     submit_filter_form();
   });

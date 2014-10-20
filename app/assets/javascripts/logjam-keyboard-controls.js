@@ -4,7 +4,7 @@
 
 $(document).on('keydown', function(event){
 
-  console.log(event.shiftKey);
+  // console.log(event.shiftKey);
 
   /**
    * search field
@@ -12,7 +12,7 @@ $(document).on('keydown', function(event){
    */
   if(event.ctrlKey && !event.shiftKey && event.keyCode === 70) {
     event.preventDefault();
-    $('.date_clearer').click()
+    $('.date_clearer').click();
     $('#application-suggest').select2("close");
     $('#namespace-suggest').select2("open");
 

@@ -37,7 +37,7 @@
     %>
 
       <div class="item">
-        <h2>Distribution Plot</h2>
+        <h2><%= @title %></h2>
         <div id="distribution-plot"></div>
         <script type="text/javascript">
           logjam_quants_plot(<%=raw Oj.dump(js_params)%>);

@@ -25,19 +25,21 @@
   <div id="logjam-content" class="app-dashboard">
 
     <% if @request.present? %>
-    <h2>Request details for action
-      <%
-        page, minute = @request["page"], @request["minute"]
-        _params = params.except(:utf8, :id, :action).merge(:page => page)
-        page_params = clean_params(_params.merge(:grouping => "page"))
-        request_params = clean_params(_params.merge(:grouping => "request", :start_minute => minute, :end_minute => minute))
-      -%>
-      <%= link_to(page, page_params, :title => "view summary") -%>
-      @
-      <%= link_to(request_started_at(@request), request_params, :title => "show requests") -%>
-    </h2>
 
     <div class="flex">
+      <div class="item col-1">
+        <h2 id="request-details">Request details for action
+          <%
+             page, minute = @request["page"], @request["minute"]
+             _params = params.except(:utf8, :id, :action).merge(:page => page)
+             page_params = clean_params(_params.merge(:grouping => "page"))
+             request_params = clean_params(_params.merge(:grouping => "request", :start_minute => minute, :end_minute => minute))
+          -%>
+          <%= link_to(page, page_params, :title => "view summary") -%>
+          @
+          <%= link_to(request_started_at(@request), request_params, :title => "show requests") -%>
+        </h2>
+      </div>
       <% time_resource_values = @request.slice(*time_resources) -%>
       <% unless time_resource_values.blank? %>
         <div class="item col-6">
@@ -155,9 +157,9 @@
     <% end %>
 
     <% unless (lines = @request["lines"]).blank? -%>
-      <h2>Log lines</h2>
       <div class="flex">
         <div class="item col-6">
+          <h2>Log lines</h2>
           <% ltimes = line_times(lines) %>
           <% lines.each_with_index do |line,i| -%>
             <div class="logline" data-logjam-tags="<%= line_tags(line) %>">
@@ -174,9 +176,9 @@
 
 
   <% if @js_exceptions.present? -%>
-    <h2>Javascript Exceptions</h2>
     <div class="flex">
-      <di class="item">
+      <div class="item">
+        <h2>Javascript Exceptions</h2>
         <table>
           <% @js_exceptions.each.with_index do |e, i| -%>
             <% unless i == 0 -%>
@@ -203,9 +205,9 @@
 
   <% if @request.present? %>
     <% if info = @request["request_info"] -%>
-      <h2>Additional Request Info</h2>
       <div class="flex">
         <div class="item">
+          <h2>Additional Request Info</h2>
           <table id="request-info" class="">
             <% %w(url method query_parameters body_parameters headers custom).each do |name| -%>
               <% next if (value = info[name]).blank?  -%>

@@ -317,20 +317,26 @@ module Logjam
       respond_to do |format|
         format.html do
           redirect_on_empty_dataset and return
-          @title = "Apdex Overview «#{params[:resource].humanize}»"
 
           if @section == :frontend
             case params[:resource]
             when 'page_time'
               @resources = %w(papdex)
+              resource = 'page_time'
             when 'ajax_time'
               @resources = %w(xapdex)
+              resource = 'ajax_time'
             when 'frontend_time'
               @resources = %w(fapdex)
+              resource = 'frontend_time'
+            else
+              resource = 'page_time'
             end
           else
+            resource = 'total_time'
             @resources = %w(apdex)
           end
+          @title = "Apdex Overview «#{resource.humanize}»"
 
           @totals = Totals.new(@db, @resources, @page.blank? ? 'all_pages' : @page)
           @minutes = Minutes.new(@db, @resources, @page, @totals.page_names, 2)
@@ -504,12 +510,14 @@ module Logjam
             @resources = Logjam::Resource.frontend_resources - %w(frontend_time)
             @dataset.get_data_for_distribution_plot(:frontend_time)
             @xmin = 100
-            @xlabel = "Frontend response time"
+            @xlabel = "Response time"
+            @title = "Frontend Response Time Distribution"
           else
             @resources = Logjam::Resource.time_resources
             @dataset.get_data_for_distribution_plot(:request_time)
             @xmin = 100
-            @xlabel = "Request time"
+            @xlabel = "Response time"
+            @title = "Backend Response Time Distribution"
           end
           render 'quants_plot'
         end
@@ -524,6 +532,7 @@ module Logjam
           @dataset.get_data_for_distribution_plot(:allocated_objects)
           @xmin = 10000
           @xlabel = "Allocated objects"
+          @title = "Allocated Objects Distribution"
           render 'quants_plot'
         end
       end
@@ -537,6 +546,7 @@ module Logjam
           @dataset.get_data_for_distribution_plot(:allocated_bytes)
           @xmin = 100000
           @xlabel = "Allocated memory (bytes)"
+          @title = "Allocated Memory Distribution"
           render 'quants_plot'
         end
       end
@@ -614,6 +624,7 @@ module Logjam
       params[:grouping] ||= FilteredDataset::DEFAULTS[:grouping]
       params[:grouping_function] ||= FilteredDataset::DEFAULTS[:grouping_function]
       params[:interval] ||= FilteredDataset::DEFAULTS[:interval]
+      params[:auto_refresh] ||= '0'
       params[:time_range] ||= 'date'
       @section = params[:section] == "frontend" ? :frontend : :backend
 
@@ -656,7 +667,7 @@ module Logjam
         if !@dataset.top_level? && !request.referer.to_s.include?("app=#{@app}")
           new_params = FilteredDataset.clean_url_params(params.merge(:page => '',
                                                                      :default_app => @default_app,
-                                                                     :default_env => @default_env))
+                                                                     :default_env => @default_env), params)
           redirect_to new_params
         else
           render "empty_dataset"
@@ -678,7 +689,7 @@ module Logjam
       selected_date = dd.to_s(:db) if params[:auto_refresh] == "1" && (dd.year != py || dd.month != pm || dd.day != pd)
       selected_date ||= dd.to_s(:db) unless (params[:year] && params[:month] && params[:day])
       if selected_date.to_s =~ /\A(\d\d\d\d)-(\d\d)-(\d\d)\z/ || params[:page] == '::'
-        new_params = FilteredDataset.clean_url_params(
+        new_params = FilteredDataset.clean_url_params({
           :auto_refresh => params[:auto_refresh] == "1" ? "1" : nil,
           :default_app => @default_app, :default_env => @default_env,
           :controller => params[:controller], :action => params[:action],
@@ -689,7 +700,7 @@ module Logjam
           :resource => params[:resource],
           :sort => params[:sort], :group => params[:group], :filter => params[:filter],
           :offset => params[:offset], :error_type => params[:error_type],
-          :grouping => params[:grouping], :grouping_function => params[:grouping_function])
+          :grouping => params[:grouping], :grouping_function => params[:grouping_function]}, params)
         redirect_to new_params
       end
     end

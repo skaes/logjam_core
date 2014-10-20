@@ -85,6 +85,24 @@ module Logjam
         (heap_options + memory_options + call_resources + [nil] + time_resources).map {|r| [resource_name(r), r]}
       end
 
+      def section(resource)
+        if time_resources.include? resource
+          :backend
+        elsif call_resources.include? resource
+          :backend
+        elsif memory_resources.include? resource
+          :backend
+        elsif heap_resources.include? resource
+          :backend
+        elsif frontend_resources.include? resource
+          :frontend
+        elsif dom_resources.include? resource
+          :frontend
+        else
+          nil
+        end
+      end
+
       def resource_type(resource)
         if time_resources.include? resource
           :time

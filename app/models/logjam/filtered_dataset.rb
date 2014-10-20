@@ -7,7 +7,7 @@ module Logjam
     :plot_kind, :resource, :grouping, :grouping_function,
     :start_minute, :end_minute, :date, :limit, :offset
 
-    DEFAULTS = {:plot_kind => :time, :interval => '5',
+    DEFAULTS = {:plot_kind => :time, :interval => '5', :section => 'backend',
       :grouping => 'page', :resource => 'total_time', :grouping_function => 'sum',
       :start_minute => '0', :end_minute => '1440', :page => ''}
 
@@ -15,9 +15,9 @@ module Logjam
       DEFAULTS.keys.include?(attribute.to_sym) && DEFAULTS[attribute.to_sym].to_s == value
     end
 
-    def self.clean_url_params(params)
+    def self.clean_url_params(params, old_params)
       default_app = params.delete(:default_app) || Logjam.default_app
-      params = params.reject{|k,v| v.blank? || is_default?(k, v)}
+      params = params.reject{|k,v| old_params[k] == v && (v.blank? || is_default?(k, v)) }
       if app = params[:app]
         params.delete(:app) if app == default_app
         if env = params[:env]

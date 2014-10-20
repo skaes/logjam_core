@@ -93,7 +93,7 @@ input[type="text"]:disabled
 
 #loading {
   background-color: $white;
-  background-image: url(spinner24.gif);
+  background-image: image-url('spinner24.gif');
   background-position: center center;
   background-repeat: no-repeat;
   z-index: 100000;

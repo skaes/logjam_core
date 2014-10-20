@@ -12,7 +12,7 @@ module Logjam
     end
 
     def default_header_parameters
-      FilteredDataset::DEFAULTS.merge(:time_range => 'date')
+      FilteredDataset::DEFAULTS.merge(:time_range => 'date', :auto_refresh => '0')
     end
 
     def date_to_params(date)
@@ -164,7 +164,8 @@ module Logjam
     end
 
     def clean_params(params)
-      FilteredDataset.clean_url_params(params.merge :default_app => @default_app, :default_env => @default_app)
+      params = params.merge(:default_app => @default_app, :default_env => @default_app)
+      FilteredDataset.clean_url_params(params, self.params)
     end
 
     def clean_link_to(*args, &block)
@@ -241,9 +242,9 @@ module Logjam
 
     def sometimes_link_all_pages(&block)
       if params[:grouping] == "page"
-        clean_link_to(nil, :action => "totals_overview", :page => @page, &block)
+        clean_link_to(:action => "totals_overview", :page => @page, &block)
       elsif params[:grouping] == "request"
-        clean_link_to(nil, :action => "request_overview", :page => @page, &block)
+        clean_link_to(:action => "request_overview", :page => @page, &block)
       else
         capture(&block) if block_given?
       end
