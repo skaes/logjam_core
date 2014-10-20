@@ -436,13 +436,13 @@ function logjam_live_stream_chart(params){
 
   /* automatically connect to the data stream when the ducoment is ready */
   $(function(){
+    console.log(ws);
     $("#stream-toggle").on("click", function(){ toggle_stream($(this)); });
     $("#warnin-toggle").on("click", function(){ toggle_warnings($(this)); });
     $("#smooth-toggle").on("click", function(){ toggle_smoothness($(this)) ;});
     connect_chart();
 
     $(window).on('resize', function(){
-      disconnect_chart();
       $('#live-stream-chart svg').remove();
       logjam_live_stream_chart(params);
     });
