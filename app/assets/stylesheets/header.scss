@@ -84,7 +84,7 @@
       border: 1px solid #aaa;
       white-space: nowrap;
       line-height: 23px;
-      color: #444;
+      color: #fff;
       text-decoration: none;
       border-radius: 3px;
       background-clip: padding-box;
@@ -95,11 +95,7 @@
             -ms-user-select: none;
                 user-select: none;
 
-      background-color: #fff;
-      background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #eee), color-stop(0.5, #fff));
-      background-image: -webkit-linear-gradient(center bottom, #eee 0%, #fff 50%);
-      background-image: -moz-linear-gradient(center bottom, #eee 0%, #fff 50%);
-      background-image: linear-gradient(to top, #eee 0%, #fff 50%);
+      background-color: $dark-blue;
     }
     .jdpicker_w {
       display: inline;
