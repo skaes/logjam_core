@@ -441,10 +441,5 @@ function logjam_live_stream_chart(params){
     $("#warnin-toggle").on("click", function(){ toggle_warnings($(this)); });
     $("#smooth-toggle").on("click", function(){ toggle_smoothness($(this)) ;});
     connect_chart();
-
-    $(window).on('resize', function(){
-      $('#live-stream-chart svg').remove();
-      logjam_live_stream_chart(params);
-    });
   });
 }

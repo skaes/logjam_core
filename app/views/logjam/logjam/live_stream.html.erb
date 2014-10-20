@@ -50,5 +50,10 @@
   }
 %>
 <script type="text/javascript">
-  logjam_live_stream_chart(<%=raw Oj.dump(js_params) %>);
+  var livestream_params = <%=raw Oj.dump(js_params) %>;
+  logjam_live_stream_chart(livestream_params);
+  $(window).on('resize', function(){
+      $('#live-stream-chart svg').remove();
+      logjam_live_stream_chart(livestream_params;
+    });
 </script>
