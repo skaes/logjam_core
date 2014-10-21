@@ -2,9 +2,13 @@ function logjam_history_bar_chart(data, metric, params) {
 
   var week_end_colors = params.week_end_colors;
   var week_day_colors = params.week_day_colors;
-  var title = metric.replace(/_/g,' ').replace(/fapdex/,'apdex');
+  var title = metric.replace(/_/g,' ');
   if (title == 'apdex score')
-    title += ' ' + params.section;
+    title = 'apdex score backend';
+  else if (title == 'papdex score')
+    title = 'apdex score pages';
+  else if (title == 'aapdex score')
+    title = 'apdex score ajax';
 
   function week_day(date) {
     var day = date.getDay();
@@ -31,15 +35,16 @@ function logjam_history_bar_chart(data, metric, params) {
       data_min = d3.min(relevant_data, function(d){ return d[metric]; }),
       data_max = d3.max(relevant_data, function(d){ return d[metric]; });
 
+  if (typeof data_min == 'undefined')
+    return; // no data
+
   if (data_min == data_max)
     data_min = 0;
 
-  /*
   if (metric == "apdex_score") {
     data_max = 1.0;
     data_min = d3.min([0.92, data_min]);
   }
-  */
 
   var formatter = d3.format(",.r");
 

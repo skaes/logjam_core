@@ -160,6 +160,8 @@ module Logjam
         page: page,
         count: count('total_time'),
         apdex: apdex.merge(t: 0.5, score: apdex_score),
+        papdex: apdex.merge(t: 2.0, score: apdex_score(:page)),
+        aapdex: apdex.merge(t: 2.0, score: apdex_score(:ajax)),
         response_codes: response,
       }.tap do |h|
         h[:exceptions] = exceptions unless exceptions.empty?

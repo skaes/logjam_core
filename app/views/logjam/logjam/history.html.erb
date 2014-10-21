@@ -4,7 +4,7 @@
   <div id="logjam-content" class="app-dashboard">
     <div class="flex">
       <div class="item col-1" id="request-history">
-        <h2>History</h2>
+        <h2>History <%= hpn("for") %></h2>
         <p id="spinner" class="spinner warning">Please stand by while we fetch your data ...<%= image_tag("spinner24.gif") %></p>
 
         <div id="apdex_score"></div>
@@ -17,8 +17,9 @@
         <div id="calls"></div>
         <div id="memory"></div>
         <div id="heap"></div>
-        <div id="fapdex_score"></div>
+        <div id="papdex_score"></div>
         <div id="page_time"></div>
+        <div id="aapdex_score"></div>
         <div id="ajax_time"></div>
         <div id="frontend"></div>
         <div id="dom"></div>
@@ -44,17 +45,18 @@
     }
     else {
       logjam_history_bar_chart(response.data, "apdex_score", js_params);
+      logjam_history_bar_chart(response.data, "papdex_score", js_params);
+      logjam_history_bar_chart(response.data, "aapdex_score", js_params);
       logjam_history_bar_chart(response.data, "request_count", js_params);
       logjam_history_bar_chart(response.data, "total_time", js_params);
       logjam_history_bar_chart(response.data, "errors", js_params);
       logjam_history_bar_chart(response.data, "warnings", js_params);
       logjam_history_bar_chart(response.data, "exceptions", js_params);
-      logjam_history_bar_chart(response.data, "fapdex_score", js_params);
       logjam_history_bar_chart(response.data, "page_time", js_params);
       logjam_history_bar_chart(response.data, "ajax_time", js_params);
       for (g in response.resources) {
         response.resources[g].forEach(function(m){
-           if (m != "total_time" && m != "page_time" && m != "ajax_time") {
+           if (m != "total_time" && m != "page_time" && m != "ajax_time" && m != "frontend_time") {
              $("#" + g).append("<div id='" + m + "'></div>");
              logjam_history_bar_chart(response.data, m, js_params);
            }
