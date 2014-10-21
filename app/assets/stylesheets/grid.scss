@@ -31,7 +31,8 @@
 }
 
 
-.icon-action {
+.icon-action a {
+  display: block;
   h2:after {
     content: "\f105";
     font-family: fontAwesome;
@@ -39,8 +40,5 @@
     right: 10px;
     color: $xing-green;
     font-size: 24px;
-  }
-  a {
-    display: block;
   }
 }

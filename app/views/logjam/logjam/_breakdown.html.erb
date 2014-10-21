@@ -8,11 +8,13 @@
    chart_size = 100
 -%>
 
-<div class="item">
+<% resources = time_resources-["total_time", "gc_time"] -%>
+<div class="item icon-action">
+  <%= sometimes_link_resource(time_resources, 'total_time') do %>
   <h2>Time</h2>
+  <% end %>
   <div class="flex-row">
     <div id="time-resources" class="breakdown-chart">
-      <% resources = time_resources-["total_time", "gc_time"] -%>
       <%= render :partial => "simple_pie", :locals => {
             :data => resources.map{|r| s.avg(r)},
             :legend => resources,
@@ -36,11 +38,13 @@
 </div>
 
 <% unless s.zero_resources?(call_resources) %>
-<div class="item">
+<% resources = *call_resources.select{|r| r =~ /_calls$/}-["gc_calls"] -%>
+<div class="item icon-action">
+  <%= sometimes_link_resource(call_resources, resources.first) do %>
   <h2>Calls</h2>
+  <% end %>
   <div class="flex-row">
     <div id="call-resources" class="breakdown-chart">
-      <% resources = *call_resources.select{|r| r =~ /_calls$/}-["gc_calls"] -%>
       <%= render :partial => "simple_pie", :locals => {
             :data =>  resources.map{|r| s.avg(r)},
             :legend => resources,
@@ -68,14 +72,15 @@
 <% end %>
 
 <% unless s.zero_resources?(memory_resources) %>
-<div class="item">
+<% resources = *memory_resources-["allocated_memory"]
+   h = resources.inject({}){|h,r| h[r] = s.avg(r); h }
+   h["allocated_objects"] *= 40 if h.include?("allocated_objects") %>
+<div class="item icon-action">
+  <%= sometimes_link_resource(memory_resources, resources.first) do %>
   <h2>Allocations</h2>
+  <% end %>
   <div class="flex-row">
     <div id="allocation-resources" class="breakdown-chart">
-      <% resources = *memory_resources-["allocated_memory"]
-         h = resources.inject({}){|h,r| h[r] = s.avg(r); h }
-         h["allocated_objects"] *= 40 if h.include?("allocated_objects")
-      -%>
       <%= render :partial => "simple_pie", :locals => {
             :data => h.values_at(*resources),
             :legend => resources,
@@ -102,14 +107,15 @@
 <% end %>
 
 <% unless s.zero_resources?(heap_resources) %>
-<div class="item">
+<% resources = *heap_resources + ["free_slots"] - ["heap_size"]
+   h = resources.inject({}){|h,r| h[r] = s.avg(r); h }
+   h["free_slots"] = s.avg('heap_size') - s.avg('live_data_set_size') -%>
+<div class="item icon-action">
+  <%= sometimes_link_resource(heap_resources, resources.first) do %>
   <h2>Heap</h2>
+  <% end %>
   <div class="flex-row">
     <div id="heap-resources" class="breakdown-chart">
-      <% resources = *heap_resources + ["free_slots"] - ["heap_size"]
-         h = resources.inject({}){|h,r| h[r] = s.avg(r); h }
-         h["free_slots"] = s.avg('heap_size') - s.avg('live_data_set_size')
-      -%>
       <%= render :partial => "simple_pie", :locals => {
             :data => h.values_at(*resources),
             :legend => resources,

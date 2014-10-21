@@ -250,6 +250,14 @@ module Logjam
       end
     end
 
+    def sometimes_link_resource(resources, resource, html_options={}, &block)
+      if resources.include?(params[:resource])
+        capture(&block) if block_given?
+      else
+        clean_link_to({:resource => resource}, html_options, &block)
+      end
+    end
+
     def link_to_request(text, options)
       clean_link_to(text, options, :"data-tooltip" => "show request")
     end
