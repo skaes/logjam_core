@@ -7,6 +7,7 @@
         <h2>History <%= hpn("for") %></h2>
         <p id="spinner" class="spinner warning">Please stand by while we fetch your data ...<%= image_tag("spinner24.gif") %></p>
 
+        <% if @section.to_s == 'backend' %>
         <div id="apdex_score"></div>
         <div id="total_time"></div>
         <div id="request_count"></div>
@@ -17,12 +18,14 @@
         <div id="calls"></div>
         <div id="memory"></div>
         <div id="heap"></div>
+        <% else %>
         <div id="papdex_score"></div>
         <div id="page_time"></div>
         <div id="aapdex_score"></div>
         <div id="ajax_time"></div>
         <div id="frontend"></div>
         <div id="dom"></div>
+        <% end %>
       </div>
     </div>
   </div>
@@ -44,16 +47,19 @@
       $("#spinner").text("Shiver me timbers! You have only " + response.data.length + " days worth o' data. This view requires at least two days o' data.");
     }
     else {
-      logjam_history_bar_chart(response.data, "apdex_score", js_params);
-      logjam_history_bar_chart(response.data, "papdex_score", js_params);
-      logjam_history_bar_chart(response.data, "aapdex_score", js_params);
-      logjam_history_bar_chart(response.data, "request_count", js_params);
-      logjam_history_bar_chart(response.data, "total_time", js_params);
-      logjam_history_bar_chart(response.data, "errors", js_params);
-      logjam_history_bar_chart(response.data, "warnings", js_params);
-      logjam_history_bar_chart(response.data, "exceptions", js_params);
-      logjam_history_bar_chart(response.data, "page_time", js_params);
-      logjam_history_bar_chart(response.data, "ajax_time", js_params);
+      if (js_params.section == 'frontend') {
+        logjam_history_bar_chart(response.data, "papdex_score", js_params);
+        logjam_history_bar_chart(response.data, "aapdex_score", js_params);
+        logjam_history_bar_chart(response.data, "page_time", js_params);
+        logjam_history_bar_chart(response.data, "ajax_time", js_params);
+      } else {
+        logjam_history_bar_chart(response.data, "apdex_score", js_params);
+        logjam_history_bar_chart(response.data, "request_count", js_params);
+        logjam_history_bar_chart(response.data, "total_time", js_params);
+        logjam_history_bar_chart(response.data, "errors", js_params);
+        logjam_history_bar_chart(response.data, "warnings", js_params);
+        logjam_history_bar_chart(response.data, "exceptions", js_params);
+      }
       for (g in response.resources) {
         response.resources[g].forEach(function(m){
            if (m != "total_time" && m != "page_time" && m != "ajax_time" && m != "frontend_time") {
@@ -61,7 +67,7 @@
              logjam_history_bar_chart(response.data, m, js_params);
            }
         });
-      }
+        }
       $("#spinner").hide();
     }
   });
