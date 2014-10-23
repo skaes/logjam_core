@@ -44,10 +44,14 @@
 }
 
 .icon-action h2 {
-  padding: 2px 4px;
-  border-radius: 2px;
 }
 
 .icon-action.selected h2 {
   background: #eee;
+  padding: 2px 4px;
+  border-radius: 2px;
+  margin-left: -4px;
+  margin-right: -4px;
+  margin-top: -2px;
+  margin-bottom: 8px;
 }
