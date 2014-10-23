@@ -408,3 +408,13 @@ td.js-exception {
 #distribution-plot {
     height: calc(100vh - 60px);
 }
+
+#apdex-overview td {
+  &:first-child {
+    padding-left: 4px;
+  }
+  &:nth-child(2) {
+    padding-right: 4px;
+  }
+
+}

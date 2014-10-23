@@ -4,7 +4,7 @@
   <div id="logjam-content" class="app-dashboard">
     <div class="flex">
       <div class="item col-1" id="request-history">
-        <h2>History <%= hpn("for") %></h2>
+        <h2><%= @section.to_s.upcase %> History <%= hpn("for") %></h2>
         <p id="spinner" class="spinner warning">Please stand by while we fetch your data ...<%= image_tag("spinner24.gif") %></p>
         <%= render "section_toggle" %>
         <% if @section.to_s == 'backend' %>
@@ -21,7 +21,7 @@
         <% else %>
         <div id="papdex_score"></div>
         <div id="page_time"></div>
-        <div id="aapdex_score"></div>
+        <div id="xapdex_score"></div>
         <div id="ajax_time"></div>
         <div id="frontend"></div>
         <div id="dom"></div>
@@ -49,7 +49,7 @@
     else {
       if (js_params.section == 'frontend') {
         logjam_history_bar_chart(response.data, "papdex_score", js_params);
-        logjam_history_bar_chart(response.data, "aapdex_score", js_params);
+        logjam_history_bar_chart(response.data, "xapdex_score", js_params);
         logjam_history_bar_chart(response.data, "page_time", js_params);
         logjam_history_bar_chart(response.data, "ajax_time", js_params);
       } else {

@@ -7,11 +7,11 @@
     <div class="flex">
       <div class="item has-action">
         <h2><%= @title %> <%= hpn("for") %></h2>
-        <%= render :partial => "apdex_choices", :locals => {:_section => section} %>
-        <table class='full_stats'>
+        <%= render :partial => "apdex_choices", :locals => {:section => section} %>
+        <table id="apdex-overview" class='full_stats'>
           <colgroup>
-            <col span="1" style="width: 150px;">
-            <col span="1" style="width: 50px;">
+            <col span="1" style="width: 80px;">
+            <col span="1" style="width: 100px;">
             <col span="1">
           </colgroup>
           <thead>

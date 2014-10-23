@@ -1,14 +1,14 @@
 <div class="secticons btn-group">
-  <% if _section == :backend %>
+  <% if section == :backend %>
   <button id="view-apdex-total-time" class="btn active">Total Time</button>
   <button id="view-apdex-page-time" class="btn">Page Time</button>
   <button id="view-apdex-ajax-time" class="btn">Ajax Time</button>
-  <% elsif _section == :page %>
+  <% elsif section == :page %>
   <button id="view-apdex-total-time" class="btn">Total Time</button>
   <button id="view-apdex-page-time" class="btn active">Page Time</button>
   <button id="view-apdex-ajax-time" class="btn">Ajax Time</button>
   <% else %>
-  <button id="view-apdex-total-time" class="btn active">Total Time</button>
+  <button id="view-apdex-total-time" class="btn">Total Time</button>
   <button id="view-apdex-page-time" class="btn">Page Time</button>
   <button id="view-apdex-ajax-time" class="btn active">Ajax Time</button>
   <% end %>
