@@ -6,7 +6,7 @@
       <div class="item col-1" id="request-history">
         <h2>History <%= hpn("for") %></h2>
         <p id="spinner" class="spinner warning">Please stand by while we fetch your data ...<%= image_tag("spinner24.gif") %></p>
-
+        <%= render "section_toggle" %>
         <% if @section.to_s == 'backend' %>
         <div id="apdex_score"></div>
         <div id="total_time"></div>
@@ -40,7 +40,7 @@
 -%>
 
 <script type="text/javascript">
-  $.getJSON("<%= url_for(params.merge(:format => :json, :section => :backend)) %>", function(response){
+  $.getJSON("<%= url_for(params.merge(:format => :json, :section => @section)) %>", function(response){
     var js_params = <%= raw Oj.dump(js_params) %>;
     response.data.forEach(function(d){ d.date = new Date(d.date); })
     if (response.data.length < 2) {

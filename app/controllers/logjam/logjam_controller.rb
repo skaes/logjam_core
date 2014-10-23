@@ -155,7 +155,6 @@ module Logjam
     end
 
     def show
-      prepare_params
       redirect_on_empty_dataset and return
       logjam_request_id = [@app, @env, params[:id]].join('-')
       @js_exceptions = Logjam::JsExceptions.new(@db).find_by_request(logjam_request_id)
@@ -449,7 +448,6 @@ module Logjam
     private :get_relationship_data
 
     def call_relationships
-      prepare_params
       redirect_on_empty_dataset and return
       params[:group] ||= 'module'
       params[:sort] ||= 'caller'
@@ -631,14 +629,14 @@ module Logjam
       params[:time_range] ||= 'date'
       @section = params[:section] == "frontend" ? :frontend : :backend
 
-      # TODO
-      #if @section == :frontend && (!Resource.frontend_resources.include?(params[:resource]) || !Resource.dom_resources.include?(params[:resource]))
-      #  redirect_to params.to_hash.merge(:resource => 'frontend_time')
-      #  return false
-      #elsif @section == :backend && !Resource.backend_resources.include?(params[:resource])
-      #  redirect_to params.to_hash.merge(:resource => 'total_time')
-      #  return false
-      #end
+      if @section == :frontend && !(Resource.frontend_resources.include?(params[:resource]) || Resource.dom_resources.include?(params[:resource]))
+        redirect_to params.to_hash.merge(:resource => 'page_time', :section => 'frontend')
+        return false
+      elsif @section == :backend && !Resource.backend_resources.include?(params[:resource])
+        redirect_to params.to_hash.merge(:resource => 'total_time', :section => 'backend')
+        return false
+      end
+
       @plot_kind = Resource.resource_type(params[:resource])
       @attributes = Resource.resources_for_type(@plot_kind)
       @collected_resources = Totals.new(@db).collected_resources
@@ -646,7 +644,7 @@ module Logjam
     end
 
     def dataset_from_params(strip_namespace = false)
-      prepare_params or return false
+      return false unless prepare_params
       @dataset = FilteredDataset.new(
         :date => @date,
         :app => @app,

@@ -51,14 +51,14 @@
             <% end %>
           </li>
           <li>
-            <%= clean_link_to(:action => "call_relationships", :filter => @app) do %>
+            <%= clean_link_to(:action => "call_relationships", :filter => @app, :section => 'backend') do %>
               <i class="fa fa-cloud"></i> Call Relationships
             <% end %>
           </li>
         <% end %>
 
         <li>
-          <%= clean_link_to(:action => "error_overview") do %>
+          <%= clean_link_to(:action => "error_overview", :section => 'backend') do %>
             <i class="fa fa-warning"></i> Problems
           <% end %>
         </li>

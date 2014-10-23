@@ -404,11 +404,12 @@ module Logjam
 
     def html_attributes_for_resource_type(resource_type)
       resource = Resource.default_resource(resource_type)
+      section = Resource.section(resource)
       # TODO: add switch between resources (frontend|backend)
       if Resource.resource_type(params[:resource]) == resource_type.to_sym
-        "class='active' onclick=\"view_resource('#{resource}')\""
+        "class='active' onclick=\"view_resource('#{resource}', '#{section}')\""
       else
-        "class='inactive' onclick=\"view_resource('#{resource}')\""
+        "class='inactive' onclick=\"view_resource('#{resource}', '#{section}')\""
       end
     end
 

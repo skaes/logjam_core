@@ -176,6 +176,35 @@ function initialize_header() {
     submit_filter_form();
   });
 
+  $("#view-backend").on("click", function(){
+    $("#section").val("backend");
+    submit_filter_form();
+  });
+
+  $("#view-frontend").on("click", function(){
+    $("#section").val("frontend");
+    submit_filter_form();
+  });
+
+  $("#view-apdex-total-time").on("click", function(){
+    $("#section").val("backend");
+    $("#resource").val("total_time");
+    submit_filter_form();
+  });
+
+  $("#view-apdex-page-time").on("click", function(){
+    $("#resource").val("page_time");
+    $("#section").val("frontend");
+    submit_filter_form();
+  });
+
+  $("#view-apdex-ajax-time").on("click", function(){
+    $("#resource").val("ajax_time");
+    $("#section").val("frontend");
+    submit_filter_form();
+  });
+
+
 /*  $("#application-suggest").autocomplete({
     serviceUrl: application_auto_complete_url,
     minChars: 0,
