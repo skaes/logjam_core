@@ -41,9 +41,8 @@
   }
 
   &.active {
-    border-color: $xing-green;
-    background: $xing-green;
-    color: $white;
+    background: #eee;
+    // color: $xing-green;
   }
 }
 a.btn {
@@ -59,7 +58,7 @@ a.btn {
     border-left: 0;
 
     &.active:first-child {
-      border-color: $xing-green;
+      // border-color: $xing-green;
     }
 
     &:first-child {

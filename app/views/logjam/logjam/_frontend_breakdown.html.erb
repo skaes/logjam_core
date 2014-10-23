@@ -6,16 +6,19 @@
    chart_size = 100
 -%>
 
-<div class="item">
+<% resources = time_resources - %w(frontend_time ajax_time page_time) -%>
+<% selected = time_resources.include?(params[:resource]) ? " selected" : "" %>
+<div class="item icon-action<%= selected %>">
+  <%= sometimes_link_resource(time_resources, 'page_time') do %>
   <h2>Time</h2>
+  <% end %>
   <div class="flex-row">
     <div id="time-resources" class="breakdown-chart">
-      <% resources = time_resources - %w(frontend_time ajax_time page_time) -%>
       <%= render :partial => "simple_pie", :locals => {
             :data => resources.map{|r| s.avg(r)},
             :legend => resources,
             :container => "time-resources",
-            :onclick => nil,
+            :onclick => "view_resource('page_time')",
             :colors => pie_colors.values_at(*resources), :size => chart_size } %>
     </div>
     <div class="table-wrapper">
@@ -35,16 +38,19 @@
 </div>
 
 <% unless s.zero_resources?(dom_resources) %>
-<div class="item">
+<% selected = dom_resources.include?(params[:resource]) ? " selected" : "" %>
+<div class="item icon-action<%= selected %>">
+  <% resources = dom_resources -%>
+  <%= sometimes_link_resource(resources, 'html_nodes') do %>
   <h2>Dom</h2>
+  <% end %>
   <div class="flex-row">
     <div id="dom-resources" class="breakdown-chart">
-      <% resources = *dom_resources -%>
       <%= render :partial => "simple_pie", :locals => {
             :data =>  resources.map{|r| s.avg(r)},
             :legend => resources,
             :container => "dom-resources",
-            :onclick => nil,
+            :onclick => "view_resource('html_nodes')",
             :colors => pie_colors.values_at(*resources), :size => chart_size
           } %>
     </div>

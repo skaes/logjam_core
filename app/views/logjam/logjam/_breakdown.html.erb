@@ -9,7 +9,8 @@
 -%>
 
 <% resources = time_resources-["total_time", "gc_time"] -%>
-<div class="item icon-action">
+<% selected = time_resources.include?(params[:resource]) ? " selected" : "" %>
+<div class="item icon-action<%=selected%>">
   <%= sometimes_link_resource(time_resources, 'total_time') do %>
   <h2>Time</h2>
   <% end %>
@@ -40,7 +41,8 @@
 
 <% unless s.zero_resources?(call_resources) %>
 <% resources = *call_resources.select{|r| r =~ /_calls$/}-["gc_calls"] -%>
-<div class="item icon-action">
+<% selected = call_resources.include?(params[:resource]) ? " selected" : "" %>
+<div class="item icon-action<%=selected%>">
   <%= sometimes_link_resource(call_resources, resources.first) do %>
   <h2>Calls</h2>
   <% end %>
@@ -77,7 +79,8 @@
 <% resources = *memory_resources-["allocated_memory"]
    h = resources.inject({}){|h,r| h[r] = s.avg(r); h }
    h["allocated_objects"] *= 40 if h.include?("allocated_objects") %>
-<div class="item icon-action">
+<% selected = memory_resources.include?(params[:resource]) ? " selected" : "" %>
+<div class="item icon-action<%=selected%>">
   <%= sometimes_link_resource(memory_resources, resources.first) do %>
   <h2>Allocations</h2>
   <% end %>
@@ -113,7 +116,8 @@
 <% resources = *heap_resources + ["free_slots"] - ["heap_size"]
    h = resources.inject({}){|h,r| h[r] = s.avg(r); h }
    h["free_slots"] = s.avg('heap_size') - s.avg('live_data_set_size') -%>
-<div class="item icon-action">
+<% selected = heap_resources.include?(params[:resource]) ? " selected" : "" %>
+<div class="item icon-action<%=selected%>">
   <%= sometimes_link_resource(heap_resources, resources.first) do %>
   <h2>Heap</h2>
   <% end %>

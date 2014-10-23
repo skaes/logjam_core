@@ -37,8 +37,17 @@
     content: "\f105";
     font-family: fontAwesome;
     position: absolute;
-    right: 10px;
+    right: 12px;
     color: $xing-green;
     font-size: 24px;
   }
+}
+
+.icon-action h2 {
+  padding: 2px 4px;
+  border-radius: 2px;
+}
+
+.icon-action.selected h2 {
+  background: #eee;
 }
