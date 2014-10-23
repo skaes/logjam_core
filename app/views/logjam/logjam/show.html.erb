@@ -42,7 +42,7 @@
       </div>
       <% time_resource_values = @request.slice(*time_resources) -%>
       <% unless time_resource_values.blank? %>
-        <div class="item col-6">
+        <div class="item col-5">
           <h2>Time</h2>
           <div id="time" class="breakdown-chart">
             <% resources = *time_resources.select{|r| r =~ /_time$/} - %w(total_time gc_time) -%>

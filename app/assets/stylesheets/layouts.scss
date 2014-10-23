@@ -30,6 +30,7 @@
   padding-top: 6px;
   padding-bottom: 6px;
 }
+
 .item {
   &.has-action {
     padding-bottom: 40px !important;
@@ -127,7 +128,7 @@
 #request-details {
   a {
     color: blue;
-
+    text-transform: none;
     &:hover { color: blue; }
   }
 }

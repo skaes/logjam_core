@@ -151,6 +151,10 @@ a.disabled {
     text-transform: uppercase;
 }
 
+#request-info .resource_name {
+    text-transform: none;
+}
+
 .autocomplete-suggestions {
   box-shadow: 0 6px 15px -5px rgba(0,0,0,0.5);
   background: $white;
