@@ -17,6 +17,12 @@ function logjam_simple_pie(params){
         .attr("width", w)
         .attr("height", h);
 
+  if (params.onclick) {
+    vis
+      .style("cursor", "pointer")
+      .on("click", function(){ return eval(params.onclick); });
+  }
+
   //  .append("g")
   //    .attr("transform", "translate(" + w / 2 + "," + h / 2 + ")");
 

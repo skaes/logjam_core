@@ -19,6 +19,7 @@
             :data => resources.map{|r| s.avg(r)},
             :legend => resources,
             :container => "time-resources",
+            :onclick => "view_resource('total_time')",
             :colors => pie_colors.values_at(*resources), :size => chart_size } %>
     </div>
     <div class="table-wrapper">
@@ -49,6 +50,7 @@
             :data =>  resources.map{|r| s.avg(r)},
             :legend => resources,
             :container => "call-resources",
+            :onclick => "view_resource('#{resources.first}')",
             :colors => pie_colors.values_at(*resources), :size => chart_size
           } %>
     </div>
@@ -85,6 +87,7 @@
             :data => h.values_at(*resources),
             :legend => resources,
             :container => "allocation-resources",
+            :onclick => "view_resource('#{resources.first}')",
             :colors => pie_colors.values_at(*resources), :size => chart_size } %>
     </div>
     <div class="table-wrapper">
@@ -120,6 +123,7 @@
             :data => h.values_at(*resources),
             :legend => resources,
             :container => "heap-resources",
+            :onclick => "view_resource('#{resources.first}')",
             :colors => pie_colors.values_at(*resources), :size => chart_size } %>
     </div>
     <div class="table-wrapper">

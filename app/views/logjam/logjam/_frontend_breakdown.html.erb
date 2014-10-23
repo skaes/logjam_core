@@ -15,6 +15,7 @@
             :data => resources.map{|r| s.avg(r)},
             :legend => resources,
             :container => "time-resources",
+            :onclick => nil,
             :colors => pie_colors.values_at(*resources), :size => chart_size } %>
     </div>
     <div class="table-wrapper">
@@ -43,6 +44,7 @@
             :data =>  resources.map{|r| s.avg(r)},
             :legend => resources,
             :container => "dom-resources",
+            :onclick => nil,
             :colors => pie_colors.values_at(*resources), :size => chart_size
           } %>
     </div>

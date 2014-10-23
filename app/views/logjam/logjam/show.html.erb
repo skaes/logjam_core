@@ -51,6 +51,7 @@
                     :container => "time",
                     :legend => resources,
                     :size => size,
+                    :onclick => nil,
                     :colors => pie_colors.values_at(*resources) } %>
           </div>
           <table id="request-details-time">
@@ -77,6 +78,7 @@
                     :container => "calls",
                     :legend => resources,
                     :size => size,
+                    :onclick => nil,
                     :colors => pie_colors.values_at(*resources) } %>
           </div>
           <table id="request-details-calls">
@@ -106,6 +108,7 @@
                   :legend => resources,
                   :container => "memory",
                   :size => size,
+                  :onclick => nil,
                   :colors => pie_colors.values_at(*resources) } %>
           </div>
           <table id="request-details-memory">
@@ -136,6 +139,7 @@
                                   :legend => resources,
                                   :container => "heap",
                                   :size => size,
+                                  :onclick => nil,
                                   :colors => pie_colors.values_at(*resources) } %>
           </div>
           <table id="request-details-heap">
