@@ -5,7 +5,7 @@ function logjam_apdex_chart(params) {
   var min_y = params.min_y;
   var h = params.height;
   var w = $(params.parent).width();
-  var x = d3.scale.linear().domain([0, w]).range([0, w]);
+  var x = d3.scale.linear().domain([0, 1440/2]).range([0, w]);
   var y = d3.scale.linear().domain([min_y, 1.0]).range([h, 0]).nice();
 
   var tooltip_formatter = d3.format(",.3r");
