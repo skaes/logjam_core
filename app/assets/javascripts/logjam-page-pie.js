@@ -91,7 +91,6 @@ function logjam_page_pie(params) {
 
   $('.legend, .legendmark').tipsy({
     gravity:"nw",
-    opacity:0.9,
     offset:10,
     delayIn:250,
     delayOut:0,
@@ -107,7 +106,6 @@ function logjam_page_pie(params) {
     offsetY: -20,
     gravity: 's',
     html: false,
-    opacity: 0.7,
     title: function() { return tooltip_text; }
   });
 

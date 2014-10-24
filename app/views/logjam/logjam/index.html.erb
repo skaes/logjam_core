@@ -1,55 +1,50 @@
 <%= render "header" %>
-<div id="show-json"><%= link_to("show json", params.merge(:format => :json)) %></div>
-<div id="content">
-  <div id="column-left" class="clear-left">
-    <% if @dataset.empty? -%>
-    <p class="warning">Dataset is empty.</p>
-    <% else -%>
-    <div id="graph-counts" class="clear-left">
-      <p class="stats graph-counts-title">
-        showing
-        <%= number_with_delimiter @dataset.count_requests %> of <%= number_with_delimiter @dataset.count %> requests
-        <%= clean_link_to(triangle_right,
-                          { :page => without_module(@page), :action => "enlarged_plot", :interval => 1 },
-                          :title => "view enlarged plot") %>
-      </p>
-      <%= render "navicons" %>
-      <%= render :partial => "resource_plot", :locals => {:width => 1440/5*2, :height => 300} %>
-    </div>
-    <div id="plot-details" class="stats clear-left">
-      <div id="plot-details-col1">
-        <%= render "apdex" %>
-      </div>
-      <div id="plot-details-col2">
-        <%= render "response_codes" %>
-      </div>
-      <div id="plot-details-col3">
-        <%= render "errors" %>
-      </div>
-    </div>
-    <% end -%>
-  </div>
+<div id="logjam-container" class="xxl-view">
+  <%= render "sidebar" %>
+  <div id="logjam-content" class="app-dashboard">
 
-  <% unless @dataset.empty? -%>
-  <div id="column-right">
-    <div id="pagetimes">
-      <h3 class="page-times-title"><%= @dataset.description %>
-        <%- if params[:grouping] == "request" -%>
-        between <%= minute_to_human(@dataset.start_minute) %>
-        and <%= minute_to_human(@dataset.end_minute) %>
-        <%- end -%>
-        <%= sometimes_link_all_pages %>
-      </h3>
-      <div>
-      <%= render "page_times" %>
+    <div class="flex size-xxl-small-width size-xxl-no-flex size-xxl-flex-order-first">
+      <%= render "apdex" %>
+      <% if params[:grouping] == "request" %>
+      <%= render "action_info" %>
+      <% else %>
+      <%= render "request_info" %>
+      <% end %>
+      <%= render "response_codes" %>
+      <%= render "errors" %>
+    </div>
+
+    <div class="flex size-xxl-flex-order-second size-xxl-no-flex size-l-no-flex">
+      <div class="item icon-action">
+        <%= clean_link_to(:action => "enlarged_plot", :interval => 1, :section => params[:section]) do %>
+        <h2>
+          showing
+          <%= number_with_delimiter @dataset.count_requests(@section) %> of <%= number_with_delimiter @dataset.count(@section) %> requests
+        </h2>
+        <% end %>
+        <%= render :partial => "resource_plot", :locals => {:width => 450, :height => 200} %>
       </div>
-      <% if params[:grouping] == "page" -%>
-      <div id="performance-break-down">
-        <h3>resources (avg)</h3>
+      <div class="item icon-action">
+        <%= sometimes_link_all_pages do %>
+          <h2>
+            <%= @dataset.description %>
+            <%- if params[:grouping] == "request" -%>
+            between <%= minute_to_human(@dataset.start_minute) %>
+            and <%= minute_to_human(@dataset.end_minute) %>
+            <%- end -%>
+          </h2>
+        <% end %>
+        <div id="pagetimes">
+          <%= render "page_times" %>
+        </div>
+      </div>
+    </div>
+
+    <% if params[:grouping] == "page" -%>
+      <div class="flex size-xxl-large-width size-xxl-no-flex size-xxl-flex-order-third">
         <%= render "breakdown" %>
       </div>
-      <% end -%>
-    </div>
+    <% end -%>
+
   </div>
-  <% end -%>
 </div>

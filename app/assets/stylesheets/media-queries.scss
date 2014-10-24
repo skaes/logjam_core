@@ -1,0 +1,230 @@
+@import 'mixins.scss';
+@import 'constants.scss';
+
+ /* Retina Display  */
+@media only screen and (-webkit-min-device-pixel-ratio: 2) {
+  th.sorted {
+    background-image: image-url('table_sorted_desc2x.png');
+
+    &:hover {
+      background-image: image-url('table_sort_desc2x.png');
+    }
+  }
+}
+
+@media all and (min-width: 1500px) {
+  .xxl-view .app-dashboard {
+    display: flex;
+
+    .size-xxl-small-width {
+      max-width: 200px;
+    }
+
+    .size-xxl-medium-width {
+      max-width: 300px;
+    }
+    .size-xxl-large-width {
+      max-width: 400px;
+    }
+
+    .size-xxl-no-flex {
+      display: block;
+
+      .item {
+        width: auto !important;
+
+        .value {
+          position: static;
+          margin: 5px 0
+        }
+      }
+    }
+
+    .size-xxl-flex-order-first {
+      order: 1;
+    }
+    .size-xxl-flex-order-second {
+      order: 2;
+    }
+    .size-xxl-flex-order-third {
+      order: 3;
+    }
+
+    .app-overview {
+      .item {
+        flex: 1 100%
+      }
+    }
+  }
+}
+
+@media all and (max-width: 1100px) {
+  #logjam-header {
+    position: static;
+  }
+  #logjam-container {
+    margin-top: 0;
+  }
+  #logjam-container {
+    display: block;
+    overflow: hidden;
+    box-sizing: border-box;
+    width: auto;
+    margin-right: 0px;
+  }
+
+  #logjam-content {
+    width: auto;
+  }
+
+  #enlarged-plot {
+    height: 70vh;
+  }
+
+  #distribution-plot {
+    height: 65vh;
+  }
+
+  .app-dashboard {
+    margin: 0 !important;
+    box-sizing: border-box;
+  }
+
+  #mobile-trigger {
+    color: $dark-grey;
+    display: block;
+    transition: padding 0.5s;
+    padding-left: 0;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 32px;
+  }
+
+  #logjam-sidebar {
+    box-shadow: 0 0 0 0 rgba(0,0,0,0);
+    left: -220px !important;
+    position: fixed !important;
+    z-index: 10000 !important;
+    transition: all 0.5s;
+    top: 0;
+    bottom: 0;
+    min-height: 0;
+    overflow-y: scroll; /* has to be scroll, not auto */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .sidebar-visible {
+    #logjam-sidebar {
+      left: 0 !important;
+      box-shadow: 0 0 50px 0 rgba(0,0,0,0.8);
+    }
+  }
+
+  .size-l-no-flex {
+    display: block !important;
+
+    .item {
+      min-width: 220px;
+      width: auto !important;
+    }
+  }
+}
+
+/* iPad Portrait  */
+@media all and (max-width: 800px) {
+  .app-overview {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+     overflow-x: scroll; /* has to be scroll, not auto */
+    -webkit-overflow-scrolling: touch;
+
+    .item {
+      min-width: 220px;
+
+    }
+  }
+
+  #logjam-header {
+    #auto-refresh {
+      width: 120px;
+      right: 30px;
+      left: auto;
+      top: 24px;
+    }
+  }
+}
+/* smartphone landscape */
+@media all and (max-width: 750px) {
+  .app-dashboard {
+    margin: 0 !important;
+
+    .flex {
+      display: block;
+      padding-right: 5px;
+      .item {
+      }
+    }
+  }
+
+  #logjam-header {
+    .application-chooser {
+      margin-left: 10px;
+      position: static;
+
+      .application-suggest {
+        width: 130px;
+      }
+
+      i.fa {
+        display: none;
+      }
+
+      .dropdown-menu {
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: auto;
+        z-index: 1000;
+      }
+
+      .active {
+        .dropdown-menu {
+          display: block;
+          box-sizing: border-box;
+        }
+      }
+    }
+  }
+}
+
+/* smartphone portrait */
+@media all and (max-width: 320px) {
+  #logjam-header {
+    display: block;
+
+    .section-chooser,
+    .enviroment-chooser {
+      overflow: hidden;
+      font-size: 18px;
+      margin-right: 20px;
+      padding-bottom: 5px !important;
+      margin-bottom: 5px !important;
+    }
+
+    .filter-item {
+      display: block;
+      line-height: normal;
+      margin-top: 0;
+      margin-top: 5px;
+      margin-left: 10px;
+    }
+
+    #auto-refresh {
+      width: 120px;
+      left: 10px;
+      top: 110px;
+    }
+  }
+}

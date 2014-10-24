@@ -1,50 +1,76 @@
-<%= render "header" %>
+<% section = @section == :backend ? :backend  : (params[:resource] == 'ajax_time' ? :ajax : :page)  %>
 
-<div id='exceptions'>
-  <h3>
-    <%= @title %> <%= hpn("for") %>
-    <%= clean_link_to(triangle_right,
-                      { :page => @page, :action => "totals_overview",
-                        :grouping => "page", :grouping_function => "apdex" },
-                      :title => "action overview by apdex score") %>
-  </h3>
-  <table class='full_stats'>
-    <tr><th>Apdex</th><th>Value/Request Count</th><th>Distribution over time (0-24h, 2 minute intervals)</th></tr>
-    <% i = 0; rating = apdex_rating(@totals.apdex_score) %>
-    <tr class='full_stats apdex <%= rating %> '>
-      <td><b>Score<br /><br />Goal<br /><br />Rating</b></td>
-      <td class='number'><%= float_number(@totals.apdex_score) %><br /><br />0.94<br /><br /><%= rating %></td>
-      <td class='echart' id='<%= "apdex-chart-#{i+=1}" %>'>
-        <%= render "apdex_chart", apdex_score: @minutes.apdex_score, i: i, height: 100 %>
-      </td>
-    </tr>
-    <tr class='full_stats apdex happy'>
-      <td><b>Happy</b><br />(t &lt; 0.1s)</td>
-      <td class='number'><%= integer_number(@totals.apdex["happy"]) %></td>
-      <td class='echart' id='<%= "echart-#{i+=1}" %>'>
-        <%= render "echart", exceptions: @minutes.apdex["happy"], i: i, url: nil, height: 90 %>
-      </td>
-    </tr>
-    <tr class='full_stats apdex satisfied'>
-      <td><b>Satisfied</b><br />(t &lt; 0.5s)</td>
-      <td class='number'><%= integer_number(@totals.apdex["satisfied"]) %></td>
-      <td class='echart' id='<%= "echart-#{i+=1}" %>'>
-        <%= render "echart", exceptions: @minutes.apdex["satisfied"], i: i, url: nil, height: 90 %>
-      </td>
-    </tr>
-    <tr class='full_stats apdex tolerating'>
-      <td><b>Tolerating</b><br />(0.5s &le; t &lt; 2s)</td>
-      <td class='number'><%= integer_number(@totals.apdex["tolerating"]) %></td>
-      <td class='echart' id='<%= "echart-#{i+=1}" %>'>
-        <%= render "echart", exceptions: @minutes.apdex["tolerating"], i: i, url: nil, height: 90 %>
-      </td>
-    </tr>
-    <tr class='full_stats apdex frustrated'>
-      <td><b>Frustrated</b><br />(t &ge; 2s)</td>
-      <td class='number'><%= integer_number(@totals.apdex["frustrated"]) %></td>
-      <td class='echart' id='<%= "echart-#{i+=1}" %>'>
-        <%= render "echart", exceptions: @minutes.apdex["frustrated"], i: i, url: nil, height: 90 %>
-      </td>
-    </tr>
-  </table>
+<%= render "header" %>
+<div id="logjam-container">
+  <%= render "sidebar" %>
+  <div id="logjam-content" class="app-dashboard ">
+    <div class="flex">
+      <div class="item has-action">
+        <h2><%= @title %> <%= hpn("for") %></h2>
+        <%= render :partial => "apdex_choices", :locals => {:section => section} %>
+        <table id="apdex-overview" class='full_stats'>
+          <colgroup>
+            <col span="1" style="width: 80px;">
+            <col span="1" style="width: 100px;">
+            <col span="1">
+          </colgroup>
+          <thead>
+            <tr>
+              <th>Apdex</th>
+              <th>Value/Request Count</th>
+              <th class="echart">Distribution over time (0-24h, 2 minute intervals)</th>
+            </tr>
+          </thead>
+            <% i = 0; rating = apdex_rating(@totals.apdex_score(section)) %>
+            <tr class='full_stats apdex <%= rating %> '>
+              <td><b>Score<br /><br />Goal<br /><br />Rating</b></td>
+              <td class='number'><%= float_number(@totals.apdex_score(section)) %><br /><br />0.94<br /><br /><%= rating %></td>
+              <td class='echart' id='<%= "apdex-chart-#{i+=1}" %>'>
+                <%= render "apdex_chart", apdex_score: @minutes.apdex_score(section), i: i, height: 100 %>
+              </td>
+            </tr>
+            <tr class='full_stats apdex happy'>
+              <td><b>Happy</b><br />(t &lt; <%= apdex_bounds[:happy] %>s)</td>
+              <td class='number'>
+                <%= integer_number(@totals.apdex(section)["happy"]) %><br /><%= "%.2f" % (100.0 * @dataset.happy(section)) %>%
+              </td>
+              <td class='echart' id='<%= "echart-#{i+=1}" %>'>
+                <%= render "echart", exceptions: @minutes.apdex(section)["happy"], i: i, url: nil, height: 90 %>
+              </td>
+            </tr>
+            <tr class='full_stats apdex satisfied'>
+              <td><b>Satisfied</b><br />(t &lt; <%= apdex_bounds[:satisfied] %>s)</td>
+              <td class='number'>
+                <%= integer_number(@totals.apdex(section)["satisfied"]) %><br /><%= "%.2f" % (100.0 * @dataset.satisfied(section)) %>%
+              </td>
+              <td class='echart' id='<%= "echart-#{i+=1}" %>'>
+                <%= render "echart", exceptions: @minutes.apdex(section)["satisfied"], i: i, url: nil, height: 90 %>
+              </td>
+            </tr>
+            <tr class='full_stats apdex tolerating'>
+              <td><b>Tolerating</b><br />(<%= apdex_bounds[:satisfied] %>s &le; t &lt; <%= apdex_bounds[:tolerating] %>s)</td>
+              <td class='number'>
+                <%= integer_number(@totals.apdex(section)["tolerating"]) %><br /><%= "%.2f" % (100.0 * @dataset.tolerating(section)) %>%
+              </td>
+              <td class='echart' id='<%= "echart-#{i+=1}" %>'>
+                <%= render "echart", exceptions: @minutes.apdex(section)["tolerating"], i: i, url: nil, height: 90 %>
+              </td>
+            </tr>
+            <tr class='full_stats apdex frustrated'>
+              <td><b>Frustrated</b><br />(t &ge; <%= apdex_bounds[:tolerating] %>s)</td>
+              <td class='number'>
+                <%= integer_number(@totals.apdex(section)["frustrated"]) %><br /><%= "%.2f" % (100.0 * @dataset.frustrated(section)) %>%
+              </td>
+              <td class='echart' id='<%= "echart-#{i+=1}" %>'>
+                <%= render "echart", exceptions: @minutes.apdex(section)["frustrated"], i: i, url: nil, height: 90 %>
+              </td>
+            </tr>
+          <thead>
+        </table>
+        <div class="action">
+          <%= clean_link_to("action overview by apdex score", { :page => @page, :action => "totals_overview", :grouping => "page", :grouping_function => "apdex", :section => params['section'] }, :title => "action overview by apdex score") %>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

@@ -4,10 +4,12 @@
      max_x: exceptions.keys.max || 0,
      max_y: exceptions.values.max || 0,
      url: url,
-     height: (height rescue 15)
+     height: (height rescue 25)
    }
    js_params[:data] = (0..js_params[:max_x]).each_with_object({}){|i,h|h[i]=-1}.merge!(exceptions).map{|k,v| [k,v]}
 %>
 <script type="text/javascript">
-logjam_echart(<%=raw Oj.dump(js_params)%>);
+  $(function(){
+    logjam_echart(<%=raw Oj.dump(js_params)%>);
+  })
 </script>

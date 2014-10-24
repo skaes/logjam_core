@@ -1,37 +1,44 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
-  <%= stylesheet_link_tag "application" %>
-  <%= javascript_include_tag "application" %>
-</head>
-<body>
+  <head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+    <%= stylesheet_link_tag "application" %>
+    <%= javascript_include_tag "application" %>
+  </head>
+  <body>
+    <div class="flex">
+      <div class="item col-1">
+        <aside>
+          <label>Grouping:</label>
+          <ul>
+            <li><a href="javascript:void(0)" onclick="logjam_load_graph_data('application', json_urls);">Applications</a></li>
+            <li><a href="javascript:void(0)" onclick="logjam_load_graph_data('module', json_urls);">Modules</a></li>
+            <li><a href="javascript:void(0)" onclick="logjam_load_graph_data('action', json_urls);">Actions</a></li>
+          </ul>
+        </aside>
 
-<aside>
-  <label>Grouping:</label>
-  <ul>
-    <li><a href="javascript:void(0)" onclick="logjam_load_graph_data('application', json_urls);">Applications</a></li>
-    <li><a href="javascript:void(0)" onclick="logjam_load_graph_data('module', json_urls);">Modules</a></li>
-    <li><a href="javascript:void(0)" onclick="logjam_load_graph_data('action', json_urls);">Actions</a></li>
-  </ul>
-</aside>
+        <p id="spinner">Please stand by while we fetch your data ...
+          <%= image_tag("spinner24.gif") %>
+        </p>
+        <p id="call-graph-info"></p>
+        <p id="call-graph-display"></p>
 
-<p id="spinner">Please stand by while we fetch your data ...
-<%= image_tag("spinner24.gif") %>
-</p>
-<p id="call-graph-info"></p>
-<p id="call-graph-display"></p>
+      </div>
+    </div>
 
-<%
-   json_urls = {}
-   %w(application module action).each do |group|
-       json_urls[group] = url_for(params.slice(:app,:env,:sort,:filter).merge(
-                                  :action => "call_relationships", :format => :json, :filter_data => 1, :group => group, :only_path => false))
-   end
-%>
-<script type="text/javascript">
-  var json_urls = <%=raw Oj.dump(json_urls) %>;
-  logjam_load_graph_data('<%= params[:group] %>', json_urls);
-</script>
+    <%-
+      json_urls = {}
+      %w(application module action).each do |group|
+         json_urls[group] = url_for(params.slice(:app,:env,:sort,:filter).merge(
+            :action => "call_relationships", :format => :json, :filter_data => 1, :group => group, :only_path => false))
+      end
+    -%>
+    <script type="text/javascript">
+      var json_urls = <%= raw Oj.dump(json_urls) %>;
+      logjam_load_graph_data('<%= params[:group] %>', json_urls);
+    </script>
+
+  </body>
+</html>

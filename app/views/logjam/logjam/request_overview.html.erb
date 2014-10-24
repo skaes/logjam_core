@@ -4,15 +4,22 @@
    resource_name = hrn(resource)
    options = {:resource => resource}
 -%>
-<div id='requests'>
-  <h3> Requests <%= hpn("for") %>
-    between <%= minute_to_human(@dataset.start_minute) %>
-    and <%= minute_to_human(@dataset.end_minute) %>,
-    sorted by <%= resource_name %>
-  </h3>
-  <%= render "result_navigator" %>
-  <table class='full_stats'>
-    <tr><th>severity</th><th>rc</th><th>time</th><th>action</th><th class="sorted"><%= resource_name %></th></tr>
-    <%= render "request_statistics", options.merge(:requests => @requests) %>
-  </table>
+<div id="logjam-container">
+  <%= render "sidebar" %>
+  <div id="logjam-content" class="app-dashboard">
+    <div class="flex">
+      <div class="item" id='requests'>
+        <h2> Requests <%= hpn("for") %>
+          between <%= minute_to_human(@dataset.start_minute) %>
+          and <%= minute_to_human(@dataset.end_minute) %>,
+          sorted by <%= resource_name %>
+        </h2>
+        <%= render "result_navigator" %>
+        <table class='full_stats'>
+          <tr><th>severity</th><th>rc</th><th>time</th><th>action</th><th class="sorted"><%= resource_name %></th></tr>
+          <%= render "request_statistics", options.merge(:requests => @requests) %>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>

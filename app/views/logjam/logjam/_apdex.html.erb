@@ -1,28 +1,34 @@
-<table id="apdex-table">
-  <tr>
-    <th colspan="2">apdex
-      <%= clean_link_to(triangle_right, {:action => "apdex_overview"}, :title => "show apdex overview") %>
-    </th>
-  </tr>
-  <tr>
-    <td>happy (t &lt; 0.1s)</td>
-    <td class="number" title="<%= @dataset.happy_count %>"><%= "%.2f" % (100.0 * @dataset.happy) %>%</td>
-  </tr>
-  <tr>
-    <td>satisfied (t &lt; 0.5s)</td>
-    <td class="number" title="<%= @dataset.satisfied_count %>"><%= "%.2f" % (100.0 * @dataset.satisfied) %>%</td>
-  </tr>
-  <tr>
-    <td>tolerating (0.5s &le; t &lt; 2s)</td>
-    <td class="number" title="<%= @dataset.tolerating_count %>"><%= "%.2f" % (100.0 * @dataset.tolerating) %>%</td>
-  </tr>
-  <tr>
-    <td>frustrated (t &ge; 2s)</td>
-    <td class="number" title="<%= @dataset.frustrated_count %>"><%= "%.2f" % (100.0 * @dataset.frustrated) %>%</td>
-  </tr>
-  <tr><td></td><td></td></tr>
-  <tr>
-    <td><%= link_to "apdex score", "http://www.apdex.org/overview.html", :title => "show definition" %></td>
-    <td class="number"><%= "%.2f" % @dataset.apdex %></td>
-  </tr>
-</table>
+<% if !@dataset.apdex(:backend).nan? %>
+<div class="item col-5 icon-action<% if "%.2f" % @dataset.apdex >= "0.94" %> apdex-ok<% end %><% if "%.2f" % @dataset.apdex < "0.94" %> apdex-fail<% end %>">
+  <%= clean_link_to(:action => "apdex_overview", :resource => 'total_time') do %>
+    <h2>Apdex Backend: <span class="number"><%= "%.2f" % @dataset.apdex(:backend) %></span></h2>
+  <% end %>
+  <table class="collapse-table full_stats">
+    <tr title="<%= integer_number @dataset.happy_count(:backend) %> requests">
+      <td>happy</td>
+      <td class="number">
+        <%= "%.2f" % (100.0 * @dataset.happy(:backend)) %>%
+      </td>
+    </tr>
+    <tr title="<%= integer_number @dataset.satisfied_count(:backend) %> requests">
+      <td>satisfied</td>
+      <td class="number">
+        <%= "%.2f" % (100.0 * @dataset.satisfied(:backend)) %>%
+      </td>
+    </tr>
+    <tr title="<%= integer_number @dataset.tolerating_count(:backend) %> requests">
+      <td>tolerating</td>
+      <td class="number">
+        <%= "%.2f" % (100.0 * @dataset.tolerating(:backend)) %>%
+      </td>
+    </tr>
+    <tr title="<%= integer_number @dataset.frustrated_count(:backend) %> requests">
+      <td>frustrated</td>
+      <td class="number">
+        <%= "%.2f" % (100.0 * @dataset.frustrated(:backend)) %>%
+      </td>
+    </tr>
+  </table>
+</div>
+<% end %>
+

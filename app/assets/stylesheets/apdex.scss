@@ -1,0 +1,21 @@
+@import 'mixins.scss';
+@import 'constants.scss';
+
+.apdex-ok { background-color: $apdex-ok !important; }
+.apdex-fail { background-color: $apdex-fail !important; }
+
+
+
+.full_stats .apdex-ok,
+.full_stats .apdex-fail {
+  background: none !important;
+  a { margin: 0 5px; }
+}
+
+.full_stats {
+  .gbox.apdex-ok { background-color: $apdex-ok !important; }
+  .gbox.apdex-fail { background-color: $apdex-fail !important; }
+}
+
+.apdex-ok > a { background-color: $apdex-ok !important; }
+.apdex-fail > a { background-color: $apdex-fail !important; }

@@ -1,0 +1,181 @@
+@import 'mixins.scss';
+@import 'constants.scss';
+
+#logjam-sidebar {
+  background: #2D353C;
+  min-width: 190px;
+  max-width: 190px;
+  position: fixed;
+  top: 45px;
+  bottom: 0;
+  color: $white;
+  overflow-y: auto;
+
+  h2 {
+    font-weight: normal;
+    font-size: 22px;
+  }
+
+  a {
+    color: $white;
+
+    &:hover {
+      background: none;
+    }
+  }
+
+  .logjam-menu {
+    border-bottom: 1px solid $dark-grey;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+
+    i {
+      width: 28px;
+    }
+    a {
+      color: $lighter-grey;
+    }
+
+    .active a {
+      color: $white;
+      text-decoration: underline;
+    }
+
+    .disabled a {
+      color: $grey;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    > li {
+      display: block;
+      font-size: 14px;
+      text-indent: 10px;
+
+      &.dropdown ul {
+        display: none;
+      }
+
+      a {
+        display: block;
+        position: relative;
+        line-height: 28px;
+      }
+
+      a.active {
+        background: #3b4751;
+      }
+
+      a.active + ul {
+        display: block;
+      }
+
+      &:before {
+        margin-right: 5px;
+      }
+
+      ul {
+        padding: 10px 10px 10px 20px;
+        font-size: 11px;
+        font-weight: normal;
+        text-transform: uppercase;
+        background: #212121;
+
+        li {
+          text-indent: 0;
+          margin: 6px 0;
+          padding-left: 20px;
+
+          &.active a:before {
+              content: " ";
+              height: 6px;
+              width: 6px;
+              border-radius: 50%;
+              background: #fff;
+              position: absolute;
+              top: 50%;
+              margin-top: -3px;
+              left: -10px;
+            }
+          a {
+            line-height: 14px;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+
+      &.open {
+        height: auto;
+      }
+    }
+  }
+
+  .admin {
+    text-transform: uppercase;
+    margin: 10px;
+  }
+
+  &.dashboard-apdex-overview {
+    min-width: 300px;
+
+    li {
+      height: 25px;
+      line-height: 25px;
+    }
+
+    ul {
+      margin-top: 20px;
+    }
+
+    li {
+      text-transform: capitalize;
+      height: 27px;
+      line-height: 27px;
+      border: 1px solid $grey;
+      margin-bottom: 5px;
+      position: relative;
+      border-radius: 1px;
+      overflow: hidden;
+
+      &.header {
+        border: none;
+        background: none;
+      }
+
+      .application-position {
+        position: absolute;
+        z-index: 20;
+        left: 10px;
+        font-weight: bold;
+        opacity: 0.5
+      }
+
+      .application-name {
+        position: absolute;
+        z-index: 20;
+        left: 30px;
+        font-weight: bold;
+      }
+
+      .application-apdex {
+        position: absolute;
+        z-index: 20;
+        left: 160px;
+      }
+
+      mark {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 10px;
+      }
+
+      &.apdex-ok mark { background: #2ECC71 }
+      &.apdex-notok mark { background: #F7856A }
+    }
+  }
+}

@@ -1,0 +1,231 @@
+@import 'mixins.scss';
+@import 'constants.scss';
+
+.bgdebug   { @include bgimg; background-image: image-url('debug.svg')   ;  }
+.bginfo    { @include bgimg; background-image: image-url('info.svg')    ;  }
+.bgwarn    { @include bgimg; background-image: image-url('warn.svg')    ;  }
+.bgerror   { @include bgimg; background-image: image-url('error.svg')   ;  }
+.bgfatal   { @include bgimg; background-image: image-url('fatal.svg')   ;  }
+.bgunknown { @include bgimg; background-image: image-url('unknown.svg') ;  }
+
+.red { color: red; }
+.info { color: #005ddd; }
+.sortable, .clickable { cursor: pointer; }
+.right { text-align: right; }
+.left { text-align: left; }
+.center { text-align: center; }
+.triangle { color: orange; }
+
+.lj-ico { vertical-align: top; width: 16px; height:16px; position: relative; }
+
+
+
+.btn {
+  border: 1px solid #c9c9c9;
+  background: none;
+  border-color: $light-grey;
+  color: $light-grey;
+  border-radius: 1px;
+  height: 24px;
+  font-size: 12px;
+  font-family: "Helvetica Neue", Verdana, Arial;
+  text-transform: uppercase;
+  display: inline-block;
+  padding: 0 10px;
+  cursor: pointer;
+
+  &.btn-small {
+    height: 21px;
+    line-height: 21px;
+    padding: 0 5px;
+  }
+
+  &.active {
+    background: #eee;
+    // color: $xing-green;
+  }
+}
+a.btn {
+  line-height: 17px;
+}
+
+.btn-group {
+  > .btn {
+    margin: 0;
+    display: inline;
+    float: left;
+    border-radius: 0;
+    border-left: 0;
+
+    &.active:first-child {
+      // border-color: $xing-green;
+    }
+
+    &:first-child {
+      border-radius: 3px 0 0 3px;
+      border-left: 1px solid $light-grey;
+    }
+
+    &:last-child {
+      border-radius: 0 3px 3px 0;
+    }
+  }
+}
+
+a.btn {
+  line-height: 22px;
+  height: 22px;
+}
+
+a.disabled {
+    color: $grey;
+    cursor: default;
+    pointer-events: none;
+}
+
+.dropdown-menu {
+  display: none;
+  border-radius: 1px;
+}
+
+.navicons {
+  border: 1px solid $lighter-grey;
+  border-top: 0px;
+  border-right: 0px;
+  padding: 2px;
+  border-radius: 1px;
+  z-index: 10;
+  display: inline-block;
+  font-size: 16px;
+  margin: 0;
+  margin-top: -11px;
+  margin-right: -11px;
+  position: absolute;
+  top: 10px;
+  right: 11px;
+
+  &.btn-group {
+    border: 0;
+  }
+
+  li {
+    display: inline
+  }
+
+  a {
+    color: $xing-green;
+    margin: 0px 5px;
+  }
+}
+
+.secticons {
+  border: 1px solid $lighter-grey;
+  border-top: 0px;
+  border-right: 0px;
+  padding: 2px;
+  border-radius: 1px;
+  z-index: 10;
+  display: inline-block;
+  font-size: 16px;
+  margin: 0;
+  margin-top: -4px;
+  margin-right: -4px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+
+  &.btn-group {
+    border: 0;
+  }
+}
+
+.box {
+    position: absolute;
+    left:0;
+    top: -2px;
+    background-color: rgba(255,0,0,0.4);
+    width: 0px;
+    height: 3px;
+}
+
+.invisible { visibility:hidden; display:none; }
+
+.warning {
+    font-size: 200%;
+    color: blue;
+}
+
+.error {color:red;}
+.error a {color:red;}
+.warn {color:brown;}
+.warn a {color:brown;}
+
+.timestamp {font-weight:bold;}
+
+.controls form { display: inline; }
+.controls a {color: blue; margin-left: 5px; }
+.controls a:hover {font-weight: bold; }
+
+.resource_name {
+    vertical-align: top;
+    white-space: nowrap;
+    text-transform: uppercase;
+}
+
+#request-info .resource_name {
+    text-transform: none;
+}
+
+.autocomplete-suggestions {
+  box-shadow: 0 6px 15px -5px rgba(0,0,0,0.5);
+  background: $white;
+  cursor: default;
+  text-align: left;
+  border-radius: 1px;
+  background: $dark-grey;
+  color: $white;
+  position: relative;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  min-width: 150px;
+
+  &:before {
+    content: " ";
+    position: absolute;
+    top: -5px;
+    left: 5px;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid $dark-grey;
+  }
+
+  .autocomplete-selected {
+    background: $xing-green;
+  }
+
+  .autocomplete-suggestion {
+    padding: 5px 15px;
+    white-space: nowrap;
+    overflow: hidden;
+
+    &:first-child {
+      border-radius: 1px 1px 0 0;
+    }
+    &:last-child {
+      border-radius: 0 0 1px 1px;
+    }
+
+    strong {
+      font-weight: normal;
+      color: #3399FF;
+    }
+  }
+}
+
+th {
+  border-bottom: 1px solid $lighter-grey;
+
+  &[onclick] {
+    cursor: pointer;
+  }
+}

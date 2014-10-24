@@ -1,0 +1,74 @@
+<% time_resources = Logjam::Resource.frontend_resources
+   dom_resources = Logjam::Resource.dom_resources
+   colors = Logjam::Resource.colors
+   pie_colors = Logjam::Resource.colors_with_transparency(0.7)
+   s = @dataset.summary
+   chart_size = 100
+-%>
+
+<% resources = time_resources - %w(frontend_time ajax_time page_time) -%>
+<% selected = time_resources.include?(params[:resource]) ? " selected" : "" %>
+<div class="item icon-action<%= selected %>">
+  <%= sometimes_link_resource(time_resources, 'page_time') do %>
+  <h2>Time</h2>
+  <% end %>
+  <div class="flex-row">
+    <div id="time-resources" class="breakdown-chart">
+      <%= render :partial => "simple_pie", :locals => {
+            :data => resources.map{|r| s.avg(r)},
+            :legend => resources,
+            :container => "time-resources",
+            :onclick => "view_resource('page_time')",
+            :colors => pie_colors.values_at(*resources), :size => chart_size } %>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <% (time_resources - %w(frontend_time)).reverse.each do |name| -%>
+          <% next if (value = s.avg(name)).zero?  -%>
+          <tr>
+            <td class="resource_name"><%= hrn name %></td>
+            <td class="number" style="color:<%= raw(colors[name] || '#000') %>;">
+              <%= number_with_precision(value, :precision => 2) %> ms
+            </td>
+          </tr>
+        <% end -%>
+      </table>
+    </div>
+  </div>
+</div>
+
+<% unless s.zero_resources?(dom_resources) %>
+<% selected = dom_resources.include?(params[:resource]) ? " selected" : "" %>
+<div class="item icon-action<%= selected %>">
+  <% resources = dom_resources -%>
+  <%= sometimes_link_resource(resources, 'html_nodes') do %>
+  <h2>Dom</h2>
+  <% end %>
+  <div class="flex-row">
+    <div id="dom-resources" class="breakdown-chart">
+      <%= render :partial => "simple_pie", :locals => {
+            :data =>  resources.map{|r| s.avg(r)},
+            :legend => resources,
+            :container => "dom-resources",
+            :onclick => "view_resource('html_nodes')",
+            :colors => pie_colors.values_at(*resources), :size => chart_size
+          } %>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <% dom_resources.each do |name| -%>
+          <% next if (value = s.avg(name)).zero?  -%>
+          <tr>
+            <td class="resource_name">
+              <%= hrn name %>
+            </td>
+            <td class="number" style="color:<%= raw(colors[name] || '#000') %>;">
+              <%= number_with_precision(value, :precision => 2) %>
+            </td>
+          </tr>
+        <% end -%>
+      </table>
+    </div>
+  </div>
+</div>
+<% end %>

@@ -1,37 +1,53 @@
 <%= render "header" %>
-<%
-  available_shapes = ["circle", "square", "diamond", "triangle-down"]
-  num_shapes = available_shapes.length
-  resources, colors, data, shapes = [], [], {}, []
-  max_x = 100
-  max_y = 1
-  i = -1
-  @resources.reverse.each do |r|
-    rd = @dataset.histogram_data(r)
-    next if rd == []
-    resources << r
-    colors << Logjam::Resource.color(r,0.7)
-    shapes << (r == "gc_time" ? "cross" : available_shapes[(i+=1) % num_shapes])
-    data[r] = rd
-    max_x = [max_x, rd.map(&:first).max].max
-    max_y = [max_y, rd.map(&:second).max].max
-  end
-  js_params = {
-  xmin: @xmin,
-  max_y: max_y,
-  max_x: max_x,
-  data: data,
-  legend: resources.map{|r| r.gsub(/_/,' ')},
-  shapes: shapes,
-  colors: colors,
-  resources: resources,
-  xlabel: @xlabel,
-  title: "#{@xlabel} distribution on #{@dataset.date} for #{@dataset.page_description}",
-  }
-%>
+<div id="logjam-container">
+  <%= render "sidebar" %>
+  <div id="logjam-content" class="app-dashboard">
 
-<div id='distribution-plot'>
-  <script type="text/javascript">
-    logjam_quants_plot(<%=raw Oj.dump(js_params)%>);
-  </script>
+    <div class="flex">
+
+    <%
+      available_shapes = ["circle", "square", "diamond", "triangle-down"]
+      num_shapes = available_shapes.length
+      resources, colors, data, shapes = [], [], {}, []
+      max_x = 100
+      max_y = 1
+      i = -1
+      @resources.reverse.each do |r|
+        rd = @dataset.histogram_data(r)
+        next if rd[:points].blank?
+        resources << r
+        colors << Logjam::Resource.color(r,0.7)
+        shapes << (r == "gc_time" ? "cross" : available_shapes[(i+=1) % num_shapes])
+        data[r] = rd
+        max_x = [max_x, rd[:points].map(&:first).max].max
+        max_y = [max_y, rd[:points].map(&:second).max].max
+      end
+      js_params = {
+        xmin: @xmin,
+        max_y: max_y,
+        max_x: max_x,
+        data: data,
+        legend: resources.map{|r| r.gsub(/_/,' ')},
+        shapes: shapes,
+        colors: colors,
+        resources: resources,
+        xlabel: @xlabel,
+        title: "#{@xlabel} distribution on #{@dataset.date} for #{@dataset.page_description}",
+      }
+    %>
+
+      <div class="item">
+        <h2><%= @title %></h2>
+        <%= render "section_toggle" %>
+        <div id="distribution-plot"></div>
+        <script type="text/javascript">
+          logjam_quants_plot(<%=raw Oj.dump(js_params)%>);
+          $(window).on('resize', function(){
+            $('#distribution-plot').html('');
+            logjam_quants_plot(<%=raw Oj.dump(js_params)%>);
+          })
+        </script>
+      </div>
+    </div>
+  </div>
 </div>

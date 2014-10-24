@@ -1,24 +1,32 @@
 function logjam_resource_plot(params) {
-
-  var events   = params.events;
-  var data     = params.data;
-  var interval = params.interval;
-  var colors   = params.colors;
-  var legend   = params.legend;
-  var request_counts = params.request_counts;
-  var gc_time = params.gc_time;
-  var max_y = params.max_y;
-  var zoomed_max_y = params.zoomed_max_y;
-  var selected_slice = params.selected_slice;
-  var selected_slice_width = params.selected_slice_width;
-  var max_request_count = d3.max(request_counts);
+  var events               = params.events,
+      data                 = params.data,
+      interval             = params.interval,
+      colors               = params.colors,
+      legend               = params.legend,
+      request_counts       = params.request_counts,
+      gc_time              = params.gc_time,
+      max_y                = params.max_y,
+      zoomed_max_y         = params.zoomed_max_y,
+      selected_slice       = params.selected_slice,
+      selected_slice_width = params.selected_slice_width,
+      container            = params.container,
+      max_request_count    = d3.max(request_counts);
 
   /* Animation */
   var zoom_interval = 1;
 
+  function get_height() {
+    var enlarged_size = $('#enlarged-plot').height() - 130;
+    if (enlarged_size > 0) {
+      return enlarged_size;
+    }
+    var parent_height = $(container).parent('.item').height() - 100;
+    return parent_height > 170 ? parent_height : 170;
+  }
   /* Sizing and scales. */
-  var w = params.w,
-      h = params.h,
+  var w = (document.getElementById(container.slice(1)).offsetWidth - 60 < 400) ? 626 : document.getElementById(container.slice(1)).offsetWidth - 60,
+      h = get_height(),
       xticks = d3.range(25).map(function(h){ return h/interval*60; }),
       x      = d3.scale.linear().domain([0, 1440/interval]).range([0, w]),
       y      = d3.scale.linear().domain([0, zoomed_max_y]).range([h, 0]).nice(),
@@ -57,7 +65,7 @@ function logjam_resource_plot(params) {
   var vis = d3.select(params.container)
         .append("svg")
         .attr("width", w+50)
-        .attr("height", h+100)
+        .attr("height", h+80)
         .style("stroke", "#999")
         .style("strokeWidth", 1.0)
         .on("click", update_y_scale)
@@ -69,7 +77,7 @@ function logjam_resource_plot(params) {
     .attr("class", "label")
     .attr("dy", h+30)
     .attr("dx", w/2)
-    .style("font", "12px sans-serif")
+    .style("font", "12px Helvetica Neue")
     .attr("text-anchor", "middle")
     .text("Time of day");
 
@@ -112,15 +120,15 @@ function logjam_resource_plot(params) {
     .attr("dx", 0)
     .attr("dy", 12)
     .attr("text-anchor", "middle")
-    .style("font", "8px sans-serif")
+    .style("font", "8px Helvetica Neue")
     .text(function(d){return (d*interval)/60;});
 
   /* Y-label */
   vis.append("svg:text")
     .attr("class", "label")
     .attr("dy", -25)
-    .attr("dx", -w/2+140)
-    .style("font", "12px sans-serif")
+    .attr("dx", -h/2)
+    .style("font", "12px Helvetica Neue")
     .attr("text-anchor", "middle")
     .attr("transform", "rotate(270)")
     .text(params.ylabel);
@@ -147,7 +155,7 @@ function logjam_resource_plot(params) {
       .attr("dx", -10)
       .attr("dy", 3)
       .attr("text-anchor", "middle")
-      .style("font", "8px sans-serif")
+      .style("font", "8px Helvetica Neue")
       .text(y_ticks_formatter);
     vlabels.exit().remove();
 
@@ -196,15 +204,15 @@ function logjam_resource_plot(params) {
     .enter()
     .append("text")
     .attr("class", "rlabel")
-    .style("font", "10px sans-serif")
+    .style("font", "10px Helvetica Neue")
     .attr("text-anchor", "end")
-    .attr("y", function(d,i){ return 50-i*25-1 })
+    .attr("y", function(d,i){ return 50-i*25-1; })
     .attr("x", w-1)
     .text(function(d){ return request_count_formatter(y2.invert(d)); });
 
 
   var request_area = d3.svg.area()
-        .interpolate("cardinal")
+        .interpolate("monotone")
         .x(function(d) { return x(d.x+0.5); })
         .y0(function(d) { return y2(d.y0); })
         .y1(function(d) { return y2(d.y + d.y0); });
@@ -291,7 +299,6 @@ function logjam_resource_plot(params) {
     offsetY: -20,
     gravity: 's',
     html: false,
-    opacity: 0.7,
     title: function() { return request_tooltip_text; }
   });
 
@@ -305,7 +312,7 @@ function logjam_resource_plot(params) {
     .style("fill", "rgba(255,0,0,0.3)");
 
   var area = d3.svg.area()
-        .interpolate("step-after")
+        .interpolate("monotone")
         .x(function(d) { return x(d.x+.5); })
         .y0(function(d) { return y(d.y0); })
         .y1(function(d) { return y(d.y+d.y0); });
@@ -357,7 +364,6 @@ function logjam_resource_plot(params) {
     offsetY: -20,
     gravity: 's',
     html: false,
-    opacity: 0.7,
     title: function() { return layer_tooltip_text; }
   });
 
@@ -431,7 +437,6 @@ function logjam_resource_plot(params) {
     offsetY: 20,
     gravity: 'w',
     html: false,
-    opacity: 0.7,
     title: function() { return event_tooltip_text; }
   };
 

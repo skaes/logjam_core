@@ -2,6 +2,13 @@ function logjam_history_bar_chart(data, metric, params) {
 
   var week_end_colors = params.week_end_colors;
   var week_day_colors = params.week_day_colors;
+  var title = metric.replace(/_/g,' ');
+  if (title == 'apdex score')
+    title = 'apdex score «total time»';
+  else if (title == 'papdex score')
+    title = 'apdex score «page time»';
+  else if (title == 'xapdex score')
+    title = 'apdex score «ajax time»';
 
   function week_day(date) {
     var day = date.getDay();
@@ -16,24 +23,28 @@ function logjam_history_bar_chart(data, metric, params) {
     return (week_day(date) ? "bar weekday" : "bar weekend");
   }
 
-  var margin = {top: 20, right: 20, bottom: 50, left: 150},
-      width = 1100 - margin.left - margin.right,
-      height = 150 - margin.top - margin.bottom;
+  var margin = {top: 25, right: 80, bottom: 50, left: 80},
+      width = document.getElementById('request-history').offsetWidth - margin.left - margin.right - 80,
+      height = 150 - margin.top - margin.bottom,
 
-  var date_min = d3.min(data, function(d){ return d.date; }),
-      date_max = d3.max(data, function(d){ return d.date; });
+      date_min = d3.min(data, function(d){ return d.date; }),
+      date_max = d3.max(data, function(d){ return d.date; }),
 
-  var relevant_data = data.filter(function(d){ return (metric in d); });
+      relevant_data = data.filter(function(d){ return (metric in d); }),
 
-  var data_min = d3.min(relevant_data, function(d){ return d[metric]; }),
+      data_min = d3.min(relevant_data, function(d){ return d[metric]; }),
       data_max = d3.max(relevant_data, function(d){ return d[metric]; });
 
-  /*
-  if (metric == "apdex_score") {
+  if (typeof data_min == 'undefined')
+    return; // no data
+
+  if (data_min == data_max)
+    data_min = 0;
+
+  if (metric == "apdex_score" || metric == "xapdex_score" || metric == "papdex_score") {
     data_max = 1.0;
     data_min = d3.min([0.92, data_min]);
   }
-  */
 
   var formatter = d3.format(",.r");
 
@@ -77,7 +88,7 @@ function logjam_history_bar_chart(data, metric, params) {
       .attr("x", 1)
       .attr("dy", ".71em")
       .style("text-anchor", "begin")
-      .text(metric.replace(/_/g,' '));
+      .text(title);
 
   var bar_tooltip_text = "";
   var tooltip_formatter = d3.format(",.3r");
@@ -111,7 +122,6 @@ function logjam_history_bar_chart(data, metric, params) {
     offsetY: -20,
     gravity: 's',
     html: false,
-    opacity: 0.8,
     title: function() { return bar_tooltip_text; }
   });
 }

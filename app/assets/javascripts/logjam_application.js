@@ -1,4 +1,4 @@
-// This is a manifest file that'll be compiled into application.js, which will include all the files
+ // This is a manifest file that'll be compiled into application.js, which will include all the files
 // listed below.
 //
 // Any JavaScript/Coffee file within this directory, lib/assets/javascripts, vendor/assets/javascripts,
@@ -10,12 +10,13 @@
 // WARNING: THE FIRST BLANK LINE MARKS THE END OF WHAT'S TO BE PROCESSED, ANY BLANK LINE SHOULD
 // GO AFTER THE REQUIRES BELOW.
 //
-//= require d3.v3.min
-//= require jquery-1.11.1.min
+//= require jquery-2.1.1
 //= require jquery-migrate-1.2.1.min
-//= require jquery.jdpicker
+//= require jquery.jdpicker.1.1
 //= require jquery.autocomplete
 //= require jquery.tipsy
+//= require select2
+//= require d3.v3.min
 //= require logjam-filter
 //= require uri
 //= require logjam-header
@@ -29,3 +30,6 @@
 //= require logjam-livestream
 //= require logjam-call-graph
 //= require logjam-ready
+//= require logjam-mobile
+//= require logjam-keyboard-controls
+

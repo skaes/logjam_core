@@ -1,0 +1,34 @@
+@import 'mixins.scss';
+@import 'constants.scss';
+
+.xlabel, .ylabel, .legend, .label, .rlabel, .tooltip {
+  font-size: 8px;
+  stroke: none;
+  fill: $black;
+  stroke-width: 0.5;
+  shape-rendering: crispEdges;
+}
+
+#request-history {
+  text {
+    font-size: 11px;
+  }
+  .title {
+    text-transform: uppercase;
+    font-size: 14px;
+    fill: $xing-green;
+  }
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: $black;
+    shape-rendering: crispEdges;
+  }
+  .bar,
+  .weekday {
+    fill: steelblue;
+  }
+  .weekend {
+    fill: #90B4D2;
+  }
+}

@@ -8,17 +8,17 @@ function logjam_live_stream_chart(params){
   var transparent_ico_path = params.transparent_ico_path;
 
   /* Sizing and scales. */
-  var w = 600,
+  var w = parseInt(document.getElementById('live-stream-chart').offsetWidth - 100, 10),
       h = 300,
       slice = 10,
-      x = d3.scale.linear().domain([0, w]).range([0, w]),
+      x = d3.scale.linear().domain([0, 600]).range([0, w]),
       y = d3.scale.linear().domain([0, 100]).range([h, 0]).nice(),
       y2 = d3.scale.linear([0, 0]).range([50,0]).nice(),
       color_map = d3.scale.ordinal().domain(colors);
   var c = color_map.range();
 
   /* Data */
-  function zeros(){ return d3.range(w/slice+2).map(function(){ return 0;}); }
+  function zeros(){ return d3.range(600/slice+2).map(function(){ return 0;}); }
   var data = d3.range(resources.length).map(zeros);
   var request_counts = zeros();
 
@@ -46,14 +46,14 @@ function logjam_live_stream_chart(params){
         .attr("y", 4)
         .attr("text-anchor", "start")
         .attr("dy", ".71em")
-        .style("font", "bold 14px sans-serif")
+        .style("font", "bold 14px Helvetica Neue")
         .style("fill", connection_status_color)
         .style("stroke", "none")
         .text(connection_status);
 
   /* Vertical grid lines */
   vis.selectAll(".yrule")
-    .data(x.ticks(w/slice))
+    .data(x.ticks(600/slice))
     .enter()
     .append("line")
     .attr("class", "yrule")
@@ -73,7 +73,7 @@ function logjam_live_stream_chart(params){
     .attr("dx", 2)
     .attr("text-anchor", "middle")
     .attr("dy", ".71em")
-    .style("font", "10px sans-serif")
+    .style("font", "10px Helvetica Neue")
     .style("fill", "#000")
     .style("stroke", "none")
     .attr("display", function(d){ return (d && ((d/slice)%10==0)) ? null : "none";})
@@ -92,8 +92,8 @@ function logjam_live_stream_chart(params){
   vis.append("svg:text")
     .attr("class", "label")
     .attr("dy", -25)
-    .attr("dx", -w/2+140)
-    .style("font", "14px sans-serif")
+    .attr("dx", -h/2)
+    .style("font", "14px Helvetica Neue")
     .style("fill", "#999")
     .style("stroke", "none")
     .attr("text-anchor", "middle")
@@ -101,7 +101,7 @@ function logjam_live_stream_chart(params){
     .text("Response time (ms)");
 
   var area = d3.svg.area()
-        .interpolate("cardinal")
+        .interpolate("monotone")
         .x(function(d) { return x(d.x*slice); })
         .y0(function(d) { return y(d.y0); })
         .y1(function(d) { return y(d.y + d.y0); });
@@ -137,7 +137,7 @@ function logjam_live_stream_chart(params){
 
   /* Request counts. */
   var request_area = d3.svg.area()
-        .interpolate("cardinal")
+        .interpolate("monotone")
         .x(function(d) { return x(d.x*slice); })
         .y0(function(d) { return y2(d.y0); })
         .y1(function(d) { return y2(d.y + d.y0); });
@@ -158,7 +158,7 @@ function logjam_live_stream_chart(params){
     .attr("class", "legend")
     .attr("x", function(d,i){ return 10+(120*(Math.floor(i/2))); })
     .attr("y", function(d,i){ return h+30+14*(i%2); })
-    .style("font", "10px sans-serif")
+    .style("font", "10px Helvetica Neue")
     .style("stroke", "none")
     .style("fill", "#000")
     .text(String);
@@ -183,7 +183,7 @@ function logjam_live_stream_chart(params){
     .style("stroke", "none")
     .style("fill", "#000")
     .attr("class", "rlabel")
-    .style("font", "10px sans-serif")
+    .style("font", "10px Helvetica Neue")
     .attr("text-anchor", "end")
     .attr("y", function(d,i){ return 50-i*25-1; })
     .attr("x", w-1)
@@ -352,7 +352,7 @@ function logjam_live_stream_chart(params){
       .attr("dx", -10)
       .attr("dy", 3)
       .attr("text-anchor", "middle")
-      .style("font", "10px sans-serif")
+      .style("font", "10px Helvetica Neue")
       .style("stroke", "none")
       .style("fill", "#000")
       .text(String);
@@ -400,6 +400,7 @@ function logjam_live_stream_chart(params){
 
   /* toggle stream conection */
   function toggle_stream(button) {
+    button.toggleClass('active');
     if (button.val() == "resume") {
       button.val("pause");
       connect_chart();
@@ -411,6 +412,7 @@ function logjam_live_stream_chart(params){
 
   /* toggle warning level */
   function toggle_warnings(button) {
+    button.toggleClass('active');
     if (button.val() == "show warnings") {
       button.val("hide warnings");
       warning_level = 2;
@@ -422,6 +424,7 @@ function logjam_live_stream_chart(params){
 
   /* toggle smoothness */
   function toggle_smoothness(button) {
+    button.toggleClass('active');
     if (button.val() == "smooth updates") {
       button.val("discrete updates");
       update_interval = 1000;
@@ -432,7 +435,8 @@ function logjam_live_stream_chart(params){
   }
 
   /* automatically connect to the data stream when the ducoment is ready */
-  $(document).ready(function(){
+  $(function(){
+    console.log(ws);
     $("#stream-toggle").on("click", function(){ toggle_stream($(this)); });
     $("#warnin-toggle").on("click", function(){ toggle_warnings($(this)); });
     $("#smooth-toggle").on("click", function(){ toggle_smoothness($(this)) ;});

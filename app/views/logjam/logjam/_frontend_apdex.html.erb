@@ -1,0 +1,33 @@
+<div class="item icon-action<% if "%.2f" % @dataset.apdex(:frontend) >= "0.94" %> apdex-ok<% end %><% if "%.2f" % @dataset.apdex(:frontend) < "0.94" %> apdex-fail<% end %>">
+  <%= clean_link_to(:action => "apdex_overview", :section => :frontend) do %>
+    <h2>Apdex Frontend: <span class="number"><%= "%.2f" % @dataset.apdex(:frontend) %></span></h2>
+  <% end %>
+  <table class="collapse-table full_stats">
+    <tr>
+      <td>happy&nbsp;(t&nbsp;&lt;&nbsp;0.5s)</td>
+      <td class="number" title="<%= integer_number @dataset.happy_count(:frontend) %>">
+        <%= "%.2f" % (100.0 * @dataset.happy(:frontend)) %>%
+      </td>
+    </tr>
+    <tr>
+      <td>satisfied&nbsp;(t&nbsp;&lt;&nbsp;2s)</td>
+      <td class="number" title="<%= integer_number @dataset.satisfied_count(:frontend) %>">
+        <%= "%.2f" % (100.0 * @dataset.satisfied(:frontend)) %>%
+      </td>
+    </tr>
+    <tr>
+      <td>tolerating&nbsp;(2s&nbsp;&le;&nbsp;t&nbsp;&lt;&nbsp;8s)</td>
+      <td class="number" title="<%= integer_number @dataset.tolerating_count(:frontend) %>">
+        <%= "%.2f" % (100.0 * @dataset.tolerating(:frontend)) %>%
+      </td>
+    </tr>
+    <tr>
+      <td>frustrated&nbsp;(t&nbsp;&ge;&nbsp;8s)</td>
+      <td class="number" title="<%= integer_number @dataset.frustrated_count(:frontend) %>">
+        <%= "%.2f" % (100.0 * @dataset.frustrated(:frontend)) %>%
+      </td>
+    </tr>
+  </table>
+</div>
+
+

@@ -7,6 +7,10 @@ module Logjam
 
     def initialize(page_info, resources)
       @page_info = page_info
+      @page_info["count"] ||= 0
+      @page_info["page_count"] ||= 0
+      @page_info["ajax_count"] ||= 0
+      @page_info["frontend_count"] ||= 0
       @resources = resources
     end
 
@@ -18,8 +22,13 @@ module Logjam
       @page_info["page"] = page
     end
 
-    def count(resource=nil)
-      @page_info["count"]
+    def backend_count; @page_info["count"]; end
+    def frontend_count; @page_info["frontend_count"]; end
+    def ajax_count; @page_info["ajax_count"]; end
+    def page_count; @page_info["page_count"]; end
+
+    def count(resource="total_time")
+      @page_info[Apdex.counter(resource)]
     end
 
     def sum(resource)
@@ -31,24 +40,28 @@ module Logjam
     end
 
     def avg(resource)
-      sum(resource) / count.to_f
+      sum(resource) / count(resource).to_f
     end
 
     def stddev(resource)
       @page_info["#{resource}_stddev"] ||=
         begin
-          n, s, sq = count, sum(resource), sum_sq(resource)
+          n, s, sq = count(resource), sum(resource), sum_sq(resource)
           a = avg(resource)
           (n == 1 || s == 0) ? 0.0 : Math.sqrt((sq - n*a*a).abs/(n-1).to_f)
         end
     end
 
-    def apdex
-      @page_info["apdex"] ||= {}
+    def apdex(section = :backend)
+      @page_info[Apdex.apdex(section)] ||= {}
     end
 
-    def apdex_score
-      (apdex["satisfied"].to_f + apdex["tolerating"].to_f / 2.0) / count.to_f
+    def fapdex; apdex(:frontend); end
+    def papdex; apdex(:page); end
+    def xapdex; apdex(:ajax); end
+
+    def apdex_score(section = :backend)
+      (apdex(section)["satisfied"].to_f + apdex(section)["tolerating"].to_f / 2.0) / count(section).to_f
     end
 
     def response
@@ -99,12 +112,23 @@ module Logjam
     end
 
     def add(other)
-      @page_info["count"] += other.count
+      @page_info["count"] += other.backend_count
+      @page_info["page_count"] += other.page_count
+      @page_info["ajax_count"] += other.ajax_count
+      @page_info["frontend_count"] += other.frontend_count
       @resources.each do |r|
-        @page_info[r] = sum(r) + other.sum(r)
-        @page_info["#{r}_sq"] = sum_sq(r) + other.sum_sq(r)
+        begin
+          @page_info[r] = sum(r) + other.sum(r)
+          @page_info["#{r}_sq"] = sum_sq(r) + other.sum_sq(r)
+        rescue
+          Rails.logger.error("MUUUU[#{r}]: #{@page_info.inspect}, !!! #{sum(r)}  !!! #{other.send :inspect}")
+          raise
+        end
       end
       other.apdex.each {|x,y| apdex[x] = (apdex[x]||0) + y}
+      other.fapdex.each {|x,y| fapdex[x] = (fapdex[x]||0) + y}
+      other.papdex.each {|x,y| papdex[x] = (papdex[x]||0) + y}
+      other.xapdex.each {|x,y| xapdex[x] = (xapdex[x]||0) + y}
       other.response.each {|x,y| response[x] = (response[x]||0) + y}
       other.severity.each {|x,y| severity[x] = (severity[x]||0) + y}
       other.exceptions.each {|x,y| exceptions[x] = (exceptions[x]||0) + y}
@@ -116,6 +140,9 @@ module Logjam
       res = super
       res.page_info = pi = @page_info.clone
       pi["apdex"] = pi["apdex"].clone if pi["apdex"]
+      pi["fapdex"] = pi["fapdex"].clone if pi["fapdex"]
+      pi["papdex"] = pi["papdex"].clone if pi["papdex"]
+      pi["xapdex"] = pi["xapdex"].clone if pi["xapdex"]
       pi["response"] = pi["response"].clone if pi["response"]
       pi["severity"] = pi["severity"].clone if pi["severity"]
       pi["exceptions"] = pi["exceptions"].clone if pi["exceptions"]
@@ -131,8 +158,10 @@ module Logjam
     def to_hash
       {
         page: page,
-        count: count,
+        count: count('total_time'),
         apdex: apdex.merge(t: 0.5, score: apdex_score),
+        papdex: apdex.merge(t: 2.0, score: apdex_score(:page)),
+        aapdex: apdex.merge(t: 2.0, score: apdex_score(:ajax)),
         response_codes: response,
       }.tap do |h|
         h[:exceptions] = exceptions unless exceptions.empty?
@@ -165,29 +194,15 @@ module Logjam
       collection
     end
 
-    def self.update_severities(db)
-      totals = db["totals"]
-      pages = totals.distinct(:page)
-      pages.each do |page|
-        severities = {}
-        [2, 3, 4].each do |severity|
-          requests = Requests.new(db, nil, page, :severity => severity)
-          num_requests = requests.count(:severity => severity)
-          severities["severity.#{severity}"] = num_requests if num_requests > 0
-        end
-        unless severities.empty?
-          # puts "#{page}, #{severities.inspect}"
-          totals.update({:page => page}, {'$set' => severities}, {:upsert => false, :multi => false})
-        end
-      end
-    end
-
     attr_reader :resources, :pattern, :pages
 
     def initialize(db, resources=[], pattern='', page_name_list=nil)
       super(db, "totals")
       @resources = resources.dup
       @apdex = @resources.delete("apdex")
+      @fapdex = @resources.delete("fapdex")
+      @papdex = @resources.delete("papdex")
+      @xapdex = @resources.delete("xapdex")
       @response = @resources.delete("response")
       @severity = @resources.delete("severity")
       @exceptions = @resources.delete("exceptions")
@@ -199,6 +214,8 @@ module Logjam
       @avg = {}
       @sum_sq = {}
       @stddev = {}
+      @count = {}
+      @apdex_hash = {}
     end
 
     def the_pages
@@ -232,20 +249,23 @@ module Logjam
     end
 
     def pages(options)
+      # section = options[:section]
+      resource = options[:resource]
       limit = options[:limit] || 1000
       filter = options[:filter]
-      pages = self.the_pages
+      pages = self.the_pages.clone
       pages.reject!{|p| !filter.call(p.page)} if filter
+      pages.reject!{|p| p.count(resource) == 0 }
       if order = options[:order]
         case order.to_sym
         when :count
-          pages.sort_by!{|r| -r.count}
+          pages.sort_by!{|r| -r.count(resource)}
         when :apdex
-          pages.sort_by!{|r| r.apdex_score}
+          pages.sort_by!{|r| v = r.apdex_score(resource); v.nan? ? 1.1 : v}
         else
           raise "unknown sort method: #{order}" unless order.to_s =~ /^(.+)_(sum|avg|stddev)$/
           resource, function = $1, $2
-          pages.sort_by!{|r| -r.send(function, resource)}
+          pages.sort_by!{|r| v = r.send(function, resource); v.is_a?(Float) && v.nan? ? 0 : -v}
         end
       end
       return pages if pages.size <= limit
@@ -254,20 +274,43 @@ module Logjam
       proper << combine_pages(rest)
     end
 
-    def count
-      @count ||= the_pages.inject(0){|n,p| n += p.count}
+    def count(resource = 'total_time')
+      @count[resource] ||= the_pages.inject(0){|n,p| n += p.count(resource)}
     end
 
-    def request_count
-      @request_count ||=
-        begin
-          query = "Totals.request_count"
-          with_conditional_caching(query) do |payload|
-            rows = @collection.find({:page=>"all_pages"},{:fields=>["count"]}).to_a
-            payload[:rows] = rows.size
-            rows.first["count"].to_i
-          end
+    def actions
+      page = pattern.to_s.sub(/\A::/,'')
+      match =
+        case
+        when page.is_a?(Regexp) then page
+        when page.blank? then /\#/
+        when page_names.include?(page) then /^#{page}$/
+        when page_names.grep(/^#{page}/).size > 0 then /^#{page}/
+        else /#{page}/
         end
+      page_names.select{|p| p =~ match }
+    end
+
+    KNOWN_SECTIONS = %i(backend frontend)
+    def request_count(section = :backend)
+      raise ArgumentErrror.new("unknown section: #{section}") unless KNOWN_SECTIONS.include?(section)
+      unless @request_counts
+        fields = %w(count page_count ajax_count frontend_count)
+        query = "Totals.request_count(#{fields.join(',')})"
+        @request_counts = with_conditional_caching(query) do |payload|
+          counts = Hash.new(0)
+          rows = @collection.find({:page=>"all_pages"},{:fields=>fields}).to_a
+          payload[:rows] = rows.size
+          if rows.size > 0
+            counts[:backend] = rows.first["count"].to_i
+            counts[:frontend] = rows.first["frontend_count"].to_i
+            counts[:ajax] = rows.first["ajax_count"].to_i
+            counts[:page] = rows.first["page_count"].to_i
+          end
+          counts
+        end
+      end
+      @request_counts[section]
     end
 
     def sum(resource)
@@ -279,7 +322,7 @@ module Logjam
     end
 
     def avg(resource)
-      @avg[resource] ||= sum(resource)/count rescue 0.0
+      @avg[resource] ||= sum(resource)/count(resource) rescue 0.0
     end
 
     def zero_resources?(resources)
@@ -289,14 +332,14 @@ module Logjam
     def stddev(resource)
       @stddev[resource] ||=
         begin
-          n, s, sq = count, sum(resource), sum_sq(resource)
+          n, s, sq = count(resource), sum(resource), sum_sq(resource)
           a = avg(resource)
           (n == 1 || s == 0) ? 0.0 : Math.sqrt((sq - n*a*a).abs/(n-1).to_f)
         end
     end
 
-    def apdex
-      @apdex_hash ||= the_pages.inject(Hash.new(0)){|h,p| p.apdex.each{|k,v| h[k] += v}; h}
+    def apdex(section = :backend)
+      @apdex_hash[section] ||= the_pages.inject(Hash.new(0)){|h,p| p.apdex(section).each{|k,v| h[k] += v}; h}
     end
 
     def response_codes
@@ -347,40 +390,40 @@ module Logjam
       end
     end
 
-    def happy_count
-      apdex["happy"].to_i
+    def happy_count(section = :backend)
+      apdex(section)["happy"].to_i
     end
 
-    def happy
-      happy_count / count.to_f
+    def happy(section = :backend)
+      happy_count(section) / count(section).to_f
     end
 
-    def satisfied_count
-      apdex["satisfied"].to_i
+    def satisfied_count(section = :backend)
+      apdex(section)["satisfied"].to_i
     end
 
-    def satisfied
-      satisfied_count / count.to_f
+    def satisfied(section = :backend)
+      satisfied_count(section) / count(section).to_f
     end
 
-    def tolerating_count
-      apdex["tolerating"].to_i
+    def tolerating_count(section = :backend)
+      apdex(section)["tolerating"].to_i
     end
 
-    def tolerating
-      tolerating_count / count.to_f
+    def tolerating(section = :backend)
+      tolerating_count(section) / count(section).to_f
     end
 
-    def frustrated_count
-      apdex["frustrated"].to_i
+    def frustrated_count(section = :backend)
+      apdex(section)["frustrated"].to_i
     end
 
-    def frustrated
-      frustrated_count / count.to_f
+    def frustrated(section = :backend)
+      frustrated_count(section) / count(section).to_f
     end
 
-    def apdex_score
-      satisfied + tolerating / 2.0
+    def apdex_score(section = :backend)
+      satisfied(section) + tolerating(section) / 2.0
     end
 
     protected
@@ -396,7 +439,9 @@ module Logjam
     end
 
     def compute
-      all_fields = ["page", "count", @apdex, @response, @severity, @exceptions, @js_exceptions, @callers].compact + @resources
+      all_fields = ["page", "count", "page_count", "ajax_count", "frontend_count"] +
+        [@apdex, @fapdex, @papdex, @xapdex, @response, @severity, @exceptions, @js_exceptions, @callers].compact + @resources
+
       sq_fields = @resources.map{|r| "#{r}_sq"}
       fields = {:fields => all_fields.concat(sq_fields)}
 

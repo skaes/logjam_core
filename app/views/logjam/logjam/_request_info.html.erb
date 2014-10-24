@@ -1,0 +1,8 @@
+<div class="item col-8 icon-action">
+  <%= clean_link_to(:page => params[:page], :grouping => "request") do %>
+  <h2>Requests</h2>
+  <div class="value"><%= memory_number @dataset.count_requests(@section) %></div>
+  <% end %>
+</div>
+
+

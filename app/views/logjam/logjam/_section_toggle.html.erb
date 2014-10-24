@@ -1,0 +1,10 @@
+<div class="secticons btn-group">
+  <% if @section.to_s == 'backend' %>
+  <button id="view-backend" class="btn active">Backend</button>
+  <button id="view-frontend" class="btn">Frontend</button>
+  <% else %>
+  <button id="view-backend" class="btn">Backend</button>
+  <button id="view-frontend" class="btn active">Frontend</button>
+  <% end %>
+</div>
+

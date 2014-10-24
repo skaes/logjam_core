@@ -1,0 +1,120 @@
+@import 'mixins.scss';
+@import 'constants.scss';
+
+::-webkit-input-placeholder { /* WebKit browsers */
+    color:    $black;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color:    $black;
+   opacity:  1;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color:    $black;
+   opacity:  1;
+}
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+   color:    $black;
+}
+
+#logjam-header {
+  background: $header-bg-color;
+  box-shadow: 1px 0 2px 0 rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+  width: 100%;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+  position: fixed;
+  top: 0;
+
+  .logo {
+    margin: 0;
+    padding: 0;
+    padding-left: 25px;
+    font-weight: normal;
+    line-height: 45px;
+    margin-right: 20px;
+    margin-left: 10px;
+    height: auto;
+    width: auto;
+    position: relative;
+
+    &:before {
+      content: " ";
+      background-image: image-url('icon.png');
+      height: 20px;
+      width: 20px;
+      position: absolute;
+      left: 0;
+      top: 12px;
+    }
+  }
+
+  > .filter-item {
+    margin: 10px;
+
+    &.no-background {
+      background: transparent;
+      padding: 0;
+    }
+
+    label {
+      font-weight: bold;
+      font-size: 14px;
+    }
+  }
+
+  .section-chooser,
+  .enviroment-chooser {
+    font-size: 16px;
+    margin-right: 20px;
+  }
+
+  .date-chooser {
+    #datepicker {
+      width: 80px;
+      display: block;
+      height: 23px;
+      padding: 0 0 0 8px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid #aaa;
+      white-space: nowrap;
+      line-height: 23px;
+      color: #444;
+      text-decoration: none;
+      border-radius: 3px;
+      background-clip: padding-box;
+
+      -webkit-touch-callout: none;
+        -webkit-user-select: none;
+           -moz-user-select: none;
+            -ms-user-select: none;
+                user-select: none;
+
+      background-color: #fff;
+      background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #eee), color-stop(0.5, #fff));
+      background-image: -webkit-linear-gradient(center bottom, #eee 0%, #fff 50%);
+      background-image: -moz-linear-gradient(center bottom, #eee 0%, #fff 50%);
+      background-image: linear-gradient(to top, #eee 0%, #fff 50%);
+    }
+    .jdpicker_w {
+      display: inline;
+    }
+  }
+
+  ul {
+      list-style: none;
+      background-color: $header-bg-color;
+  }
+
+  #auto-refresh {
+    position: relative;
+    margin-top: 15px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+}

@@ -1,0 +1,57 @@
+@import 'mixins.scss';
+@import 'constants.scss';
+
+.flex {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+  width: 100%;
+
+  .item {
+    -webkit-flex: 1;
+    flex: 1;
+    background: $white;
+    border-radius: 2px;
+    border: 1px solid $lighter-grey;
+    box-sizing: border-box;
+    padding: 10px;
+    margin: 0 5px 5px 0;
+    position: relative;
+  }
+
+  .col-8 { min-width: calc(100%/8 - 10px); }
+  .col-6 { min-width: calc(100%/6 - 10px); }
+  .col-5 { min-width: calc(100%/5 - 10px); }
+  .col-4 { min-width: calc(100%/4 - 10px); }
+  .col-2 { min-width: calc(100%/2 - 10px); }
+  .col-1 { min-width: calc(100% - 10px); }
+}
+
+
+.icon-action a {
+  display: block;
+  h2:after {
+    content: "\f105";
+    font-family: fontAwesome;
+    position: absolute;
+    right: 12px;
+    color: $xing-green;
+    font-size: 24px;
+  }
+}
+
+.icon-action h2 {
+}
+
+.icon-action.selected h2 {
+  background: #eee;
+  padding: 2px 4px;
+  border-radius: 2px;
+  margin-left: -4px;
+  margin-right: -4px;
+  margin-top: -2px;
+  margin-bottom: 8px;
+}

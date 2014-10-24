@@ -1,12 +1,11 @@
-<fieldset class="resource-fields resize">
-  <legend><%= title %></legend>
-  <table id="request-details" class="breakdown-table">
-    <% fields.each do |name, value| -%>
+<div class="flex">
+  <% max = fields.length %>
+  <% fields.each do |name, value| -%>
     <% next if value.blank? -%>
-    <tr>
-      <td class="resource_name"><%= hrn name %></td>
-      <td class="number"><%= value %></td>
-    </tr>
-    <% end -%>
-  </table>
-</fieldset>
+    <div class="item col-4">
+      <h2><%= hrn name %></h2>
+      <%= value %>
+    </div>
+  <% end -%>
+</div>
+

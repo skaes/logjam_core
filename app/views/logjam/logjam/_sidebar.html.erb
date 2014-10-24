@@ -1,0 +1,194 @@
+<a id="mobile-trigger"><i class="fa fa-bars"></i></a>
+
+<section id="logjam-sidebar" class="open">
+
+  <% action = action_name == "index" ? "" : action_name %>
+  <%= form_tag(params.except(:id).merge(:action => action), :method => :get, :id => "filter-form", :autocomplete => "off") do -%>
+
+    <div class="menu-wrapper">
+      <ul class="logjam-menu">
+        <li>
+          <%= link_to(fa_icon("home", :title => "Home") + " Home", {}, {:href=> '#', :onclick => "go_home()"}) %>
+        </li>
+      </ul>
+
+      <ul class="logjam-menu" id="backend-menu">
+
+        <% klass = params[:section] == "backend" ? "enabled" : "disabled" %>
+        <% active1, active2 = params[:grouping] == "request" ? %w(active inactive) : %w(inactive active) %>
+        <li class="<%= klass %>">
+          <%= clean_link_to(fa_icon("tachometer", :title => "Actions") + " Actions", {:action => '', :grouping => "page"}, :class => active2) %>
+        </li>
+        <li class="<%= klass %>">
+          <%= clean_link_to(fa_icon("list", :title => "Requests") + " Requests", {:action => '', :section => "backend", :grouping => "request"}, :class => active1) %>
+        </li>
+      </ul>
+
+      <ul class="logjam-menu separator">
+        <% klass = (@dataset && @dataset.live_stream?) ? "enabled" : "disabled" %>
+        <li class="<%= klass %>">
+          <%= link_to(fa_icon("play-circle", :title => "view live stream") + " Livestream", clean_params(params.slice(:app,:env,:page).merge(:action => "live_stream"))) %>
+        </li>
+
+        <li>
+          <%= clean_link_to(fa_icon("history", :title => "Performace History") + " History", :action => "history") %>
+        </li>
+
+        <% klass = @dataset && @dataset.has_distribution_plot? ? "enabled" : "disabled" %>
+        <li class="<%= klass %>">
+          <% scatter_title = "view #{distribution_kind(@dataset.resource).to_s.gsub(/_/," ")} plot" %>
+            <%= link_to(:page => without_module(@page), :action => distribution_kind(@dataset.resource),
+                        :section => ::Logjam::Resource.section(@dataset.resource)) do %>
+            <i class="fa fa-signal" style="transform:scale(-1,1) translate(-6px,-1px);"></i> Distribution Plot
+            <% end %>
+        </li>
+
+        <% unless @only_one_app %>
+          <% klass = @dataset && @dataset.has_callers? ? "enabled" : "disabled" %>
+          <li class="<%= klass %>">
+            <%= clean_link_to(:action =>"callers") do %>
+            <i class="fa fa-phone"></i> Callers
+            <% end %>
+          </li>
+          <li>
+            <%= clean_link_to(:action => "call_relationships", :filter => @app, :section => 'backend') do %>
+              <i class="fa fa-cloud"></i> Call Relationships
+            <% end %>
+          </li>
+        <% end %>
+
+        <li>
+          <%= clean_link_to(:action => "error_overview", :section => 'backend') do %>
+            <i class="fa fa-warning"></i> Problems
+          <% end %>
+        </li>
+
+      </ul>
+
+      <ul class="logjam-menu separator">
+        <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:time) %>><i class="fa fa-clock-o"></i> Backend Time</a>
+          <ul>
+            <% collected_time_resources.reverse.each do |r| %>
+              <li <% if params[:resource] == r %>class="active"<% end %>>
+                <a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a>
+              </li>
+            <% end %>
+          </ul>
+        </li>
+
+        <% unless collected_frontend_time_resources.empty? %>
+          <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:frontend) %>><i class="fa fa-clock-o"></i> Frontend Time</a>
+            <ul>
+              <% collected_frontend_time_resources.reverse.each do |r| %>
+                <li <% if params[:resource] == r %>class="active"<% end %>>
+                  <a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a>
+                </li>
+              <% end %>
+            </ul>
+          </li>
+        <% end %>
+
+        <% unless collected_call_resources.empty? %>
+          <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:call) %>><i class="fa fa-phone"></i> Calls</a>
+            <ul>
+              <% collected_call_resources.reverse.each do |r| %>
+                <li <% if params[:resource] == r %>class="active"<% end %>>
+                  <a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a>
+                </li>
+              <% end %>
+            </ul>
+          </li>
+        <% end %>
+
+        <% unless collected_memory_resources.empty? %>
+          <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:memory) %>><i class="fa fa-th"></i> Allocations</a>
+            <ul>
+              <% collected_memory_resources.reverse.each do |r| %>
+                <li <% if params[:resource] == r %>class="active"<% end %>>
+                  <a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a>
+                </li>
+              <% end %>
+            </ul>
+          </li>
+        <% end %>
+
+        <% unless collected_heap_resources.empty? %>
+          <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:heap) %>><i class="fa fa-bars"></i> Heap</a>
+            <ul>
+              <% collected_heap_resources.reverse.each do |r| %>
+                <li <% if params[:resource] == r %>class="active"<% end %>>
+                  <a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a>
+                </li>
+              <% end %>
+            </ul>
+          </li>
+        <% end %>
+
+        <% unless collected_dom_resources.empty? %>
+          <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:dom) %>><i class="fa fa-tree"></i> HTML</a>
+            <ul>
+              <% collected_dom_resources.reverse.each do |r| %>
+              <li <% if params[:resource] == r %>class="active"<% end %>>
+                <a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a>
+              </li>
+              <% end %>
+            </ul>
+          </li>
+        <% end %>
+      </ul>
+
+      <ul class="logjam-menu separator">
+        <li>
+          <% if params[:auto_refresh] == "1" %>
+            <%= clean_link_to(fa_icon("toggle-on") + " Autorefresh", :auto_refresh => 0) %>
+          <% else %>
+            <%= clean_link_to(fa_icon("toggle-off") + " Autorefresh", :auto_refresh => 1) %>
+          <% end %>
+        </li>
+        <li>
+          <%= clean_link_to(fa_icon("file-text-o") + " API Response", :format => :json) %>
+        </li>
+        <li>
+          <%= link_to(fa_icon("cogs") + " Admin Space", admin_storage_path) %>
+        </li>
+      </ul>
+  </div>
+
+    <input type="hidden" id="app" name="app" value="<%= params[:app] %>" />
+    <input type="hidden" id="env" name="env" value="<%= params[:env] %>" />
+    <input type="hidden" id="page" name="page" value="<%= params[:page] %>" />
+    <input type="hidden" id="auto_refresh" name="auto_refresh" value="<%= params[:auto_refresh] %>" />
+    <input type="hidden" id="section" name="section" value="<%= params[:section] %>" />
+    <input type="hidden" id="time-range" name="time_range" value="<%= params[:time_range] %>" />
+    <input type="hidden" id="grouping" name="grouping" value="<%= params[:grouping]%>" />
+    <input type="hidden" id="resource" name="resource" value="<%= params[:resource] %>" />
+    <input type="hidden" id="grouping-function" name="grouping_function" value="<%= params[:grouping_function] %>" />
+    <input type="hidden" id="start-minute" name="start_minute" value="<%= params[:start_minute] %>" />
+    <input type="hidden" id="end-minute" name="end_minute" value="<%= params[:end_minute] %>" />
+    <input type="hidden" id="interval" name="interval" value="<%= params[:interval] %>" />
+
+  <% end %>
+
+</section>
+
+<script>
+
+  $(function(){
+    $('#auto-refresh').on('click', function(){
+      if( $('#auto_refresh').val() == '1' ) {
+        $('#auto_refresh').val('0');
+        submit_filter_form();
+      }
+      else {
+        $('#auto_refresh').val('1');
+        submit_filter_form();
+      }
+    })
+  });
+
+/*  $('.dropdown a', '#logjam-sidebar').on('click', function(event){
+    event.preventDefault();
+    $('ul', $(this).parent()).toggle();
+  })*/
+
+</script>

@@ -1,13 +1,16 @@
-<table id="response-code-table">
-  <tr>
-    <th colspan="2">response codes
-      <%= clean_link_to(triangle_right, {:action => "response_code_overview"}, :title => "show response code timeline") %>
-    </th>
-  </tr>
-  <% @dataset.response_code_summary.keys.sort.each do |rc| %>
-  <tr>
-    <td class="number-left"><%= rc %></td>
-    <td class="number"><%= sometimes_link_response_code(rc, @dataset.response_code_summary[rc]) %></td>
-  </tr>
+<div class="item col-5 icon-action">
+  <%= link_to(params.merge(:action => "response_code_overview")) do %>
+    <h2>Responses</h2>
   <% end %>
-</table>
+  <table class="collapse-table full_stats">
+    <% @dataset.response_code_summary.keys.sort.each do |rc| %>
+    <% cnt = @dataset.response_code_summary[rc] %>
+    <% next if cnt == 0 && rc =~ /[01]xx/ %>
+    <% url, options = response_code_link_options(rc, cnt) %>
+    <tr class="<%= options[:tr_class] %>" data-href="<%= url %>" title="<%= options[:title] %>">
+      <td class="number-left"><%= rc %></td>
+      <td class="number <%= options[:class] %>"><%= integer_number(cnt) %></td>
+    </tr>
+    <% end %>
+  </table>
+</div>

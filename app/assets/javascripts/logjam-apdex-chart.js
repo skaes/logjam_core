@@ -4,8 +4,8 @@ function logjam_apdex_chart(params) {
   var max_x = params.max_x;
   var min_y = params.min_y;
   var h = params.height;
-  var w = 1440/2;
-  var x = d3.scale.linear().domain([0, w]).range([0, w]);
+  var w = $(params.parent).width();
+  var x = d3.scale.linear().domain([0, 1440/2]).range([0, w]);
   var y = d3.scale.linear().domain([min_y, 1.0]).range([h, 0]).nice();
 
   var tooltip_formatter = d3.format(",.3r");
@@ -38,7 +38,7 @@ function logjam_apdex_chart(params) {
   ;
 
   var area = d3.svg.area()
-        .interpolate("cardinal")
+        .interpolate("monotone")
         .x(function(d,i) { return x(d[0]); })
         .y0(function(d) { return y(0); })
         .y1(function(d) { return y(d[1]); })
@@ -54,7 +54,6 @@ function logjam_apdex_chart(params) {
     offsetY: -20,
     gravity: 's',
     html: false,
-    opacity: 0.8,
     title: function() { return tooltip_text; }
   });
 
@@ -95,7 +94,7 @@ function logjam_apdex_chart(params) {
     .enter()
     .append("text")
     .attr("class", "rlabel")
-    .style("font", "8px sans-serif")
+    .style("font", "8px Helvetica Neue")
     .attr("text-anchor", "end")
     .attr("dy", ".75em")
     .attr("x", w-1)

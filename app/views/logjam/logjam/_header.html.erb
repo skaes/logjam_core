@@ -1,158 +1,88 @@
 <%= content_for(:page_scripts) do %>
-var parameters = <%= raw Oj.dump(params) %>;
-var parameter_defaults = <%= raw Oj.dump(default_header_parameters) %>;
-var self_url = '<%= raw self_url %>';
-var home_url = '<%= raw home_url %>';
-var history_url = '<%= raw history_url %>';
-var selectable_days = <%= raw Oj.dump(@days.map(&:to_s)) %>;
-var auto_complete_url = '<%= raw auto_complete_url_for_action_page %>';
-$(document).ready(initialize_header);
+var parameters = <%= raw Oj.dump(params) %>,
+    parameter_defaults = <%= raw Oj.dump(default_header_parameters) %>,
+    self_url = '<%= raw self_url %>',
+    home_url = '<%= raw home_url %>',
+    history_url = '<%= raw history_url %>',
+    <% if @days %>
+      selectable_days = <%= raw Oj.dump(@days.map(&:to_s)) %>,
+    <% end %>
+    action_auto_complete_url = '<%= raw auto_complete_url_for_action_page %>',
+    application_auto_complete_url = '<%= raw auto_complete_url_for_application_page %>';
 <% end %>
 
 <% action = action_name == "index" ? "" : action_name %>
-<%= form_tag(params.except(:id).merge(:action => action), :method => :get, :id => "filter-form", :autocomplete => "off") do -%>
-
-<div class="header">
-  <ul class="left">
-    <li id="navigation-widget">
-      <div><%= label :filter, "logjam" %></div>
-      <div class="menu">
-        <ul class="horizonzal">
-          <li class="dropdown" onclick="go_home();"><a><%= fa_icon("eye")%></a>
-            <ul>
-              <% if @dataset.try(:live_stream?) -%>
-                <li>
-                  <%= link_to("Live Stream", clean_params(params.slice(:app,:env,:page).merge(:action => "live_stream")), :target => "_blank") %>
-                </li>
-                <li class="separator"></li>
-              <% end %>
-              <li><%= clean_link_to("Apdex Overview", :action => "apdex_overview") %></li>
-              <li><%= clean_link_to("Response Code Overview", :action => "response_code_overview") %></li>
-              <li><%= clean_link_to("Problem Overview", :action => "error_overview") %></li>
-              <li class="separator"></li>
-              <li>
-                <%= clean_link_to("Enlarged Resource Plot", :page => without_module(@page), :action => "enlarged_plot", :interval => 1) %>
-              </li>
-              <% if @dataset.try(:has_distribution_plot?) %>
-                <li>
-                  <%= clean_link_to("Resource Distribution Plot", :page => without_module(@page), :action => distribution_kind(@dataset.resource)) %>
-                </li>
-              <% end %>
-              <% unless @only_one_app %>
-                <li class="separator"></li>
-                <% if @dataset && @dataset.has_callers? -%>
-                  <li><%= clean_link_to("My Callers", :action =>"callers") %></li>
-                <% end %>
-                <li><%= clean_link_to("Call Relationships", :action =>"call_relationships", :filter => @app) %></li>
-              <% end %>
-            </ul>
-          </li>
-          <li><a id="home-button" onclick="go_home();"><%= fa_icon("home")%></a>
-        </ul>
-      </div>
-      </li>
-      <% unless @only_one_app %>
-        <li id="app-widget">
-          <div><%= label :filter, "application" %></div>
-          <div><%= select_tag "app", options_for_select(@apps, @app), :onchange => "view_selected_pages()" %></div>
-        </li>
-      <% end %>
-      <% unless @only_one_env %>
-        <li id="env-widget">
-          <div><%= label :filter, "environment" %></div>
-          <div><%= select_tag "env", options_for_select(@envs, @env), :onchange => "view_selected_pages()" %></div>
-        </li>
-      <% end %>
-      <li id="time-range-widget">
-        <div class="menu">
-          <ul class="radio horizontal">
-            <li><a <%= raw html_attributes_for_time_range("date") %>>Date</a></li>
-            <li><a <%= raw html_attributes_for_time_range("history") %>>History</a></li>
-          </ul>
-        </div>
-        <div>
-          <% if params[:time_range] == "date" %>
-            <input size="11" type="text" value="<%= @date %>" id="datepicker" onchange="submit_filter_form()" />
-          <% else %>
-            <input size="11" type="text" value="<%= @date %>" id="datepicker" readonly="readonly" disabled="disabled" />
+<header id="logjam-header">
+  <h1 class="logo">LOGJAM</h1>
+  <% unless @only_one_app %>
+    <div class="application-chooser filter-item">
+        <select id="application-suggest">
+          <% @apps.each do |app| %>
+            <option value="<%= app %>" <% if params[:app] == app %>selected<% end %>><%= app %></option>
           <% end %>
-        </div>
-      </li>
-      <li id="page-widget">
-        <div><label>Namespace / Action</label></div>
-        <div>
-          <input id="page-field" class="autocomplete" name="page" size="45" type="text" value="<%= @page %>" onchange="view_selected_pages()" />
-        </div>
-      </li>
-      <li id="grouping-widget">
-        <div class="menu">
-          <ul class="radio vertical">
-            <li><a <%= raw html_attributes_for_grouping("page") %>>Actions</a></li>
-            <li><a <%= raw html_attributes_for_grouping("request") %>>Requests</a></li>
-          </ul>
-        </div>
-      </li>
-      <li id="resource-type-widget">
-        <div><label>Resource</label></div>
-        <div class="menu">
-          <ul class="radio horizontal">
-            <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:time) %>>Time</a>
-              <ul>
-                <% collected_time_resources.reverse.each do |r| %>
-                  <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
-                <% end %>
-              </ul>
-            </li>
-            <% unless collected_call_resources.empty? %>
-              <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:call) %>>Calls</a>
-                <ul>
-                  <% collected_call_resources.reverse.each do |r| %>
-                    <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
-                  <% end %>
-                </ul>
-              </li>
-            <% end %>
-            <% unless collected_memory_resources.empty? %>
-              <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:memory) %>>Allocations</a>
-                <ul>
-                  <% collected_memory_resources.reverse.each do |r| %>
-                    <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
-                  <% end %>
-                </ul>
-              </li>
-            <% end %>
-            <% unless collected_heap_resources.empty? %>
-              <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:heap) %>>Heap</a>
-                <ul>
-                  <% collected_heap_resources.reverse.each do |r| %>
-                    <li><a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a></li>
-                  <% end %>
-                </ul>
-              </li>
-            <% end %>
-          </ul>
-        </div>
-      </li>
-      <input type="hidden" id="time-range" name="time_range" value="<%= params[:time_range] %>" />
-      <input type="hidden" id="grouping" name="grouping" value="<%= params[:grouping]%>" />
-      <input type="hidden" id="resource" name="resource" value="<%= params[:resource] %>" />
-      <input type="hidden" id="grouping-function" name="grouping_function" value="<%= params[:grouping_function] %>" />
-      <input type="hidden" id="start-minute" name="start_minute" value="<%= params[:start_minute] %>" />
-      <input type="hidden" id="end-minute" name="end_minute" value="<%= params[:end_minute] %>" />
-      <input type="hidden" id="interval" name="interval" value="<%= params[:interval] %>" />
-      <li>
-        <div id="auto-refresh">
-          <%= check_box_tag "auto_refresh", "1", params[:auto_refresh]=="1", :onchange => "submit_filter_form()" %> Autorefresh
-        </div>
-      </li>
-  </ul>
-  <ul class="right">
-    <li>
-      <div id="admin">
-        <%= link_to(image_tag("database.svg", :size => "16x16"), admin_storage_path, :title => "admin stuff") %>
-      </div>
-    </li>
-  </ul>
-</div>
+        </select>
+      </label>
+    </div>
+  <% end %>
 
-<% end %>
+  <div class="date-chooser filter-item">
+    <% if params[:time_range] == "date" %>
+      <input tabindex="2" size="11" type="text" value="<%= @date %>" id="datepicker" onchange="submit_filter_form()" />
+    <% else %>
+      <input tabindex="2" size="11" type="text" value="<%= @date %>" id="datepicker" readonly="readonly" disabled="disabled" />
+    <% end %>
+  </div>
+
+  <div class="namespace-chooser filter-item">
+    <%
+      unless params[:page].blank?
+        value = params[:page]
+      else
+        value = 'by namespace or action'
+      end
+    %>
+    <input tabindex="3" id="namespace-suggest" placeholder="<%= value %>" name="page" type="text">
+    <% if value != 'by namespace or action' %>
+      <i class="fa fa-times"></i>
+    <% end %>
+  </div>
+
+  <% unless @only_one_env %>
+    <div class="enviroment-chooser filter-item no-background">
+      <div class="btn-group">
+        <% @envs.map do |env| %>
+          <% if params[:env] == env %>
+            <button type="submit" class="btn active" onclick="view_selected_pages()" value="<%= env %>"><%= env %></button>
+          <% else %>
+            <button type="submit" class="btn" onclick="view_selected_pages()" value="<%= env %>"><%= env %></button>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</header>
+
+<script>
+  $(function(){
+    initialize_header()
+    /* choose the enviroment */
+    $('.enviroment-chooser .btn', '#logjam-header').on('mousedown', function(event){
+      $('#env').val( $(this).val() );
+    });
+
+    /* remove namespace filter */
+    $('.namespace-chooser .fa.fa-times').on('click', function(){
+      $('#page').val('');
+      submit_filter_form();
+    })
+
+    /* fix for: https://github.com/skaes/logjam_core/issues/22 */
+    $('#namespace-suggest').on('keyup blur', function(event){
+      if((event.keyCode == 13 || event.type == 'blur') && event.target.value.length > 0) {
+        $('#page').val(event.target.value);
+        submit_filter_form();
+      }
+    })
+  });
+</script>
+

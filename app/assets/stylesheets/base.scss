@@ -1,0 +1,109 @@
+@import 'mixins.scss';
+@import 'constants.scss';
+
+body {
+    background-color: #ebebeb;
+    color: #333;
+    margin: 0px;
+    padding: 0px;
+}
+
+body, p, ol, ul, td {
+    font-family: "Helvetica Neue", verdana, arial, helvetica, sans-serif;
+    font-weight: normal;
+    font-size:   12px;
+    line-height: 18px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    padding: 0;
+    font-weight: normal;
+}
+
+ul, li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+img {
+  border: 0 none;
+}
+
+a {
+    text-decoration: none;
+    color: $link-color;
+    cursor: pointer;
+}
+
+pre {
+  margin: 1px 0!important;
+  padding: 4px!important;
+  font-size: 11px;
+  white-space: pre-wrap;
+
+  a {
+    color: blue;
+
+    :hover {
+      color: blue;
+    }
+  }
+}
+
+table {
+  thead {
+    tr {
+      background: none !important;
+    }
+  }
+  tbody {
+    tr:nth-child(1) {
+      border-bottom: 1px solid $lighter-grey !important;
+      text-align: left !important;
+    }
+  }
+
+}
+
+td.group-thing {
+  max-width: 250px;
+  min-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+svg {
+    -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+    -moz-user-select: none; /* mozilla browsers */
+    -khtml-user-select: none; /* webkit (konqueror) browsers */
+    -ms-user-select: none; /* IE10+ */
+}
+
+input[type="text"]:disabled
+{
+    color:#ccc;
+}
+
+#mobile-trigger {
+    display: none;
+}
+
+#loading {
+  background-color: $white;
+  background-image: image-url('spinner24.gif');
+  background-position: center center;
+  background-repeat: no-repeat;
+  z-index: 100000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transition: opacity 0.1s;
+}
+.loaded #loading {
+  opacity: 0;
+}

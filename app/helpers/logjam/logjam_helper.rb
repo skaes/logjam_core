@@ -3,8 +3,24 @@ module Logjam
 
   # Methods added to this helper will be available to all templates in the application.
   module LogjamHelper
+    def frontend?
+      @section == :frontend
+    end
+
+    def backend?
+      @section == :backend
+    end
+
     def default_header_parameters
-      FilteredDataset::DEFAULTS.merge(:time_range => 'date')
+      FilteredDataset::DEFAULTS.merge(:time_range => 'date', :auto_refresh => '0')
+    end
+
+    def date_to_params(date)
+      {
+        :day => sprintf("%02d", date.day),
+        :month => sprintf("%02d", date.month),
+        :year => sprintf("%04d", date.year)
+      }
     end
 
     def home_url
@@ -20,7 +36,19 @@ module Logjam
     end
 
     def auto_complete_url_for_action_page
-      url_for(params.slice(:year, :month, :day, :app, :env).merge(:action => "auto_complete_for_controller_action_page"))
+      url_for(params.slice(:year, :month, :day, :app, :env).merge(:action => "auto_complete_for_controller_action_page", :format => :json))
+    end
+
+    def auto_complete_url_for_application_page
+      url_for(params.slice(:year, :month, :day, :app, :env).merge(:action => "auto_complete_for_applications_page", :format => :json))
+    end
+
+    def collected_frontend_time_resources
+      (Logjam::Resource.frontend_resources - %w[frontend_time]) & @collected_resources
+    end
+
+    def collected_dom_resources
+      Logjam::Resource.dom_resources & @collected_resources
     end
 
     def collected_time_resources
@@ -39,6 +67,10 @@ module Logjam
       Logjam::Resource.heap_resources & @collected_resources
     end
 
+    def collected_dom_resources
+      Logjam::Resource.dom_resources & @collected_resources
+    end
+
     def grouping_options
       options_for_select(Logjam::Resource.grouping_options, params[:grouping])
     end
@@ -52,16 +84,28 @@ module Logjam
     end
 
     def time_number(f)
-      number_with_precision(f.to_f, :delimiter => ",", :separator => ".", :precision => 2)
+      if f.to_f.nan?
+        "NaN"
+      else
+        number_with_precision(f.to_f, :delimiter => ",", :separator => ".", :precision => 2)
+      end
     end
     alias_method :float_number, :time_number
 
     def memory_number(f)
-      number_with_precision(f.floor, :delimiter => ",", :separator => ".", :precision => 0)
+      if f.to_f.nan?
+        "NaN"
+      else
+        number_with_precision(f.floor, :delimiter => ",", :separator => ".", :precision => 0)
+      end
     end
 
     def integer_number(i)
-      number_with_precision(i.to_i, :delimiter => ",", :precision => 0)
+      if i.to_f.nan?
+        "NaN"
+      else
+        number_with_precision(i.to_i, :delimiter => ",", :precision => 0)
+      end
     end
 
     def callers_sorting_options
@@ -95,7 +139,7 @@ module Logjam
 
     def distribution_kind(resource)
       case Resource.resource_type(resource)
-      when :time
+      when :time, :frontend
         :request_time_distribution
       when :memory
         case resource
@@ -120,11 +164,23 @@ module Logjam
     end
 
     def clean_params(params)
-      FilteredDataset.clean_url_params(params.merge :default_app => @default_app, :default_env => @default_app)
+      params = params.merge(:default_app => @default_app, :default_env => @default_app)
+      FilteredDataset.clean_url_params(params, self.params)
     end
 
-    def clean_link_to(name, options, html_options = {})
-      link_to(name, clean_params(params.merge(options)), html_options)
+    def clean_link_to(*args, &block)
+      if block_given?
+        options      = args[0] || {}
+        html_options = args[1]
+        cleaned_options = clean_params(params.merge(options))
+        clean_link_to(capture(&block), cleaned_options, html_options)
+      else
+        name         = args[0]
+        options      = args[1] || {}
+        html_options = args[2]
+        cleaned_options = clean_params(params.merge(options))
+        link_to(name, cleaned_options, html_options)
+      end
     end
 
     def clean_url_for(options)
@@ -132,22 +188,38 @@ module Logjam
     end
 
     def sometimes_link_grouping_result(result, grouping, params)
-      value = result.send(grouping)  # .sub(/\A::/,'')
+      value = result.send(grouping)
       ppage = params[:page]
       if grouping.to_sym == :page && ppage !~ /\AOthers/ && (ppage != @page || ppage =~ /^::/)
         params = params.merge(grouping => value)
         params[:page] = without_module(ppage) # unless @page == "::"
         params[:action] = "index"
-        clean_link_to(value, params, :title => "view summary")
+        _scope, action = value.split('#')
+        if value.length > 40
+          if action.to_s.length > 25
+            tooltip = value.gsub(/\A(.*)#/, "\u2026#")
+          else
+            tooltip = value
+          end
+        end
+        clean_link_to(value, params, :title => tooltip)
       else
         content_tag(:span, value, :class => 'dead-link')
       end
     end
 
+    def apdex_section
+      if @section == :frontend
+        params[:resource] == 'ajax_time' ? :ajax : :page
+      else
+        :backend
+      end
+    end
+
     def sometimes_link_requests(result, grouping, options)
-      n = number_with_delimiter(result.count.to_i)
+      n = number_with_delimiter(result.count(params[:resource]).to_i)
       if :page == grouping.to_sym && result.page != "Others..."
-        clean_link_to(n, options.merge(:action => "index"), :title => "show requests")
+        clean_link_to(n, options.merge(:action => "index"), :"data-tooltip" => "show requests")
       else
         n
       end
@@ -155,32 +227,46 @@ module Logjam
 
     def sometimes_link_stddev(page, resource)
       stddev = page.stddev(resource)
-      n = number_with_precision(stddev, :precision => 0 , :delimiter => ',')
+      if stddev.to_f.finite?
+        n = number_with_precision(stddev, :precision => 0 , :delimiter => ',')
+      else
+        n = stddev.to_s
+      end
       if stddev > 0 && page.page != "Others..."
         params = { :app => @app, :env => @env, :page => without_module(page.page), :action => distribution_kind(resource) }
-        clean_link_to(n, params, :title => distribution_kind(resource).to_s.gsub(/_/,' '))
+        clean_link_to(n, params, :"data-tooltip" => distribution_kind(resource).to_s.gsub(/_/,' '))
       else
         n
       end
     end
 
-    def sometimes_link_all_pages
+    def sometimes_link_all_pages(&block)
       if params[:grouping] == "page"
-        clean_link_to(triangle_right, { :action => "totals_overview", :page => @page }, :title => "show all actions")
+        clean_link_to(:action => "totals_overview", :page => @page, &block)
       elsif params[:grouping] == "request"
-        clean_link_to(triangle_right, { :action => "request_overview", :page => @page }, :title => "browse requests")
+        clean_link_to(:action => "request_overview", :page => @page, &block)
+      else
+        capture(&block) if block_given?
+      end
+    end
+
+    def sometimes_link_resource(resources, resource, html_options={}, &block)
+      if resources.include?(params[:resource])
+        capture(&block) if block_given?
+      else
+        clean_link_to({:resource => resource}, html_options, &block)
       end
     end
 
     def link_to_request(text, options)
-      clean_link_to(text, options, :title => "show request")
+      clean_link_to(text, options, :"data-tooltip" => "show request")
     end
 
     def sometimes_link_to_request(request_id)
       app, env, oid = request_id.split('-')
       if @database_info.db_exists?(@date, app, env) && Requests.exists?(@date, app, env, oid)
         params = { :app => app, :env => env, :action => "show", :id => oid }
-        clean_link_to(request_id, params, :title => "show request")
+        clean_link_to(request_id, params, :"data-tooltip" => "show request")
       else
         request_id
       end
@@ -197,9 +283,9 @@ module Logjam
       else
         params = { :app => @app, :env => @env, :action => "errors", :page => without_module(page.page) }
         errors = error_count == 0 ? error_count :
-          clean_link_to(integer_number(error_count), params.merge(:error_type => "logged_error"), :class => "error", :title => "show errors")
+          clean_link_to(integer_number(error_count), params.merge(:error_type => "logged_error"), :class => "error data-tooltip-bottom-nose-right", :"data-tooltip" => "show errors")
         warnings = warning_count == 0 ? warning_count :
-          clean_link_to(integer_number(warning_count), params.merge(:error_type => "logged_warning"), :class => "warn", :title => "show warnings")
+          clean_link_to(integer_number(warning_count), params.merge(:error_type => "logged_warning"), :class => "warn data-tooltip-bottom-nose-right", :"data-tooltip" => "show warnings")
         raw "#{errors}/#{warnings}"
       end
     end
@@ -212,7 +298,17 @@ module Logjam
         integer_number(n)
       else
         params = { :app => @app, :env => @env, :action => "response_codes", :above => 400, :page => without_module(page.page) }
-        link_to(integer_number(n), params, :class => "warn", :title => "show 400s")
+        link_to(integer_number(n), params, :class => "warn", :"data-tooltip" => "show 400s")
+      end
+    end
+
+    def response_code_link_options(code, n)
+      params = { :app => @app, :env => @env, :action => "response_codes", :page => @page }
+      if n == 0 || code.to_s =~ /[0-3]xx\z/
+        [nil, {}]
+      else code.to_s =~ /xx\z/
+        params[:above] = code.to_s.sub('xx', '00')
+        [ clean_url_for(params), {:tr_class => "clickable", :class => "error", :title => "show requests with response #{code}"}]
       end
     end
 
@@ -223,12 +319,12 @@ module Logjam
         text
       elsif code.to_s =~ /xx\z/
         params[:above] = code.to_s.sub('xx', '00')
-        clean_link_to(text, params, :class => "error", :title => "show requests with response #{code}")
+        clean_link_to(text, params, :class => "error", :"data-tooltip" => "show requests with response #{code}")
       elsif code.to_i < 400
         text
       else
         params[:response_code] = code
-        clean_link_to(text, params, :class => "error", :title => "show requests with response #{code}")
+        clean_link_to(text, params, :class => "error", :"data-tooltip" => "show requests with response #{code}")
       end
     end
 
@@ -238,8 +334,28 @@ module Logjam
       clean_link_to(integer_number(n), params, html_options)
     end
 
+    def error_link_options(n, error_type, html_options)
+      if n > 0
+        page = (@page||'').gsub(/^::/,'')
+        params = { :page => page, :action => "errors", :error_type => error_type }
+        [ clean_url_for(params), html_options.merge(:class => "error", :tr_class => "clickable") ]
+      else
+        [ nil, {} ]
+      end
+    end
+
     def sometimes_link_error_list(n, error_type, html_options={})
       n == 0 ? integer_number(n) : link_error_list(n, error_type, html_options)
+    end
+
+    def exception_link_options(n, html_options)
+      if n > 0
+        page = (@page||'').gsub(/^::/,'')
+        params = { :page => page, :action => "exceptions" }
+        [ clean_url_for(params), html_options.merge(:class => "error", :tr_class => "clickable") ]
+      else
+        [ nil, {} ]
+      end
     end
 
     def link_exception_list(n, html_options={})
@@ -254,7 +370,7 @@ module Logjam
 
     def link_js_exception_list(n, html_options={})
       page = (@page||'').gsub(/^::/,'')
-      params = { :page => page, :action => "js_exception_types" }
+      params = { :page => page, :action => "js_exception_types", :section => :frontend }
       clean_link_to(integer_number(n), params, html_options)
     end
 
@@ -288,10 +404,12 @@ module Logjam
 
     def html_attributes_for_resource_type(resource_type)
       resource = Resource.default_resource(resource_type)
+      section = Resource.section(resource)
+      # TODO: add switch between resources (frontend|backend)
       if Resource.resource_type(params[:resource]) == resource_type.to_sym
-        "class='active' onclick=\"view_resource('#{resource}')\""
+        "class='active' onclick=\"view_resource('#{resource}', '#{section}')\""
       else
-        "class='inactive' onclick=\"view_resource('#{resource}')\""
+        "class='inactive' onclick=\"view_resource('#{resource}', '#{section}')\""
       end
     end
 
@@ -306,7 +424,7 @@ module Logjam
     end
 
     def apdex_class(v, gf = params[:grouping_function])
-      if  gf == "apdex"
+      if gf == "apdex" && !v.to_f.nan?
         v > 0.94 ? "apdex-ok" : "apdex-fail"
       else
         ""
@@ -316,7 +434,7 @@ module Logjam
     def page_percent(pages, page, resource)
       case gf = params[:grouping_function]
       when "apdex"
-        page.apdex_score.to_f * 100
+        page.apdex_score(resource).to_f * 100
       when "sum"
         div_percent(page.sum(resource) , pages.first.sum(resource))
       when "avg"
@@ -447,6 +565,14 @@ module Logjam
       end
     rescue
       lines.map{0}
+    end
+
+    def apdex_bounds
+      if @section == :frontend
+        {:happy => 0.5, :satisfied => 2, :tolerating => 8}
+      else
+        {:happy => 0.1, :satisfied => 0.5, :tolerating => 2}
+      end
     end
 
     # human resource name (escaped)

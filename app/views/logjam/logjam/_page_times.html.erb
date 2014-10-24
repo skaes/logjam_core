@@ -1,35 +1,42 @@
+<%
+  resource = @dataset.resource
+  resource_type = Logjam::Resource.resource_type(@dataset.resource)
+  resource_name = hrn(resource)
+  options = {:resource => resource}
+  data = @dataset.do_the_query(@section, options)
+-%>
+
 <table class='full_stats'>
-  <tr>
-    <% resource = @dataset.resource
-       resource_type = Logjam::Resource.resource_type(@dataset.resource)
-       resource_name = hrn(resource)
-       options = {:resource => resource} -%>
     <% if @dataset.grouping? -%>
-      <th><%= @dataset.grouping_name %></th>
-      <th <%= raw html_attributes_for_grouping_function("count","number of requests") %>>requests</th>
-      <th <%= raw html_attributes_for_grouping_function("avg", "average") %>>avg<br/><%= resource_name %></th>
-      <th <%= raw html_attributes_for_grouping_function("stddev", "standard deviation")%>>stddev<br/><%= resource_name %></th>
-      <th <%= raw html_attributes_for_grouping_function("sum", "sum") %>>sum<br/><%= resource_name %></th>
-      <% if @dataset.accumulates_time? -%>
-        <% options.merge!(:resource_total => @dataset.sum(resource))-%>
-        <th>% of overall<br/><%= raw resource_name.gsub(' ', '&nbsp;') %></th>
-        <% if resource.to_sym != :total_time -%>
-          <% options.merge!(:total_time => @dataset.sum("total_time")) -%>
-          <th>% of<br/>total time</th>
-        <% else %>
-          <th <%= raw html_attributes_for_grouping_function("apdex", "apdex score") %>>apdex</th>
-          <th>errors/<br/>warnings</th>
+    <thead>
+      <tr>
+        <th><%= @dataset.grouping_name %></th>
+        <th class="right<% if params[:grouping_function] == 'count' %> sorted<% end %>" <%= raw html_attributes_for_grouping_function("count","number of requests") %>>requests</th>
+        <th class="right<% if params[:grouping_function] == 'avg' %> sorted<% end %>" <%= raw html_attributes_for_grouping_function("avg", "average") %>>avg <%= resource_name %></th>
+        <th class="right<% if params[:grouping_function] == 'stddev' %> sorted<% end %>" <%= raw html_attributes_for_grouping_function("stddev", "standard deviation")%>>stddev <%= resource_name %></th>
+        <th class="right<% if params[:grouping_function] == '' %> sorted<% end %>" <%= raw html_attributes_for_grouping_function("sum", "sum") %>>sum <%= resource_name %></th>
+        <% if @dataset.accumulates_time? -%>
+          <% options.merge!(:resource_total => @dataset.sum(resource))-%>
+          <th class="center<% if params[:grouping_function] == 'apdex' %> sorted<% end %>" <%= raw html_attributes_for_grouping_function("apdex", "apdex score") %>>apdex</th>
+          <% if backend? -%>
+          <th class="right">errors/&#8203;warnings</th>
+          <% end -%>
         <% end -%>
-      <% end -%>
-  </tr>
-      <%= render "#{resource_type}_statistics", options.merge(:pages => @dataset.do_the_query) %>
-    <% else -%>
-      <th>severity</th>
-      <th>rc</th>
-      <th>time</th>
-      <th>action</th>
-      <th class="sorted"><%= resource_name %></th>
-  </tr>
-      <%= render "request_statistics", options.merge(:requests => @dataset.do_the_query) %>
-    <% end -%>
+      </tr>
+    </thead>
+    <%= render "#{resource_type}_statistics", options.merge(:pages => data) %>
+
+  <% else -%>
+    </thead>
+      <tr>
+        <th>severity</th>
+        <th class="right">rc</th>
+        <th class="right">time</th>
+        <th class="right">action</th>
+        <th class="sorted right"><%= resource_name %></th>
+      </tr>
+    </thead>
+    <%= render "request_statistics", options.merge(:requests => data) %>
+
+  <% end -%>
 </table>

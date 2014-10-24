@@ -1,0 +1,42 @@
+<%= render "header" %>
+<div id="logjam-container" class="xxl-view">
+  <%= render "sidebar" %>
+  <div id="logjam-content" class="app-dashboard">
+
+    <div class="flex size-xxl-small-width size-xxl-no-flex">
+      <%= render "page_apdex" %>
+      <%= render "ajax_apdex" %>
+      <%= render "frontend_javascript_errors" %>
+      <%= render "frontend_dom_nodes" %>
+    </div>
+
+    <div class="flex size-xxl-flex-order-second size-xxl-no-flex size-l-no-flex">
+      <div class="item icon-action">
+        <%= clean_link_to(:action => "enlarged_plot", :interval => 1, :section => params[:section]) do %>
+        <h2>showing <%= number_with_delimiter @dataset.count_requests(@section) %> of <%= number_with_delimiter @dataset.count(@section) %> requests</h2>
+        <% end %>
+        <%= render :partial => "resource_plot", :locals => {:width => 450, :height => 200} %>
+      </div>
+      <div class="item icon-action">
+        <%= sometimes_link_all_pages do %>
+        <h2><%= @dataset.description %>
+          <%- if params[:grouping] == "request" -%>
+          between <%= minute_to_human(@dataset.start_minute) %>
+          and <%= minute_to_human(@dataset.end_minute) %>
+          <%- end -%>
+        </h2>
+        <% end %>
+        <div id="pagetimes">
+          <%= render "page_times" %>
+        </div>
+      </div>
+    </div>
+
+    <% if params[:grouping] == "page" -%>
+      <div class="flex size-xxl-large-width size-xxl-no-flex size-xxl-flex-order-third">
+        <%= render "frontend_breakdown" %>
+      </div>
+    <% end -%>
+
+  </div>
+</di>

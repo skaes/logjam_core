@@ -1,0 +1,24 @@
+<% sorted_by_apdex = params[:grouping_function] == "apdex" %>
+<% pages.each do |page| -%>
+  <tr class="full_stats">
+    <td class="group-thing">
+      <div class="gbg">
+        <div class="gct"><%= sometimes_link_grouping_result(page, :page, :page => page.page) %></div>
+        <div class="gbox <%= apdex_class(page.apdex_score(apdex_section)) %>" style="width:<%= page_percent(pages, page, resource) %>%"></div>
+        <% if sorted_by_apdex %>
+          <div class="apdex-box"></div>
+        <% end %>
+      </div>
+    </td>
+    <td class="number"><%= sometimes_link_requests(page, :page, :grouping => "request", :page => without_module(page.page), :section => params[:section]) %></td>
+    <td class="number"><%= number_with_precision(page.avg(resource), :precision => 1, :delimiter => ",") %></td>
+    <td class="number"><%= sometimes_link_stddev(page, resource) %></td>
+    <td class="number"><%= seconds_to_human(page.sum(resource).to_f / 1000) %></td>
+    <td class="center <%= apdex_class(page.apdex_score(apdex_section), 'apdex') %>">
+      <%= clean_link_to(number_with_precision(page.apdex_score(apdex_section), :precision => 2), :action => "apdex_overview", :page => page.page) %>
+    </td>
+    <% if backend? %>
+    <td class="number"><%= sometimes_link_errors(page) %></td>
+    <% end %>
+  </tr>
+<% end -%>

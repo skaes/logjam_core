@@ -43,6 +43,10 @@ module Logjam
         resource_map["heap_resources"].map{|r| r.keys}.flatten
       end
 
+      def backend_resources
+        time_resources + call_resources + memory_resources + heap_resources
+      end
+
       def frontend_resources
         resource_map["frontend_resources"].map{|r| r.keys}.flatten
       end
@@ -79,6 +83,24 @@ module Logjam
         heap_options = heap_resources.empty? ? [] : heap_resources + [nil]
         memory_options = memory_resources.empty? ? [] : memory_resources + [nil]
         (heap_options + memory_options + call_resources + [nil] + time_resources).map {|r| [resource_name(r), r]}
+      end
+
+      def section(resource)
+        if time_resources.include? resource
+          :backend
+        elsif call_resources.include? resource
+          :backend
+        elsif memory_resources.include? resource
+          :backend
+        elsif heap_resources.include? resource
+          :backend
+        elsif frontend_resources.include? resource
+          :frontend
+        elsif dom_resources.include? resource
+          :frontend
+        else
+          nil
+        end
       end
 
       def resource_type(resource)

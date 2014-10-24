@@ -1,25 +1,14 @@
-<p class="navicons">
-  <% if params[:interval].to_s == "5" %>
-    <%= clean_link_to(fa_icon("search-plus", :title => "increase plot resolution"),
-                      :page => without_module(@page), :action => "index", :interval => 1) %>
-  <% else %>
-    <%= clean_link_to(fa_icon("search-minus", :title => "decrease plot resolution"),
-                      :page => without_module(@page), :action => "index", :interval => 5) %>
-  <% end %>
-  <% if @dataset.has_distribution_plot? %>
-    <% scatter_title = "view #{distribution_kind(@dataset.resource).to_s.gsub(/_/," ")} plot" %>
-      <%= clean_link_to(fa_icon("signal flip-horizontal", :title => scatter_title),
-                        :page => without_module(@page), :action => distribution_kind(@dataset.resource)) %>
-  <% end %>
-  <% if @dataset.live_stream? -%>
-    <%= link_to(fa_icon("video-camera", :title => "view live stream"),
-                clean_params(params.slice(:app,:env,:page).merge(:action => "live_stream")),
-                :target => "_blank") %>
-  <% end -%>
-  <% unless @only_one_app %>
-    <% if @dataset.has_callers? -%>
-      <%= clean_link_to(fa_icon("phone", :title => "view callers"), :action => "callers") %>
-    <% end -%>
-    <%= clean_link_to(fa_icon("cloud", :title => "analyze call relationships"), :action => "call_relationships", :filter => @app) %>
-  <% end %>
-</p>
+<ul class="navicons">
+<!--
+  <li>
+    <% if params[:interval].to_s == "5" %>
+      <%= clean_link_to(fa_icon("search-plus", :title => "increase plot resolution"), :page => without_module(@page), :action => "index", :interval => 1) %>
+    <% else %>
+      <%= clean_link_to(fa_icon("search-minus", :title => "decrease plot resolution"), :page => without_module(@page), :action => "index", :interval => 5) %>
+    <% end %>
+  </li>
+-->
+  <li>
+    <%= clean_link_to(fa_icon("expand", :title => "view enlarged plot"), :page => without_module(@page), :action => "enlarged_plot", :interval => 1, :section => params[:section]) %>
+  </li>
+</ul>
