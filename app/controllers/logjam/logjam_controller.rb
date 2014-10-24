@@ -507,17 +507,16 @@ module Logjam
       respond_to do |format|
         format.html do
           redirect_on_empty_dataset and return
+          @xlabel = "Response time (ms)"
           if @section == :frontend
             @resources = Logjam::Resource.frontend_resources - %w(frontend_time)
             @dataset.get_data_for_distribution_plot(:frontend_time)
             @xmin = 100
-            @xlabel = "Response time"
             @title = "Frontend Response Time Distribution"
           else
             @resources = Logjam::Resource.time_resources
             @dataset.get_data_for_distribution_plot(:request_time)
             @xmin = 100
-            @xlabel = "Response time"
             @title = "Backend Response Time Distribution"
           end
           render 'quants_plot'

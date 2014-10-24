@@ -107,12 +107,11 @@ var yaxis = vis.append("svg:line")
     .style("font", "8px sana-serif")
     .text(formatter);
 
-function draw_percentile(r,i,key){
+function draw_percentile(xp,i,key,j){
   // percentiles
-  var xp = params.data[r][key];
   var a = [x(xp), 0];
   var b = [x(xp), h];
-  var p90 = vis.append("svg:line")
+  var pline = vis.append("svg:line")
     .style("fill", colors(i))
     .style("stroke", colors(i))
     .attr("x1", a[0])
@@ -128,18 +127,35 @@ function draw_percentile(r,i,key){
 
   vis.append("svg:text")
     .attr("dx", a[0])
-    .attr("dy", a[1]-8)
+    .attr("dy", a[1]-10)
     .attr("text-anchor", "middle")
-    .style("font", "8px sans-serif")
+    .style("font", "10px sans-serif")
     .text("~"+key);
+
+  vis.append("svg:text")
+    .attr("dx", a[0]+2)
+    .attr("dy", a[1]+15+j*10)
+    .style("font", "10px sans-serif")
+    .attr("text-anchor", "start")
+    .text(formatter(xp));
 }
 
 params.resources.forEach(function(r,i){
   var klazz = "shape" + i;
   if (r == 'total_time' || r == 'page_time' || r == 'ajax_time') {
-    draw_percentile(r, i,'p90');
-    draw_percentile(r, i,'p95');
-    draw_percentile(r, i,'p99');
+    var pos = 0;
+    var xp90 = params.data[r]['p90'];
+    var xp95 = params.data[r]['p95'];
+    var xp99 = params.data[r]['p99'];
+    if (xp90 != xp95) {
+      draw_percentile(xp90, i, 'p90', pos);
+      pos += 1;
+    }
+    if (xp95 != xp99) {
+      draw_percentile(xp95, i, 'p95', pos);
+      pos += 1;
+    }
+    draw_percentile(xp99, i, 'p99', pos);
   }
 
   // quants

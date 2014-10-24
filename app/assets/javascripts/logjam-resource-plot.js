@@ -206,7 +206,7 @@ function logjam_resource_plot(params) {
     .attr("class", "rlabel")
     .style("font", "10px Helvetica Neue")
     .attr("text-anchor", "end")
-    .attr("y", function(d,i){ return 50-i*25-1 })
+    .attr("y", function(d,i){ return 50-i*25-1; })
     .attr("x", w-1)
     .text(function(d){ return request_count_formatter(y2.invert(d)); });
 
