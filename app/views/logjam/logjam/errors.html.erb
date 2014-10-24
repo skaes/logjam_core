@@ -8,7 +8,7 @@
         <%= render "result_navigator" %>
         <table class="full_stats">
           <tr><th>Severity</th><th>RC</th><th>Time</th><th>Action</th><th>Log Excerpt</th></tr>
-          <% @requests.each do |r| %>
+          <% @requests.sort_by{|r| request_started_at(r)}.reverse.each do |r| %>
           <% request_url = clean_url_for(:action => "show", :id => r["_id"]) -%>
           <tr class="full_stats clickable" data-href="<%= request_url %>" title="view request">
             <% severity = r["severity"] %>
