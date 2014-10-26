@@ -37,6 +37,10 @@ module Logjam
     @@bind_ip = ip
   end
 
+  def self.bind_ip_for_zmq_spec
+    @@bind_ip == "0.0.0.0" ? "*" : @@bind_ip
+  end
+
   @@allow_cross_domain_ajax = false
   def self.allow_cross_domain_ajax
     @@allow_cross_domain_ajax
