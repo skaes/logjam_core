@@ -1,4 +1,4 @@
 #!/bin/bash
 # ulimit -n 16384
 exec 2>&1
-exec /usr/local/bin/logjam-importer -c cimporter.conf "$@"
+exec /usr/local/bin/logjam-importer -c LOGJAM_SERVICE_TARGET_DIR/cimporter.conf "$@"
