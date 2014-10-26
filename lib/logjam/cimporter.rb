@@ -14,7 +14,9 @@ module Logjam
     private
 
     def analyze_streams
-      @streams = Logjam.streams.reject{|k,s| s.is_a?(Logjam::LiveStream) || s.importer.devices.blank? || s.env == "development"}
+      @streams = Logjam.streams.reject do |k,s|
+        s.is_a?(Logjam::LiveStream) || (s.env == "development" && Rails.env.production?)
+      end
       @environments = @streams.values.map(&:env).uniq
       @endpoints = @streams.values.map{|s| s.importer.devices}.flatten.uniq
       @databases = Logjam.database_config
