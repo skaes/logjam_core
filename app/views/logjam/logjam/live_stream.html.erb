@@ -1,6 +1,10 @@
-<%= render "header" %>
-<div id="logjam-container">
-  <%= render "sidebar" %>
+<% unless params[:monitoring] %>
+  <%= render "header" %>
+<% end %>
+<div id="logjam-container" <% if params[:monitoring] %>class="full-width"<% end %>>
+  <% unless params[:monitoring] %>
+    <%= render "sidebar" %>
+  <% end %>
   <div id="logjam-content" class="app-dashboard">
     <div class="flex">
       <div class="item col-1">
