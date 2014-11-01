@@ -128,7 +128,7 @@ function initialize_header() {
   });*/
 
   $("#namespace-suggest").select2({
-    width: 350,
+    width: 300,
     minimumInputLength: 0,
     ajax: {
       url: action_auto_complete_url,
