@@ -59,6 +59,21 @@ module Logjam
     @@ignored_request_uri = uri
   end
 
+  @@websocket_url_generator = ->(request) {
+    if RUBY_PLATFORM =~ /darwin/
+      "ws://#{request.host}:9680/"
+    else
+      "ws://#{request.host}:8080/"
+    end
+  }
+  def self.websocket_url_generator
+    @@websocket_url_generator
+  end
+
+  def self.websocket_url_generator=(websocket_url_generator)
+    @@websocket_url_generator = websocket_url_generator
+  end
+
   @@devices = nil
   def self.devices
     @@devices

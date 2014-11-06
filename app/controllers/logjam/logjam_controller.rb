@@ -558,8 +558,7 @@ module Logjam
           get_app_env
           redirect_on_empty_dataset and return
           @resources = Logjam::Resource.time_resources-%w(total_time gc_time)
-          ws_port = RUBY_PLATFORM =~ /darwin/ ? 9608 : 8080
-          @socket_url = "ws://#{request.host}:#{ws_port}/"
+          @socket_url = Logjam.websocket_url_generator.call(request)
           @key = params[:page].to_s
           @key = "all_pages" if @key.blank? || @key == "::"
           @key = @key.sub(/^::/,'').downcase
