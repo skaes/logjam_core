@@ -369,6 +369,10 @@ tr {
   background-image: image-url('spinner24.gif');
 }
 
+#livestream-updated-at {
+  text-transform: lowercase;
+}
+
 table.zebra {
   border-spacing: 0;
   margin: 3px;

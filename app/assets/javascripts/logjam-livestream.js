@@ -290,8 +290,10 @@ function logjam_live_stream_chart(params){
       update_errors(value);
     else if ("anomaly" in value)
       update_anomaly_score(value);
-    else
+    else {
       update_chart(value);
+      $('#livestream-updated-at').html(new Date().toLocaleTimeString());
+    }
   };
 
   /* The web socket */
