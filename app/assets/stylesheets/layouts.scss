@@ -362,6 +362,13 @@ tr {
   margin: 20px;
 }
 
+#spinner img {
+  width: 24px;
+  height: 24px;
+  background-size: 24px 24px;
+  background-image: image-url('spinner24.gif');
+}
+
 table.zebra {
   border-spacing: 0;
   margin: 3px;
