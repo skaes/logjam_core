@@ -41,6 +41,25 @@ module Logjam
     @@bind_ip == "0.0.0.0" ? "*" : @@bind_ip
   end
 
+  @@statsd_endpoint = nil
+  # either udp://host:port or tcp://host:port
+  def self.statsd_endpoint=(spec)
+    @@statsd_endpoint = spec
+  end
+
+  def self.statsd_endpoint
+    @@statsd_endpoint
+  end
+
+  @@statsd_namespace = "logjam"
+  def self.statsd_namespace=(namespace)
+    @@statsd_namespace = namespace
+  end
+
+  def self.statsd_namespace
+    @@statsd_namespace
+  end
+
   @@allow_cross_domain_ajax = false
   def self.allow_cross_domain_ajax
     @@allow_cross_domain_ajax
