@@ -81,6 +81,11 @@ module Logjam
       @database_flush_interval ||= Logjam.database_flush_interval
     end
 
+    def backend_only_requests(*args)
+      @backend_only_requests = args if args.first
+      @backend_only_requests ||= Logjam.backend_only_requests
+    end
+
     def interesting_request?(request)
       total_time = request["total_time"].to_f
       total_time > import_threshold ||

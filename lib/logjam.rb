@@ -78,6 +78,15 @@ module Logjam
     @@ignored_request_uri = uri
   end
 
+  @@backend_only_requests = ""
+  def self.backend_only_requests
+    @@backend_only_requests
+  end
+
+  def self.backend_only_requests=(prefixes)
+    @@backend_only_requests = prefixes
+  end
+
   @@devices = nil
   def self.devices
     @@devices

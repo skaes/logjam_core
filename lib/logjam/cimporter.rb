@@ -60,6 +60,7 @@ module Logjam
       unless Logjam.ignored_request_uri.blank?
         indented(2, "ignored_request_uri = \"%s\"" % Logjam.ignored_request_uri)
       end
+      indented(2, "backend_only_requests = \"%s\"" % Logjam.backend_only_requests)
     end
 
     def generate_streams
@@ -74,6 +75,9 @@ module Logjam
           s.import_thresholds.each do |t|
             indented(4, "%s = %d" % t)
           end
+        end
+        if s.backend_only_requests != Logjam.backend_only_requests
+          indented(3, "backend_only_requests = \"%s\"" % s.backend_only_requests)
         end
       end
     end
