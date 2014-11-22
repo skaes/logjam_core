@@ -40,6 +40,9 @@
           <%= link_to(request_started_at(@request), request_params, :title => "show requests") -%>
         </h2>
       </div>
+    </div>
+
+    <div class="flex">
       <% time_resource_values = @request.slice(*time_resources) -%>
       <% unless time_resource_values.blank? %>
         <div class="item col-5">
