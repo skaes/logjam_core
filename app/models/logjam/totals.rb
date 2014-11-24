@@ -159,11 +159,15 @@ module Logjam
       {
         page: page,
         count: count('total_time'),
-        apdex: apdex.merge(t: 0.5, score: apdex_score),
-        papdex: apdex.merge(t: 2.0, score: apdex_score(:page)),
-        aapdex: apdex.merge(t: 2.0, score: apdex_score(:ajax)),
+        apdex: apdex(:backend).merge(t: 0.5, score: apdex_score(:backend)),
         response_codes: response,
       }.tap do |h|
+        unless (apdex_page = apdex(:page)).blank?
+          h[:papdex] = apdex_page.merge(t: 2.0, score: apdex_score(:page))
+        end
+        unless (apdex_ajax = apdex(:page)).blank?
+          h[:xapdex] = apdex_ajax.merge(t: 2.0, score: apdex_score(:ajax))
+        end
         h[:exceptions] = exceptions unless exceptions.empty?
         h[:js_exceptions] = js_exceptions unless js_exceptions.empty?
         h[:log_severities] = human_severities(severity) unless severity.empty?

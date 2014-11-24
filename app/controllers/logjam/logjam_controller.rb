@@ -67,7 +67,7 @@ module Logjam
 
     def fetch_json_data_for_index(db, page, options = params)
       options = {:app => @app, :env => @env}
-      resources = Resource.all_resources + %w(apdex response severity exceptions js_exceptions)
+      resources = Resource.all_resources + %w(apdex papdex xapdex response severity exceptions js_exceptions)
       stream = Logjam.streams["#{options[:app]}-#{options[:env]}"]
       filter = stream.frontend_page if options[:frontend_only] == "1"
       pages = Totals.new(db, resources, page).pages(:order => :apdex, :limit => 100_000, :filter => filter)
