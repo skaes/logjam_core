@@ -1,4 +1,7 @@
 #!/bin/bash
-# ulimit -n 16384
+# limit open files
+# ulimit -n 12345
+# limit resident size to 5 GB, which is plenty
+# ulimit -m 5000000
 exec 2>&1
 exec /usr/local/bin/logjam-importer -c LOGJAM_SERVICE_TARGET_DIR/cimporter.conf "$@"
