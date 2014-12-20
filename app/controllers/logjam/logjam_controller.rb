@@ -3,6 +3,7 @@ require 'csv'
 module Logjam
 
   class LogjamController < ApplicationController
+    before_filter :verify_date
     before_filter :redirect_to_clean_url, :except => [:live_stream, :auto_complete_for_controller_action_page]
     before_filter :verify_app_env, :except => [:call_relationships, :call_graph]
     before_filter :print_params if Rails.env=="development"
@@ -612,11 +613,11 @@ module Logjam
       @date = "#{params['year']}-#{params['month']}-#{params['day']}".to_date unless params[:year].blank?
       @date ||= default_date
       @days = database_info.days(@app, @env)
-      @db = Logjam.db(@date, @app, @env)
     end
 
     def prepare_params
       get_date
+      @db = Logjam.db(@date, @app, @env)
       params[:section] ||= 'backend'
       params[:start_minute] ||= FilteredDataset::DEFAULTS[:start_minute]
       params[:end_minute] ||= FilteredDataset::DEFAULTS[:end_minute]
@@ -708,6 +709,18 @@ module Logjam
     def print_params
       # p params
       # p request.format
+    end
+
+    def verify_date
+      get_date
+      today = Date.today
+      if @date > today || @date < today - Logjam.database_cleaning_threshold
+        msg = "Invalid date"
+        respond_to do |format|
+          format.html { render :text => msg, :status => 404 }
+          format.json { render :json => {:error => msg}, :status => 404 }
+        end
+      end
     end
 
     def verify_app_env
