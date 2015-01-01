@@ -249,8 +249,11 @@ module Logjam
           intervals_per_day.times do |i|
             row = minutes[i] || zero
             total = 0
+            if (heap_size = row["heap_size"]) && (live_data_set_size = row["live_data_set_size"]) && (live_data_set_size > heap_size)
+              row["live_data_set_size"] = row["heap_size"]
+            end
             plot_resources.each do |r|
-              v = r == "free_slots" ? [row["heap_size"] - row["live_data_set_size"], 0].max : row[r]
+              v = r == "free_slots" ? row["heap_size"] - row["live_data_set_size"] : row[r]
               if v.is_a?(Float) && v.nan?
                 Rails.logger.error("found NaN for resource #{r} minute #{i}")
                 v = 0.0
