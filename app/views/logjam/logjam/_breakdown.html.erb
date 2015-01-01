@@ -114,8 +114,9 @@
 
 <% unless s.zero_resources?(heap_resources) %>
 <% resources = *heap_resources + ["free_slots"] - ["heap_size"]
-   h = resources.inject({}){|h,r| h[r] = s.avg(r); h }
-   h["free_slots"] = s.avg('heap_size') - s.avg('live_data_set_size') -%>
+  h = resources.inject({}){|h,r| h[r] = s.avg(r); h }
+  h["free_slots"] = [s.avg('heap_size') - s.avg('live_data_set_size'), 0].max
+-%>
 <% selected = heap_resources.include?(params[:resource]) ? " selected" : "" %>
 <div class="item icon-action<%=selected%>">
   <%= sometimes_link_resource(heap_resources, resources.first) do %>
@@ -149,7 +150,7 @@
             <%= hrn name %>
           </td>
           <td class="number" style="color:<%= raw(colors[name] || '#000') %>;">
-            <%= memory_number(s.avg('heap_size') - s.avg('live_data_set_size')) %>
+            <%= memory_number([s.avg('heap_size') - s.avg('live_data_set_size'), 0].max) %>
           </td>
         </tr>
       </table>

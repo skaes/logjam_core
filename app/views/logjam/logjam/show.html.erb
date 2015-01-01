@@ -128,13 +128,13 @@
 
       <% heap_resource_values = @request.slice(*heap_resources) -%>
       <% unless heap_resource_values.blank? %>
-        <% heap_resource_values["free_slots"] = heap_resource_values["heap_size"] - heap_resource_values["live_data_set_size"] %>
+        <% heap_resource_values["free_slots"] = [heap_resource_values["heap_size"] - heap_resource_values["live_data_set_size"], 0].max %>
         <div class="item col-6">
           <h2>Heap</h2>
           <div id="heap" class="breakdown-chart">
             <% resources = *heap_resources
                h = @request.slice(*resources)
-               h["free_slots"] = h.delete("heap_size") - h["live_data_set_size"]
+               h["free_slots"] = [h.delete("heap_size") - h["live_data_set_size"], 0].max
                resources << "free_slots"
             -%>
                             <%= render :partial => "simple_pie", :locals => {

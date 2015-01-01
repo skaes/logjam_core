@@ -250,7 +250,7 @@ module Logjam
             row = minutes[i] || zero
             total = 0
             plot_resources.each do |r|
-              v = r == "free_slots" ? row["heap_size"] - row["live_data_set_size"] : row[r]
+              v = r == "free_slots" ? [row["heap_size"] - row["live_data_set_size"], 0].max : row[r]
               if v.is_a?(Float) && v.nan?
                 Rails.logger.error("found NaN for resource #{r} minute #{i}")
                 v = 0.0
