@@ -22,7 +22,7 @@ $(document).on('keydown', function(event){
    * application chooser
    * CTRL + A
    */
-  if(event.ctrlKey && && event.shiftKey event.keyCode === 65 && $('.application-chooser').length > -1) {
+  if(event.ctrlKey && event.shiftKey && event.keyCode === 65 && $('.application-chooser').length > -1) {
     event.preventDefault();
     $('.date_clearer').click()
     $('#namespace-suggest').select2("close");
@@ -33,7 +33,7 @@ $(document).on('keydown', function(event){
    * date chooser
    * CTRL + D
    */
-  if(event.ctrlKey && && event.shiftKey event.keyCode === 68) {
+  if(event.ctrlKey && event.shiftKey && event.keyCode === 68) {
     event.preventDefault();
     $('#namespace-suggest').select2("close");
     $('#application-suggest').select2("close");
@@ -44,7 +44,7 @@ $(document).on('keydown', function(event){
    * activate / deactivate autorefresh
    * CTRL + R
    */
-  if(event.ctrlKey && && event.shiftKey event.keyCode === 82) {
+  if(event.ctrlKey && event.shiftKey && event.keyCode === 82) {
     event.preventDefault();
     $('#auto-refresh').click();
   }
@@ -53,7 +53,7 @@ $(document).on('keydown', function(event){
    * Go to backend Dashboard
    * CTRL + B
    */
-  if(event.ctrlKey && && event.shiftKey event.shiftKey && event.keyCode === 66) {
+  if(event.ctrlKey && event.shiftKey && event.shiftKey && event.keyCode === 66) {
     event.preventDefault();
     $('#section').val('backend');
     submit_filter_form();
@@ -63,7 +63,7 @@ $(document).on('keydown', function(event){
    * Go to frontend Dashboard
    * CTRL + F
    */
-  if(event.ctrlKey && && event.shiftKey event.shiftKey && event.keyCode === 70) {
+  if(event.ctrlKey && event.shiftKey && event.shiftKey && event.keyCode === 70) {
     event.preventDefault();
     $('#section').val('frontend');
     submit_filter_form();
