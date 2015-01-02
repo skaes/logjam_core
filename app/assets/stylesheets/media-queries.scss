@@ -18,6 +18,7 @@
 
 @media all and (min-width: 1500px) {
   .xxl-view .app-dashboard {
+    display: -webkit-flex;
     display: flex;
 
     .size-xxl-small-width {
