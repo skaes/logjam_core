@@ -10,7 +10,7 @@ $(document).on('keydown', function(event){
    * search field
    * CTRL + S
    */
-  if(event.ctrlKey && event.shiftKey && !event.shiftKey && event.keyCode === 70) {
+  if(event.ctrlKey && !event.shiftKey && event.keyCode === 70) {
     event.preventDefault();
     $('.date_clearer').click();
     $('#application-suggest').select2("close");
@@ -53,7 +53,7 @@ $(document).on('keydown', function(event){
    * Go to backend Dashboard
    * CTRL + B
    */
-  if(event.ctrlKey && event.shiftKey && event.shiftKey && event.keyCode === 66) {
+  if(event.ctrlKey && event.shiftKey && event.keyCode === 66) {
     event.preventDefault();
     $('#section').val('backend');
     submit_filter_form();
@@ -63,7 +63,7 @@ $(document).on('keydown', function(event){
    * Go to frontend Dashboard
    * CTRL + F
    */
-  if(event.ctrlKey && event.shiftKey && event.shiftKey && event.keyCode === 70) {
+  if(event.ctrlKey && event.shiftKey && event.keyCode === 70) {
     event.preventDefault();
     $('#section').val('frontend');
     submit_filter_form();
