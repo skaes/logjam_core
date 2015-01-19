@@ -17,7 +17,7 @@ function logjam_page_pie(params) {
 
   function goto_page(page) {
     if (page != "Others...") {
-      $('#page-field').val(page);
+      $('#page').val(page);
       $('#filter-form').submit();
     }
   }

@@ -27,7 +27,7 @@ function submit_filter_form() {
 }
 
 function go_home() {
-  $("#page-field").val(parameter_defaults.page);
+  $("#page").val(parameter_defaults.page);
   $("#grouping").val(parameter_defaults.grouping);
   $("#resource").val(parameter_defaults.resource);
   $("#section").val(parameter_defaults.section);
