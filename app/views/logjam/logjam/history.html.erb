@@ -42,7 +42,7 @@
 -%>
 
 <script type="text/javascript">
-  $.getJSON("<%= url_for(params.merge(:format => :json, :section => @section)) %>", function(response){
+  $.getJSON("<%= raw url_for(params.merge(:format => :json, :section => @section)) %>", function(response){
     var js_params = <%= raw Oj.dump(js_params) %>;
     response.data.forEach(function(d){ d.date = new Date(d.date); })
     if (response.data.length < 2) {
