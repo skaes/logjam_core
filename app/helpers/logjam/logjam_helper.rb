@@ -415,17 +415,25 @@ module Logjam
 
     def apdex_rating(v)
       case
-      when v > 0.94 then "excellent"
-      when v > 0.85 then "good"
-      when v > 0.7  then "fair"
-      when v > 0.5  then "poor"
+      when v >= 0.94 then "excellent"
+      when v >= 0.85 then "good"
+      when v >= 0.7  then "fair"
+      when v >= 0.5  then "poor"
       else "unacceptable"
       end
     end
 
+    def truncated_apdex(v)
+      sprintf "%.2f", (v * 100.0).floor / 100.0
+    end
+
+    def card_apdex_class(v)
+      v >= 0.94 ? "apdex-ok" : "apdex-fail"
+    end
+
     def apdex_class(v, gf = params[:grouping_function])
       if gf == "apdex" && !v.to_f.nan?
-        v > 0.94 ? "apdex-ok" : "apdex-fail"
+        card_apdex_class(v)
       else
         ""
       end
