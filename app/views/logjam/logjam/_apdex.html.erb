@@ -1,5 +1,5 @@
 <% if !@dataset.apdex(:backend).nan? %>
-<div class="item col-5 icon-action <%= card_apdex_class(@dataset.apdex) %>"
+<div class="item col-5 icon-action <%= card_apdex_class(@dataset.apdex) %>">
   <%= clean_link_to(:action => "apdex_overview", :resource => 'total_time') do %>
     <h2>Apdex Backend: <span class="number"><%= truncated_apdex(@dataset.apdex(:backend)) %></span></h2>
   <% end %>

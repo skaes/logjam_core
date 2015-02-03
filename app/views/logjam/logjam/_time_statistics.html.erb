@@ -15,7 +15,7 @@
     <td class="number"><%= sometimes_link_stddev(page, resource) %></td>
     <td class="number"><%= seconds_to_human(page.sum(resource).to_f / 1000) %></td>
     <td class="center <%= apdex_class(page.apdex_score, 'apdex') %>">
-      <%= clean_link_to(number_with_precision(page.apdex_score, :precision => 2), :action => "apdex_overview", :page => page.page) %>
+      <%= clean_link_to(number_with_precision(truncated_apdex(page.apdex_score), :precision => 2), :action => "apdex_overview", :page => page.page) %>
     </td>
     <td class="number"><%= sometimes_link_errors(page) %></td>
   </tr>
