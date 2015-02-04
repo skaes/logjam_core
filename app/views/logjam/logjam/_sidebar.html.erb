@@ -2,7 +2,7 @@
 
 <section id="logjam-sidebar" class="open">
 
-  <% action = action_name == "index" ? "" : action_name %>
+  <% action = %w(index show).include?(action_name) ? "" : action_name %>
   <%= form_tag(params.except(:id).merge(:action => action), :method => :get, :id => "filter-form", :autocomplete => "off") do -%>
 
     <div class="menu-wrapper">
