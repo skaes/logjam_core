@@ -1,11 +1,13 @@
+<%
+   fields.reject{|k,v| v.blank?}.each_slice(4) do |tiles|
+%>
 <div class="flex">
-  <% max = fields.length %>
-  <% fields.each do |name, value| -%>
+  <% tiles.each do |name, value| -%>
     <% next if value.blank? -%>
-    <div class="item col-8">
+    <div class="item col-4" style="word-wrap:break-word">
       <h2><%= hrn name %></h2>
       <%= name == "started_at" ? value.to_s.sub(/(\d)T(\d)/,'\1 \2').sub(/(\d)\+/, '\1 +') : value %>
     </div>
   <% end -%>
 </div>
-
+<% end %>
