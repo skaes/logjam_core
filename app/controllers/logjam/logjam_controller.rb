@@ -669,7 +669,7 @@ module Logjam
           new_params = FilteredDataset.clean_url_params(params.merge(:page => '',
                                                                      :default_app => @default_app,
                                                                      :default_env => @default_env), params)
-          redirect_to new_params
+          redirect_to new_params.to_hash
         else
           render "empty_dataset"
         end
