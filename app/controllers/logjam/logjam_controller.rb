@@ -12,7 +12,7 @@ module Logjam
     def auto_complete_for_controller_action_page
       respond_to do |format|
         format.json do
-          query = params[:page] = params.delete(:query)
+          params[:page] = params.delete(:query)
           prepare_params
           show_modules = [":", "::"].include?(@page)
           re = show_modules ? /^::/ : /#{@page}/i
