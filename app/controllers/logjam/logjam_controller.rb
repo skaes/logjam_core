@@ -155,6 +155,61 @@ module Logjam
       end
     end
 
+    def leaders
+      redirect_on_empty_dataset and return
+      resources = %w(apdex papdex xapdex severity exceptions total_time)
+      databases = Logjam.grep(Logjam.databases, :env => @env, :date => @date)
+      @applications = []
+
+      databases.each do |db_name|
+        db = Logjam.connection_for(db_name).db(db_name)
+        Logjam.db_name_format =~ db_name && (application = $1)
+        stream = Logjam.streams["#{application}-#{@env}"]
+        filter = stream.frontend_page
+
+        pages = Totals.new(db, resources, '').pages(:order => :apdex, :limit => 100_000, :filter => filter)
+        next unless pages.size > 0
+        summary = pages.shift
+        summary.page = "__summary__"
+        while p = pages.shift
+          summary.add(p)
+        end
+
+        papdex = summary.apdex_score(:page)
+        xapdex = summary.apdex_score(:ajax)
+        next if papdex.nan? && xapdex.nan?
+
+        @applications << {
+            :application => application,
+            :requests => summary.count,
+            :apdex => summary.apdex_score(:backend),
+            :papdex => papdex,
+            :xapdex => xapdex,
+            :errors => summary.error_count,
+            :warnings => summary.warning_count,
+            :exceptions => summary.exception_count,
+        }
+      end
+
+      respond_to do |format|
+        format.html do
+          @applications.sort_by!{|a| - a[:apdex]}
+        end
+        format.json do
+          render :json => Oj.dump(@applications, :mode => :compat)
+        end
+        format.csv do
+          str = CSV.generate(:col_sep => ';') do |csv|
+            csv << %w(Application Backend-Apdex Page-Apdex Ajax-Apdex Requests Errors)
+            @applications.each do |p|
+              csv << p.values_at(:application, :apdex, :papdex, :xapdex, :requests, :errors, :exceptions)
+            end
+          end
+          render :text => str, :format => :csv
+        end
+      end
+    end
+
     def show
       redirect_on_empty_dataset and return
       logjam_request_id = [@app, @env, params[:id]].join('-')

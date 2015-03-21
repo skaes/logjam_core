@@ -1,0 +1,35 @@
+<%= render "header" %>
+<div id="logjam-container" class="xxl-view">
+  <%= render "sidebar" %>
+  <div id="logjam-content" class="app-dashboard">
+    <div class="flex">
+      <div class="controls item col-1">
+        <h2>Leader board for user facing applications</h2>
+      </div>
+      <div id="leaders" class="item col-1">
+        <table class="full_stats" style="max-width: 500px; border-bottom:1px;">
+          <tr>
+            <th>Pos</th>
+            <th>Application</th>
+            <th>Apdex Backend</th>
+            <th>Apdex Pages</th>
+            <th>Apdex Ajax</th>
+            <th>Requests</th>
+            <th>Errors</th>
+          </tr>
+          <% @applications.each_with_index do |info,i| %>
+            <tr class="full_stats">
+              <td class="number" style="padding-right:8px"><%= i+1 %></td>
+              <td><%= info[:application] %></td>
+              <td class="center <%= card_apdex_class(info[:apdex]) %>"><%= apdex_number(info[:apdex]) %></td>
+              <td class="center <%= card_apdex_class(info[:papdex]) %>"><%= apdex_number(info[:papdex]) %></td>
+              <td class="center <%= card_apdex_class(info[:xapdex]) %>"><%= apdex_number(info[:xapdex]) %></td>
+              <td class="number"><%= integer_number(info[:requests]) %></td>
+              <td class="number"><%= integer_number(info[:errors]) %></td>
+            </tr>
+          <% end %>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

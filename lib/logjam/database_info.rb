@@ -21,6 +21,10 @@ module Logjam
       @apps ||= @info.keys.sort
     end
 
+    def apps_for_env(env)
+      @apps_for_env ||= @info.select{|app,envs| envs.include?(env)}.keys
+    end
+
     def envs(app)
       @info[app].keys.sort.reverse rescue []
     end
