@@ -6,7 +6,7 @@
    chart_size = 100
 -%>
 
-<% resources = time_resources - %w(frontend_time ajax_time page_time) -%>
+<% resources = time_resources - %w(frontend_time dom_interactive ajax_time page_time) -%>
 <% selected = time_resources.include?(params[:resource]) ? " selected" : "" %>
 <div class="item icon-action<%= selected %>">
   <%= sometimes_link_resource(time_resources, 'page_time') do %>

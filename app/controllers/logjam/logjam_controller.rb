@@ -37,7 +37,7 @@ module Logjam
       respond_to do |format|
         format.html do
           redirect_on_empty_dataset and return
-          @resources, @js_data, @js_events, @js_max, @request_counts, @gc_time, @js_zoom = @dataset.plot_data(@section)
+          @resources, @js_data, @js_events, @js_max, @request_counts, @lines, @js_zoom = @dataset.plot_data(@section)
           if @section == :frontend
             render :template => "logjam/logjam/frontend_overview"
           end
@@ -55,7 +55,7 @@ module Logjam
       respond_to do |format|
         format.html do
           redirect_on_empty_dataset and return
-          @resources, @js_data, @js_events, @js_max, @request_counts, @gc_time, @js_zoom = @dataset.plot_data(@section)
+          @resources, @js_data, @js_events, @js_max, @request_counts, @lines, @js_zoom = @dataset.plot_data(@section)
         end
         format.json do
           prepare_params
@@ -499,7 +499,7 @@ module Logjam
       respond_to do |format|
         format.html do
           redirect_on_empty_dataset and return
-          @resources, @js_data, @js_events, @js_max, @request_counts, @gc_time, @js_zoom = @dataset.plot_data(@section)
+          @resources, @js_data, @js_events, @js_max, @request_counts, @lines, @js_zoom = @dataset.plot_data(@section)
         end
       end
     end

@@ -6,6 +6,7 @@ function logjam_resource_plot(params) {
       legend               = params.legend,
       request_counts       = params.request_counts,
       gc_time              = params.gc_time,
+      dom_interactive      = params.dom_interactive,
       max_y                = params.max_y,
       zoomed_max_y         = params.zoomed_max_y,
       selected_slice       = params.selected_slice,
@@ -374,13 +375,30 @@ function logjam_resource_plot(params) {
           .y(function(d){ return y(d[1]); })
           .interpolate("cardinal");
 
-    var gl = vis.append("g")
+    var glg = vis.append("g")
       .data([gc_time]);
 
-    var da_gc_line = gl.append("path")
+    var da_gc_line = glg.append("path")
           .attr("class", "gc_time")
           .attr("d", gc_line)
           .style("stroke", "rgba(0,0,0,.9)")
+          .style("fill", "none");
+  }
+
+  /* Dom interative */
+  if (dom_interactive != null) {
+    var interactive_line = d3.svg.line()
+          .x(function(d){ return x(d[0]+0.5); })
+          .y(function(d){ return y(d[1]); })
+          .interpolate("cardinal");
+
+    var dlg = vis.append("g")
+      .data([dom_interactive]);
+
+    var da_interactive_line = dlg.append("path")
+          .attr("class", "dom_interactive")
+          .attr("d", interactive_line)
+          .style("stroke", "rgba(94,73,234,.9)")
           .style("fill", "none");
   }
 
@@ -405,6 +423,12 @@ function logjam_resource_plot(params) {
       da_gc_line.transition()
         .duration(zoom_interval)
         .attr("d", gc_line);
+    };
+
+    if (dom_interactive != null) {
+      da_interactive_line.transition()
+        .duration(zoom_interval)
+        .attr("d", interactive_line);
     };
   }
 

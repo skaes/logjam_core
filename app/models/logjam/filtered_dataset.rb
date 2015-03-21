@@ -222,7 +222,7 @@ module Logjam
     end
 
     RESOURCES_EXCLUDED_FROM_PLOT = %w(total_time allocated_memory requests heap_growth page_time frontend_time)
-    LINE_PLOTTED_RESOURCES = %w(ajax_time gc_time)
+    LINE_PLOTTED_RESOURCES = %w(ajax_time gc_time dom_interactive)
 
     def plotted_resources
       (Resource.resources_for_type(plot_kind) & @collected_resources) - RESOURCES_EXCLUDED_FROM_PLOT
@@ -271,14 +271,14 @@ module Logjam
             nonzero += 1 if total > 0
           end
           plot_data = data_for_proto_vis(results, plot_resources).reverse
-          lines = []
-          LINE_PLOTTED_RESOURCES.each do |r|
-            lines << plot_data.shift if resources.include?(r)
+          lines = {}
+          LINE_PLOTTED_RESOURCES.reverse.each do |r|
+            lines[r] = plot_data.shift if resources.include?(r)
           end
           request_counts = []
           intervals_per_day.times{|i| request_counts << (counts[i] || 0) / 60.0}
           y_zoom = totals.sort[(totals.size*0.9).to_i].to_f
-          [plot_resources-LINE_PLOTTED_RESOURCES, plot_data, events, max_total, request_counts, lines.first, y_zoom]
+          [plot_resources-LINE_PLOTTED_RESOURCES, plot_data, events, max_total, request_counts, lines, y_zoom]
         end
     end
 

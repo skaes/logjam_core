@@ -6,15 +6,16 @@
 
 
 <%
-  line_attr = @section == :frontend ? "ajax_time" : "gc_time"
+  line_attr = @lines.include?("gc_time") ? "gc_time" : "ajax_time"
   js_params = {
     :events   => @js_events.map { |event| [event["minute"], event["label"]] },
     :data     => @js_data,
     :interval => params[:interval].to_i,
-    :colors   => (@resources.reverse+[@gc_time&&line_attr]).compact.map{|r| Logjam::Resource.color(r,0.8)}+["rgba(128,128,128,0.2)"],
-    :legend   => (@resources.reverse+[@gc_time&&line_attr]+%w(requests/second)).compact.map{|c| c.gsub(/_/,' ')},
+    :colors   => (@resources.reverse+@lines.keys).map{|r| Logjam::Resource.color(r,0.8)}+["rgba(128,128,128,0.2)"],
+    :legend   => (@resources.reverse+@lines.keys+%w(requests/second)).map{|c| c.gsub(/_/,' ')},
     :request_counts => @request_counts.reverse.drop_while{|d|d==0}.reverse,
-    :gc_time => @gc_time ? @gc_time.reverse.drop_while{|_,d| d==0}.reverse : nil,
+    :gc_time => @lines[line_attr] ? @lines[line_attr].reverse.drop_while{|_,d| d==0}.reverse : nil,
+    :dom_interactive => @lines["dom_interactive"] ? @lines["dom_interactive"].reverse.drop_while{|_,d| d==0}.reverse : nil,
     :max_y => @js_max,
     :zoomed_max_y => @js_zoom * 1.5,
     :selected_slice => params[:start_minute].to_i,
@@ -29,12 +30,14 @@
 
 <div id="resource-plot-<%= section %>"></div>
 <script>
-  $(function(){
-    logjam_resource_plot(<%=raw Oj.dump(js_params) %>)
-  })
-
-  $(window, document).on('resize', function(){
-    $('#resource-plot-<%= section %>').html('');
-    logjam_resource_plot(<%=raw Oj.dump(js_params) %>)
-  })
+  (function(){
+    var resource_plot_params = <%=raw Oj.dump(js_params) %>;
+    $(function(){
+      logjam_resource_plot(resource_plot_params);
+    });
+    $(window, document).on('resize', function(){
+      $('#resource-plot-<%= section %>').html('');
+      logjam_resource_plot(resource_plot_params);
+    });
+  })();
 </script>
