@@ -9,6 +9,9 @@
       <ul class="logjam-menu">
         <li>
           <%= link_to(fa_icon("home", :title => "Home") + " Home", {}, {:href=> '#', :onclick => "go_home()"}) %>
+          <% unless @only_one_app %>
+          <%= clean_link_to(fa_icon("list-ol", :title => "Leaders") + " Leaders", {:action => "leaders"}) %>
+          <% end %>
         </li>
       </ul>
 

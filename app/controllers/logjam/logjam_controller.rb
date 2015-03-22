@@ -178,6 +178,8 @@ module Logjam
         papdex = summary.apdex_score(:page)
         xapdex = summary.apdex_score(:ajax)
         next if papdex.nan? && xapdex.nan?
+        papdex = "-" if papdex.nan?
+        xapdex = "-" if xapdex.nan?
 
         @applications << {
             :application => application,
@@ -193,16 +195,16 @@ module Logjam
 
       respond_to do |format|
         format.html do
-          @applications.sort_by!{|a| - a[:apdex]}
+          @applications.sort_by!{|a| -a[:apdex] }
         end
         format.json do
           render :json => Oj.dump(@applications, :mode => :compat)
         end
         format.csv do
           str = CSV.generate(:col_sep => ';') do |csv|
-            csv << %w(Application Backend-Apdex Page-Apdex Ajax-Apdex Requests Errors)
-            @applications.each do |p|
-              csv << p.values_at(:application, :apdex, :papdex, :xapdex, :requests, :errors, :exceptions)
+            csv << %w(Pos Application Backend-Apdex Page-Apdex Ajax-Apdex Requests Errors Exceptions)
+            @applications.each_with_index do |p,i|
+              csv << ([i+1] + p.values_at(:application, :apdex, :papdex, :xapdex, :requests, :errors, :exceptions))
             end
           end
           render :text => str, :format => :csv

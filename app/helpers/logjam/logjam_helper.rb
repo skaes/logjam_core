@@ -109,7 +109,9 @@ module Logjam
     end
 
     def apdex_number(f)
-      if f.to_f.nan?
+      if !f.is_a?(Numeric)
+        f.to_s
+      elsif f.to_f.nan?
         "NaN"
       else
         number_with_precision((f.to_f*100).floor/100.0, :delimiter => ",", :separator => ".", :precision => 2)
@@ -436,11 +438,11 @@ module Logjam
     end
 
     def card_apdex_class(v)
-      (v.to_f.nan? || v >= 0.94) ? "apdex-ok" : "apdex-fail"
+      (!v.is_a?(Numeric) || v.to_f.nan? || v >= 0.94) ? "apdex-ok" : "apdex-fail"
     end
 
     def apdex_class(v, gf = params[:grouping_function])
-      if gf == "apdex" && !v.to_f.nan?
+      if gf == "apdex" && v.is_a?(Numeric) && !v.to_f.nan?
         card_apdex_class(v)
       else
         ""

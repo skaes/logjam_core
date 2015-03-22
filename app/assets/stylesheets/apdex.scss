@@ -4,12 +4,17 @@
 .apdex-ok { background-color: $apdex-ok !important; }
 .apdex-fail { background-color: $apdex-fail !important; }
 
-
-
 .full_stats .apdex-ok,
 .full_stats .apdex-fail {
-  // background: none !important;
+  background: none !important;
   a { margin: 0 5px; }
+}
+
+#leaders {
+  .full_stats .apdex-ok,
+  .full_stats .apdex-fail {
+    a { margin: 0; }
+  }
 }
 
 .full_stats {

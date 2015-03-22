@@ -4,28 +4,50 @@
   <div id="logjam-content" class="app-dashboard">
     <div class="flex">
       <div class="controls item col-1">
-        <h2>Leader board for user facing applications</h2>
+        <h2>Leader board
+          <div id="admin-control">
+            <%= form_tag(params.merge(:format => :csv), :method => :get) do %>
+            <%= submit_tag "Download CSV", :id => "download-button", :class => "btn", :name => nil %>
+            <% end %>
+          </div>
+        </h2>
       </div>
       <div id="leaders" class="item col-1">
-        <table class="full_stats" style="max-width: 500px; border-bottom:1px;">
+        <table class="full_stats" style="max-width: 600px">
           <tr>
             <th>Pos</th>
             <th>Application</th>
-            <th>Apdex Backend</th>
-            <th>Apdex Pages</th>
-            <th>Apdex Ajax</th>
-            <th>Requests</th>
-            <th>Errors</th>
+            <th class="center">Apdex Backend</th>
+            <th class="center">Apdex Pages</th>
+            <th class="center">Apdex Ajax</th>
+            <th class="center">Requests</th>
+            <th class="center">Errors</th>
+            <th class="center">Exceptions</th>
           </tr>
           <% @applications.each_with_index do |info,i| %>
-            <tr class="full_stats">
+            <% app, apdex, papdex, xapdex = info.values_at(:application, :apdex, :papdex, :xapdex) %>
+            <% url = clean_url_for(:app => app, :action => "index") %>
+            <tr class="full_stats clickable" data-href="<%= url %>">
               <td class="number" style="padding-right:8px"><%= i+1 %></td>
-              <td><%= info[:application] %></td>
-              <td class="center <%= card_apdex_class(info[:apdex]) %>"><%= apdex_number(info[:apdex]) %></td>
-              <td class="center <%= card_apdex_class(info[:papdex]) %>"><%= apdex_number(info[:papdex]) %></td>
-              <td class="center <%= card_apdex_class(info[:xapdex]) %>"><%= apdex_number(info[:xapdex]) %></td>
-              <td class="number"><%= integer_number(info[:requests]) %></td>
-              <td class="number"><%= integer_number(info[:errors]) %></td>
+              <td><%= app %></td>
+              <td class="center <%= card_apdex_class(apdex) %>">
+                <%= clean_link_to(apdex_number(apdex), app: app, action: "apdex_overview") %>
+              </td>
+              <td class="center <%= card_apdex_class(papdex) %>">
+                <%= clean_link_to(apdex_number(papdex), app: app, action: "apdex_overview", section: "frontend", resource: "page_time")  %>
+              </td>
+              <td class="center <%= card_apdex_class(xapdex) %>">
+                <%= clean_link_to(apdex_number(xapdex), app: app, action: "apdex_overview", section: "frontend", resource: "ajax_time") %>
+              </td>
+              <td class="number">
+                <%= clean_link_to(integer_number(info[:requests]), app: app, action: "index", grouping: "request") %>
+              </td>
+              <td class="number">
+                <%= clean_link_to(integer_number(info[:errors]), app: app, action: "error_overview") %>
+              </td>
+              <td class="number">
+                <%= clean_link_to(integer_number(info[:exceptions]), app: app, action: "exceptions") %>
+              </td>
             </tr>
           <% end %>
         </table>
