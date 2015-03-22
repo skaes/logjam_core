@@ -24,7 +24,7 @@
             <% i = 0; rating = apdex_rating(@totals.apdex_score(section)) %>
             <tr class='full_stats apdex <%= rating %> '>
               <td><b>Score<br /><br />Goal<br /><br />Rating</b></td>
-              <td class='number'><%= float_number(@totals.apdex_score(section)) %><br /><br />0.94<br /><br /><%= rating %></td>
+              <td class='number'><%= apdex_number(@totals.apdex_score(section)) %><br /><br />0.94<br /><br /><%= rating %></td>
               <td class='echart' id='<%= "apdex-chart-#{i+=1}" %>'>
                 <%= render "apdex_chart", apdex_score: @minutes.apdex_score(section), i: i, height: 100 %>
               </td>
