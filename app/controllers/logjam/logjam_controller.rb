@@ -177,7 +177,7 @@ module Logjam
 
         papdex = summary.apdex_score(:page)
         xapdex = summary.apdex_score(:ajax)
-        next if papdex.nan? && xapdex.nan?
+        next if papdex.nan? && xapdex.nan? && params[:showall] != "1"
         papdex = "-" if papdex.nan?
         xapdex = "-" if xapdex.nan?
 
@@ -192,11 +192,16 @@ module Logjam
             :exceptions => summary.exception_count,
         }
       end
-
+      @applications.sort_by!{|a| -a[:apdex] }
+      # @applications.each do |a|
+      #   %i[apdex papdex xapdex].each do |k|
+      #     if (v = a[k]).is_a?(Numeric)
+      #       a[k] = (v*100.0).floor/100.0
+      #     end
+      #   end
+      # end
       respond_to do |format|
-        format.html do
-          @applications.sort_by!{|a| -a[:apdex] }
-        end
+        format.html
         format.json do
           render :json => Oj.dump(@applications, :mode => :compat)
         end

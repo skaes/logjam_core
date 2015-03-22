@@ -7,6 +7,7 @@
         <h2>Leader board
           <div id="admin-control">
             <%= form_tag(params.merge(:format => :csv), :method => :get) do %>
+            <%= hidden_field_tag :showall, params[:showall] %>
             <%= submit_tag "Download CSV", :id => "download-button", :class => "btn", :name => nil %>
             <% end %>
           </div>
