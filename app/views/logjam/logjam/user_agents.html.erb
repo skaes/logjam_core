@@ -1,0 +1,40 @@
+<%= render "header" %>
+<div id="logjam-container" class="xxl-view">
+  <%= render "sidebar" %>
+  <div id="logjam-content" class="app-dashboard">
+    <div class="flex">
+      <div class="controls item col-1">
+        <h2>User Agents
+          <div id="admin-control">
+            <%= form_tag(params.merge(:format => :csv), :method => :get) do %>
+            <%= submit_tag "Download CSV", :id => "download-button", :class => "btn", :name => nil %>
+            <% end %>
+          </div>
+        </h2>
+      </div>
+    </div>
+    <div class="flex">
+      <div id="user-agents" class="item col-1">
+        <table class="full_stats zebra">
+          <tr>
+            <th class="center">User Agent</th>
+            <th class="center">Backend Count</th>
+            <th class="center">Frontend Count</th>
+          </tr>
+          <% @agents.each do |info| %>
+            <% agent, backend, frontend = info.values_at("agent", "backend", "frontend") %>
+            <tr class="full_stats zebra">
+              <td><%= agent %></td>
+              <td class="number">
+                <%= integer_number(backend) %>
+              </td>
+              <td class="number">
+                <%= integer_number(frontend) %>
+              </td>
+            </tr>
+          <% end %>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

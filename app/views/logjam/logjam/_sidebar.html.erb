@@ -152,6 +152,9 @@
           <%= clean_link_to(fa_icon("file-text-o") + " API Response", :format => :json) %>
         </li>
         <li>
+          <%= clean_link_to(fa_icon("user-secret") + " User Agents", action: "user_agents") %>
+        </li>
+        <li>
           <%= link_to(fa_icon("cogs") + " Admin Space", admin_storage_path) %>
         </li>
       </ul>

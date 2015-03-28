@@ -217,6 +217,27 @@ module Logjam
       end
     end
 
+    def user_agents
+      redirect_on_empty_dataset and return
+      @agents = Agents.new(@db).all
+      @agents.sort_by!{|a| -a["backend"].to_i}
+      respond_to do |format|
+        format.html
+        format.json do
+          render :json => Oj.dump(@agents, :mode => :compat)
+        end
+        format.csv do
+          str = CSV.generate(:col_sep => ';') do |csv|
+            csv << %w(User-Agent Backend-Count Frontend-Count)
+            @agents.each do |p|
+              csv << p.values_at("agent", "backend", "frontend")
+            end
+          end
+          render :text => str, :format => :csv
+        end
+      end
+    end
+
     def show
       redirect_on_empty_dataset and return
       logjam_request_id = [@app, @env, params[:id]].join('-')
