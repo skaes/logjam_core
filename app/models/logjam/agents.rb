@@ -5,9 +5,10 @@ module Logjam
       super(db, "agents")
     end
 
-    def all
+    def find(limit: nil)
       selector = {}
-      query_opts = {:fields => [:agent, :backend, :frontend]}
+      query_opts = {:fields => [:agent, :backend, :frontend], :sort => [:backend, -1]}
+      query_opts.merge!(limit: limit) if limit
       query = "Agents.find(#{selector.inspect},#{query_opts.inspect})"
       rows = with_conditional_caching(query) do |payload|
         # explain = @collection.find(selector, query_opts.dup).explain
@@ -29,6 +30,16 @@ module Logjam
       with_conditional_caching(query) do |payload|
         payload[:rows] = 1
         @collection.find(selector).count
+      end
+    end
+
+    def summary
+      group = { _id: nil, count:  {:$sum => 1}, backend: {:$sum => '$backend'}, frontend: {:$sum => '$frontend'}}
+      pipeline = [{'$group' => group }]
+      query = "Agents.aggregate(#{pipeline.inspect})"
+      with_conditional_caching(query) do |payload|
+        payload[:rows] = 1
+        @collection.aggregate(pipeline).first
       end
     end
   end

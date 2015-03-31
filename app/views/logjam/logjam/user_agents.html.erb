@@ -11,10 +11,16 @@
             <% end %>
           </div>
         </h2>
+        <table style="width:auto">
+          <tr><td><strong>Header Count</strong></td><td class="number"><%= integer_number(@summary["count"]) %></td></tr>
+          <tr><td><strong>Headers Received</strong></td><td class="number"><%= integer_number(@summary["backend"]) %></td></tr>
+          <tr><td><strong>Metrics Received</strong></td><td class="number"><%= integer_number(@summary["frontend"]) %></td></tr>
+        </table>
       </div>
     </div>
     <div class="flex">
       <div id="user-agents" class="item col-1">
+        <h2>Top <%= @limit %></h2>
         <table class="full_stats zebra">
           <tr>
             <th class="center">User Agent</th>
