@@ -212,7 +212,7 @@ module Logjam
               csv << ([i+1] + p.values_at(:application, :apdex, :papdex, :xapdex, :requests, :errors, :exceptions))
             end
           end
-          render :text => str, :format => :csv
+          send_data str, :filename => "leaders.csv"
         end
       end
     end
@@ -238,7 +238,7 @@ module Logjam
               csv << p.values_at("agent", "backend", "frontend")
             end
           end
-          render :text => str, :format => :csv
+          send_data str, :filename => "user_agents_#{@app}.csv"
         end
       end
     end
@@ -559,7 +559,7 @@ module Logjam
               csv << p.values_at(:source, :target, :count)
             end
           end
-          render :text => str, :format => :csv
+          send_data str, :filename => "call_relationships.csv"
         end
       end
     end
