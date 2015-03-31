@@ -223,7 +223,7 @@ module Logjam
       @summary = agent_collection.summary
       respond_to do |format|
         format.html do
-          @limit = 20
+          @limit = 100
           @agents = agent_collection.find(limit: @limit)
         end
         format.json do
