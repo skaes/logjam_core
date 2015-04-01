@@ -39,8 +39,13 @@ module Logjam
       query = "Agents.aggregate(#{pipeline.inspect})"
       with_conditional_caching(query) do |payload|
         payload[:rows] = 1
-        @collection.aggregate(pipeline).first
+        @collection.aggregate(pipeline).first || empty_summary
       end
+    end
+
+    private
+    def empty_summary
+      {"count" => 0, "backend" => 0, "frontend" => 0}
     end
   end
 
