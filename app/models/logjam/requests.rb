@@ -24,6 +24,8 @@ module Logjam
 
     def self.indexed_fields(collection)
       collection.index_information.keys.map{|i| i.gsub(/_-?1/,'')}
+    rescue Mongo::OperationFailure
+      []
     end
 
     def self.ensure_indexes(collection)
