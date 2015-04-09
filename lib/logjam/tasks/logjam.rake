@@ -43,6 +43,12 @@ namespace :logjam do
       Logjam.drop_applications(ENV['APPLICATIONS'].to_s.split(/\s*,\s*/), delay)
     end
 
+    desc "drop environments ENVS=a,b,c"
+    task :drop_envs => :environment do
+      delay = [ENV['REPAIR_DELAY'].to_i, 5].max
+      Logjam.drop_environments(ENV['ENVS'].to_s.split(/\s*,\s*/), delay)
+    end
+
     desc "reomve frontend fields from all dbs DATE=yesterday DROP_DELAY=5"
     task :drop_frontend_fields => :environment do
       delay = (ENV['DROP_DELAY'] || 5).to_i

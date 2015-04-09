@@ -429,6 +429,23 @@ module Logjam
     update_known_databases if dropped > 0
   end
 
+  def drop_environments(envs, delay = 10)
+    return if envs.blank?
+    dropped = 0
+    db_match = db_name_format(:env => envs.join("|"))
+    connections.each do |_,connection|
+      names = connection.database_names
+      names.each do |name|
+        next unless name =~ db_match
+        puts "dropping database: #{name}"
+        connection.drop_database(name)
+        sleep delay
+        dropped += 1
+      end
+    end
+    update_known_databases if dropped > 0
+  end
+
   def self.drop_frontend_fields_from_db(db)
     counts = %w(frontend_count ajax_count page_count)
     metrics = %w(frontend_time ajax_time page_time load_time processing_time response_time request_time connect_time style_nodes script_nodes html_nodes)
