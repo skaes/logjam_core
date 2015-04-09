@@ -7,7 +7,7 @@ module Logjam
 
     def find(limit: nil)
       selector = {}
-      query_opts = {:fields => [:agent, :backend, :frontend], :sort => [:backend, -1]}
+      query_opts = {:fields => [:agent, :backend, :frontend, :dropped], :sort => [:backend, -1]}
       query_opts.merge!(limit: limit) if limit
       query = "Agents.find(#{selector.inspect},#{query_opts.inspect})"
       rows = with_conditional_caching(query) do |payload|
@@ -34,7 +34,17 @@ module Logjam
     end
 
     def summary
-      group = { _id: nil, count:  {:$sum => 1}, backend: {:$sum => '$backend'}, frontend: {:$sum => '$frontend'}}
+      group = { _id: nil,
+                count:  {:$sum => 1},
+                backend: {:$sum => '$backend'},
+                frontend: {:$sum => '$frontend'},
+                dropped: {:$sum => '$dropped'},
+                outlier: {:$sum => '$drop_reasons.outlier'},
+                nav_timing: {:$sum => '$drop_reasons.nav_timing'},
+                illegal: {:$sum => '$drop_reasons.illegal'},
+                corrupted: {:$sum => '$drop_reasons.corrupted'},
+                invalid: {:$sum => '$drop_reasons.invalid'},
+              }
       pipeline = [{'$group' => group }]
       query = "Agents.aggregate(#{pipeline.inspect})"
       with_conditional_caching(query) do |payload|
@@ -45,7 +55,10 @@ module Logjam
 
     private
     def empty_summary
-      {"count" => 0, "backend" => 0, "frontend" => 0}
+      {
+        "count" => 0, "backend" => 0, "frontend" => 0, "dropped" => 0,
+        "outlier" => 0, "nav_timing" => 0, "illegal" => 0, "corrupted" => 0, "invalid" => 0
+      }
     end
   end
 

@@ -233,9 +233,9 @@ module Logjam
         format.csv do
           @agents = agent_collection.find
           str = CSV.generate(:col_sep => ';') do |csv|
-            csv << %w(User-Agent Backend-Count Frontend-Count)
+            csv << %w(User-Agent Backend-Count Frontend-Count Dropped)
             @agents.each do |p|
-              csv << p.values_at("agent", "backend", "frontend")
+              csv << p.values_at("agent", "backend", "frontend", "dropped")
             end
           end
           send_data str, :filename => "user_agents_#{@app}.csv"
