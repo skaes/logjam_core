@@ -227,17 +227,12 @@ module Logjam
           @agents = agent_collection.find(limit: @limit)
         end
         format.json do
-          @agents = agent_collection.find
-          render :json => Oj.dump(@agents, :mode => :compat)
+          agents = agent_collection.find
+          render :json => Oj.dump(agents, :mode => :compat)
         end
         format.csv do
-          @agents = agent_collection.find
-          str = CSV.generate(:col_sep => ';') do |csv|
-            csv << %w(User-Agent Backend-Count Frontend-Count Dropped)
-            @agents.each do |p|
-              csv << p.values_at("agent", "backend", "frontend", "dropped")
-            end
-          end
+          agents = agent_collection.find(select: Agents::BACKEND)
+          str = Agents.array_to_csv(agents)
           send_data str, :filename => "user_agents_#{@app}.csv"
         end
       end

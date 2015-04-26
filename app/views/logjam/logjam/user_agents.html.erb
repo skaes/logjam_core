@@ -12,20 +12,20 @@
           </div>
         </h2>
         <table style="width:auto">
-          <tr><td><strong>Agent Count</strong></td><td class="number"><%= integer_number(@summary["count"]) %></td></tr>
-          <tr><td><strong>Headers Received</strong></td><td class="number"><%= integer_number(@summary["backend"]) %></td></tr>
-          <tr><td><strong>Metrics Received</strong></td><td class="number"><%= integer_number(@summary["frontend"]) %></td></tr>
-          <tr><td><strong>Metrcis Dropped</strong></td><td class="number"><%= integer_number(@summary["dropped"]) %></td></tr>
+          <tr><td><strong>Agent Count</strong></td><td class="number"><%= integer_number(@summary[:count]) %></td></tr>
+          <tr><td><strong>Headers Received</strong></td><td class="number"><%= integer_number(@summary[:backend]) %></td></tr>
+          <tr><td><strong>Metrics Received</strong></td><td class="number"><%= integer_number(@summary[:frontend]) %></td></tr>
+          <tr><td><strong>Metrcis Dropped</strong></td><td class="number"><%= integer_number(@summary[:dropped]) %></td></tr>
         </table>
       </div>
       <div id="user-agents" class="item col-2">
         <h2>Loss Statistics</h2>
         <table style="width:auto">
-          <tr><td><strong>Outliers</strong></td><td class="number"><%= integer_number(@summary["outliers"]) %></td></tr>
-          <tr><td><strong>Nav Timing</strong></td><td class="number"><%= integer_number(@summary["nav_timing"]) %></td></tr>
-          <tr><td><strong>Illegal</strong></td><td class="number"><%= integer_number(@summary["illegal"]) %></td></tr>
-          <tr><td><strong>Corrupted</strong></td><td class="number"><%= integer_number(@summary["corrupted"]) %></td></tr>
-          <tr><td><strong>Invalid</strong></td><td class="number"><%= integer_number(@summary["invalid"]) %></td></tr>
+          <tr><td><strong>Outliers</strong></td><td class="number"><%= integer_number(@summary[:outliers]) %></td></tr>
+          <tr><td><strong>Nav Timing</strong></td><td class="number"><%= integer_number(@summary[:nav_timing]) %></td></tr>
+          <tr><td><strong>Illegal</strong></td><td class="number"><%= integer_number(@summary[:illegal]) %></td></tr>
+          <tr><td><strong>Corrupted</strong></td><td class="number"><%= integer_number(@summary[:corrupted]) %></td></tr>
+          <tr><td><strong>Invalid</strong></td><td class="number"><%= integer_number(@summary[:invalid]) %></td></tr>
         </table>
       </div>
     </div>
@@ -40,18 +40,11 @@
             <th class="center">Dropped</th>
           </tr>
           <% @agents.each do |info| %>
-            <% agent, backend, frontend, dropped = info.values_at("agent", "backend", "frontend", "dropped") %>
             <tr class="full_stats zebra">
-              <td><%= agent %></td>
-              <td class="number">
-                <%= integer_number(backend) %>
-              </td>
-              <td class="number">
-                <%= integer_number(frontend) %>
-              </td>
-              <td class="number">
-                <%= integer_number(dropped) %>
-              </td>
+              <td><%= info.agent %></td>
+              <td class="number"><%= integer_number(info.backend) %></td>
+              <td class="number"><%= integer_number(info.frontend) %></td>
+              <td class="number"><%= integer_number(info.dropped) %></td>
             </tr>
           <% end %>
         </table>
