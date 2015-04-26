@@ -502,4 +502,19 @@ module Logjam
   def database_config(env = Rails.env)
     @@database_config[env] ||= YAML.load_file("#{Rails.root}/config/logjam_database.yml")[env]
   end
+
+  def user_agents
+    user_agents = Agents.create_stats_hash
+    databases_sorted_by_date.each do |db_name|
+      date = db_date(db_name)
+      if date > Date.today - 14
+        db = connection_for(db_name).db(db_name)
+        agent_infos = Agents.new(db).find(select: Agents::BACKEND)
+        agent_infos.each do |a|
+          user_agents[a.agent].merge!(a)
+        end
+      end
+    end
+    user_agents.values.sort_by{|a| -a.backend}
+  end
 end

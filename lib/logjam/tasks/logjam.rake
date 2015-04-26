@@ -106,6 +106,12 @@ namespace :logjam do
         Logjam.import_databases(from_host, databases_to_copy, delay: delay, drop_existing: drop_existing)
       end
     end
+
+    desc "list all stored user agents strings"
+    task :user_agents => :environment do
+      agents = Logjam.user_agents
+      Logjam::Agents.dump_array(agents)
+    end
   end
 
   namespace :device do
