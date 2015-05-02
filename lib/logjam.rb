@@ -500,7 +500,12 @@ module Logjam
 
   @@database_config ||= {}
   def database_config(env = Rails.env)
-    @@database_config[env] ||= YAML.load_file("#{Rails.root}/config/logjam_database.yml")[env]
+    @@database_config[env] ||=
+      begin
+        file_name = "#{Rails.root}/config/logjam_database.yml"
+        file_contents = ERB.new(File.read(file_name)).result
+        YAML.load(file_contents)[env]
+      end
   end
 
   def user_agents
