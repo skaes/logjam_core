@@ -4,4 +4,9 @@
 # limit resident size to 5 GB, which is plenty
 # ulimit -m 5000000
 exec 2>&1
-exec /usr/local/bin/logjam-importer -c LOGJAM_SERVICE_TARGET_DIR/cimporter.conf "$@"
+if [ -x /opt/logjam/bin/logjam-importer ]; then
+  importer=/opt/logjam/bin/logjam-importer
+else
+  importer=/usr/local/bin/logjam-importer
+fi
+exec $importer -c LOGJAM_SERVICE_TARGET_DIR/cimporter.conf "$@"
