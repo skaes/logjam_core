@@ -98,7 +98,7 @@ module Logjam
 
     def generate_statsd
       indented(0, "statsd")
-      indented(1, "endpoint = \"%s\"" % Logjam.statsd_endpoint)
+      indented(1, "endpoint = \"%s\"" % Logjam.statsd_endpoint) if Logjam.statsd_endpoint
       indented(1, "namespace = \"%s\"" % Logjam.statsd_namespace)
     end
 
