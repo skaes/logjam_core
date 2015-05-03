@@ -1,5 +1,5 @@
 module Logjam
-  class Cimporter
+  class Importer
     def initialize
       analyze_streams
     end

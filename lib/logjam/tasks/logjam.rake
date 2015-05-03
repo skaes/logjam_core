@@ -126,11 +126,11 @@ namespace :logjam do
     end
   end
 
-  namespace :cimporter do
+  namespace :importer do
     namespace :config do
       desc "generate C importer config"
       task :generate => :environment do
-        Logjam::Cimporter.new.generate_config
+        Logjam::Importer.new.generate_config
       end
     end
   end
@@ -204,23 +204,16 @@ namespace :logjam do
       system("mkdir -p #{service_dir}")
       installed_services = []
       streams = Logjam.streams(ENV['LOGJAM_SERVICE_TAG'])
-      install_c_importer = Rails.env.development?
       streams.each do |i, s|
         next if Rails.env.production? && s.env == 'development'
         if s.is_a?(Logjam::LiveStream)
           installed_services << install_service("livestream", "live-stream-#{s.env}",
                                                 :ANOMALIES_HOST => s.anomalies_host,
                                                 :BIND_IP => Logjam.bind_ip)
-        elsif s.importer.devices.blank?
-          installed_services << install_service("importer", "importer-#{i}", :IMPORTER => i)
-        else
-          install_c_importer = true
         end
       end
-      if install_c_importer
-        Logjam::Cimporter.new.generate_config(StringIO.new(config = ""))
-        installed_services << install_service("cimporter", "cimporter", :config => config)
-      end
+      Logjam::Importer.new.generate_config(StringIO.new(config = ""))
+      installed_services << install_service("importer", "importer", :config => config)
       old_services = service_paths.map{|f| f.split("/").compact.last} - installed_services
       old_services.each do |old_service|
         puts "removing old service #{old_service}"
