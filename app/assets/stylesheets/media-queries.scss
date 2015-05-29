@@ -111,20 +111,19 @@
     left: -9000px !important;
     position: fixed !important;
     z-index: 10000 !important;
-    transition: all 0.5s;
     top: 45px;
+    left: 0 !important;
     min-height: 0;
     max-width: 100%;
-    opacity: 0;
     overflow-y: scroll; /* has to be scroll, not auto */
     -webkit-overflow-scrolling: touch;
     width: 100%;
+    display: none;
   }
 
   .sidebar-visible {
     #logjam-sidebar {
-      left: 0 !important;
-      opacity: 1;
+      display: block;
     }
   }
 
