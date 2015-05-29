@@ -118,7 +118,6 @@
     opacity: 0;
     overflow-y: scroll; /* has to be scroll, not auto */
     -webkit-overflow-scrolling: touch;
-    transition: opacity .3s;
     width: 100%;
   }
 
