@@ -108,22 +108,29 @@
 
   #logjam-sidebar {
     box-shadow: 0 0 0 0 rgba(0,0,0,0);
-    left: -220px !important;
+    left: -9000px !important;
     position: fixed !important;
     z-index: 10000 !important;
     transition: all 0.5s;
-    top: 0;
-    bottom: 0;
+    top: 45px;
     min-height: 0;
+    max-width: 100%;
+    opacity: 0;
     overflow-y: scroll; /* has to be scroll, not auto */
     -webkit-overflow-scrolling: touch;
+    transition: opacity .3s;
+    width: 100%;
   }
 
   .sidebar-visible {
     #logjam-sidebar {
       left: 0 !important;
-      box-shadow: 0 0 50px 0 rgba(0,0,0,0.8);
+      opacity: 1;
     }
+  }
+
+  body.sidebar-visible {
+    overflow: hidden;
   }
 
   .size-l-no-flex {
