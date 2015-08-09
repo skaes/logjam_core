@@ -166,7 +166,6 @@ function initialize_header() {
 
   $("#application-suggest").on("change", function(value){
       $('#app').val( value.added.text );
-      $('#page').val( '' );
       submit_filter_form();
   });
 
