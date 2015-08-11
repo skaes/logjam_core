@@ -4,12 +4,13 @@ module Logjam
       analyze_streams
     end
 
-    def generate_config(io = STDOUT)
-      @io = io
+    def config
+      @io = StringIO.new(config = "")
       generate_frontend
       generate_backend
       generate_metrics
       generate_statsd
+      config
     end
 
     private

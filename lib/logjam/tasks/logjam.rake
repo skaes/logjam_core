@@ -130,7 +130,7 @@ namespace :logjam do
     namespace :config do
       desc "generate C importer config"
       task :generate => :environment do
-        Logjam::Importer.new.generate_config
+        puts Logjam::Importer.new.config
       end
     end
   end
@@ -212,7 +212,7 @@ namespace :logjam do
                                                 :BIND_IP => Logjam.bind_ip)
         end
       end
-      Logjam::Importer.new.generate_config(StringIO.new(config = ""))
+      config = Logjam::Importer.new.config
       installed_services << install_service("importer", "importer", :config => config)
       old_services = service_paths.map{|f| f.split("/").compact.last} - installed_services
       old_services.each do |old_service|
