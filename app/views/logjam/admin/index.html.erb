@@ -1,5 +1,5 @@
 <div id="logjam-header">
-  <h1 class="logo"><a href="/<%= params[:year] %>/<%= params[:month] %>/<%= params[:day] %>/dashboard">LOGJAM</a></h1>
+  <h1 class="logo">LOGJAM</h1>
 </div>
 <div id="logjam-container">
   <div class="flex">
@@ -8,7 +8,7 @@
         ~ <%= integer_number(@total_bytes/(1024*1024*1024)) %>G
         <div id="admin-control">
           <%= form_tag(params.merge(:format => :csv), :method => :get) do %>
-          <%= submit_tag "Download CSV", :id => "download-button", :class => "btn", :name => nil %>
+            <%= submit_tag "Download CSV", :id => "download-button", :class => "btn", :name => nil %>
           <% end %>
         </div>
       </h2>
