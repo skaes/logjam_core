@@ -63,6 +63,15 @@ table {
       border-bottom: 1px solid $lighter-grey !important;
       text-align: left !important;
     }
+    td {
+      vertical-align: top;
+    }
+  }
+
+  &.allow-multilines {
+    td {
+      white-space: pre;
+    }
   }
 
 }
