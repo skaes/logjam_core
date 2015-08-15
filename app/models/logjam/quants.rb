@@ -4,8 +4,8 @@ module Logjam
 
     def self.ensure_indexes(collection)
       ms = Benchmark.ms do
-        fields = [ ["page", Mongo::ASCENDING], ["kind", Mongo::ASCENDING], ["quant", Mongo::ASCENDING] ]
-        collection.create_index(fields, :background => true)
+        fields = { "page" => Mongo::ASCENDING, "kind" => Mongo::ASCENDING, "quant" => Mongo::ASCENDING }
+        collection.indexes.create_one(fields, :background => true)
       end
       logger.debug "MONGO Quants Indexes Creation: #{"%.1f" % (ms)} ms"
       collection
@@ -26,12 +26,12 @@ module Logjam
     end
 
     def compute
-      selector = {:page => @pattern, :kind => @kind}
-      fields = {:fields => ["quant"].concat(@resources)}
-      query = "Quants.find(#{selector.inspect},#{fields.inspect})"
-      rows = with_conditional_caching(query) do |payload|
+      selector = { :page => @pattern, :kind => @kind }
+      fields = { :projection => _fields(["quant"].concat(@resources))}
+      query, log = build_query("Quants.find", selector, fields)
+      rows = with_conditional_caching(log) do |payload|
         rs = []
-        @collection.find(selector, fields.clone).each do |row|
+        query.each do |row|
           row.delete("_id")
           rs << row
         end

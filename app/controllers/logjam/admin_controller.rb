@@ -33,8 +33,9 @@ module Logjam
       @database_info = []
       @total_bytes = 0
       Logjam.connections.each do |host,conn|
-        conn.database_info.each do |db,size|
-          @database_info << [host,db,size]
+        conn.list_databases.each do |db|
+          size = db["sizeOnDisk"]
+          @database_info << [host, db["name"], size]
           @total_bytes += size
         end
       end

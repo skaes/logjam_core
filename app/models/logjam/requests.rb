@@ -35,11 +35,11 @@ module Logjam
           logger.info "MONGO assuming request indexes already exist"
         else
           logger.info "MONGO creating request indexes"
-          collection.create_index([ ["metrics.n", 1], ["metrics.v", -1] ], :background => true)
-          collection.create_index([ ["page", 1], ["metrics.n", 1], ["metrics.v", -1] ], :background => true)
+          collection.indexes.create_one({ "metrics.n" => 1, "metrics.v" => -1 }, :background => true)
+          collection.indexes.create_one({ "page" => 1, "metrics.n" => 1, "metrics.v" => -1 }, :background => true)
           INDEXED_FIELDS.each do |f|
-            collection.create_index([ [f, 1] ], :background => true, :sparse => true)
-            collection.create_index([ ["page", 1], [f, 1] ], :background => true)
+            collection.indexes.create_one({ f => 1 }, :background => true, :sparse => true)
+            collection.indexes.create_one({ "page" => 1, f => 1 }, :background => true)
           end
         end
       end
@@ -119,19 +119,21 @@ module Logjam
       fields["lines"] = {'$slice' => -1000} if @options[:response_code] || @options[:severity] || @options[:exceptions]
 
       query_opts = {
-        :fields => fields,
-        :sort => INDEXED_FIELDS.include?(@resource) ?  [@resource, -1] : [["metrics.n", 1], ["metrics.v", -1]],
+        :projection => fields,
+        :sort => INDEXED_FIELDS.include?(@resource) ? {@resource => -1} : {"metrics.n" => 1, "metrics.v" => -1},
         :limit => @options[:limit] || 25,
         :skip => @options[:skip]
       }
 
-      query = "Requests.find(#{selector.inspect},#{query_opts.inspect})"
-      rows = with_conditional_caching(query) do |payload|
+      query, log = build_query("Requests.find", selector, query_opts)
+      rows = with_conditional_caching(log) do |payload|
         # explain = @collection.find(selector, query_opts.dup).explain
         # logger.debug explain.inspect
         rs = []
-        @collection.find(selector, query_opts.dup).each do |row|
-          (id = row["_id"]) && row["_id"] = id.to_s
+        query.each do |row|
+          if (id = row["_id"]) && id.is_a?(BSON::Binary)
+            row["_id"] = id.data.to_s
+          end
           rs << row
           convert_metrics(row)
         end
@@ -152,10 +154,12 @@ module Logjam
 
     def find(id)
       selector = {"_id" => primary_key(id)}
-      query = "Requests.find_one(#{id})"
-      rows = with_conditional_caching(query) do |payload|
-        if row = @collection.find_one(selector, {:fields => {'lines' => {'$slice' => -1000}}})
-          (id = row["_id"]) && row["_id"] = id.to_s
+      log = "Requests.find_one(#{id})"
+      rows = with_conditional_caching(log) do |payload|
+        if row = @collection.find(selector).projection(:lines => {'$slice' => -1000}).limit(1).first
+          if (id = row["_id"]) && id.is_a?(BSON::Binary)
+            row["_id"] = id.data.to_s
+          end
           convert_metrics(row)
           payload[:rows] = 1
           [row]
@@ -178,7 +182,7 @@ module Logjam
       when 24
         BSON::ObjectId.from_string(id)
       when 32
-        BSON::Binary.new(id, BSON::Binary::SUBTYPE_UUID)
+        BSON::Binary.new(id, :uuid_old)
       else
         id
       end

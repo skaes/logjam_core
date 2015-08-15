@@ -3,6 +3,12 @@ require 'oj'
 
 Oj.default_options = {:mode => :compat, :time_format => :ruby}
 
+# monkey patch Mongo::Client
+class Mongo::Client
+  # provide a db method. should be removed at some point
+  alias_method :db, :use
+end
+
 module Logjam
   extend self
 
@@ -170,11 +176,12 @@ module Logjam
     key = "#{config['host']}-#{config['port']}"
     @@mongo_connections[key] ||=
       begin
-        connection = Mongo::Connection.new(config['host'], config['port'])
+        connection_spec = "#{config['host']}:#{config['port']}"
+        options = { :connection_timeout => 60, :socket_timeout => 60 }
         if config['user'] && config['pass']
-          connection.db('admin').authenticate(config['user'], config['pass'])
+          options.merge!(:user => config['user'], :password => config['pass'])
         end
-        connection
+        Mongo::Client.new([connection_spec], options)
       end
   end
 
@@ -195,7 +202,7 @@ module Logjam
   def db(date, app, env)
     name = db_name(date, app, env)
     connection = connection_for(name)
-    connection.db name
+    connection.db(name).database
   end
 
   def db_name(date, app, env)
@@ -247,7 +254,7 @@ module Logjam
 
   def ensure_known_database(dbname)
     connection = connection_for(dbname)
-    meta_collection(connection).update({:name => 'databases'}, {'$addToSet' => {:value => dbname}}, {:upsert => true, :multi => false})
+    meta_collection(connection).find(:name => 'databases').update_one({'$addToSet' => {:value => dbname}}, :upsert => true)
   end
 
   def update_known_databases
@@ -256,8 +263,8 @@ module Logjam
     connections.each do |_,connection|
       names = connection.database_names
       known_databases = grep(names).reject{|name| db_date(name) > today}.sort
-      meta_collection(connection).create_index("name")
-      meta_collection(connection).update({:name => 'databases'}, {'$set' => {:value => known_databases}}, {:upsert => true, :multi => false})
+      meta_collection(connection).indexes.create_one(name: 1)
+      meta_collection(connection).find(:name => 'databases').update_one({'$set' => {:value => known_databases}}, :upsert => true)
       all_known_databases.concat(known_databases)
     end
     if all_known_databases.empty?
@@ -273,7 +280,7 @@ module Logjam
     connections.each do |_,connection|
       rows = []
       ActiveSupport::Notifications.instrument("mongo.logjam", :query => "load database names") do |payload|
-        rows = meta_collection(connection).find({:name => "databases"},{:fields => ["value"]}).to_a
+        rows = meta_collection(connection).find(:name => "databases").projection(value: 1).to_a
         payload[:rows] = rows.size
       end
       all_known_databases.concat(rows.first["value"]) unless rows.empty?
@@ -317,7 +324,7 @@ module Logjam
       if known_databases.include?(db_name)
         if options[:drop_existing]
           puts "dropping target database #{db_name}"
-          mongo.drop_database(db_name)
+          mongo.use(db_name).database.drop
         else
           puts "cowardly refusing to overwrite existing database #{db_name}"
           next
@@ -370,7 +377,7 @@ module Logjam
       # puts "db cleaning threshold for #{db_name}: #{stream.database_cleaning_threshold}"
       if Date.today - stream.database_cleaning_threshold > date
         puts "removing old database: #{db_name}"
-        connection_for(db_name).drop_database(db_name)
+        connection_for(db_name).use(db_name).database.drop
         sleep delay
         dropped += 1
       end
@@ -388,7 +395,7 @@ module Logjam
         db = connection.db(name)
         next unless db.stats["fileSize"] == 0
         puts "dropping empty database: #{name}"
-        connection.drop_database(name)
+        connection.use(name).database.drop
         sleep delay
         dropped += 1
       end
@@ -404,7 +411,7 @@ module Logjam
       names.each do |name|
         next unless name =~ db_match
         puts "dropping database: #{name}"
-        connection.drop_database(name)
+        connection.use(name).database.drop
         sleep delay
         dropped += 1
       end
@@ -421,7 +428,7 @@ module Logjam
       names.each do |name|
         next unless name =~ db_match
         puts "dropping database: #{name}"
-        connection.drop_database(name)
+        connection.use(name).database.drop
         sleep delay
         dropped += 1
       end
@@ -438,7 +445,7 @@ module Logjam
       names.each do |name|
         next unless name =~ db_match
         puts "dropping database: #{name}"
-        connection.drop_database(name)
+        connection.use(name).database.drop
         sleep delay
         dropped += 1
       end
@@ -453,7 +460,7 @@ module Logjam
     fields = counts + metrics + metrics_sq + %w(fapdex papdex xapdex)
     fields = fields.each_with_object({}){|f,h| h[f] = true}
     %w[totals minutes].each do |collection|
-      db[collection].update({}, {'$unset' => fields}, :multi => true)
+      db[collection].update_many('$unset' => fields)
     end
     db["quants"].remove({"kind" => "f"})
   end

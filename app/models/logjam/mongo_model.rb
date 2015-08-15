@@ -36,5 +36,37 @@ module Logjam
         "#{Rails.env}-#{@database.name}-#{query}"
       end
     end
+
+    def _fields(array)
+      Hash[* array.flat_map{ |x| [x,1] }]
+    end
+
+    def build_query(name, selector, opts = {})
+      query = @collection.find(selector)
+      log = "#{name}(#{selector.inspect})"
+
+      if projection = opts[:projection]
+        query = query.projection(projection)
+        log << ".projection(#{projection})"
+      end
+
+      if sort = opts[:sort]
+        query = query.sort(sort)
+        log << ".sort(#{sort})"
+      end
+
+      if limit = opts[:limit]
+        query = query.limit(limit)
+        log << ".limit(#{limit})"
+      end
+
+      if skip = opts[:skip]
+        query = query.skip(skip)
+        log << ".skip(#{skip})"
+      end
+
+      [query, log]
+    end
+
   end
 end

@@ -192,7 +192,7 @@ module Logjam
 
     def self.ensure_indexes(collection)
       ms = Benchmark.ms do
-        collection.create_index("page", :background => true)
+        collection.indexes.create_one({"page" => 1}, :background => true)
       end
       logger.debug "MONGO Totals Indexes Creation: #{"%.1f" % (ms)} ms"
       collection
@@ -231,7 +231,7 @@ module Logjam
         begin
           query = "Totals.distinct(:page)"
           with_conditional_caching(query) do |payload|
-            rows = @collection.distinct(:page, :count => {'$gt' => 0})
+            rows = @collection.find.distinct(:page, :count => {'$gt' => 0})
             payload[:rows] = rows.size
             rows
           end
@@ -243,7 +243,7 @@ module Logjam
         begin
           query = "Totals.find({page:'all_pages'},{})"
           row = with_conditional_caching(query) do |payload|
-                  r = @collection.find_one({:page => 'all_pages'},{})
+                  r = @collection.find(:page => 'all_pages').limit(1).first
                   payload[:rows] = r ? 1 : 0
                   r.delete("_id") if r
                   r
@@ -303,7 +303,7 @@ module Logjam
         query = "Totals.request_count(#{fields.join(',')})"
         @request_counts = with_conditional_caching(query) do |payload|
           counts = Hash.new(0)
-          rows = @collection.find({:page=>"all_pages"},{:fields=>fields}).to_a
+          rows = @collection.find(:page => "all_pages").projection(_fields(fields)).to_a
           payload[:rows] = rows.size
           if rows.size > 0
             counts[:backend] = rows.first["count"].to_i
@@ -380,9 +380,9 @@ module Logjam
     end
 
     def call_relationships(app)
-      query = "Totals.call_relationships()"
-      rows = with_conditional_caching(query) do |payload|
-        rs = @collection.find({:page => /#/}, :fields => %w(page callers)).to_a
+      query, log = build_query("Totals.call_relationships", {:page => /#/}, :projection => { page: 1, callers: 1 })
+      rows = with_conditional_caching(log) do |payload|
+        rs = query.to_a
         payload[:rows] = rs.size
         rs.each{|r| r.delete("_id")}
         rs
@@ -447,11 +447,11 @@ module Logjam
         [@apdex, @fapdex, @papdex, @xapdex, @response, @severity, @exceptions, @js_exceptions, @callers].compact + @resources
 
       sq_fields = @resources.map{|r| "#{r}_sq"}
-      fields = {:fields => all_fields.concat(sq_fields)}
+      fields = { :projection => _fields(all_fields.concat(sq_fields)) }
 
-      query = "Totals.find(#{selector.inspect},#{fields.inspect})"
-      rows = with_conditional_caching(query) do |payload|
-        rs = @collection.find(selector, fields.clone).to_a
+      query, log  = build_query("Totals.find", selector, fields)
+      rows = with_conditional_caching(log) do |payload|
+        rs = query.to_a
         payload[:rows] = rs.size
         rs.each{|r| r.delete("_id")}
         rs

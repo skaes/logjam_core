@@ -17,8 +17,8 @@ module Logjam
 
     def initialize(db)
       super(db, "js_exceptions")
-      @collection.ensure_index('logjam_request_id')
-      @collection.ensure_index('description')
+      @collection.indexes.create_one(logjam_request_id: 1)
+      @collection.indexes.create_one(description: 1)
     end
 
     def all
@@ -53,10 +53,13 @@ module Logjam
     private
 
     def get_rows(selector, options={})
-      with_conditional_caching("JsExceptions.get_rows(#{selector},#{options})") do |payload|
+      query, log = build_query("JsExceptions.get_rows", selector, options)
+      with_conditional_caching(log) do |payload|
         rows = []
-        @collection.find(selector, options).each do |row|
-          (id = row["_id"]) && row["_id"] = id.to_s
+        query.each do |row|
+          if (id = row["_id"]) && id.is_a?(BSON::Binary)
+            row["_id"] = id.data.to_s
+          end
           rows << row
         end
         payload[:rows] = rows.size

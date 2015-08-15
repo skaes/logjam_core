@@ -105,7 +105,7 @@ module Logjam
             date_str = Logjam.iso_date_string(db_name)
             date = Date.parse(date_str)
             next if date == today
-            db = Logjam.connection_for(db_name).db(db_name)
+            db = Logjam.connection_for(db_name).db(db_name).database
             if summary = Totals.new(db, resources, page).pages(:limit => 1).try(:first)
               hash = {
                 :date => date_str,
@@ -162,7 +162,7 @@ module Logjam
       @applications = []
 
       databases.each do |db_name|
-        db = Logjam.connection_for(db_name).db(db_name)
+        db = Logjam.connection_for(db_name).db(db_name).database
         Logjam.db_name_format =~ db_name && (application = $1)
         stream = Logjam.streams["#{application}-#{@env}"]
         filter = stream.frontend_page
@@ -510,7 +510,7 @@ module Logjam
       databases = Logjam.grep(Logjam.databases, :env => @env, :date => @date)
       databases.each do |db_name|
         stream = Logjam.stream_for(db_name)
-        db = Logjam.connection_for(db_name).db(db_name)
+        db = Logjam.connection_for(db_name).db(db_name).database
         relationships = Totals.new(db).call_relationships(stream.app)
         relationships.each do |callee, callers|
           callee = transform.call(callee)

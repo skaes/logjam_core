@@ -66,12 +66,12 @@ module Logjam
     end
 
     def find(limit: nil, select: ALL)
-      query_opts = { :fields => [:agent, :backend, :frontend, :dropped] }
+      query_opts = { :projection => { agent: 1, backend: 1, frontend: 1, dropped: 1 } }
       query_opts.merge!(limit: limit) if limit
-      query = "Agents.find(#{select.inspect},#{query_opts.inspect})"
-      rows = with_conditional_caching(query) do |payload|
+      query, log = build_query("Agents.find", select, query_opts)
+      rows = with_conditional_caching(log) do |payload|
         rs = []
-        @collection.find(select, query_opts).each do |row|
+        query.each do |row|
           agent = AgentInfo.from_hash(row)
           rs << agent
         end
@@ -107,7 +107,7 @@ module Logjam
       query = "Agents.aggregate(#{pipeline.inspect})"
       with_conditional_caching(query) do |payload|
         payload[:rows] = 1
-        @collection.aggregate(pipeline).first.try(&:symbolize_keys) || empty_summary
+        @collection.find.aggregate(pipeline).first.try(&:symbolize_keys) || empty_summary
       end
     end
 

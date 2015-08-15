@@ -4,7 +4,7 @@ module Logjam
 
     def self.ensure_indexes(collection)
       ms = Benchmark.ms do
-        collection.create_index([ ["page", Mongo::ASCENDING], ["minute", Mongo::ASCENDING] ], :background => true)
+        collection.indexes.create_one({"page" => Mongo::ASCENDING, "minute" => Mongo::ASCENDING }, :background => true)
       end
       logger.debug "MONGO Minutes Indexes Creation: #{"%.1f" % (ms)} ms"
       collection
@@ -126,13 +126,12 @@ module Logjam
 
     def compute(interval)
       logger.debug "pattern: #{@pattern}, resources: #{@resources.inspect}"
-      selector = {:page => @pattern}
-      fields = {:fields => ["minute"].concat(@counters).concat(@resources)}
-
-      query = "Minutes.find(#{selector.inspect},#{fields.inspect})"
-      rows = with_conditional_caching(query) do |payload|
+      selector = { :page => @pattern }
+      fields = { :projection => _fields(["minute"].concat(@counters).concat(@resources)) }
+      query, log = build_query("Minutes.find", selector, fields)
+      rows = with_conditional_caching(log) do |payload|
         rs = []
-        @collection.find(selector, fields.clone).each do |row|
+        query.each do |row|
           row.delete("_id")
           rs << row if @counters.any?{|c| row[c].to_i > 0}
           # puts row.inspect
