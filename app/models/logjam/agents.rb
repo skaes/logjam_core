@@ -59,7 +59,7 @@ module Logjam
     def agent_names(select: ALL)
       query = "Agents.distinct(:agent,#{select.inspect})"
       with_conditional_caching(query) do |payload|
-        rows = @collection.distinct(:agent, select)
+        rows = @collection.find.distinct(:agent, select)
         payload[:rows] = rows.size
         rows
       end

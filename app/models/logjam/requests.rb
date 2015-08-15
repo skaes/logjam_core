@@ -67,7 +67,7 @@ module Logjam
         begin
           query = "Totals.distinct(:page)"
           with_conditional_caching(query) do |payload|
-            rows = @database["totals"].distinct(:page)
+            rows = @database["totals"].find.distinct(:page)
             payload[:rows] = rows.size
             rows
           end
