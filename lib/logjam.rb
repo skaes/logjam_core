@@ -351,7 +351,7 @@ module Logjam
         begin
           db = connection_for(db_name).db(db_name)
           coll = db["requests"]
-          if coll.count > 0
+          if coll.find.count > 0
             puts "removing old requests: #{db_name}"
             coll.drop
             begin
