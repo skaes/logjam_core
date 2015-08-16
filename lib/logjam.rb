@@ -393,7 +393,8 @@ module Logjam
       names.each do |name|
         next unless name =~ db_match
         db = connection.db(name)
-        next unless db.stats["fileSize"] == 0
+        stats = db.command(:dbStats => 1).first
+        next unless stats.present? && stats[:fileSize] == 0
         puts "dropping empty database: #{name}"
         connection.use(name).database.drop
         sleep delay
