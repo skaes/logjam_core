@@ -203,6 +203,7 @@ namespace :logjam do
       require "fileutils"
       system("mkdir -p #{service_dir}")
       installed_services = []
+
       streams = Logjam.streams(ENV['LOGJAM_SERVICE_TAG'])
       streams.each do |i, s|
         next if Rails.env.production? && s.env == 'development'
@@ -212,8 +213,17 @@ namespace :logjam do
                                                 :BIND_IP => Logjam.bind_ip)
         end
       end
-      config = Logjam::Importer.new.config
-      installed_services << install_service("importer", "importer", :config => config)
+
+      unless ENV['LOGJAM_IMPORTER_INSTALL'] == '0'
+        config = Logjam::Importer.new.config
+        installed_services << install_service("importer", "importer", :config => config)
+      end
+
+      unless ENV['LOGJAM_HTTPD_INSTALL'] == '0'
+        collector_port = Logjam.frontend_timings_collector_port
+        installed_services << install_service("httpd", "httpd", :HTTPD_PORT => collector_port.to_s)
+      end
+
       old_services = service_paths.map{|f| f.split("/").compact.last} - installed_services
       old_services.each do |old_service|
         puts "removing old service #{old_service}"

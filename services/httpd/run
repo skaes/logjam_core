@@ -1,0 +1,12 @@
+#!/bin/bash
+# limit open files
+# ulimit -n 12345
+# limit resident size to 5 GB, which is plenty
+# ulimit -m 5000000
+exec 2>&1
+if [ -x /opt/logjam/bin/logjam-httpd ]; then
+  httpd=/opt/logjam/bin/logjam-httpd
+else
+  httpd=/usr/local/bin/logjam-httpd
+fi
+exec $httpd -t LOGJAM_HTTPD_PORT -d 73 "$@"

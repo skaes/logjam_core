@@ -66,14 +66,18 @@ module Logjam
     @@statsd_namespace
   end
 
-  @@frontend_timings_collector = "http://localhost:8081"
+  @@frontend_timings_collector = nil
   def self.frontend_timings_collector=(spec)
-    spec[-1] = "" if spec[-1] == "/"
+    spec[-1] = "" if spec && spec[-1] == "/"
     @@frontend_timings_collector = spec
   end
 
   def self.frontend_timings_collector
     @@frontend_timings_collector
+  end
+
+  def self.frontend_timings_collector_port
+    (frontend_timings_collector || ':9705').split(':')[1].to_i
   end
 
   @@allow_cross_domain_ajax = false
