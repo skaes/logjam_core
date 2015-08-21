@@ -3,6 +3,22 @@ module Logjam
 
   # Methods added to this helper will be available to all templates in the application.
   module LogjamHelper
+    def logjam_header_request_id
+      if rid = LogjamAgent.request.try(:id)
+        tag(:meta, :name => "logjam-request-id", :content => rid)
+      end
+    end
+
+    def logjam_header_action
+      if action = LogjamAgent.request.try(:action)
+        tag(:meta, :name => "logjam-action", :content => action)
+      end
+    end
+
+    def logjam_header_timings_collector
+      tag(:meta, :name => "logjam-timings-collector", :content => Logjam.frontend_timings_collector)
+    end
+
     def frontend?
       @section == :frontend
     end

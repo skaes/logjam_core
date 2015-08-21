@@ -66,6 +66,16 @@ module Logjam
     @@statsd_namespace
   end
 
+  @@frontend_timings_collector = "http://localhost:8081"
+  def self.frontend_timings_collector=(spec)
+    spec[-1] = "" if spec[-1] == "/"
+    @@frontend_timings_collector = spec
+  end
+
+  def self.frontend_timings_collector
+    @@frontend_timings_collector
+  end
+
   @@allow_cross_domain_ajax = false
   def self.allow_cross_domain_ajax
     @@allow_cross_domain_ajax

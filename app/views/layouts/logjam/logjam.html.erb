@@ -4,6 +4,9 @@
   <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
   <link rel="shortcut icon" href='<%= asset_path "favicon.ico"%>' type="image/ico">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1" />
+  <%= logjam_header_request_id %>
+  <%= logjam_header_action %>
+  <%= logjam_header_timings_collector %>
   <% if params[:auto_refresh] == "1" %>
   <meta http-equiv="refresh" content="60">
   <% end %>
