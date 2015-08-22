@@ -69,7 +69,7 @@ function view_resource(resource){
     $("#grouping-function").val(parameter_defaults.grouping_function);
   }
 
-  frontendResources = ['page_time', 'connect_time', 'request_time', 'response_time', 'processing_time', 'load_time', 'dom_interactive', 'ajax_time', 'style_nodes', 'script_nodes', 'html_nodes'];
+  frontendResources = ['page_time', 'navigation_time', 'connect_time', 'request_time', 'response_time', 'processing_time', 'load_time', 'dom_interactive', 'ajax_time', 'style_nodes', 'script_nodes', 'html_nodes'];
   if(frontendResources.indexOf(resource) > -1) {
     $('#section').val('frontend');
   } else {
