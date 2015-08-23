@@ -16,7 +16,7 @@ module Logjam
     end
 
     def logjam_header_timings_collector
-      collector_url = Logjam.frontend_timings_collector || "http://#{request.host}:#{Logjam.frontend_timings_collector_port}"
+      collector_url = Logjam.frontend_timings_collector || "#{request.protocol}#{request.host}:#{Logjam.frontend_timings_collector_port}"
       tag(:meta, :name => "logjam-timings-collector", :content => collector_url)
     end
 
