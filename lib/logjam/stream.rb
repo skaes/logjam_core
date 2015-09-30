@@ -82,7 +82,7 @@ module Logjam
     end
 
     def backend_only_requests(*args)
-      @backend_only_requests = args if args.first
+      @backend_only_requests = args.first if args.first
       @backend_only_requests ||= Logjam.backend_only_requests
     end
 
