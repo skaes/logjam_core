@@ -121,6 +121,10 @@ module Logjam
     tag.blank? ? @@streams : @@streams.slice(*@@streams.values.select{|v| v.tag == tag}.map(&:name))
   end
 
+  def self.production_streams
+    streams.reject{|name,stream| stream.is_a?(LiveStream) || stream.env == "development"}
+  end
+
   # declare a performance data stream
   def self.stream(name, &block)
     @@streams[name] = Stream.new(name, &block)

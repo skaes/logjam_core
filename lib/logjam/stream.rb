@@ -113,6 +113,18 @@ module Logjam
       end
     end
 
+    def to_hash
+      {
+        :app => app,
+        :env => env,
+        :ignored_request_uri => ignored_request_uri,
+        :backend_only_requests => backend_only_requests,
+        :import_threshold => import_threshold,
+        :request_cleaning_threshold => request_cleaning_threshold,
+        :database_cleaning_threshold => database_cleaning_threshold,
+      }
+    end
+
     class Context
       def initialize(stream)
         @stream = stream

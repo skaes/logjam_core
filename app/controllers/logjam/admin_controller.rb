@@ -28,6 +28,15 @@ module Logjam
       end
     end
 
+    def streams
+      respond_to do |format|
+        format.json do
+          streams = Logjam.production_streams
+          render :json => Oj.dump(streams, :mode => :compat)
+        end
+      end
+    end
+
     private
     def get_database_info
       @database_info = []
