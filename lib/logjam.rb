@@ -93,15 +93,6 @@ module Logjam
     @@importer_writer_threads = n
   end
 
-  @@importer_adder_threads = 4
-  def self.importer_adder_threads
-    @@importer_adder_threads
-  end
-
-  def self.importer_adder_threads=(n)
-    @@importer_adder_threads = n
-  end
-
   @@frontend_timings_collector = nil
   def self.frontend_timings_collector=(spec)
     spec[-1] = "" if spec && spec[-1] == "/"

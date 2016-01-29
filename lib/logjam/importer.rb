@@ -39,7 +39,6 @@ module Logjam
       indented(2, "parsers = %d" % [Logjam.importer_parser_threads])
       indented(2, "updaters = %d" % [Logjam.importer_updater_threads])
       indented(2, "writers = %d" % [Logjam.importer_writer_threads])
-      indented(2, "adders = %d" % [Logjam.importer_adder_threads])
     end
 
     def generate_backend
