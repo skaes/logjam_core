@@ -81,7 +81,7 @@ module Logjam
   end
 
   def self.importer_updater_threads=(n)
-    @@importer_parser_threads = n
+    @@importer_updater_threads = n
   end
 
   @@importer_writer_threads = 10
