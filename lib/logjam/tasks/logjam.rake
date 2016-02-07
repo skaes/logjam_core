@@ -26,26 +26,26 @@ namespace :logjam do
 
     desc "drop old databases"
     task :drop_old => :environment do
-      delay = [ENV['REPAIR_DELAY'].to_i, 5].max
+      delay = (ENV['REPAIR_DELAY'] || 5).to_i
       Logjam.drop_old_databases(delay)
     end
 
     desc "drop empty databases"
     task :drop_empty => :environment do
-      delay = [ENV['REPAIR_DELAY'].to_i, 5].max
+      delay = (ENV['REPAIR_DELAY'] || 5).to_i
       app = ENV['APPLICATION'] || '.+?'
       Logjam.drop_empty_databases(app, delay)
     end
 
     desc "drop applications APPLICATIONS=a,b,c"
     task :drop_apps => :environment do
-      delay = [ENV['REPAIR_DELAY'].to_i, 5].max
+      delay = (ENV['REPAIR_DELAY'] || 5).to_i
       Logjam.drop_applications(ENV['APPLICATIONS'].to_s.split(/\s*,\s*/), delay)
     end
 
     desc "drop environments ENVS=a,b,c"
     task :drop_envs => :environment do
-      delay = [ENV['REPAIR_DELAY'].to_i, 5].max
+      delay = (ENV['REPAIR_DELAY'] || 5).to_i
       Logjam.drop_environments(ENV['ENVS'].to_s.split(/\s*,\s*/), delay)
     end
 
@@ -70,7 +70,7 @@ namespace :logjam do
 
     desc "remove old data"
     task :clean => :drop_old do
-      delay = [ENV['REPAIR_DELAY'].to_i, 5].max
+      delay = (ENV['REPAIR_DELAY'] || 5).to_i
       Logjam.remove_old_requests(delay)
     end
 
