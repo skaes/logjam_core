@@ -239,6 +239,8 @@ module Logjam
     @@mongo_connections
   end
 
+  # retrieving a connection this way only works if the stream still exists
+  # this causes problems when trying to delete databaes of removed apps
   def connection_for(db_name)
     stream = stream_for(db_name)
     mongo_connection(stream.database)
@@ -320,17 +322,24 @@ module Logjam
     all_known_databases
   end
 
-  def get_known_databases
-    all_known_databases = []
+  def get_known_databases_with_connections
+    known_databases_with_connections = []
     connections.each do |_,connection|
       rows = []
       ActiveSupport::Notifications.instrument("mongo.logjam", :query => "load database names") do |payload|
         rows = meta_collection(connection).find(:name => "databases").projection(value: 1).to_a
         payload[:rows] = rows.size
       end
-      all_known_databases.concat(rows.first["value"]) unless rows.empty?
+      unless rows.empty?
+        pairs = rows.first["value"].map{|db_name| [db_name, connection]}
+        known_databases_with_connections.concat(pairs)
+      end
     end
-    all_known_databases
+    known_databases_with_connections
+  end
+
+  def get_known_databases
+    get_known_databases_with_connections.map(&:first)
   end
 
   def sanitize_date(date_str)
@@ -358,6 +367,10 @@ module Logjam
 
   def databases_sorted_by_date
     databases.sort_by{|db| db =~ /^([-a-z]+)-(\d[-0-9]+)/ && "#{$2}-#{$1}"}
+  end
+
+  def databases_sorted_by_date_with_connections
+    get_known_databases_with_connections.sort_by{|db| db =~ /^([-a-z]+)-(\d[-0-9]+)/ && "#{$2}-#{$1}"}
   end
 
   def import_databases(from_host, database_names, options = {})
@@ -388,13 +401,13 @@ module Logjam
   end
 
   def remove_old_requests(delay = 60)
-    databases_sorted_by_date.each do |db_name|
+    databases_sorted_by_date_with_connections.each do |db_name, connection|
       date = db_date(db_name)
       stream = stream_for(db_name) || Logjam
       # puts "request cleaning threshold for #{db_name}: #{stream.request_cleaning_threshold}"
       if Date.today - stream.request_cleaning_threshold > date
         begin
-          db = connection_for(db_name).db(db_name)
+          db = connection.use(db_name).database
           coll = db["requests"]
           if coll.find.count > 0
             puts "removing old requests: #{db_name}"
@@ -416,13 +429,17 @@ module Logjam
 
   def drop_old_databases(delay = 60)
     dropped = 0
-    databases_sorted_by_date.each do |db_name|
+    databases_sorted_by_date_with_connections.each do |db_name, connection|
       date = db_date(db_name)
       stream = stream_for(db_name) || Logjam
       # puts "db cleaning threshold for #{db_name}: #{stream.database_cleaning_threshold}"
       if Date.today - stream.database_cleaning_threshold > date
         puts "removing old database: #{db_name}"
-        connection_for(db_name).use(db_name).database.drop
+        begin
+          connection.use(db_name).database.drop
+        rescue => e
+          puts e.message
+        end
         sleep delay
         dropped += 1
       end
@@ -437,9 +454,9 @@ module Logjam
       names = connection.database_names
       names.each do |name|
         next unless name =~ db_match
-        db = connection.db(name)
+        db = connection.use(name).database
         stats = db.command(:dbStats => 1).first
-        next unless stats.present? && (stats[:objects] || stats["objects"] ) == 0
+        next unless stats.present? && (stats[:objects] || stats["objects"]) == 0
         puts "dropping empty database: #{name}"
         connection.use(name).database.drop
         sleep delay
@@ -563,10 +580,10 @@ module Logjam
 
   def user_agents
     user_agents = Agents.create_stats_hash
-    databases_sorted_by_date.each do |db_name|
+    databases_sorted_by_date_with_connections.each do |db_name, connection|
       date = db_date(db_name)
       if date > Date.today - 14
-        db = connection_for(db_name).db(db_name)
+        db = connection.use(db_name).database
         agent_infos = Agents.new(db).find(select: Agents::BACKEND)
         agent_infos.each do |a|
           user_agents[a.agent].merge!(a)
