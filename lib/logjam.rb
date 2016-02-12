@@ -244,6 +244,9 @@ module Logjam
   def connection_for(db_name)
     stream = stream_for(db_name)
     mongo_connection(stream.database)
+  rescue
+    Rails.logger.error("could not retrieve connection for database '#{db_name}'")
+    raise
   end
 
   def db(date, app, env)
