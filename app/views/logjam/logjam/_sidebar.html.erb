@@ -172,7 +172,12 @@
     <input type="hidden" id="start-minute" name="start_minute" value="<%= params[:start_minute] %>" />
     <input type="hidden" id="end-minute" name="end_minute" value="<%= params[:end_minute] %>" />
     <input type="hidden" id="interval" name="interval" value="<%= params[:interval] %>" />
-
+    <% if params[:above].present? %>
+    <input type="hidden" id="above" name="above" value="<%= params[:above] %>" />
+    <% end %>
+    <% if params[:response_code].present? %>
+    <input type="hidden" id="response-code" name="response_code" value="<%= params[:response_code] %>" />
+    <% end %>
   <% end %>
 
 </section>
