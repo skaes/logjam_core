@@ -2,16 +2,19 @@
 
   window.rum !== false && (function(window, document, location){
 
-    var logjamPageAction    = document.querySelector("meta[name^=logjam-action]"),
-        logjamPageRequestId = document.querySelector("meta[name^=logjam-request-id]"),
-        monitoringCollector = document.querySelector("meta[name^=logjam-timings-collector]");
+    var logjamPageAction          = document.querySelector("meta[name^=logjam-action]"),
+        monitoringCollector       = document.querySelector("meta[name^=logjam-timings-collector]"),
+        logjamPageRequestIdTag    = document.querySelector("meta[name^=logjam-request-id]"),
+        logjamPageRequestIdCookie = Cookies.get("X-Logjam-Request-Id");
 
-    if ( !(monitoringCollector && logjamPageAction && logjamPageAction) )
+    Cookies.remove("X-Logjam-Request-Id");
+
+    if ( !(monitoringCollector && logjamPageAction && (logjamPageRequestIdCookie || logjamPageRequestIdTag)) )
       return;
 
     monitoringCollector = monitoringCollector.content + "/logjam/";
     logjamPageAction    = logjamPageAction.content;
-    logjamPageRequestId = logjamPageRequestId.content;
+    logjamPageRequestId = logjamPageRequestIdCookie || logjamPageRequestIdTag.content;
 
     var monitoringMeasures,
         _toQuery = function(obj){
