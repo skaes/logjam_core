@@ -16,6 +16,7 @@ require 'set'
 @anomaly_scores = Hash.new(0)
 @bind_ip = ARGV[0] || "localhost"
 @anomaly_host = ARGV[1] || "localhost"
+@importer_host = ARGV[2] || "localhost"
 
 @processed = 0
 
@@ -83,23 +84,24 @@ zmq_context = ZMQ::Context.new(1)
 EM.run do
   context = EM::ZeroMQ::Context.new(zmq_context)
 
-  pull_socket = context.socket(ZMQ::PULL)
-  pull_socket.setsockopt(ZMQ::LINGER, 100)
-  pull_socket.setsockopt(ZMQ::RCVHWM, 1000)
-  pull_socket.bind("tcp://#{@bind_ip}:9607")
+  sub_socket = context.socket(ZMQ::SUB)
+  sub_socket.setsockopt(ZMQ::LINGER, 100)
+  sub_socket.setsockopt(ZMQ::RCVHWM, 100000)
+  sub_socket.connect("tcp://#{@importer_host}:9607")
+  sub_socket.subscribe('')
 
   pub_socket = context.socket(ZMQ::PUB)
   pub_socket.setsockopt(ZMQ::LINGER, 100)
-  pub_socket.setsockopt(ZMQ::SNDHWM, 1000)
+  pub_socket.setsockopt(ZMQ::SNDHWM, 100000)
   pub_socket.bind("tcp://#{@bind_ip}:9611")
 
-  sub_socket = context.socket(ZMQ::SUB)
-  sub_socket.setsockopt(ZMQ::LINGER, 100)
-  sub_socket.setsockopt(ZMQ::RCVHWM, 1000)
-  sub_socket.connect("tcp://#{@anomaly_host}:9610")
-  sub_socket.subscribe('')
+  opad_socket = context.socket(ZMQ::SUB)
+  opad_socket.setsockopt(ZMQ::LINGER, 100)
+  opad_socket.setsockopt(ZMQ::RCVHWM, 100000)
+  opad_socket.connect("tcp://#{@anomaly_host}:9610")
+  opad_socket.subscribe('')
 
-  pull_socket.on(:message) do |*parts|
+  sub_socket.on(:message) do |*parts|
     begin
       app_env_key = parts[0].copy_out_string
       perf_data   = parts[1].copy_out_string
@@ -111,7 +113,7 @@ EM.run do
     end
   end
 
-  sub_socket.on(:message) do |*parts|
+  opad_socket.on(:message) do |*parts|
     begin
       app_env_key  = parts[0].copy_out_string
       anomaly_data = parts[1].copy_out_string
