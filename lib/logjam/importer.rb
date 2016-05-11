@@ -35,6 +35,8 @@ module Logjam
       @endpoints.each_with_index do |p,i|
         indented(3, "bind%d = \"%s\"" % [i, p])
       end
+      indented(2, "livestream")
+      indented(3, "pub = \"tcp://%s:9607\"" % [Logjam.bind_ip_for_zmq_spec])
       indented(1, "threads")
       indented(2, "parsers = %d" % [Logjam.importer_parser_threads])
       indented(2, "updaters = %d" % [Logjam.importer_updater_threads])
