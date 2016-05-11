@@ -6,7 +6,11 @@
 exec 2>&1
 if [ -x /opt/logjam/bin/logjam-importer ]; then
   importer=/opt/logjam/bin/logjam-importer
-else
+elif [ -x /usr/local/bin/logjam-importer ]; then
   importer=/usr/local/bin/logjam-importer
+else
+  echo "ERROR: no logjam-importer binary found"
+  sleep 10
+  exit 1
 fi
 exec $importer -c LOGJAM_SERVICE_TARGET_DIR/importer.conf "$@"
