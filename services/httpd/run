@@ -9,4 +9,4 @@ if [ -x /opt/logjam/bin/logjam-httpd ]; then
 else
   httpd=/usr/local/bin/logjam-httpd
 fi
-exec $httpd -t HTTPD_PORT -d 73 "$@"
+exec $httpd -p HTTPD_PORT -d 73 "$@"
