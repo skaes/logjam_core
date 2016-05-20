@@ -181,7 +181,7 @@ module Logjam
     end
 
     def line_tags(line)
-      logline = line.last.strip
+      logline = line.last.to_s.strip
       tags = []
       tags << "view"      if logline =~ /^Rendered/
       tags << "api"       if logline =~ /(^API|PerlBackend)/
