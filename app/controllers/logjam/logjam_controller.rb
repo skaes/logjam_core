@@ -134,6 +134,25 @@ module Logjam
           end
           data = data.sort_by{|d| d[:date]}  # .drop_while{|d| !d.has_key?(:request_count)}
           data << { :date => (Date.parse(data.last[:date])+1).iso8601 } unless data.empty?
+          # fill in data for mising databases
+          tmp = [data.shift]
+          while !data.empty?
+            last_date = Date.parse(tmp.last[:date])
+            next_date = Date.parse(data.first[:date])
+            if  next_date - last_date == 1
+              tmp << data.shift
+            else
+              tmp << {
+                :date => (last_date+1).iso8601,
+                :request_count =>0,
+                :errors => 0,
+                :warnings => 0,
+                :exceptions => 0,
+                :apdex_score => 0,
+              }
+            end
+          end
+          data = tmp
           collected_resources = data.inject(Set.new){|s,d| s.union(d.keys)}
           resources.reject!{|r| !collected_resources.include?(r.to_sym)}
           # logger.debug @data.inspect
