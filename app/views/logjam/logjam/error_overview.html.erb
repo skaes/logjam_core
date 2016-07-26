@@ -121,7 +121,7 @@
             <% if @dataset && @dataset.has_frontend? %>
             <tr class="full_stats">
               <% url = clean_url_for(:action => "js_exception_types", :section => :frontend) %>
-              <td><%= link_to "Javascript Execptions", url %></td>
+              <td><%= link_to "Javascript Exceptions", url %></td>
               <td class="number"><%= link_to integer_number(@totals.js_exception_count), url %></td>
               <td class="echart" id='<%= "echart-#{i+=1}" %>'>
                 <%= render "echart", exceptions: @minutes.js_exception_summary, i: i, url: url %>
