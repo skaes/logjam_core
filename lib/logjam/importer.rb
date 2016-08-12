@@ -29,6 +29,7 @@ module Logjam
       indented(0, "frontend")
       indented(1, "endpoints")
       indented(2, "subscriber")
+      indented(3, "router = \"tcp://%s:9604\"" % [Logjam.bind_ip_for_zmq_spec])
       indented(3, "pull = \"tcp://%s:9605\"" % [Logjam.bind_ip_for_zmq_spec])
       indented(3, "pub = \"tcp://%s:9651\"" % [Logjam.bind_ip_for_zmq_spec])
       indented(2, "bindings")
