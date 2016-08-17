@@ -373,17 +373,31 @@ module Logjam
     Date.today - stream.request_cleaning_threshold > date
   end
 
+  def index_with_mongo_rescue(coll_name)
+    yield
+  rescue => e
+    puts "could not index #{coll_name}: #{e.message}"
+  end
+
   def ensure_indexes(options = {})
     databases_sorted_by_date.each do |db_name|
       puts "#{db_name}: reindexing"
       db = connection_for(db_name).db(db_name)
-      Totals.ensure_indexes(db["totals"], options)
-      Minutes.ensure_indexes(db["minutes"], options)
-      Quants.ensure_indexes(db["quants"], options)
+      index_with_mongo_rescue("totals") do
+        Totals.ensure_indexes(db["totals"], options)
+      end
+      index_with_mongo_rescue("minutes") do
+        Minutes.ensure_indexes(db["minutes"], options)
+      end
+      index_with_mongo_rescue("quants") do
+        Quants.ensure_indexes(db["quants"], options)
+      end
       if request_collection_expired?(db_name)
         puts "not creating indexes for expired requests collection "
       else
-        Requests.ensure_indexes(db["requests"], options)
+        index_with_mongo_rescue("requests") do
+          Requests.ensure_indexes(db["requests"], options)
+        end
       end
     end
   end
