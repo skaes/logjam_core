@@ -22,6 +22,8 @@ module Logjam
 
     INDEXED_FIELDS = %w[response_code severity exceptions]
 
+    NON_METRIC_FIELDS = INDEXED_FIELDS + %w(minute)
+
     def self.indexed_fields(collection)
       collection.index_information.keys.map{|i| i.gsub(/_-?1/,'')}
     rescue Mongo::OperationFailure
@@ -72,7 +74,7 @@ module Logjam
     end
 
     def selector(options={})
-      if INDEXED_FIELDS.include?(@resource)
+      if NON_METRIC_FIELDS.include?(@resource)
         query_opts = {}
       else
         query_opts = {"metrics.n" => @resource}
@@ -117,7 +119,7 @@ module Logjam
 
       query_opts = {
         :projection => fields,
-        :sort => INDEXED_FIELDS.include?(@resource) ? {@resource => -1} : {"metrics.n" => 1, "metrics.v" => -1},
+        :sort => NON_METRIC_FIELDS.include?(@resource) ? {@resource => -1} : {"metrics.n" => 1, "metrics.v" => -1},
         :limit => @options[:limit] || 25,
         :skip => @options[:skip]
       }
