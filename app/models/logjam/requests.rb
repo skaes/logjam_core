@@ -20,7 +20,7 @@ module Logjam
 
     SQUARED_FIELDS = FIELDS.inject({}) { |h, f| h[f] = "#{f}_sq"; h}
 
-    INDEXED_FIELDS = %w[response_code severity minute exceptions]
+    INDEXED_FIELDS = %w[response_code severity exceptions]
 
     def self.indexed_fields(collection)
       collection.index_information.keys.map{|i| i.gsub(/_-?1/,'')}
@@ -28,22 +28,19 @@ module Logjam
       []
     end
 
-    def self.ensure_indexes(collection)
+    def self.ensure_indexes(collection, options = {})
       ms = Benchmark.ms do
-        fields = indexed_fields(collection)
-        if (fields & INDEXED_FIELDS) == INDEXED_FIELDS
-          logger.info "MONGO assuming request indexes already exist"
-        else
-          logger.info "MONGO creating request indexes"
-          collection.indexes.create_one({ "metrics.n" => 1, "metrics.v" => -1 }, :background => true)
-          collection.indexes.create_one({ "page" => 1, "metrics.n" => 1, "metrics.v" => -1 }, :background => true)
-          INDEXED_FIELDS.each do |f|
-            collection.indexes.create_one({ f => 1 }, :background => true, :sparse => true)
-            collection.indexes.create_one({ "page" => 1, f => 1 }, :background => true)
-          end
+        logger.info "MONGO creating request indexes"
+        collection.indexes.create_one({ "metrics.n" => 1, "metrics.v" => -1 }, options)
+        collection.indexes.create_one({ "page" => 1, "metrics.n" => 1, "metrics.v" => -1 }, options)
+        INDEXED_FIELDS.each do |f|
+          # collection.indexes.create_one({ f => 1 }, options.reverse_merge(sparse: true))
+          collection.indexes.create_one({ "minute" => -1, f => 1 }, options)
+          # collection.indexes.create_one({ "page" => 1, f => 1 }, options)
+          collection.indexes.create_one({ "page" => 1, "minute" => -1, f => 1 }, options)
         end
       end
-      puts "MONGO Requests Indexes Creation (#{2*INDEXED_FIELDS.size+2+1}): #{"%.1f" % (ms)} ms"
+      puts "MONGO requests indexes creation (#{4*INDEXED_FIELDS.size+2+1}): #{"%.1f" % (ms)} ms"
       collection
     end
 

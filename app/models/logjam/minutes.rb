@@ -2,9 +2,9 @@ module Logjam
 
   class Minutes < MongoModel
 
-    def self.ensure_indexes(collection)
+    def self.ensure_indexes(collection, options = {})
       ms = Benchmark.ms do
-        collection.indexes.create_one({"page" => Mongo::ASCENDING, "minute" => Mongo::ASCENDING }, :background => true)
+        collection.indexes.create_one({"page" => 1, "minute" => 1 }, options)
       end
       logger.debug "MONGO Minutes Indexes Creation: #{"%.1f" % (ms)} ms"
       collection

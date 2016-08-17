@@ -367,13 +367,24 @@ module Logjam
     ['1', '2', '5']
   end
 
-  def ensure_indexes
-    databases.each do |db_name|
+  def request_collection_expired?(db_name)
+    date = db_date(db_name)
+    stream = stream_for(db_name) || Logjam
+    Date.today - stream.request_cleaning_threshold > date
+  end
+
+  def ensure_indexes(options = {})
+    databases_sorted_by_date.each do |db_name|
+      puts "#{db_name}: reindexing"
       db = connection_for(db_name).db(db_name)
-      Totals.ensure_indexes(db["totals"])
-      Requests.ensure_indexes(db["requests"])
-      Minutes.ensure_indexes(db["minutes"])
-      Quants.ensure_indexes(db["quants"])
+      Totals.ensure_indexes(db["totals"], options)
+      Minutes.ensure_indexes(db["minutes"], options)
+      Quants.ensure_indexes(db["quants"], options)
+      if request_collection_expired?(db_name)
+        puts "not creating indexes for expired requests collection "
+      else
+        Requests.ensure_indexes(db["requests"], options)
+      end
     end
   end
 
@@ -414,10 +425,7 @@ module Logjam
 
   def remove_old_requests(delay = 60)
     databases_sorted_by_date_with_connections.each do |db_name, connection|
-      date = db_date(db_name)
-      stream = stream_for(db_name) || Logjam
-      # puts "request cleaning threshold for #{db_name}: #{stream.request_cleaning_threshold}"
-      if Date.today - stream.request_cleaning_threshold > date
+      if request_collection_expired?(db_name)
         begin
           db = connection.use(db_name).database
           coll = db["requests"]

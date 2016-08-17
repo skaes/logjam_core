@@ -190,9 +190,9 @@ module Logjam
 
   class Totals < MongoModel
 
-    def self.ensure_indexes(collection)
+    def self.ensure_indexes(collection, options)
       ms = Benchmark.ms do
-        collection.indexes.create_one({"page" => 1}, :background => true)
+        collection.indexes.create_one({"page" => 1}, options)
       end
       logger.debug "MONGO Totals Indexes Creation: #{"%.1f" % (ms)} ms"
       collection

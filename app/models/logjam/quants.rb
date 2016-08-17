@@ -2,10 +2,10 @@ module Logjam
 
   class Quants < MongoModel
 
-    def self.ensure_indexes(collection)
+    def self.ensure_indexes(collection, options = {})
       ms = Benchmark.ms do
-        fields = { "page" => Mongo::ASCENDING, "kind" => Mongo::ASCENDING, "quant" => Mongo::ASCENDING }
-        collection.indexes.create_one(fields, :background => true)
+        fields = { "page" => 1, "kind" => 1, "quant" => 1 }
+        collection.indexes.create_one(fields, options)
       end
       logger.debug "MONGO Quants Indexes Creation: #{"%.1f" % (ms)} ms"
       collection
