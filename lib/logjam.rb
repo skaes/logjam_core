@@ -373,32 +373,42 @@ module Logjam
     Date.today - stream.request_cleaning_threshold > date
   end
 
-  def index_with_mongo_rescue(coll_name)
+  def index_with_mongo_rescue(collection_name)
     yield
   rescue => e
-    puts "could not index #{coll_name}: #{e.message}"
+    puts "could not index #{collection_name}: #{e}"
   end
 
   def ensure_indexes(options = {})
+    failures = []
     databases_sorted_by_date.each do |db_name|
-      puts "#{db_name}: reindexing"
-      db = connection_for(db_name).db(db_name)
-      index_with_mongo_rescue("totals") do
-        Totals.ensure_indexes(db["totals"], options)
-      end
-      index_with_mongo_rescue("minutes") do
-        Minutes.ensure_indexes(db["minutes"], options)
-      end
-      index_with_mongo_rescue("quants") do
-        Quants.ensure_indexes(db["quants"], options)
-      end
-      if request_collection_expired?(db_name)
-        puts "not creating indexes for expired requests collection "
-      else
-        index_with_mongo_rescue("requests") do
-          Requests.ensure_indexes(db["requests"], options)
+      begin
+        puts "#{db_name}: reindexing"
+        db = connection_for(db_name).db(db_name)
+        index_with_mongo_rescue("totals") do
+          Totals.ensure_indexes(db["totals"], options)
         end
+        index_with_mongo_rescue("minutes") do
+          Minutes.ensure_indexes(db["minutes"], options)
+        end
+        index_with_mongo_rescue("quants") do
+          Quants.ensure_indexes(db["quants"], options)
+        end
+        if request_collection_expired?(db_name)
+          puts "not creating indexes for expired requests collection "
+        else
+          index_with_mongo_rescue("requests") do
+            Requests.ensure_indexes(db["requests"], options)
+          end
+        end
+      rescue => e
+        puts "unexpected failure: #{e}"
+        failures << db_name
       end
+    end
+    unless failures.empty?
+      puts "the following databases could not be indexed:"
+      puts failures.sort.join("\n")
     end
   end
 
