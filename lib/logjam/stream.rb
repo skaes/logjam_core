@@ -86,31 +86,6 @@ module Logjam
       @backend_only_requests ||= Logjam.backend_only_requests
     end
 
-    def interesting_request?(request)
-      total_time = request["total_time"].to_f
-      total_time > import_threshold ||
-        request["severity"] > 1 ||
-        request["response_code"].to_i >= 400 ||
-        request["exceptions"] ||
-        request["heap_growth"].to_i > 0 ||
-        special_import_threshold_matches?(request["page"], total_time)
-    end
-
-    def special_import_threshold_matches?(page, total_time)
-      if (thresholds = import_thresholds).blank?
-        return false
-      else
-        thresholds.each do |prefix,threshold|
-          return true if total_time > threshold && page.starts_with?("#{prefix}::")
-        end
-        return false
-      end
-    end
-
-    def ignored_request?(request)
-      if (info = request["request_info"]) && (uri = ignored_request_uri)
-        info["url"].to_s.starts_with?(uri)
-      end
     def sampling_rate_400s(*args)
       @sampling_rate_400s = args.first if args.first
       @sampling_rate_400s ||= Logjam.sampling_rate_400s
