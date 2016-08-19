@@ -38,10 +38,13 @@ module Logjam
         INDEXED_FIELDS.each do |f|
           # collection.indexes.create_one({ f => 1 }, options.reverse_merge(sparse: true))
           collection.indexes.create_one({ "minute" => -1, f => 1 }, options)
+          collection.indexes.drop_one("#{f}_1")
           # collection.indexes.create_one({ "page" => 1, f => 1 }, options)
           collection.indexes.create_one({ "page" => 1, "minute" => -1, f => 1 }, options)
+          collection.indexes.drop_one("page_1_#{f}_1")
         end
       end
+      collection.indexes.drop_one("minute_1")
       puts "MONGO requests indexes creation (#{4*INDEXED_FIELDS.size+2+1}): #{"%.1f" % (ms)} ms"
       collection
     end
