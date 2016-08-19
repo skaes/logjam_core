@@ -143,6 +143,15 @@ module Logjam
     @@backend_only_requests = prefixes
   end
 
+  @@sampling_rate_400s = 1
+  def self.sampling_rate_400s
+    @@sampling_rate_400s
+  end
+
+  def self.sampling_rate_400s=(r)
+    @@sampling_rate_400s = r
+  end
+
   @@devices = nil
   def self.devices
     @@devices

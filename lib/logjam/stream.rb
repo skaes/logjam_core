@@ -111,6 +111,9 @@ module Logjam
       if (info = request["request_info"]) && (uri = ignored_request_uri)
         info["url"].to_s.starts_with?(uri)
       end
+    def sampling_rate_400s(*args)
+      @sampling_rate_400s = args.first if args.first
+      @sampling_rate_400s ||= Logjam.sampling_rate_400s
     end
 
     def to_hash
@@ -122,6 +125,7 @@ module Logjam
         :import_threshold => import_threshold,
         :request_cleaning_threshold => request_cleaning_threshold,
         :database_cleaning_threshold => database_cleaning_threshold,
+        :sampling_rate_400s => sampling_rate_400s,
       }
     end
 

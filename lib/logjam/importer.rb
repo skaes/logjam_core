@@ -70,6 +70,7 @@ module Logjam
         indented(2, "ignored_request_uri = \"%s\"" % Logjam.ignored_request_uri)
       end
       indented(2, "backend_only_requests = \"%s\"" % Logjam.backend_only_requests)
+      indented(2, "sampling_rate_400s = %s" % Logjam.sampling_rate_400s.to_f.to_s)
     end
 
     def generate_streams
@@ -84,6 +85,9 @@ module Logjam
           s.import_thresholds.each do |t|
             indented(4, "%s = %d" % t)
           end
+        end
+        if s.sampling_rate_400s != Logjam.sampling_rate_400s
+          indented(3, "sampling_rate_400s = #{s.sampling_rate_400s.to_f}")
         end
         if s.backend_only_requests != Logjam.backend_only_requests
           indented(3, "backend_only_requests = \"%s\"" % s.backend_only_requests)
