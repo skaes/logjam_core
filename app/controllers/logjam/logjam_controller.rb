@@ -350,7 +350,9 @@ module Logjam
             @title = "Requests with response code #{@response_code}"
             @error_count = @dataset.response_codes[@response_code] || 0
           end
-          q = Requests.new(@db, "minute", @page, :response_code => @response_code, :limit => @page_size, :skip => params[:offset].to_i, :above => params[:above].present?)
+          @sampling_rate_400s = @stream.sampling_rate_400s if (400..499).include?(@response_code)
+          q = Requests.new(@db, "minute", @page, :response_code => @response_code,
+                           :limit => @page_size, :skip => params[:offset].to_i, :above => params[:above].present?)
           @requests = q.all
           offset = params[:offset].to_i
           @page_count = @error_count/@page_size + 1
@@ -708,6 +710,7 @@ module Logjam
       @envs ||= database_info.envs(@app)
       @only_one_app = database_info.only_one_app?
       @only_one_env = database_info.only_one_env?(@app)
+      @stream = Logjam.streams["#{@app}-#{@env}"]
     end
 
     def get_date
