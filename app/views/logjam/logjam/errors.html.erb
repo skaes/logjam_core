@@ -7,7 +7,7 @@
         <h2>
           <%= @title %> <%= hpn("for") %> (<%= integer_number(@error_count) %>)
           <% if @sampling_rate_400s && @sampling_rate_400s < 1.0 %>
-             <span class="warning-box">[400s sampling rate <%= @sampling_rate_400s*100 %>%]</span>
+             <span class="warning-box">[400s sampled at <%= @sampling_rate_400s*100 %>%]</span>
           <% end %>
         </h2>
         <%= render "result_navigator" %>
