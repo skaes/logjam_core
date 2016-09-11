@@ -7,14 +7,14 @@ function logjam_graph_app_data(appCallers) {
       cw = 700,
       ch = 420;
 
-  var fill = d3.scale.category20c();
+  var fill = d3.scaleCategory20c();
 
-  var chord = d3.layout.chord()
+  var chord = d3.chord()
         .padding(.02)
         .sortSubgroups(d3.descending)
         .sortChords(d3.descending);
 
-  var arc = d3.svg.arc()
+  var arc = d3.arc()
         .innerRadius(r0)
         .outerRadius(r0 + 20);
 
@@ -32,7 +32,7 @@ function logjam_graph_app_data(appCallers) {
       appNames = d3.set(),
       n = 0;
 
-  var scale =  d3.scale.log().domain(d3.extent(appCallers, function(d){ return d.count;}));
+  var scale =  d3.scaleLog().domain(d3.extent(appCallers, function(d){ return d.count;}));
 
   function appName(name) {
     return name;
@@ -137,7 +137,7 @@ function logjam_graph_app_data(appCallers) {
     .attr("class", "chord")
     .style("stroke", function(d) { return d3.rgb(fill(d.source.index)).darker(); })
     .style("fill", function(d) { return fill(d.source.index); })
-    .attr("d", d3.svg.chord().radius(r0))
+    .attr("d", d3.chord().radius(r0))
     .on("mouseover", function(d) {
       svg.selectAll(".active").classed("active", false);
       // using :hover now instead of:  svg.selectAll("path.chord").classed("active", function(p) { return p === d; });

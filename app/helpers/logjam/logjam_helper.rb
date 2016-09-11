@@ -659,5 +659,6 @@ module Logjam
         h(s.force_encoding('ASCII-8BIT').encode('UTF-8', :undef => :replace))
       end
     end
+
   end
 end

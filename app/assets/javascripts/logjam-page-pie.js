@@ -7,7 +7,7 @@ function logjam_page_pie(params) {
       h = params.h,
       r = w / 2,
       s = d3.sum(data),
-      a = d3.scale.linear([0, s]).range([0, 2 * Math.PI]);
+      a = d3.scaleLinear([0, s]).range([0, 2 * Math.PI]);
 
   /* The root panel. */
   var vis = d3.select(params.parent).append("svg")
@@ -28,9 +28,9 @@ function logjam_page_pie(params) {
   function cursorf(d,i){ return legend[i] != "Others..." ? "pointer" : "arrow"; };
 
   var
-  color = d3.scale.category20(),
+  color = d3.scaleCategory20(),
   donut = d3.layout.pie(),
-  arc = d3.svg.arc().innerRadius(0).outerRadius(r);
+  arc = d3.arc().innerRadius(0).outerRadius(r);
 
   var arcs = vis.selectAll("g.arc")
         .data(donut)
@@ -85,7 +85,7 @@ function logjam_page_pie(params) {
     .attr("class", "legendmark")
     .attr("display", function(d,i) { return data[i]/s > .05 ? null : "none"; })
     .attr("transform", function(d,i){ return "translate(" + (w+30) + "," + (17+16*i) + ")"; })
-    .attr("d", function(d,i){ return d3.svg.symbol().type("circle").size(48).call(); })
+    .attr("d", function(d,i){ return d3.symbol().type("circle").size(48).call(); })
     .style("stroke", function(d,i){ return color(i); })
     .style("fill", function(d,i){ return color(i); });
 

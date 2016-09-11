@@ -6,7 +6,7 @@
     <div class="flex">
 
     <%
-      available_shapes = ["circle", "square", "diamond", "triangle-down"]
+      available_shapes = ["d3.symbolCircle", "d3.symbolSquare", "d3.symbolDiamond", "d3.symbolTriangle"]
       num_shapes = available_shapes.length
       resources, colors, data, shapes = [], [], {}, []
       max_x = 100
@@ -17,7 +17,7 @@
         next if rd[:points].blank?
         resources << r
         colors << Logjam::Resource.color(r,0.7)
-        shapes << (r == "gc_time" ? "cross" : available_shapes[(i+=1) % num_shapes])
+        shapes << (r == "gc_time" ? "d3.symbolCross" : available_shapes[(i+=1) % num_shapes])
         data[r] = rd
         max_x = [max_x, rd[:points].map(&:first).max].max
         max_y = [max_y, rd[:points].map(&:second).max].max

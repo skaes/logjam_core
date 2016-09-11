@@ -11,10 +11,10 @@ function logjam_live_stream_chart(params){
   var w = parseInt(document.getElementById('live-stream-chart').offsetWidth - 100, 10),
       h = 300,
       slice = 10,
-      x = d3.scale.linear().domain([0, 600]).range([0, w]),
-      y = d3.scale.linear().domain([0, 100]).range([h, 0]).nice(),
-      y2 = d3.scale.linear([0, 0]).range([50,0]).nice(),
-      color_map = d3.scale.ordinal().domain(colors);
+      x = d3.scaleLinear().domain([0, 600]).range([0, w]),
+      y = d3.scaleLinear().domain([0, 100]).range([h, 0]).nice(),
+      y2 = d3.scaleLinear([0, 0]).range([50,0]).nice(),
+      color_map = d3.scaleOrdinal().domain(colors);
   var c = color_map.range();
 
   /* Data */
@@ -100,11 +100,11 @@ function logjam_live_stream_chart(params){
     .attr("transform", "rotate(270)")
     .text("Response time (ms)");
 
-  var area = d3.svg.area()
-        .interpolate("monotone")
+  var area = d3.area()
         .x(function(d) { return x(d.x*slice); })
         .y0(function(d) { return y(d.y0); })
-        .y1(function(d) { return y(d.y + d.y0); });
+        .y1(function(d) { return y(d.y + d.y0); })
+        .curve(d3.curveMonotoneX);
 
   function oj(a) {
     return a.map(function(d){
@@ -136,11 +136,11 @@ function logjam_live_stream_chart(params){
 
 
   /* Request counts. */
-  var request_area = d3.svg.area()
-        .interpolate("monotone")
+  var request_area = d3.area()
         .x(function(d) { return x(d.x*slice); })
         .y0(function(d) { return y2(d.y0); })
-        .y1(function(d) { return y2(d.y + d.y0); });
+        .y1(function(d) { return y2(d.y + d.y0); })
+        .curve(d3.curveMonotoneX);
 
   var request_data = request_counts.map(function(d,i){ return {x:i, y:d, y0:0};});
   pane.selectAll(".request_count")
@@ -199,8 +199,8 @@ function logjam_live_stream_chart(params){
       for (var j = 0; j < num_areas; ++j) sum_slot += data[j][i];
       if (sum_slot > max_y) max_y = sum_slot;
     };
-    y = d3.scale.linear().domain([0, max_y]).range([h,0]).nice();
-    y2 = d3.scale.linear().domain([0, d3.max(request_counts)]).range([50,0]).nice();
+    y = d3.scaleLinear().domain([0, max_y]).range([h,0]).nice();
+    y2 = d3.scaleLinear().domain([0, d3.max(request_counts)]).range([50,0]).nice();
   };
 
   /* add stream data to the chart */

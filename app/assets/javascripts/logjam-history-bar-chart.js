@@ -48,17 +48,17 @@ function logjam_history_bar_chart(data, metric, params) {
 
   var formatter = d3.format(",.r");
 
-  var x = d3.time.scale.utc()
+  var x = d3.scaleUtc()
       .range([0, width]);
 
-  var y = d3.scale.linear()
+  var y = d3.scaleLinear()
       .range([height, 0]);
 
-  var xAxis = d3.svg.axis()
+  var xAxis = d3.axis()
       .scale(x)
       .orient("bottom");
 
-  var yAxis = d3.svg.axis()
+  var yAxis = d3.axis()
       .scale(y)
       .orient("left")
       .ticks(5)

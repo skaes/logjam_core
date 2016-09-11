@@ -29,9 +29,9 @@ function logjam_resource_plot(params) {
   var w = (document.getElementById(container.slice(1)).offsetWidth - 60 < 400) ? 626 : document.getElementById(container.slice(1)).offsetWidth - 60,
       h = get_height(),
       xticks = d3.range(25).map(function(h){ return h/interval*60; }),
-      x      = d3.scale.linear().domain([0, 1440/interval]).range([0, w]),
-      y      = d3.scale.linear().domain([0, zoomed_max_y]).range([h, 0]).nice(),
-      y2     = d3.scale.linear().domain([0, max_request_count]).range([50,0]).nice();
+      x      = d3.scaleLinear().domain([0, 1440/interval]).range([0, w]),
+      y      = d3.scaleLinear().domain([0, zoomed_max_y]).range([h, 0]).nice(),
+      y2     = d3.scaleLinear().domain([0, max_request_count]).range([50,0]).nice();
 
   function submit_minutes(start, end, resource) {
     $('#start-minute').val(""+start);
@@ -104,7 +104,7 @@ function logjam_resource_plot(params) {
     tooltip_formatter = function(d){ return d3.format(".0f")(d/1000) + "k"; };
   }
   else {
-    y_tick_precision = params.js_max < 10 ? ".1f" : "0.f";
+    y_tick_precision = params.js_max < 10 ? ".1f" : ".0f";
     y_ticks_formatter = d3.format(y_tick_precision);
     if (params.plot_kind == "time")
       tooltip_formatter = function(d){ return d3.round(d,1) + " ms"; };
@@ -212,11 +212,11 @@ function logjam_resource_plot(params) {
     .text(function(d){ return request_count_formatter(y2.invert(d)); });
 
 
-  var request_area = d3.svg.area()
-        .interpolate("monotone")
+  var request_area = d3.area()
         .x(function(d) { return x(d.x+0.5); })
         .y0(function(d) { return y2(d.y0); })
-        .y1(function(d) { return y2(d.y + d.y0); });
+        .y1(function(d) { return y2(d.y + d.y0); })
+        .curve(d3.curveMonotoneX);
 
   var request_data = request_counts.map(function(d,i){ return {x:i, y:d, y0:0};});
 
@@ -312,11 +312,11 @@ function logjam_resource_plot(params) {
     .style("stroke", "none")
     .style("fill", "rgba(255,0,0,0.3)");
 
-  var area = d3.svg.area()
-        .interpolate("monotone")
+  var area = d3.area()
         .x(function(d) { return x(d.x+.5); })
         .y0(function(d) { return y(d.y0); })
-        .y1(function(d) { return y(d.y+d.y0); });
+        .y1(function(d) { return y(d.y+d.y0); })
+        .curve(d3.curveMonotoneX);
 
   function oj(a) {
     return a.map(function(d){
@@ -325,7 +325,7 @@ function logjam_resource_plot(params) {
   };
 
   var odata = oj(data);
-  var ldata = d3.layout.stack()(odata);
+  var ldata = d3.stack()(odata);
 
   var layer_tooltip_text = "";
   var tooltime_formatter = d3.format("02d");
@@ -370,10 +370,10 @@ function logjam_resource_plot(params) {
 
   /* GC time */
   if (gc_time != null) {
-    var gc_line = d3.svg.line()
+    var gc_line = d3.line()
           .x(function(d){ return x(d[0]+0.5); })
           .y(function(d){ return y(d[1]); })
-          .interpolate("cardinal");
+          .curve(d3.curveCardinal);
 
     var glg = vis.append("g")
       .data([gc_time]);
@@ -387,10 +387,10 @@ function logjam_resource_plot(params) {
 
   /* Dom interative */
   if (dom_interactive != null) {
-    var interactive_line = d3.svg.line()
+    var interactive_line = d3.line()
           .x(function(d){ return x(d[0]+0.5); })
           .y(function(d){ return y(d[1]); })
-          .interpolate("cardinal");
+          .curve(d3.curveCardinal);
 
     var dlg = vis.append("g")
       .data([dom_interactive]);

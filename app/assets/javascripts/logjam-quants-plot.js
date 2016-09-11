@@ -11,12 +11,12 @@ function logjam_quants_plot(params) {
 var
     w = document.getElementById('distribution-plot').offsetWidth - 120,
     h  = get_height(),
-    x = d3.scale.log().domain([params.xmin, params.max_x]).range([0, w]).nice(),
-    y = d3.scale.log().domain([1, params.max_y]).range([0, h]).nice(),
+    x = d3.scaleLog().domain([params.xmin, params.max_x]).range([0, w]).nice(),
+    y = d3.scaleLog().domain([1, params.max_y]).range([0, h]).nice(),
     legend = params.legend,
-    colors = d3.scale.ordinal().range(params.colors),
+    colors = d3.scaleOrdinal().range(params.colors),
     shapes = params.shapes,
-    formatter = d3.format(",r");
+    formatter = d3.format("d");
 
 /* The root panel. */
 var vis = d3.select("#distribution-plot")
@@ -121,7 +121,7 @@ function draw_percentile(xp,i,key,j){
 
   vis.append("svg:path")
     .attr("transform", "translate(" + a[0] + "," + a[1] + ")")
-    .attr("d", d3.svg.symbol().type(shapes[i]).size(64))
+    .attr("d", d3.symbol().type(shapes[i]).size(64))
     .style("stroke", colors(i))
     .style("fill", colors(i));
 
@@ -161,10 +161,10 @@ params.resources.forEach(function(r,i){
   // quants
   vis.selectAll("."+klazz)
     .data(params.data[r].points)
-    .enter().append("svg:path")
+    .enter().append("path")
     .attr("class", klazz)
     .attr("transform", function(d) { return "translate(" + x(d[0]) + "," + (h-y(d[1])) + ")"; })
-    .attr("d", d3.svg.symbol().type(shapes[i]).size(24))
+    .attr("d", d3.symbol.type(shapes[i]).size(24))
     .style("stroke", colors(i))
     .style("fill", colors(i));
 });
@@ -184,7 +184,7 @@ vis.selectAll(".legend")
     .enter().append("svg:path")
     .attr("class", "legendmark")
     .attr("transform", function(d,i){ return "translate(" + (w-70) + "," + (17+14*i) + ")"; })
-    .attr("d", function(d,i){ return d3.svg.symbol().type(shapes[i]).size(48).call(); })
+    .attr("d", function(d,i){ return d3.symbol().type(shapes[i]).size(48).call(); })
     .style("stroke", colors)
     .style("fill", colors);
 }

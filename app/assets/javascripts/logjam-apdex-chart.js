@@ -5,8 +5,8 @@ function logjam_apdex_chart(params) {
   var min_y = params.min_y;
   var h = params.height;
   var w = $(params.parent).width();
-  var x = d3.scale.linear().domain([0, 1440/2]).range([0, w]);
-  var y = d3.scale.linear().domain([min_y, 1.0]).range([h, 0]).nice();
+  var x = d3.scaleLinear().domain([0, 1440/2]).range([0, w]);
+  var y = d3.scaleLinear().domain([min_y, 1.0]).range([h, 0]).nice();
 
   var tooltip_formatter = d3.format(",.3r");
   var tooltip_timeformatter = d3.format("02d");
@@ -32,16 +32,16 @@ function logjam_apdex_chart(params) {
         .attr("y2", h)
   ;
 
-  var goal = d3.svg.line()
+  var goal = d3.line()
         .x(function(d,i) { return x(d[0]); })
         .y(function(){ return y(0.94); })
   ;
 
-  var area = d3.svg.area()
-        .interpolate("monotone")
+  var area = d3.area()
         .x(function(d,i) { return x(d[0]); })
         .y0(function(d) { return y(0); })
         .y1(function(d) { return y(d[1]); })
+        .curve(d3.curveMonotoneX)
   ;
 
 

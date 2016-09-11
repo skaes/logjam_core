@@ -8,8 +8,8 @@ function logjam_simple_pie(params){
       h = params.h,
       r = w / 2,
       s = d3.sum(data),
-      a = d3.scale.linear([0, s]).range([0, 2 * Math.PI]),
-      color = d3.scale.ordinal().range(params.color);
+      a = d3.scaleLinear([0, s]).range([0, 2 * Math.PI]),
+      color = d3.scaleOrdinal().range(params.color);
 
   /* The root panel. */
   var vis = d3.select(container).append("svg")
@@ -28,8 +28,8 @@ function logjam_simple_pie(params){
 
   /* The pie. */
   var
-  donut = d3.layout.pie(),
-  arc = d3.svg.arc().innerRadius(0).outerRadius(r);
+  donut = d3.pie(),
+  arc = d3.arc().innerRadius(0).outerRadius(r);
 
   var arcs = vis.selectAll("g.arc")
         .data(donut)
