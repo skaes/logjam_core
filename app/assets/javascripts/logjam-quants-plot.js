@@ -8,15 +8,25 @@ function logjam_quants_plot(params) {
       return 500;
   }
 
-var
-    w = document.getElementById('distribution-plot').offsetWidth - 120,
-    h  = get_height(),
-    x = d3.scaleLog().domain([params.xmin, params.max_x]).range([0, w]).nice(),
-    y = d3.scaleLog().domain([1, params.max_y]).range([0, h]).nice(),
-    legend = params.legend,
-    colors = d3.scaleOrdinal().range(params.colors),
-    shapes = params.shapes,
-    formatter = d3.format("d");
+  var shape_transform = {
+    circle: d3.symbolCircle,
+    square: d3.symbolSquare,
+    diamond: d3.symbolDiamond,
+    triangle: d3.symbolTriangle,
+    cross: d3.symbolCross
+  };
+
+  var w = document.getElementById('distribution-plot').offsetWidth - 120,
+      h  = get_height(),
+      x = d3.scaleLog().domain([params.xmin, params.max_x]).range([0, w]).nice(),
+      y = d3.scaleLog().domain([1, params.max_y]).range([0, h]).nice(),
+      legend = params.legend,
+      colors = d3.scaleOrdinal().range(params.colors),
+      shapes = params.shapes.map(function(s){ return shape_transform[s];}),
+      formatter = d3.format("d");
+
+  console.log(params.shapes);
+  console.log(shapes);
 
 /* The root panel. */
 var vis = d3.select("#distribution-plot")
@@ -164,7 +174,7 @@ params.resources.forEach(function(r,i){
     .enter().append("path")
     .attr("class", klazz)
     .attr("transform", function(d) { return "translate(" + x(d[0]) + "," + (h-y(d[1])) + ")"; })
-    .attr("d", d3.symbol.type(shapes[i]).size(24))
+    .attr("d", d3.symbol().type(shapes[i]).size(24))
     .style("stroke", colors(i))
     .style("fill", colors(i));
 });
