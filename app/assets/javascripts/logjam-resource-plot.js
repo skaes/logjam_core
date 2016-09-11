@@ -211,7 +211,6 @@ function logjam_resource_plot(params) {
     .attr("x", w-1)
     .text(function(d){ return request_count_formatter(y2.invert(d)); });
 
-
   var request_area = d3.area()
         .x(function(d) { return x(d.x+0.5); })
         .y0(function(d) { return y2(d.y0); })
@@ -328,13 +327,24 @@ function logjam_resource_plot(params) {
     layer_tooltip_text = tooltip_formatter(dp[1]) + " " + legend[i] + time_suffix(dp[0]*interval);
   }
 
+  function stackup(d) {
+    for (i = 0; i < d[0].length; i++) {
+      d[0][i][2] = 0;
+    }
+    for (i = 1; i < d.length; i++) {
+      for (j = 0; j < d[i].length; j++) {
+        d[i][j][2] = d[i-1][j][1] + d[i-1][j][2];
+      }
+    }
+  }
+  stackup(data);
+
   var area = d3.area()
         .x(function(d) { return x(d[0]+.5); })
-        .y0(y(0))
-        .y1(function(d) { return y(d[1]); })
+        .y0(function(d) { return y(d[2]); })
+        .y1(function(d) { return y(d[1]+d[2]); })
         .curve(d3.curveMonotoneX);
 
-  console.log(JSON.stringify(data));
 
   /* The stack layout. */
   vis.selectAll(".layer")

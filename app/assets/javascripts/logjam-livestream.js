@@ -100,20 +100,33 @@ function logjam_live_stream_chart(params){
     .attr("transform", "rotate(270)")
     .text("Response time (ms)");
 
+  function init_row(r) {
+    return r.map(function(d,i) {
+        return {x:i, y:d, y0:0};
+    });
+  }
+
+  function init_stack(data) {
+    return data.map(function(r){
+      return init_row(r);
+    });
+  }
+
+  function compute_stack(d) {
+    for (i = 1; i < d.length; i++) {
+      for (j = 0; j < d[i].length; j++) {
+        d[i][j].y0 = d[i-1][j].y0 + d[i-1][j].y;
+      }
+    }
+  }
+  var ldata = init_stack(data);
+  compute_stack(ldata);
+
   var area = d3.area()
         .x(function(d) { return x(d.x*slice); })
         .y0(function(d) { return y(d.y0); })
         .y1(function(d) { return y(d.y + d.y0); })
         .curve(d3.curveMonotoneX);
-
-  function oj(a) {
-    return a.map(function(d){
-      return d.map(function(d,i ){ return {x:i, y:d, y0:0}; });
-    });
-  };
-
-  var odata = oj(data);
-  var ldata = d3.layout.stack()(odata);
 
   vis.append("svg:clipPath")
     .attr("id", "clip")
@@ -142,7 +155,8 @@ function logjam_live_stream_chart(params){
         .y1(function(d) { return y2(d.y + d.y0); })
         .curve(d3.curveMonotoneX);
 
-  var request_data = request_counts.map(function(d,i){ return {x:i, y:d, y0:0};});
+  var request_data = init_row(request_counts);
+
   pane.selectAll(".request_count")
     .data([request_data])
     .enter().append("path")
@@ -301,10 +315,10 @@ function logjam_live_stream_chart(params){
 
   function redraw() {
     // Update
-    odata = oj(data);
-    ldata = d3.layout.stack()(odata);
+    ldata = init_stack(data);
+    compute_stack(ldata);
 
-    request_data = request_counts.map(function(d,i){ return {x:i, y:d, y0:0};});
+    request_data = init_row(request_counts);
 
     pane.selectAll(".layer")
       .data(ldata)
@@ -317,7 +331,7 @@ function logjam_live_stream_chart(params){
     pane
       .attr("transform", "translate(" + x(0) + ")")
       .transition()
-      .ease("linear")
+      .ease(d3.easeLinear)
       .duration(update_interval)
       .attr("transform", "translate(" + x(-slice) + ")");
 
@@ -349,15 +363,15 @@ function logjam_live_stream_chart(params){
 
     vlabels.enter().append("text")
       .attr("class", "ylabel")
-      .attr("x", 0)
-      .attr("y", y)
-      .attr("dx", -10)
-      .attr("dy", 3)
       .attr("text-anchor", "middle")
       .style("font", "10px Helvetica Neue")
       .style("stroke", "none")
       .style("fill", "#000")
-      .text(String);
+      .text(String)
+      .attr("x", 0)
+      .attr("y", y)
+      .attr("dx", -10)
+      .attr("dy", 3);
 
     vlabels.exit().remove();
 
@@ -438,7 +452,7 @@ function logjam_live_stream_chart(params){
 
   /* automatically connect to the data stream when the ducoment is ready */
   $(function(){
-    console.log(ws);
+    // console.log(ws);
     $("#stream-toggle").on("click", function(){ toggle_stream($(this)); });
     $("#warnin-toggle").on("click", function(){ toggle_warnings($(this)); });
     $("#smooth-toggle").on("click", function(){ toggle_smoothness($(this)) ;});
