@@ -9,45 +9,71 @@
       available_shapes = ["circle", "square", "diamond", "triangle"]
       num_shapes = available_shapes.length
       resources, colors, data, shapes = [], [], {}, []
+      color_map = {}
       max_x = 100
       max_y = 1
       i = -1
-      @resources.reverse.each do |r|
+      percentiles = {}
+      bucket_set = Set.new
+      @resources.each do |r|
         rd = @dataset.histogram_data(r)
-        next if rd[:points].blank?
+        next if rd[:buckets].blank? || rd[:buckets].all?{|x,y| y.zero?}
         resources << r
         colors << Logjam::Resource.color(r,0.7)
+        color_map[r] = colors.last
         shapes << (r == "gc_time" ? "cross" : available_shapes[(i+=1) % num_shapes])
-        data[r] = rd
-        max_x = [max_x, rd[:points].map(&:first).max].max
-        max_y = [max_y, rd[:points].map(&:second).max].max
+        data[r] = rd[:buckets]
+        percentiles[r] = rd[:percentiles]
+        max_x = [max_x, rd[:buckets].keys.max].max
+        max_y = [max_y, rd[:buckets].values.max].max
+        bucket_set += rd[:buckets].keys
       end
+      buckets = bucket_set.sort.to_a.map do |b|
+        {"bucket": b}.merge! Hash[resources.map{ |r| [ r, data[r][b] ] } ]
+      end
+      # Rails.logger.debug "RESOURCES: #{resources.inspect}"
+      buckets = buckets.reverse.drop_while{|b| b.values_at(*resources).sum.zero?}.reverse
+      buckets.each do |b|
+        resources.each do |r|
+          b[r] = 0.9 if b[r] == 0
+        end
+      end
+      # Rails.logger.debug "BUCKETS: #{buckets.inspect}"
       js_params = {
         xmin: @xmin,
         max_y: max_y,
         max_x: max_x,
-        data: data,
-        legend: resources.map{|r| r.gsub(/_/,' ')},
-        shapes: shapes,
+        legend: resources.reverse.map{|r| r.gsub(/_/,' ')},
+        color_map: color_map,
         colors: colors,
         resources: resources,
-        xlabel: @xlabel,
         title: "#{@xlabel} distribution on #{@dataset.date} for #{@dataset.page_description}",
+        buckets: buckets,
+        percentiles: percentiles
       }
     %>
 
-      <div class="item">
-        <h2><%= @title %></h2>
-        <%= render "section_toggle" %>
-        <div id="distribution-plot"></div>
-        <script type="text/javascript">
-          logjam_quants_plot(<%=raw Oj.dump(js_params)%>);
-          $(window).on('resize', function(){
-            $('#distribution-plot').html('');
-            logjam_quants_plot(<%=raw Oj.dump(js_params)%>);
-          })
-        </script>
-      </div>
+    <div class="item col-1">
+      <h2><%= @title %></h2>
+      <%= render "section_toggle" %>
+    </div>
+    <% resources.each do |r| %>
+    <div class="item col-<%= %w(total_time page_time ajax_time).include?(r) ? 1 : 2 %> distribution-plot" id="distri-plot-<%=r%>"></div>
+    <% end %>
+    <script type="text/javascript">
+      (function(){
+      function capitalize(s) {
+          return s.toLowerCase().replace( /\b./g, function(a){ return a.toUpperCase(); } );
+      }
+      var data = <%=raw Oj.dump(js_params)%>;
+      data.resources.forEach(function(r,i){
+      var graph_id = "distri-plot-"+r;
+      logjam_quants_plot(data, r, graph_id, capitalize(r.replace('_', ' ')));
+        $(window).on('resize', function(){
+          $('#'+graph_id).html('');
+          logjam_quants_plot(data, r, graph_id, capitalize(r.replace('_', ' ')));
+        })})})();
+    </script>
     </div>
   </div>
 </div>

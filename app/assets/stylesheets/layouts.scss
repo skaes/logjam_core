@@ -425,8 +425,9 @@ td.js-exception {
     height: calc(100vh - 60px);
 }
 
-#distribution-plot {
-    height: calc(100vh - 60px);
+.distribution-plot {
+//    height: calc(100vh - 60px);
+    height: 350px;
 }
 
 #apdex-overview td {

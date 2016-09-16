@@ -1,84 +1,89 @@
-function logjam_quants_plot(params) {
+function logjam_quants_plot(params, resource, id, label) {
 
   function get_height() {
-    var height = $('#distribution-plot').height() - 150;
+    var height = $('#'+id).height() - 100;
     if (height > 0)
       return height;
     else
       return 500;
   }
 
-  var shape_transform = {
-    circle: d3.symbolCircle,
-    square: d3.symbolSquare,
-    diamond: d3.symbolDiamond,
-    triangle: d3.symbolTriangle,
-    cross: d3.symbolCross
-  };
 
-  var w = document.getElementById('distribution-plot').offsetWidth - 120,
+  var w = document.getElementById(id).offsetWidth - 120,
       h  = get_height(),
-      x = d3.scaleLog().domain([params.xmin, params.max_x]).range([0, w]).nice(),
-      y = d3.scaleLog().domain([1, params.max_y]).range([0, h]).nice(),
+//      x = d3.scaleLog().domain([params.xmin, params.max_x]).range([0, w]).nice(),
+//      y = d3.scaleLog().domain([1, params.max_y]).range([0, h]).nice(),
       legend = params.legend,
-      colors = d3.scaleOrdinal().range(params.colors),
-      shapes = params.shapes.map(function(s){ return shape_transform[s];}),
-      formatter = d3.format("d");
+      color = params.color_map[resource],
+      formatter = d3.format(".0s"),
+      bucket_values = params.buckets.map(function (d){return d.bucket;})
+  ;
 
-  console.log(params.shapes);
-  console.log(shapes);
+  // console.log(resource, id, w, h);
+  // console.log(JSON.stringify(bucket_values));
+  // console.log(JSON.stringify(params.buckets));
 
-/* The root panel. */
-var vis = d3.select("#distribution-plot")
-    .append("svg")
-     .attr("width", w+100)
-     .attr("height", h+100)
-     .append("g")
-       .attr("transform", "translate(50,50)");
+  var x = d3.scaleBand()
+        .domain(bucket_values)
+        .paddingInner([.01])
+        .paddingOuter([.01])
+        .range([0, w]);
 
-/* X-label */
-vis.append("svg:text")
+  var y = d3.scaleLog()
+        .domain([1, params.max_y])
+        .range([h,0]);
+
+  /* The root panel. */
+  var vis = d3.select('#'+id)
+        .append("svg")
+        .attr("width", w+100)
+        .attr("height", h+100)
+        .append("g")
+        .attr("transform", "translate(50,50)");
+
+  /* X-label */
+  vis.append("svg:text")
     .attr("dy", h+40)
     .attr("dx", w/2)
     .style("font", "12px sans-serif")
     .attr("text-anchor", "middle")
-    .text(params.xlabel);
+    .attr("text-transform", "capitalize")
+    .text(label);
 
-/* X-axis, ticks and tick labels. */
-var xaxis = vis.append("svg:line")
-    .style("fill", "#999")
-    .style("stroke", "#999")
-    .attr("x1", 0)
-    .attr("y1", h)
-    .attr("x2", w)
-    .attr("y2", h);
+  /* X-axis, ticks and tick labels. */
+  var xaxis = vis.append("svg:line")
+        .style("fill", "#999")
+        .style("stroke", "#999")
+        .attr("x1", 0)
+        .attr("y1", h)
+        .attr("x2", w)
+        .attr("y2", h);
 
-vis.selectAll(".xtick")
-    .data(x.ticks())
+  vis.selectAll(".xtick")
+    .data(bucket_values)
     .enter().append("line")
     .attr("class", "xtick")
-    .attr("x1", x)
-    .attr("x2", x)
+    .attr("x1", function (d){ return x(d) + x.bandwidth();})
+    .attr("x2", function (d){ return x(d) + x.bandwidth();})
     .attr("y1", h)
     .attr("y2", function(d,i){ return (i % 9 == 0 || i % 9 == 4) ? h + 10 : h + 5; })
     .style("fill", "#999")
     .style("stroke", "#999");
 
-vis.selectAll(".xlabel")
-    .data(x.ticks())
+  vis.selectAll(".xlabel")
+    .data(bucket_values)
     .enter().append("text")
     .attr("class", "xlabel")
-    .attr("x", x)
+    .attr("x", function (d){ return x(d) + x.bandwidth();})
     .attr("y", h)
     .attr("dy", function(d, i) { return (i % 9 == 0 || i % 9 == 4 ) ? 20 : 15; })
     .attr("text-anchor", "middle")
-    .attr("display", function(d,i){ return (i % 9 == 0 || i % 9 == 4) ? null : "none"; })
+  //.attr("display", function(d,i){ return (i % 9 == 0 || i % 9 == 4) ? null : "none"; })
     .style("font", "8px sans-serif")
     .text(formatter);
 
-
-/* Y-label */
-vis.append("svg:text")
+  /* Y-label */
+  vis.append("svg:text")
     .attr("dy", -40)
     .attr("dx", -h/2)
     .style("font", "12px sans-serif")
@@ -86,13 +91,13 @@ vis.append("svg:text")
     .attr("transform", "rotate(270)")
     .text("Number of requests");
 
-var yaxis = vis.append("svg:line")
-    .style("fill", "#999")
-    .style("stroke", "#999")
-    .attr("x1", 0)
-    .attr("y1", h)
-    .attr("x2", 0)
-    .attr("y2", 0);
+  var yaxis = vis.append("svg:line")
+        .style("fill", "#999")
+        .style("stroke", "#999")
+        .attr("x1", 0)
+        .attr("y1", h)
+        .attr("x2", 0)
+        .attr("y2", 0);
 
   vis.selectAll(".ytick")
     .data(y.ticks())
@@ -103,98 +108,85 @@ var yaxis = vis.append("svg:line")
     .attr("y1", y)
     .attr("y2", y)
     .style("fill", "#999")
-    .style("stroke", "#999");
+    .style("stroke", "#999")
+    .attr("display", function(d,i){ return (i % 9 == 0 || i % 9 == 4) ? null : "none"; })
+  ;
 
   vis.selectAll(".ylabel")
     .data(y.ticks())
     .enter().append("text")
     .attr("class", "ylabel")
     .attr("x", 0)
-    .attr("y", function(d){ return h-y(d); })
+    .attr("y", function(d){ return y(d); })
     .attr("dx", function(d, i) { return (i % 9 == 0 || i % 9 == 4 ) ? -20 : -15; })
     .attr("text-anchor", "middle")
     .attr("display", function(d,i){ return (i % 9 == 0 || i % 9 == 4) ? null : "none"; })
-    .style("font", "8px sana-serif")
+    .style("font", "9px sans-serif")
     .text(formatter);
 
-function draw_percentile(xp,i,key,j){
-  // percentiles
-  var a = [x(xp), 0];
-  var b = [x(xp), h];
-  var pline = vis.append("svg:line")
-    .style("fill", colors(i))
-    .style("stroke", colors(i))
-    .attr("x1", a[0])
-    .attr("y1", a[1])
-    .attr("x2", b[0])
-    .attr("y2", b[1]);
+  function draw_percentile(xp, key, j){
+    // percentiles
+    var a = [x(xp)+x.bandwidth(), 0];
+    var b = [x(xp)+x.bandwidth(), h];
 
-  vis.append("svg:path")
-    .attr("transform", "translate(" + a[0] + "," + a[1] + ")")
-    .attr("d", d3.symbol().type(shapes[i]).size(64))
-    .style("stroke", colors(i))
-    .style("fill", colors(i));
+    vis.append("svg:line")
+      .style("fill", "rgba(0,0,0,0.5)")
+      .style("stroke", "rgba(0,0,0,0.5)")
+      .attr("x1", a[0])
+      .attr("y1", a[1])
+      .attr("x2", b[0])
+      .attr("y2", b[1]);
 
-  vis.append("svg:text")
-    .attr("dx", a[0])
-    .attr("dy", a[1]-10)
-    .attr("text-anchor", "middle")
-    .style("font", "10px sans-serif")
-    .text("~"+key);
+    vis.append("svg:path")
+      .attr("transform", "translate(" + a[0] + "," + a[1] + ")")
+      .attr("d", d3.symbol().type(d3.symbolCircle).size(64))
+      .style("stroke", "#aaa")
+      .style("fill", "#aaa");
 
-  vis.append("svg:text")
-    .attr("dx", a[0]+2)
-    .attr("dy", a[1]+15+j*10)
-    .style("font", "10px sans-serif")
-    .attr("text-anchor", "start")
-    .text(formatter(xp));
-}
+    vis.append("svg:text")
+      .attr("dx", a[0])
+      .attr("dy", a[1]-10)
+      .attr("text-anchor", "middle")
+      .style("font", "10px sans-serif")
+      .text("~ "+key);
 
-params.resources.forEach(function(r,i){
-  var klazz = "shape" + i;
-  if (r == 'total_time' || r == 'page_time' || r == 'ajax_time') {
+    // vis.append("svg:text")
+    //   .attr("dx", a[0]+2)
+    //   .attr("dy", a[1]+15+j*10)
+    //   .style("font", "10px sans-serif")
+    //   .attr("text-anchor", "start")
+    //   .text(formatter(xp));
+  }
+
+  console.log(JSON.stringify(params.percentiles));
+
+  function draw_percentiles(){
     var pos = 0;
-    var xp90 = params.data[r]['p90'];
-    var xp95 = params.data[r]['p95'];
-    var xp99 = params.data[r]['p99'];
+    var xp90 = params.percentiles[resource].p90;
+    var xp95 = params.percentiles[resource].p95;
+    var xp99 = params.percentiles[resource].p99;
     if (xp90 != xp95) {
-      draw_percentile(xp90, i, 'p90', pos);
+      draw_percentile(xp90, 'p90', pos);
       pos += 1;
     }
     if (xp95 != xp99) {
-      draw_percentile(xp95, i, 'p95', pos);
+      draw_percentile(xp95, 'p95', pos);
       pos += 1;
     }
-    draw_percentile(xp99, i, 'p99', pos);
+    draw_percentile(xp99, 'p99', pos);
   }
+  draw_percentiles();
 
-  // quants
-  vis.selectAll("."+klazz)
-    .data(params.data[r].points)
-    .enter().append("path")
-    .attr("class", klazz)
-    .attr("transform", function(d) { return "translate(" + x(d[0]) + "," + (h-y(d[1])) + ")"; })
-    .attr("d", d3.symbol().type(shapes[i]).size(24))
-    .style("stroke", colors(i))
-    .style("fill", colors(i));
-});
+   // quants
+   vis.selectAll(".bar")
+    .data(params.buckets)
+    .enter().append("rect")
+    .attr("class", "bar")
+    .style("fill", color)
+    .attr("x", function(d) { return x(d.bucket); })
+    .attr("y", function(d) { return y(d[resource]); })
+    .attr("width", x.bandwidth())
+    .attr("height", function(d) { return h - y(d[resource]); })
+  ;
 
-/* Legend. */
-vis.selectAll(".legend")
-    .data(legend)
-    .enter().append("svg:text")
-    .attr("class", "legend")
-    .attr("x", w-60)
-    .attr("y", function(d,i){return 20+14*i; })
-    .style("font", "12px sans-serif")
-    .text(String);
-
-  vis.selectAll(".legendmark")
-    .data(legend)
-    .enter().append("svg:path")
-    .attr("class", "legendmark")
-    .attr("transform", function(d,i){ return "translate(" + (w-70) + "," + (17+14*i) + ")"; })
-    .attr("d", function(d,i){ return d3.symbol().type(shapes[i]).size(48).call(); })
-    .style("stroke", colors)
-    .style("fill", colors);
 }

@@ -314,10 +314,60 @@ module Logjam
       @the_quants = Quants.new(@db, resources, page, kind)
     end
 
+    BUCKETS = [
+      1,            #    1   ms               1 object            1   KB
+      3,            #    3   ms               3 objects           3   KB
+      10,           #   10   ms              10 objects          10   KB
+      30,           #   30   ms              30 objects          30   KB
+      100,          #  100   ms             100 objects         100   KB
+      300,          #  300   ms             300 objects         300   KB
+      1000,         #    1   second          1K objects       ~   1   MB
+      3000,         #    3   seconds         2K objects       ~   2.9 MB
+      10000,        #   10   seconds        10K objects       ~   9.7 MB
+      30000,        #   30   seconds        30K objects       ~  29.3 MB
+      100000,       #  100   seconds       100K objects       ~  97.6 MB
+      300000,       #    5   minutes       300K objects       ~ 293   MB
+      1000000,      # ~ 17   minutes         1M objects       ~ 976   MB
+      3000000,      #   50   minutes         3M objects       ~   2.9 GB
+      10000000,     #  ~ 2.6 hours          10M objects       ~   9.7 GB
+      30000000,     #  ~ 8.3 hours          30M objects       ~  28.9 GB
+      100000000,    #  ~ 1.2 days          100M objects       ~  96.3 GB
+      300000000,    #    3.5 days          300M objects       ~ 289   GB
+      1000000000,   #   11.6 days            1B objects       ~ 963   GB
+      3000000000,   #   34.7 days            3B objects       ~   2.8 TB
+      10000000000,  #  116   days           10B objects       ~   9.4 TB
+      30000000000,  #  347   days           30B objects       ~  28.2 TB
+      0
+    ]
+
+    EMPTY_BUCKETS = BUCKETS[0..-2].each_with_object({}) do |b, buckets|
+      buckets[b] = 0
+    end
+
+    def bucket(v)
+      i = 0
+      while (b = BUCKETS[i]) < v && b != 0
+        i += 1
+      end
+      b > 0 ? b : BUCKETS[i-1]
+    end
+
+    def compute_buckets(resource)
+      quants = @the_quants.quants(resource)
+      # Rails.logger.debug "#{resource}:quants:" + quants.inspect
+      return {} if quants.blank?
+      EMPTY_BUCKETS.clone.tap do |buckets|
+        quants.each do |quant, count|
+          buckets[bucket(quant)] += count
+        end
+      end
+    end
+
     def histogram_data(resource)
-      quantized = @the_quants.quants(resource)
+      buckets = compute_buckets(resource)
+      # Rails.logger.debug "#{resource}:buckets:" + buckets.inspect
       points = []
-      quantized.keys.sort.each{|x| points << [x, quantized[x]] } unless quantized.blank?
+      buckets.keys.sort.each{|x| points << [x, buckets[x]] } unless buckets.blank?
       count = points.map(&:second).sum
       return {} if count == 0
       c90 = count * 0.90
@@ -340,7 +390,7 @@ module Logjam
         i += 1
       end
       p99 = points[i-1][0]
-      {points: points, p90: p90, p95: p95, p99: p99}
+      {buckets: buckets, percentiles: {p90: p90, p95: p95, p99: p99}}
     end
 
     def happy_count(section = :backend)

@@ -617,12 +617,12 @@ module Logjam
             @resources = Logjam::Resource.frontend_resources - %w(frontend_time)
             @dataset.get_data_for_distribution_plot(:frontend_time)
             @xmin = 1
-            @title = "Frontend Response Time Distribution"
+            @title = "Frontend Response Time Distribution (ms)"
           else
-            @resources = Logjam::Resource.time_resources
+            @resources = Logjam::Resource.time_resources.reverse
             @dataset.get_data_for_distribution_plot(:request_time)
             @xmin = 1
-            @title = "Backend Response Time Distribution"
+            @title = "Backend Response Time Distribution (ms)"
           end
           render 'quants_plot'
         end
@@ -650,8 +650,8 @@ module Logjam
           @resources = Logjam::Resource.memory_resources
           @dataset.get_data_for_distribution_plot(:allocated_bytes)
           @xmin = 1024
-          @xlabel = "Allocated memory (bytes)"
-          @title = "Allocated Memory Distribution"
+          @xlabel = "Allocated memory"
+          @title = "Allocated Memory Distribution (bytes)"
           render 'quants_plot'
         end
       end

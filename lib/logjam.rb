@@ -246,6 +246,9 @@ module Logjam
         end
         Mongo::Client.new([connection_spec], options)
       end
+  rescue
+    Rails.logger.error("could not establish connection for '#{connection_name}'")
+    raise
   end
 
   def establish_connections
@@ -261,10 +264,8 @@ module Logjam
   # this causes problems when trying to delete databaes of removed apps
   def connection_for(db_name)
     stream = stream_for(db_name)
+    Rails.logger.debug "trying to connect db for stream #{stream.inspect}"
     mongo_connection(stream.database)
-  rescue
-    Rails.logger.error("could not retrieve connection for database '#{db_name}'")
-    raise
   end
 
   def db(date, app, env)
@@ -291,7 +292,11 @@ module Logjam
   end
 
   def self.stream_for(db_name)
-    db_name =~ db_name_format && @@streams["#{$1}-#{$2}"]
+    if db_name =~ db_name_format
+      @@streams["#{$1}-#{$2}"]
+    else
+      raise "could not find stream for database: '#{db_name}'"
+    end
   end
 
   def iso_date_string(db_name)
