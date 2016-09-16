@@ -58,7 +58,7 @@
       <%= render "section_toggle" %>
     </div>
     <% resources.each do |r| %>
-    <div class="item col-<%= %w(total_time page_time ajax_time).include?(r) ? 1 : 2 %> distribution-plot" id="distri-plot-<%=r%>"></div>
+    <div class="item col-<%= columns_for_resource(r) %> distribution-plot" id="distri-plot-<%=r%>"></div>
     <% end %>
     <script type="text/javascript">
       (function(){

@@ -660,5 +660,12 @@ module Logjam
       end
     end
 
+    def columns_for_resource(r)
+      case r
+      when 'total_time' then 1
+      when 'page_time', 'ajax_time' then 2
+      else 3
+      end
+    end
   end
 end
