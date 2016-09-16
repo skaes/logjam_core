@@ -733,6 +733,7 @@ module Logjam
       params[:auto_refresh] ||= '0'
       params[:time_range] ||= 'date'
       @section = params[:section] == "frontend" ? :frontend : :backend
+      params[:scale] ||= 'logarithmic'
 
       if @section == :frontend && !(Resource.frontend_resources.include?(params[:resource]) || Resource.dom_resources.include?(params[:resource]))
         redirect_to params.to_hash.merge(:resource => 'page_time', :section => 'frontend')
@@ -806,6 +807,7 @@ module Logjam
           :resource => params[:resource],
           :sort => params[:sort], :group => params[:group], :filter => params[:filter],
           :offset => params[:offset], :error_type => params[:error_type],
+          :scale => params[:scale],
           :grouping => params[:grouping], :grouping_function => params[:grouping_function]}, params)
         redirect_to new_params
       end

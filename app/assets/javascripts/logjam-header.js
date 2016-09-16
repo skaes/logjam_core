@@ -16,6 +16,7 @@ function submit_filter_form() {
      .removeSearch("page", parameter_defaults.page)
      .removeSearch("resource", parameter_defaults.resource)
      .removeSearch("section", parameter_defaults.section)
+     .removeSearch("scale", parameter_defaults.scale)
      .removeSearch("time_range", parameter_defaults.time_range)
      .removeSearch("grouping", parameter_defaults.grouping)
      .removeSearch("grouping_function", parameter_defaults.grouping_function)
@@ -31,6 +32,7 @@ function go_home() {
   $("#grouping").val(parameter_defaults.grouping);
   $("#resource").val(parameter_defaults.resource);
   $("#section").val(parameter_defaults.section);
+  $("#scale").val(parameter_defaults.scale);
   $("#grouping-function").val(parameter_defaults.grouping_function);
   $("#start-minute").val(parameter_defaults.start_minute);
   $("#end-minute").val(parameter_defaults.end_minute);
@@ -182,6 +184,16 @@ function initialize_header() {
 
   $("#view-frontend").on("click", function(){
     $("#section").val("frontend");
+    submit_filter_form();
+  });
+
+  $("#view-linear-scale").on("click", function(){
+    $("#scale").val("linear");
+    submit_filter_form();
+  });
+
+  $("#view-log-scale").on("click", function(){
+    $("#scale").val("logarithmic");
     submit_filter_form();
   });
 

@@ -1,0 +1,9 @@
+<div class="btn-group">
+  <% if params[:scale].to_s == 'linear' %>
+  <button id="view-linear-scale" class="btn active">Linear Scale</button>
+  <button id="view-log-scale" class="btn">Log Scale</button>
+  <% else %>
+  <button id="view-linear-scale" class="btn">Linear Scale</button>
+  <button id="view-log-scale" class="btn active">Log Scale</button>
+  <% end %>
+</div>

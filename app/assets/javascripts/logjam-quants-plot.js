@@ -1,4 +1,4 @@
-function logjam_quants_plot(params, resource, id, label) {
+function logjam_quants_plot(params, resource, id, label, scale) {
 
   function get_height() {
     var height = $('#'+id).height() - 100;
@@ -29,7 +29,7 @@ function logjam_quants_plot(params, resource, id, label) {
         .paddingOuter([.01])
         .range([0, w]);
 
-  var y = d3.scaleLog()
+  var y = (scale == "linear" ? d3.scaleLinear : d3.scaleLog)()
         .domain([1, params.max_y])
         .range([h,0]);
 
