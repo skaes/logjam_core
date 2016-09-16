@@ -148,7 +148,7 @@ function logjam_quants_plot(params, resource, id, label) {
       .attr("dy", a[1]-10)
       .attr("text-anchor", "middle")
       .style("font", "10px sans-serif")
-      .text("~ "+key);
+      .text(key);
 
     // vis.append("svg:text")
     //   .attr("dx", a[0]+2)
@@ -158,7 +158,7 @@ function logjam_quants_plot(params, resource, id, label) {
     //   .text(formatter(xp));
   }
 
-  console.log(JSON.stringify(params.percentiles));
+  // console.log(JSON.stringify(params.percentiles));
 
   function draw_percentiles(){
     var pos = 0;
