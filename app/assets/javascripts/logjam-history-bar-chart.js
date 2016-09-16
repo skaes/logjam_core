@@ -46,7 +46,7 @@ function logjam_history_bar_chart(data, metric, params) {
     data_min = d3.min([0.92, data_min]);
   }
 
-  var formatter = d3.format(",.r");
+  var formatter = d3.format(".3s");
 
   var x = d3.scaleUtc()
       .range([0, width]);
@@ -54,13 +54,9 @@ function logjam_history_bar_chart(data, metric, params) {
   var y = d3.scaleLinear()
       .range([height, 0]);
 
-  var xAxis = d3.axis()
-      .scale(x)
-      .orient("bottom");
+  var xAxis = d3.axisBottom(x);
 
-  var yAxis = d3.axis()
-      .scale(y)
-      .orient("left")
+  var yAxis = d3.axisLeft(y)
       .ticks(5)
       .tickFormat(formatter);
 
@@ -91,8 +87,8 @@ function logjam_history_bar_chart(data, metric, params) {
       .text(title);
 
   var bar_tooltip_text = "";
-  var tooltip_formatter = d3.format(",.3r");
-  var date_formatter = d3.time.format("%b %d");
+  var tooltip_formatter = d3.format(".2s");
+  var date_formatter = d3.timeFormat("%b %d");
   function mouse_over_bar(d,e) {
     bar_tooltip_text = date_formatter(d.date) + " ~ " + tooltip_formatter(d[metric]);
   }
