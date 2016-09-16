@@ -662,10 +662,16 @@ module Logjam
 
     def columns_for_resource(r)
       case r
-      when 'total_time' then 1
-      when 'page_time', 'ajax_time' then 2
+      when 'total_time', 'wait_time', 'page_time', 'ajax_time' then 2
       else 3
       end
+    end
+
+    def order_quants_tiles(resources)
+      rc = resources.clone
+      total = rc.delete('total_time')
+      wait = rc.delete('wait_time')
+      [total, wait].compact.concat(rc)
     end
   end
 end
