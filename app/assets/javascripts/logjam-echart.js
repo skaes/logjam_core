@@ -9,7 +9,7 @@ function logjam_echart(params) {
       x      = d3.scaleLinear().domain([0, 1440/2]).range([0, w_r]),
       y      = d3.scaleLinear().domain([0, max_y]).range([h, 0]).nice(),
 
-      tooltip_formatter = d3.format(",3d"),
+      tooltip_formatter = d3.format(",.2s"),
       tooltip_timeformatter = d3.format("02d");
 
   var vis = d3.select(params.parent)
@@ -49,7 +49,7 @@ function logjam_echart(params) {
   var line = d3.line()
         .x(function(d,i) { return x(d[0]); })
         .y(function(d) { return y(d[1]); })
-        .curve(d4.curveCardinal)
+        .curve(d3.curveCardinal)
   ;
 
   var tooltip = $(params.parent + ' svg');

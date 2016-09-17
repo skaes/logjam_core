@@ -107,9 +107,9 @@ function logjam_resource_plot(params) {
     y_tick_precision = params.js_max < 10 ? ".1f" : ".0f";
     y_ticks_formatter = d3.format(y_tick_precision);
     if (params.plot_kind == "time")
-      tooltip_formatter = function(d){ return d3.round(d,1) + " ms"; };
+      tooltip_formatter = function(d){ return d3.format(".1f")(d) + " ms"; };
     else
-      tooltip_formatter = function(d){ return d3.round(d,1); };
+      tooltip_formatter = d3.format("s");
   }
 
   vis.selectAll(".xlabel")
@@ -274,7 +274,7 @@ function logjam_resource_plot(params) {
   function mouse_over_requests(d, i, n) {
     var p = d3.mouse(n);
     var di = Math.ceil(x.invert(p[0]))-1;
-    request_tooltip_text = d3.round(request_counts[di]) + " req/sec" + time_suffix(di*interval);
+    request_tooltip_text = d3.format("d")(request_counts[di]) + " req/sec" + time_suffix(di*interval);
   }
 
   vis.selectAll(".request_count")
