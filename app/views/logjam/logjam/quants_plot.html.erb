@@ -35,7 +35,7 @@
       buckets = buckets.reverse.drop_while{|b| b.values_at(*resources).sum.zero?}.reverse
       buckets.each do |b|
         resources.each do |r|
-          b[r] = 0.9 if b[r] == 0
+          b[r] = 0.1 if b[r] == 0
         end
       end
       # Rails.logger.debug "BUCKETS: #{buckets.inspect}"

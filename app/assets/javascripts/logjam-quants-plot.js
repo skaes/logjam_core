@@ -30,7 +30,7 @@ function logjam_quants_plot(params, resource, id, label, scale) {
         .range([0, w]);
 
   var y = (scale == "linear" ? d3.scaleLinear : d3.scaleLog)()
-        .domain([1, params.max_y])
+        .domain([.1, params.max_y])
         .range([h,0]);
 
   /* The root panel. */
@@ -66,7 +66,7 @@ function logjam_quants_plot(params, resource, id, label, scale) {
     .attr("x1", function (d){ return x(d) + x.bandwidth();})
     .attr("x2", function (d){ return x(d) + x.bandwidth();})
     .attr("y1", h)
-    .attr("y2", function(d,i){ return (i % 9 == 0 || i % 9 == 4) ? h + 10 : h + 5; })
+    .attr("y2", h + 5)
     .style("fill", "#999")
     .style("stroke", "#999");
 
@@ -76,7 +76,7 @@ function logjam_quants_plot(params, resource, id, label, scale) {
     .attr("class", "xlabel")
     .attr("x", function (d){ return x(d) + x.bandwidth();})
     .attr("y", h)
-    .attr("dy", function(d, i) { return (i % 9 == 0 || i % 9 == 4 ) ? 20 : 15; })
+    .attr("dy", 17)
     .attr("text-anchor", "middle")
   //.attr("display", function(d,i){ return (i % 9 == 0 || i % 9 == 4) ? null : "none"; })
     .style("font", "8px sans-serif")
@@ -104,13 +104,12 @@ function logjam_quants_plot(params, resource, id, label, scale) {
     .enter().append("line")
     .attr("class", "ytick")
     .attr("x1", 0)
-    .attr("x2", function(d,i){ return (i % 9 == 0 || i % 9 == 4) ? -10 : -5; })
+    .attr("x2", -5)
     .attr("y1", y)
     .attr("y2", y)
     .style("fill", "#999")
     .style("stroke", "#999")
-    .attr("display", function(d,i){ return (i % 9 == 0 || i % 9 == 4) ? null : "none"; })
-  ;
+    .attr("display", function(d,i){ return (i>0 && i % 9 == 0) ? null : "none"; });
 
   vis.selectAll(".ylabel")
     .data(y.ticks())
@@ -118,9 +117,9 @@ function logjam_quants_plot(params, resource, id, label, scale) {
     .attr("class", "ylabel")
     .attr("x", 0)
     .attr("y", function(d){ return y(d); })
-    .attr("dx", function(d, i) { return (i % 9 == 0 || i % 9 == 4 ) ? -20 : -15; })
+    .attr("dx", -17)
     .attr("text-anchor", "middle")
-    .attr("display", function(d,i){ return (i % 9 == 0 || i % 9 == 4) ? null : "none"; })
+    .attr("display", function(d,i){ return (i>0 && i % 9 == 0) ? null : "none"; })
     .style("font", "9px sans-serif")
     .text(formatter);
 
