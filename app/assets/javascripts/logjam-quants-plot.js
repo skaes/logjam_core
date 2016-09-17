@@ -187,6 +187,31 @@ function logjam_quants_plot(params, resource, id, label, scale) {
     .attr("y", function(d) { return y(d[resource]); })
     .attr("width", x.bandwidth())
     .attr("height", function(d) { return h - y(d[resource]); })
+    .on("mousemove", function(d,i){ mouse_over_bar(d, this); })
+    .on("mouseover", function(d,i){ mouse_over_bar(d, this); })
+    .on("mouseout", function(d,i){ mouse_over_out(); });
   ;
+
+  var tooltip_text = "";
+  var tooltip_formatter = d3.format(".2s");
+
+  function mouse_over_bar(d) {
+    tooltip_text =  tooltip_formatter(d[resource]) + " requests";
+  }
+
+  function mouse_over_out() {
+    tooltip_text = "";
+  }
+
+  $(".bar").tipsy({
+    trigger: 'hover',
+    follow: 'x',
+    offset: 0,
+    offsetX: 0,
+    offsetY: -20,
+    gravity: 's',
+    html: false,
+    title: function() { return tooltip_text; }
+  });
 
 }
