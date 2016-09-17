@@ -7,10 +7,10 @@ function logjam_graph_app_data(appCallers) {
       cw = 700,
       ch = 420;
 
-  var fill = d3.scaleCategory20c();
+  var fill = d3.scaleOrdinal(d3.schemeCategory20c);
 
   var chord = d3.chord()
-        .padding(.02)
+        .padAngle(.02)
         .sortSubgroups(d3.descending)
         .sortChords(d3.descending);
 
@@ -18,10 +18,10 @@ function logjam_graph_app_data(appCallers) {
         .innerRadius(r0)
         .outerRadius(r0 + 20);
 
-  var svg = d3.select("#call-graph-display").append("svg:svg")
+  var svg = d3.select("#call-graph-display").append("svg")
         .attr("width", w)
         .attr("height", h)
-        .append("svg:g")
+        .append("g")
         .attr("transform", "translate(" + cw + "," + ch + ")");
 
   // Initialize the info display.
@@ -91,14 +91,16 @@ function logjam_graph_app_data(appCallers) {
     return text;
   }
 
-  chord.matrix(scaled_matrix);
+  var g = svg.append("g")
+        .datum(chord(scaled_matrix));
 
-  var g = svg.selectAll("g.group")
-        .data(chord.groups)
-        .enter().append("svg:g")
-        .attr("class", "group");
+  var group = g.append("g")
+        .attr("class", "groups")
+        .selectAll("g")
+        .data(function(chords) { return chords.groups; })
+        .enter().append("g");
 
-  g.append("svg:path")
+  group.append("path")
     .style("fill", function(d) { return fill(d.index); })
     .style("stroke", function(d) { return fill(d.index); })
     .attr("d", arc)
@@ -110,7 +112,7 @@ function logjam_graph_app_data(appCallers) {
       // leave the arc selection, hard to read otherwise: svg.selectAll(".active").classed("active", false);
     });
 
-  g.append("svg:text")
+  group.append("text")
     .each(function(d) { d.angle = (d.startAngle + d.endAngle) / 2; })
     .attr("dy", ".35em")
     .attr("fill", function(d) { return d.value == 0 ? "green" : "black" ;})
@@ -131,13 +133,15 @@ function logjam_graph_app_data(appCallers) {
 
   var formatter = d3.format(",.0f");
 
-  svg.selectAll("path.chord")
-    .data(chord.chords)
-    .enter().append("svg:path")
+  g.append("g")
+    .attr("class", "ribbons")
+    .selectAll("path")
+    .data(function(chords) { return chords; })
+    .enter().append("path")
     .attr("class", "chord")
-    .style("stroke", function(d) { return d3.rgb(fill(d.source.index)).darker(); })
+    .attr("d", d3.ribbon().radius(r0))
     .style("fill", function(d) { return fill(d.source.index); })
-    .attr("d", d3.chord().radius(r0))
+    .style("stroke", function(d) { return d3.rgb(fill(d.source.index)).darker(); })
     .on("mouseover", function(d) {
       svg.selectAll(".active").classed("active", false);
       // using :hover now instead of:  svg.selectAll("path.chord").classed("active", function(p) { return p === d; });

@@ -530,16 +530,20 @@ module Logjam
       data = Hash.new(0)
       databases = Logjam.grep(Logjam.databases, :env => @env, :date => @date)
       databases.each do |db_name|
-        stream = Logjam.stream_for(db_name)
-        db = Logjam.connection_for(db_name).db(db_name).database
-        relationships = Totals.new(db).call_relationships(stream.app)
-        relationships.each do |callee, callers|
-          callee = transform.call(callee)
-          callers.each do |caller, count|
-            caller = transform.call(caller)
-            next if filter_regexp && "#{caller},#{callee}" !~ filter_regexp
-            data[[caller, callee]] += count.to_i
+        begin
+          stream = Logjam.stream_for(db_name)
+          db = Logjam.connection_for(db_name).db(db_name).database
+          relationships = Totals.new(db).call_relationships(stream.app)
+          relationships.each do |callee, callers|
+            callee = transform.call(callee)
+            callers.each do |caller, count|
+              caller = transform.call(caller)
+              next if filter_regexp && "#{caller},#{callee}" !~ filter_regexp
+              data[[caller, callee]] += count.to_i
+            end
           end
+        rescue => e
+          logger.error e
         end
       end
       data = data.map{|p,c| {source: p[0], target: p[1], count: c}}

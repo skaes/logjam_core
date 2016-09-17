@@ -293,9 +293,18 @@ module Logjam
 
   def self.stream_for(db_name)
     if db_name =~ db_name_format
-      @@streams["#{$1}-#{$2}"]
+      stream = @@streams["#{$1}-#{$2}"]
+      if stream
+        stream
+      else
+        msg = "could not find stream for database: '#{db_name}'"
+        Rails.logger.fatal msg
+        raise msg
+      end
     else
-      raise "could not find stream for database: '#{db_name}'"
+      msg = "database name did not match db name format: '#{db_name}'"
+      Rails.logger.fatal msg
+      raise msg
     end
   end
 
