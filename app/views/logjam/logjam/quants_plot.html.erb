@@ -2,9 +2,6 @@
 <div id="logjam-container">
   <%= render "sidebar" %>
   <div id="logjam-content" class="app-dashboard">
-
-    <div class="flex">
-
     <%
       available_shapes = ["circle", "square", "diamond", "triangle"]
       num_shapes = available_shapes.length
@@ -53,13 +50,19 @@
       }
     %>
 
-    <div class="item col-1">
-      <h2><%= @title %></h2>
-      <%= render "section_toggle" %>
-      <%= render "scale_toggle" %>
+    <div class="flex">
+      <div class="item col-1">
+        <h2><%= @title %></h2>
+        <%= render "section_toggle" %>
+        <%= render "scale_toggle" %>
+      </div>
     </div>
-    <% order_quants_tiles(resources).each do |r| %>
-    <div class="item col-<%= columns_for_resource(r) %> distribution-plot" id="distri-plot-<%=r%>"></div>
+    <% order_and_slice_quants_tiles(resources).each do |tiles| %>
+      <div class="flex">
+        <% tiles.each do |r| %>
+        <div class="item col-<%= columns_for_resource(r) %> distribution-plot" id="distri-plot-<%=r%>"></div>
+        <% end %>
+      </div>
     <% end %>
     <script type="text/javascript">
       (function(){
