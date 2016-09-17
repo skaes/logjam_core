@@ -41,13 +41,20 @@ function logjam_history_bar_chart(data, metric, params) {
   if (data_min == data_max)
     data_min = 0;
 
-  if (metric == "apdex_score" || metric == "xapdex_score" || metric == "papdex_score") {
+  // make space for the last day
+  date_max = d3.timeDay.offset(date_max, 1);
+
+  var formatter;
+
+  if (metric.match(/(apdex|xapdex|papdex)_score/i)) {
     data_max = 1.0;
     data_min = d3.min([0.92, data_min]);
+    formatter = d3.format(".2f");
+  } else if (metric.match(/request_count|errors|warnings|exceptions/i)) {
+    formatter = d3.format(",.0d");
+  } else {
+    formatter = d3.format(",.3r");
   }
-
-  var formatter = d3.format(".3s");
-
   var x = d3.scaleUtc()
       .range([0, width]);
 
@@ -83,11 +90,11 @@ function logjam_history_bar_chart(data, metric, params) {
       .attr("y", -20)
       .attr("x", 1)
       .attr("dy", ".71em")
-      .style("text-anchor", "begin")
+      .style("text-anchor", "start")
       .text(title);
 
   var bar_tooltip_text = "";
-  var tooltip_formatter = d3.format(".2s");
+  var tooltip_formatter = d3.format(",r");
   var date_formatter = d3.timeFormat("%b %d");
   function mouse_over_bar(d,e) {
     bar_tooltip_text = date_formatter(d.date) + " ~ " + tooltip_formatter(d[metric]);
