@@ -5,9 +5,11 @@
 # ulimit -m 5000000
 exec 2>&1
 if [ -x /opt/logjam/bin/logjam-importer ]; then
-  importer=/opt/logjam/bin/logjam-importer
+    importer=/opt/logjam/bin/logjam-importer
 elif [ -x /usr/local/bin/logjam-importer ]; then
-  importer=/usr/local/bin/logjam-importer
+    importer=/usr/local/bin/logjam-importer
+elif [ "$(which logjam-importer)" != "" ]; then
+    importer=logjam-importer
 else
   echo "ERROR: no logjam-importer binary found"
   sleep 10

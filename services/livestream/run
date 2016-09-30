@@ -1,7 +1,14 @@
 #!/bin/bash
-export RAILS_ENV=RAILSENV
-export PATH=DAEMON_PATH
-export GEM_HOME=GEMHOME
-export GEM_PATH=GEMPATH
 exec 2>&1
-exec LOGJAM_DIR/vendor/logjam/script/performance-data-stream-server BIND_IP ANOMALIES_HOST
+if [ -x /opt/logjam/bin/logjam-livestream ]; then
+    livestream=/opt/logjam/bin/logjam-livestream
+elif [ -x /usr/local/bin/logjam-livestream ]; then
+    livestream=/usr/local/bin/logjam-livestream
+elif [ "$(which logjam-livestream)" != "" ]; then
+    livestream=logjam-livestream
+else
+    echo "ERROR: no logjam-livestream binary found"
+    sleep 10
+    exit 1
+fi
+exec $livestream BIND_IP ANOMALIES_HOST
