@@ -8,7 +8,7 @@ require 'oj'
 require 'active_support'
 require 'uuid4r'
 
-options = {:app => "app", :env => "production", :keys => %w{all_pages jobs xws}}
+options = {:app => "logjam", :env => "development", :keys => %w{all_pages logjam}}
 
 OptionParser.new do |opt|
   opt.on("-a", "--app [APP]", "Name of the app") { |a| options[:app] = a }
