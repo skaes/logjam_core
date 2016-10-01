@@ -388,23 +388,49 @@ function logjam_live_stream_chart(params){
     }
   }
 
+  var timeoutID = null;
+
   function reconnect(){
     var button = $('#stream-toggle');
-    if ( button.val() == "pause") {
+    if ( button.val() == "not-paused") {
       change_connection_status("connecting");
-      window.setTimeout(connect_chart, 5000);
+      if (timeoutID != null)
+        window.clearTimeout(timeoutID);
+      timeoutID = window.setTimeout(connect_callback, 3000);
     }
   };
+
+  function connect_callback() {
+    timeoutID = null;
+    connect_chart();
+  }
 
   /* connect to the data stream */
   function connect_chart() {
     if ( ws == null ) {
       var Socket = "MozWebSocket" in window ? MozWebSocket : WebSocket;
       ws = new Socket(params.socket_url);
-      ws.onmessage = function(evt) { update_view(JSON.parse(evt.data)); };
-      ws.onclose = function() { change_connection_status("disconnected"); ws = null; reconnect(); };
-      ws.onopen = function() { change_connection_status("connected"); ws.send(params.socket_greeting); };
-      ws.onerror = function() { alert("websocket error"); };
+      ws.onmessage = function(evt) {
+        update_view(JSON.parse(evt.data));
+      };
+      ws.onclose = function() {
+        console.log("received close on websocket");
+        change_connection_status("disconnected");
+        ws = null;
+        reconnect();
+      };
+      ws.onopen = function() {
+        change_connection_status("connected");
+        ws.send(params.socket_greeting);
+      };
+      ws.onerror = function() {
+        console.log("websocket error");
+        change_connection_status("disconnected");
+        ws = null;
+        reconnect();
+      };
+      if (timeoutID != null)
+        timeoutID = window.setTimeout(reconnect, 3000);
     }
   };
 
@@ -417,11 +443,11 @@ function logjam_live_stream_chart(params){
   /* toggle stream conection */
   function toggle_stream(button) {
     button.toggleClass('active');
-    if (button.val() == "resume") {
-      button.val("pause");
+    if (button.val() == "paused") {
+      button.val("not-paused");
       connect_chart();
     } else {
-      button.val("resume");
+      button.val("paused");
       disconnect_chart();
     }
   }
@@ -429,11 +455,11 @@ function logjam_live_stream_chart(params){
   /* toggle warning level */
   function toggle_warnings(button) {
     button.toggleClass('active');
-    if (button.val() == "show warnings") {
-      button.val("hide warnings");
+    if (button.val() == "not-shown") {
+      button.val("shown");
       warning_level = 2;
     } else {
-      button.val("show warnings");
+      button.val("not-shown");
       warning_level = 3;
     }
   }
