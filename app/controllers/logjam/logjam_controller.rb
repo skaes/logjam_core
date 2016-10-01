@@ -726,7 +726,20 @@ module Logjam
 
     def prepare_params
       get_date
-      @db = Logjam.db(@date, @app, @env)
+
+      begin
+        @db = Logjam.db(@date, @app, @env)
+      rescue
+        # TODO: deal with no defined stream being defined and no databases in the UI
+        if session[:last_app]
+          session[:last_app] = nil
+          redirect_to "/"
+          return false
+        else
+          raise
+        end
+      end
+
       params[:section] ||= 'backend'
       params[:start_minute] ||= FilteredDataset::DEFAULTS[:start_minute]
       params[:end_minute] ||= FilteredDataset::DEFAULTS[:end_minute]
