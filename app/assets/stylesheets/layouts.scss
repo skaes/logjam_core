@@ -338,12 +338,16 @@ tr {
 
 #anomaly-score-title {
   font-size: 14px;
+  vertical-align: middle;
+  text-transform: uppercase;
+  color: $xing-green;
+  margin-right: 10px;
 }
 
 #anomaly-score-value {
   font-weight: bold;
-  font-size: 48px;
-  margin-top: 20px;
+  font-size: 32px;
+  vertical-align: middle;
 }
 
 #recent-errors-container {
