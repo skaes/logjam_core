@@ -209,7 +209,7 @@ namespace :logjam do
         next if Rails.env.production? && s.env == 'development'
         if s.is_a?(Logjam::LiveStream) && ENV['LOGJAM_LIVESTREAM_INSTALL'] != '0'
           installed_services <<
-            install_service("livestream", "live-stream-#{s.env}",
+            install_service("livestream", "live-stream",
                             :ANOMALIES_HOST => s.anomalies_host,
                             :BIND_IP => Logjam.bind_ip)
         end
