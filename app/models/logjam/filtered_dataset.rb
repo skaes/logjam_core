@@ -168,7 +168,7 @@ module Logjam
     end
 
     def totals
-      @totals ||= Totals.new(@db, %w(apdex fapdex papdex xapdex response severity exceptions js_exceptions) + resource_fields, page)
+      @totals ||= Totals.new(@db, %w(apdex fapdex papdex xapdex response severity exceptions soft_exceptions js_exceptions) + resource_fields, page)
     end
 
     def namespace?
@@ -451,6 +451,14 @@ module Logjam
 
     def exception_count
       totals.exception_count
+    end
+
+    def soft_exceptions
+      totals.soft_exceptions
+    end
+
+    def soft_exception_count
+      totals.soft_exception_count
     end
 
     def js_exception_count

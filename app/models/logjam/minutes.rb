@@ -44,6 +44,10 @@ module Logjam
       @exceptions ||= extract_sub_hash('exceptions')
     end
 
+    def soft_exceptions
+      @soft_exceptions ||= extract_sub_hash('soft_exceptions')
+    end
+
     def js_exceptions
       @js_exceptions ||= extract_sub_hash('js_exceptions')
     end
@@ -62,6 +66,10 @@ module Logjam
 
     def exception_summary
       @excpetion_summary ||= exceptions.each_with_object(Hash.new(0)){|(_,h),s| h.each{|m,c| s[m] += c}}
+    end
+
+    def soft_exception_summary
+      @soft_excpetion_summary ||= soft_exceptions.each_with_object(Hash.new(0)){|(_,h),s| h.each{|m,c| s[m] += c}}
     end
 
     def js_exception_summary
@@ -103,7 +111,7 @@ module Logjam
     end
 
     def compound_resources
-      %w(apdex fapdex papdex xapdex exceptions js_exceptions severity callers response)
+      %w(apdex fapdex papdex xapdex exceptions soft_exceptions js_exceptions severity callers response)
     end
 
     def self.counter_for_field(f)
@@ -152,6 +160,7 @@ module Logjam
         end
         sum_sofar = (sums[slot] ||= Hash.new(0.0))
         counted_resources.each do |f|
+          puts "ROW! #{f} -> #{row[f]}"
           v = row[f].to_f
           v /= 40 if f == "allocated_bytes" # HACK!!!
           sum_sofar[f] += v

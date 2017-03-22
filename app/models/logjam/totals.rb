@@ -80,6 +80,14 @@ module Logjam
       exceptions.values.inject(0){|s,v| s += v.to_i}
     end
 
+    def soft_exceptions
+      @page_info["soft_exceptions"] ||= {}
+    end
+
+    def soft_exception_count
+      soft_exceptions.values.inject(0){|s,v| s += v.to_i}
+    end
+
     def js_exceptions
       @page_info["js_exceptions"] ||= {}
     end
@@ -132,6 +140,7 @@ module Logjam
       other.response.each {|x,y| response[x] = (response[x]||0) + y}
       other.severity.each {|x,y| severity[x] = (severity[x]||0) + y}
       other.exceptions.each {|x,y| exceptions[x] = (exceptions[x]||0) + y}
+      other.soft_exceptions.each {|x,y| soft_exceptions[x] = (soft_exceptions[x]||0) + y}
       other.callers.each {|x,y| callers[x] = (callers[x]||0) + y}
       other.js_exceptions.each {|x,y| js_exceptions[x] = (js_exceptions[x]||0) + y}
     end
@@ -146,6 +155,7 @@ module Logjam
       pi["response"] = pi["response"].clone if pi["response"]
       pi["severity"] = pi["severity"].clone if pi["severity"]
       pi["exceptions"] = pi["exceptions"].clone if pi["exceptions"]
+      pi["soft_exceptions"] = pi["soft_exceptions"].clone if pi["soft_exceptions"]
       pi["callers"] = pi["callers"].clone if pi["callers"]
       pi["js_exceptions"] = pi["js_exceptions"].clone if pi["js_exceptions"]
       @resources.each do |r|
@@ -169,6 +179,7 @@ module Logjam
           h[:xapdex] = apdex_ajax.merge(t: 2.0, score: apdex_score(:ajax))
         end
         h[:exceptions] = exceptions unless exceptions.empty?
+        h[:soft_exceptions] = soft_exceptions unless soft_exceptions.empty?
         h[:js_exceptions] = js_exceptions unless js_exceptions.empty?
         h[:log_severities] = human_severities(severity) unless severity.empty?
         hr = h[:resources] = {}
@@ -210,6 +221,7 @@ module Logjam
       @response = @resources.delete("response")
       @severity = @resources.delete("severity")
       @exceptions = @resources.delete("exceptions")
+      @soft_exceptions = @resources.delete("soft_exceptions")
       @callers = @resources.delete("callers")
       @js_exceptions = @resources.delete("js_exceptions")
       @pattern = pattern
@@ -362,6 +374,14 @@ module Logjam
       @exception_count ||= exceptions.values.inject(0){|s,v| s += v}
     end
 
+    def soft_exceptions
+      @soft_exceptions_hash ||= the_pages.inject(Hash.new(0)){|h,p| p.soft_exceptions.each{|k,v| h[k] += v.to_i}; h}
+    end
+
+    def soft_exception_count
+      @soft_exception_count ||= soft_exceptions.values.inject(0){|s,v| s += v}
+    end
+
     def callers
       # callers unfortunately have dots in their names
       @callers_hash ||= the_pages.inject(Hash.new(0)){|h,p| p.callers.each{|k,v| h[k.gsub('∙','.')] += v.to_i}; h}
@@ -444,7 +464,7 @@ module Logjam
 
     def compute
       all_fields = ["page", "count", "page_count", "ajax_count", "frontend_count"] +
-        [@apdex, @fapdex, @papdex, @xapdex, @response, @severity, @exceptions, @js_exceptions, @callers].compact + @resources
+        [@apdex, @fapdex, @papdex, @xapdex, @response, @severity, @exceptions, @soft_exceptions, @js_exceptions, @callers].compact + @resources
 
       sq_fields = @resources.map{|r| "#{r}_sq"}
       fields = { :projection => _fields(all_fields.concat(sq_fields)) }
