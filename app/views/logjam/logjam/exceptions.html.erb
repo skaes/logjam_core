@@ -51,7 +51,7 @@
           <tbody>
             <% @soft_totals.soft_exceptions.to_a.sort.each_with_index do |(e,c),i| %>
               <tr class='full_stats'>
-                <% url = clean_url_for(:action => "errors", :error_type => "exceptions", :exception => e) %>
+                <% url = clean_url_for(:action => "errors", :error_type => "soft_exceptions", :exception => e) %>
                 <td><%= link_to e, url %></td>
                 <td class='number'><%= link_to integer_number(c), url %></td>
                 <% echart_id = "soft-echart-#{i}" %>

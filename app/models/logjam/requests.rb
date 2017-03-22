@@ -92,6 +92,9 @@ module Logjam
       if exs = @options[:exceptions]
         query_opts.merge!(:exceptions => exs)
       end
+      if exs = @options[:soft_exceptions]
+        query_opts.merge!(:soft_exceptions => exs)
+      end
       if severity = @options[:severity]
         if severity.to_i < 3
           query_opts.merge!(:severity => severity)

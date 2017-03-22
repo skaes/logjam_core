@@ -288,6 +288,10 @@ module Logjam
             @title = "Requests with exception «#{params[:exception]}»"
             q = Requests.new(@db, "minute", @page, :exceptions => params[:exception], :limit => @page_size, :skip => params[:offset].to_i)
             @error_count = @dataset.exceptions[params[:exception]]
+          when "soft_exceptions"
+            @title = "Requests with exception «#{params[:exception]}» logged (log-level below ERROR)"
+            q = Requests.new(@db, "minute", @page, :soft_exceptions => params[:exception], :limit => @page_size, :skip => params[:offset].to_i)
+            @error_count = @dataset.soft_exceptions[params[:exception]]
           else
             severity, @title, @error_count = case params[:error_type]
                                              when "logged_warning"; then [2, "Logged Warnings", @dataset.logged_error_count(2)]
