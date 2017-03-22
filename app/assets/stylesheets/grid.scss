@@ -1,11 +1,21 @@
 @import 'mixins.scss';
 @import 'constants.scss';
 
+.flex-columnar {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+}
+
 .flex {
   display: -webkit-flex;
   display: flex;
   -webkit-flex-direction: row;
   flex-direction: row;
+}
+
+.flex, .flex-columnar {
   -webkit-flex-wrap: wrap;
   flex-wrap: wrap;
   width: 100%;
@@ -30,7 +40,6 @@
   .col-2 { min-width: calc(100%/2 - 10px); }
   .col-1 { min-width: calc(100% - 10px); }
 }
-
 
 .icon-action a {
   display: block;

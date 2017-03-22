@@ -458,6 +458,9 @@ module Logjam
           @title = "Logged Exceptions"
           @totals = Totals.new(@db, ["exceptions"], @page.blank? ? 'all_pages' : @page)
           @minutes = Minutes.new(@db, ["exceptions"], @page, @totals.page_names, 2)
+          @soft_title = "Logged Soft-Exceptions (below log-level = Error)"
+          @soft_totals = Totals.new(@db, ["soft_exceptions"], @page.blank? ? 'all_pages' : @page)
+          @soft_minutes = Minutes.new(@db, ["soft_exceptions"], @page, @totals.page_names, 2)
         end
       end
     end

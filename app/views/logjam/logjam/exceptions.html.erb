@@ -2,7 +2,7 @@
 <div id="logjam-container">
   <%= render "sidebar" %>
   <div id="logjam-content" class="app-dashboard">
-    <div class="flex">
+    <div class="flex-columnar">
       <div id='exceptions' class="item">
         <h2><%= @title %> <%= hpn("for") %> (<%= integer_number(@totals.exception_count) %>)</h2>
         <table class='full_stats'>
@@ -24,10 +24,41 @@
               <% url = clean_url_for(:action => "errors", :error_type => "exceptions", :exception => e) %>
               <td><%= link_to e, url %></td>
               <td class='number'><%= link_to integer_number(c), url %></td>
-              <td class='echart' id='<%= "echart-#{i}" %>'>
-                <%= render "echart", exceptions: @minutes.exceptions[e], i: i, url: url%>
+              <% echart_id = "echart-#{i}" %>
+              <td class='echart' id='<%= echart_id %>'>
+                <%= render "echart", exceptions: @minutes.exceptions[e], parent_selector: "##{echart_id}", url: url%>
               </td>
             </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      <div id='soft_exceptions' class="item">
+        <h2><%= @soft_title %> <%= hpn("for") %> (<%= integer_number(@soft_totals.soft_exception_count) %>)</h2>
+        <table class='full_stats'>
+          <colgroup>
+            <col span="1" style="width: 50px;">
+            <col span="1" style="width: 50px;">
+            <col span="1">
+          </colgroup>
+          <thead>
+            <tr>
+              <th class="left">Exception</th>
+              <th class="right">Count</th>
+              <th class="left echart">Distribution over time (0-24h, 2 minute intervals)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @soft_totals.soft_exceptions.to_a.sort.each_with_index do |(e,c),i| %>
+              <tr class='full_stats'>
+                <% url = clean_url_for(:action => "errors", :error_type => "exceptions", :exception => e) %>
+                <td><%= link_to e, url %></td>
+                <td class='number'><%= link_to integer_number(c), url %></td>
+                <% echart_id = "soft-echart-#{i}" %>
+                <td class='echart' id='<%= echart_id %>'>
+                  <%= render "echart", exceptions: @soft_minutes.soft_exceptions[e], parent_selector: "##{echart_id}", url: url%>
+                </td>
+              </tr>
             <% end %>
           </tbody>
         </table>
