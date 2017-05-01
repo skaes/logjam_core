@@ -240,7 +240,7 @@ module Logjam
     @@mongo_connections[key] ||=
       begin
         connection_spec = "#{config['host']}:#{config['port']}"
-        options = { :connection_timeout => 60, :socket_timeout => 60 }
+        options = { :connect_timeout => 60, :socket_timeout => 60 }
         if config['user'] && config['pass']
           options.merge!(:user => config['user'], :password => config['pass'])
         end
