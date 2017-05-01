@@ -3,11 +3,11 @@ require 'csv'
 module Logjam
 
   class LogjamController < ApplicationController
-    before_filter :verify_date
-    before_filter :redirect_to_clean_url, :except => [:live_stream, :auto_complete_for_controller_action_page]
-    before_filter :verify_app_env, :except => [:call_relationships, :call_graph]
-    before_filter :print_params if Rails.env=="development"
-    after_filter :allow_cross_domain_ajax
+    before_action :verify_date
+    before_action :redirect_to_clean_url, :except => [:live_stream, :auto_complete_for_controller_action_page]
+    before_action :verify_app_env, :except => [:call_relationships, :call_graph]
+    before_action :print_params if Rails.env=="development"
+    after_action :allow_cross_domain_ajax
 
     def auto_complete_for_controller_action_page
       respond_to do |format|
