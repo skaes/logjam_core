@@ -23,7 +23,7 @@ module Logjam
               csv << [host, app, env, date, size]
             end
           end
-          render :text => str, :format => :csv
+          render :plain => str, :format => :csv
         end
       end
     end

@@ -841,7 +841,7 @@ module Logjam
       if @date > today || @date < today - Logjam.database_cleaning_threshold
         msg = "Invalid date"
         respond_to do |format|
-          format.html { render :text => msg, :status => 404 }
+          format.html { render :plain => msg, :status => 404 }
           format.json { render :json => {:error => msg}, :status => 404 }
         end
       end
@@ -852,7 +852,7 @@ module Logjam
       unless @apps.include?(@app)
         msg = "Application '#{@app}' doesn't exist."
         respond_to do |format|
-          format.html { render :text => msg, :status => 404 }
+          format.html { render :plain => msg, :status => 404 }
           format.json { render :json => {:error => msg}, :status => 404 }
         end
         return
@@ -860,7 +860,7 @@ module Logjam
       unless @envs.include?(@env)
         msg = "Environment '#{@env}' doesn't exist for Application '#{@app}'."
         respond_to do |format|
-          format.html { render :text => msg, :status => 404 }
+          format.html { render :plain => msg, :status => 404 }
           format.json { render :json => {:error => msg}, :status => 404 }
         end
         return
