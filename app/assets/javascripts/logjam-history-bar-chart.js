@@ -100,8 +100,10 @@ function logjam_history_bar_chart(data, divid, metric, params, kind) {
   var bar_tooltip_text = "";
   var tooltip_formatter = d3.format(",r");
   var date_formatter = d3.timeFormat("%b %d");
+  var exception_formatter = d3.format(",d");
   function mouse_over_bar(d,e) {
-    bar_tooltip_text = date_formatter(d.date) + " ~ " + tooltip_formatter(is_metric() ? d[metric] : d.exception_counts[metric]);
+    bar_tooltip_text = date_formatter(d.date) + " ~ " +
+      (is_metric() ? tooltip_formatter(d[metric]) : exception_formatter(d.exception_counts[metric]));
   }
 
   var bar_width = x(data[data.length-1].date) - x(data[data.length-2].date) - 0.1;
