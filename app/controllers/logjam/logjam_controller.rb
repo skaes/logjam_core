@@ -725,6 +725,8 @@ module Logjam
     end
 
     def prepare_params
+      # TODO: fix this security hole
+      params.permit!
       get_date
 
       begin
