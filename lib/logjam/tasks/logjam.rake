@@ -1,3 +1,5 @@
+require "rake/testtask"
+
 namespace :test do
   Rake::TestTask.new(:logjam) do |t|
     t.libs << "test"
