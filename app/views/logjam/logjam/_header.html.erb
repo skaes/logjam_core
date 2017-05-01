@@ -1,5 +1,5 @@
 <%= content_for(:page_scripts) do %>
-var parameters = <%= raw Oj.dump(params) %>,
+var parameters = <%= raw Oj.dump(params.to_hash) %>,
     parameter_defaults = <%= raw Oj.dump(default_header_parameters) %>,
     self_url = '<%= raw self_url %>',
     home_url = '<%= raw home_url %>',
