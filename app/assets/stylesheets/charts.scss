@@ -9,7 +9,7 @@
   shape-rendering: crispEdges;
 }
 
-#request-history {
+#request-history, #exception-history {
   text {
     font-size: 11px;
   }
@@ -30,5 +30,11 @@
   }
   .weekend {
     fill: #90B4D2;
+  }
+}
+
+#exception-history {
+  .title {
+      text-transform: none;
   }
 }

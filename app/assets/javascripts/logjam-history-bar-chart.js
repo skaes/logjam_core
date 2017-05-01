@@ -1,4 +1,4 @@
-function logjam_history_bar_chart(data, metric, params) {
+function logjam_history_bar_chart(data, divid, metric, params, kind) {
 
   var week_end_colors = params.week_end_colors;
   var week_day_colors = params.week_day_colors;
@@ -23,6 +23,10 @@ function logjam_history_bar_chart(data, metric, params) {
     return (week_day(date) ? "bar weekday" : "bar weekend");
   }
 
+  function is_metric() {
+    return kind == "m";
+  }
+
   var margin = {top: 25, right: 80, bottom: 50, left: 80},
       width = document.getElementById('request-history').offsetWidth - margin.left - margin.right - 80,
       height = 150 - margin.top - margin.bottom,
@@ -30,10 +34,10 @@ function logjam_history_bar_chart(data, metric, params) {
       date_min = d3.min(data, function(d){ return d.date; }),
       date_max = d3.max(data, function(d){ return d.date; }),
 
-      relevant_data = data.filter(function(d){ return (metric in d); }),
+      relevant_data = data.filter(function(d){ return is_metric() ? (metric in d) : (metric in d.exception_counts); }),
 
-      data_min = d3.min(relevant_data, function(d){ return d[metric]; }),
-      data_max = d3.max(relevant_data, function(d){ return d[metric]; });
+      data_min = d3.min(relevant_data, function(d){ return is_metric() ? d[metric] : d.exception_counts[metric]; }),
+      data_max = d3.max(relevant_data, function(d){ return is_metric() ? d[metric] : d.exception_counts[metric]; });
 
   if (typeof data_min == 'undefined')
     return; // no data
@@ -50,7 +54,7 @@ function logjam_history_bar_chart(data, metric, params) {
     data_max = 1.0;
     data_min = d3.min([0.92, data_min]);
     formatter = d3.format(".2f");
-  } else if (metric.match(/request_count|errors|warnings|exceptions/i)) {
+  } else if (metric.match(/request_count|errors|warnings|exceptions/i) || !is_metric()) {
     formatter = d3.format(",.0d");
   } else {
     formatter = d3.format(",.3r");
@@ -67,7 +71,7 @@ function logjam_history_bar_chart(data, metric, params) {
       .ticks(5)
       .tickFormat(formatter);
 
-  var svg = d3.select("#request-history #" + metric).append("svg")
+  var svg = d3.select("#" + divid).append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
     .append("g")
@@ -108,8 +112,8 @@ function logjam_history_bar_chart(data, metric, params) {
       .attr("class", function(d){ return bar_class(d.date); })
       .attr("x", function(d) { return x(d.date); })
       .attr("width", bar_width)
-      .attr("y", function(d) { return y(d[metric]); })
-      .attr("height", function(d) { return height - y(d[metric]); })
+      .attr("y", function(d) { return y(is_metric() ? d[metric] : d.exception_counts[metric]); })
+      .attr("height", function(d) { return height - y(is_metric() ? d[metric] : d.exception_counts[metric]); })
       .attr("cursor", "pointer")
       .style("fill", function(d) { return bar_color(d.date, metric); })
       .on("click", function(d) { view_date(d.date); })

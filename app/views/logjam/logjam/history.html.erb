@@ -29,6 +29,12 @@
         <div id="dom"></div>
         <% end %>
       </div>
+      <% if @section.to_s == 'backend' %>
+      <div class="item col-1" id="exception-history">
+        <h2>Exception History <%= hpn("for") %></h2>
+        <div id="exception_counts"></div>
+      </div>
+      <% end %>
     </div>
   </div>
 </div>
@@ -49,26 +55,31 @@
       // $("#spinner").text("Shiver me timbers! You have only " + response.data.length + " days worth o' data. This view requires at least two days o' data.");
     } else {
       if (js_params.section == 'frontend') {
-        logjam_history_bar_chart(response.data, "papdex_score", js_params);
-        logjam_history_bar_chart(response.data, "xapdex_score", js_params);
-        logjam_history_bar_chart(response.data, "page_time", js_params);
-        logjam_history_bar_chart(response.data, "ajax_time", js_params);
+        logjam_history_bar_chart(response.data, "papdex_score", "papdex_score", js_params, "m");
+        logjam_history_bar_chart(response.data, "xapdex_score", "xapdex_score",js_params, "m");
+        logjam_history_bar_chart(response.data, "page_time", "page_time", js_params, "m");
+        logjam_history_bar_chart(response.data, "ajax_time", "ajax_time", js_params, "m");
       } else {
-        logjam_history_bar_chart(response.data, "apdex_score", js_params);
-        logjam_history_bar_chart(response.data, "request_count", js_params);
-        logjam_history_bar_chart(response.data, "total_time", js_params);
-        logjam_history_bar_chart(response.data, "errors", js_params);
-        logjam_history_bar_chart(response.data, "warnings", js_params);
-        logjam_history_bar_chart(response.data, "exceptions", js_params);
+        logjam_history_bar_chart(response.data, "apdex_score", "apdex_score",js_params, "m");
+        logjam_history_bar_chart(response.data, "request_count", "request_count",js_params, "m");
+        logjam_history_bar_chart(response.data, "total_time", "total_time", js_params, "m");
+        logjam_history_bar_chart(response.data, "errors", "errors", js_params, "m");
+        logjam_history_bar_chart(response.data, "warnings", "warnings", js_params, "m");
+        logjam_history_bar_chart(response.data, "exceptions", "exceptions", js_params, "m");
       }
       for (g in response.resources) {
         response.resources[g].forEach(function(m){
-           if (m != "total_time" && m != "page_time" && m != "ajax_time" && m != "frontend_time") {
-             $("#" + g).append("<div id='" + m + "'></div>");
-             logjam_history_bar_chart(response.data, m, js_params);
-           }
+          if (m != "total_time" && m != "page_time" && m != "ajax_time" && m != "frontend_time") {
+            $("#" + g).append("<div id='" + m + "'></div>");
+            logjam_history_bar_chart(response.data, m, m, js_params, "m");
+          }
         });
-        }
+      }
+      response.exception_names.forEach(function(e,i){
+        var id = "backend-exception" + i;
+        $("#exception_counts").append("<div id='" + id + "'></div>");
+        logjam_history_bar_chart(response.data, id, e, js_params, "x");
+      });
       $("#spinner").hide();
     }
   });

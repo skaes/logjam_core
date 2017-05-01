@@ -114,6 +114,7 @@ module Logjam
                 :warnings => summary.warning_count,
                 :exceptions => summary.exception_count,
                 :apdex_score => summary.apdex_score(:backend),
+                :exception_counts => summary.exceptions,
               }
               if (v = summary.apdex_score(:page)) && v.to_f.finite? && v>0
                 hash[:papdex_score] = v
@@ -149,13 +150,16 @@ module Logjam
                 :warnings => 0,
                 :exceptions => 0,
                 :apdex_score => 0,
+                :exception_counts => {},
               }
             end
           end
           data = tmp
           collected_resources = data.inject(Set.new){|s,d| s.union(d.keys)}
           resources.reject!{|r| !collected_resources.include?(r.to_sym)}
-          # logger.debug @data.inspect
+          collected_exception_names = data.inject(Set.new){|s,d| s.union((d[:exception_counts]||{}).keys)}.to_a.sort
+          # logger.debug collected_exception_names.inspect
+          # logger.debug data.inspect
           data = data.select{|d| d.keys.size > 1 }
           json_hash = {
             :resources => {
@@ -166,6 +170,7 @@ module Logjam
               :frontend => Resource.frontend_resources & resources,
               :dom => Resource.dom_resources & resources
             },
+            :exception_names => collected_exception_names,
             :data => data
           }
           # logger.debug json_hash.inspect
