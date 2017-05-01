@@ -436,7 +436,7 @@ module Logjam
   end
 
   def databases_sorted_by_date
-    databases.sort_by{|db| db =~ /^([-a-z]+)-(\d[-0-9]+)/ && "#{$2}-#{$1}"}
+    get_known_databases.sort_by{|db| db =~ /^([-a-z]+)-(\d[-0-9]+)/ && "#{$2}-#{$1}"}
   end
 
   def databases_sorted_by_date_with_connections

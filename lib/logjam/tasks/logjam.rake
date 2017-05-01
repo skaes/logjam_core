@@ -86,7 +86,7 @@ namespace :logjam do
 
     desc "list known databases"
     task :list_known_databases => :environment do
-      puts Logjam.get_known_databases
+      puts Logjam.databases_sorted_by_date
     end
 
     desc "import databases"
