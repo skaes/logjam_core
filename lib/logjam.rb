@@ -4,9 +4,35 @@ require 'oj'
 Oj.default_options = {:mode => :compat, :time_format => :ruby}
 
 # monkey patch Mongo::Client
+require 'mongo/client'
 class Mongo::Client
   # provide a db method. should be removed at some point
   alias_method :db, :use
+end
+
+# monkey patch Mongo::Socket to avoid excessive allocations
+require 'mongo/socket'
+class Mongo::Socket
+  private
+  def read_from_socket(length)
+    data = String.new
+    deadline = (Time.now + timeout) if timeout
+    begin
+      while (data.length < length)
+        n = length - data.length
+        n = 4096 if n > 4096
+        data << @socket.read_nonblock(n)
+      end
+    rescue IO::WaitReadable
+      select_timeout = (deadline - Time.now) if deadline
+      unless Kernel::select([@socket], nil, [@socket], select_timeout)
+        raise Timeout::Error.new("Took more than #{timeout} seconds to receive data.")
+      end
+      retry
+    end
+
+    data
+  end
 end
 
 module Logjam
