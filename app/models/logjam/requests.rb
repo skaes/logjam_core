@@ -2,7 +2,7 @@ module Logjam
 
   class Requests < MongoModel
 
-    GENERIC_FIELDS = %w(page host ip user_id started_at process_id minute session_id new_session response_code app env severity exceptions callers)
+    GENERIC_FIELDS = %w(page host ip user_id started_at process_id minute session_id new_session response_code app env severity exceptions soft_exceptions callers)
 
     TIME_FIELDS = Resource.time_resources
 
@@ -91,6 +91,9 @@ module Logjam
       end
       if exs = @options[:exceptions]
         query_opts.merge!(:exceptions => exs)
+      end
+      if exs = @options[:soft_exceptions]
+        query_opts.merge!(:soft_exceptions => exs)
       end
       if severity = @options[:severity]
         if severity.to_i < 3

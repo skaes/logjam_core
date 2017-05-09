@@ -28,11 +28,15 @@
       </td>
     </tr>
     <% n = @dataset.exception_count %>
-    <% error_url, error_options = exception_link_options(n, :title => "show exceptions") %>
+    <% soft_n = @dataset.soft_exception_count %>
+    <% error_url, error_options = exception_link_options(n + soft_n, :title => "show exceptions") %>
+    <% Rails.logger.warn @dataset.instance_variable_get(:@page_info).inspect %>
     <tr class="<%= error_options[:tr_class] %>" data-href="<%= error_url %>" title="<%= error_options[:title] %>">
       <td>exceptions</td>
-      <td class="number <%= error_options[:class] %>">
-        <%= integer_number(n) %>
+      <td class="number">
+        <span class="<%= error_options[:class] %>"><%= integer_number(n) %></span>
+        /
+        <span class="warn"><%= integer_number(soft_n) %></span>
       </td>
     </tr>
     <!---
