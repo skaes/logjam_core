@@ -36,7 +36,7 @@
               <td></td>
               <td class="number"><%= integer_number(overview.values.sum) %></td>
               <td class="echart" id='<%= "echart-#{i+=1}" %>'>
-                <%= render "echart", exceptions: overview, i: i, url: url, height: 100 %>
+                <%= render "echart", exceptions: overview, parent_selector: "echart-#{i}", url: url, height: 100 %>
               </td>
             </tr>
           </tbody>
@@ -64,7 +64,7 @@
               <td><%= link_to "Logged Fatals", url %></td>
               <td class="number"><%= link_to integer_number(@totals.severities[4]), url %></td>
               <td class="echart" id='<%= "echart-#{i+=1}" %>'>
-                <%= render "echart", exceptions: @minutes.severity["4"], i: i, url: url %>
+                <%= render "echart", exceptions: @minutes.severity["4"], parent_selector: "echart-#{i}", url: url %>
               </td>
             </tr>
             <tr class="full_stats">
@@ -72,7 +72,7 @@
               <td><%= link_to "Logged Errors", url %></td>
               <td class="number"><%= link_to integer_number(@totals.severities[3]), url %></td>
               <td class="echart" id='<%= "echart-#{i+=1}" %>'>
-                <%= render "echart", exceptions: @minutes.severity["3"], i: i, url: url %>
+                <%= render "echart", exceptions: @minutes.severity["3"], parent_selector: "echart-#{i}", url: url %>
               </td>
             </tr>
             <tr class="full_stats">
@@ -80,7 +80,7 @@
               <td><%= link_to "Logged Warnings", url %></td>
               <td class="number"><%= link_to integer_number(@totals.severities[2]), url %></td>
               <td class="echart" id='<%= "echart-#{i+=1}" %>'>
-                <%= render "echart", exceptions: @minutes.severity["2"], i: i, url: url %>
+                <%= render "echart", exceptions: @minutes.severity["2"], parent_selector: "echart-#{i}", url: url %>
               </td>
             </tr>
           </tbody>
@@ -107,7 +107,7 @@
               <td><%= link_to "Internal Server Errors", url %></td>
               <td class="number"><%= link_to integer_number(@totals.response_codes[500]), url %></td>
               <td class="echart" id='<%= "echart-#{i+=1}" %>'>
-                <%= render "echart", exceptions: @minutes.response["500"], i: i, url: url %>
+                <%= render "echart", exceptions: @minutes.response["500"], parent_selector: "echart-#{i}", url: url %>
               </td>
             </tr>
             <tr class="full_stats">
@@ -115,7 +115,7 @@
               <td><%= link_to "Backend Exceptions", url %></td>
               <td class="number"><%= link_to integer_number(@totals.exception_count), url %></td>
               <td class="echart" id='<%= "echart-#{i+=1}" %>'>
-                <%= render "echart", exceptions: @minutes.exception_summary, i: i, url: url %>
+                <%= render "echart", exceptions: @minutes.exception_summary, parent_selector: "echart-#{i}", url: url %>
               </td>
             </tr>
             <% if @dataset && @dataset.has_frontend? %>
@@ -124,7 +124,7 @@
               <td><%= link_to "Javascript Execptions", url %></td>
               <td class="number"><%= link_to integer_number(@totals.js_exception_count), url %></td>
               <td class="echart" id='<%= "echart-#{i+=1}" %>'>
-                <%= render "echart", exceptions: @minutes.js_exception_summary, i: i, url: url %>
+                <%= render "echart", exceptions: @minutes.js_exception_summary, parent_selector: "echart-#{i}", url: url %>
               </td>
             </tr>
             <% end %>

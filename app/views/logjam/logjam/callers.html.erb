@@ -48,7 +48,7 @@
                 <td><%= link_to(controller, url) unless controller.blank? %></td>
                 <td class="number"><%= integer_number(count) %></td>
                 <td class='echart' id='<%= "echart-#{i}" %>'>
-                    <%= render "echart", :exceptions => @caller_minutes[caller], :i => i, :url => url %>
+                    <%= render "echart", :exceptions => @caller_minutes[caller], parent_selector: "echart-#{i}", :url => url %>
                 </td>
               </tr>
             <% end %>
