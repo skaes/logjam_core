@@ -26,7 +26,7 @@
               <td class="js-exception"><%= link_to key, url, :title => key %></td>
               <td class="number"><%= link_to integer_number(c), url %>
               <td class="echart" id='<%= "echart-#{i}" %>'>
-                <%= render "echart", exceptions: @minutes.js_exceptions[e], parent_selector: "echart-#{i}", url: url%>
+                <%= render "echart", exceptions: @minutes.js_exceptions[e], parent_selector: "#echart-#{i}", url: url%>
               </td>
             </tr>
             <% end %>
