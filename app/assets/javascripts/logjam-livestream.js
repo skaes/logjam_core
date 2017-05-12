@@ -6,6 +6,7 @@ function logjam_live_stream_chart(params){
   var warning_level = 3;
   var update_interval = 1;
   var transparent_ico_path = params.transparent_ico_path;
+  var response_filter = [];
 
   /* Sizing and scales. */
   var w = parseInt(document.getElementById('live-stream-chart').offsetWidth - 100, 10),
@@ -255,7 +256,24 @@ function logjam_live_stream_chart(params){
   function error_url(request_id, time) {
     var date = time.slice(0,10).replace(/-/g,'/');
     return ('/' + date + '/show/' + request_id + '?' + params.app_env);
-  };
+  }
+
+  function get_parameter_by_name(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+  }
+
+  function initialize_filter() {
+    var exclude_response = get_parameter_by_name("exclude_response");
+    if (exclude_response) {
+      response_filter = exclude_response.split(",").map(function(value) { return parseInt(value,10) });
+    }
+  }
 
   /* add errors to the recent errors list */
   function update_errors(errors) {
@@ -265,6 +283,10 @@ function logjam_live_stream_chart(params){
       var e = errors[i];
       var severity_value = e["severity"];
       if (severity_value < warning_level) {
+        continue;
+      }
+      var response_code = e["response_code"];
+      if ($.inArray(response_code, response_filter) > -1) {
         continue;
       }
       var severity = severity_image(severity_value);
@@ -300,8 +322,9 @@ function logjam_live_stream_chart(params){
 
   /* update chart or error list */
   function update_view(value) {
-    if ($.isArray(value))
+    if ($.isArray(value)) {
       update_errors(value);
+    }
     else if ("anomaly" in value)
       update_anomaly_score(value);
     else {
@@ -478,6 +501,7 @@ function logjam_live_stream_chart(params){
 
   /* automatically connect to the data stream when the ducoment is ready */
   $(function(){
+    initialize_filter();
     // console.log(ws);
     $("#stream-toggle").on("click", function(){ toggle_stream($(this)); });
     $("#warnin-toggle").on("click", function(){ toggle_warnings($(this)); });
