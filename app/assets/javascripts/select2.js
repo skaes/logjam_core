@@ -961,6 +961,7 @@ the specific language governing permissions and limitations under the Apache Lic
                             label.addClass("select2-result-label");
                             label.attr("id", "select2-result-label-" + nextUid());
                             label.attr("role", "option");
+                            label.attr("title", result.text);
 
                             formatted=opts.formatResult(result, label, query, self.opts.escapeMarkup);
                             if (formatted!==undefined) {
