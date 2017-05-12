@@ -523,7 +523,7 @@ module Logjam
     end
 
     def allow_breaks(l, request_id=nil)
-      request_id ? l : CGI.unescape(l.gsub(/(%2C|=)/, '\1&#x200B;')).gsub('<', '&lt;').gsub('>', '&gt;')
+      request_id ? l : CGI.unescape(l.gsub(/(%2C|=)/, '\1&#x200B;').gsub('+', '%2B')).gsub('<', '&lt;').gsub('>', '&gt;')
     rescue => e
       logger.error("#{e.class}(#{e})")
       l

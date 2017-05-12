@@ -160,7 +160,6 @@ module Logjam
         end
         sum_sofar = (sums[slot] ||= Hash.new(0.0))
         counted_resources.each do |f|
-          puts "ROW! #{f} -> #{row[f]}"
           v = row[f].to_f
           v /= 40 if f == "allocated_bytes" # HACK!!!
           sum_sofar[f] += v

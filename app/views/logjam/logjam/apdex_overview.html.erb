@@ -35,7 +35,7 @@
                 <%= integer_number(@totals.apdex(section)["happy"]) %><br /><%= "%.2f" % (100.0 * @dataset.happy(section)) %>%
               </td>
               <td class='echart' id='<%= "echart-#{i+=1}" %>'>
-                <%= render "echart", exceptions: @minutes.apdex(section)["happy"], i: i, url: nil, height: 90 %>
+                <%= render "echart", exceptions: @minutes.apdex(section)["happy"], parent_selector: "#echart-#{i}", url: nil, height: 90 %>
               </td>
             </tr>
             <tr class='full_stats apdex satisfied'>
@@ -44,7 +44,7 @@
                 <%= integer_number(@totals.apdex(section)["satisfied"]) %><br /><%= "%.2f" % (100.0 * @dataset.satisfied(section)) %>%
               </td>
               <td class='echart' id='<%= "echart-#{i+=1}" %>'>
-                <%= render "echart", exceptions: @minutes.apdex(section)["satisfied"], i: i, url: nil, height: 90 %>
+                <%= render "echart", exceptions: @minutes.apdex(section)["satisfied"], parent_selector: "#echart-#{i}", url: nil, height: 90 %>
               </td>
             </tr>
             <tr class='full_stats apdex tolerating'>
@@ -53,7 +53,7 @@
                 <%= integer_number(@totals.apdex(section)["tolerating"]) %><br /><%= "%.2f" % (100.0 * @dataset.tolerating(section)) %>%
               </td>
               <td class='echart' id='<%= "echart-#{i+=1}" %>'>
-                <%= render "echart", exceptions: @minutes.apdex(section)["tolerating"], i: i, url: nil, height: 90 %>
+                <%= render "echart", exceptions: @minutes.apdex(section)["tolerating"], parent_selector: "#echart-#{i}", url: nil, height: 90 %>
               </td>
             </tr>
             <tr class='full_stats apdex frustrated'>
@@ -62,7 +62,7 @@
                 <%= integer_number(@totals.apdex(section)["frustrated"]) %><br /><%= "%.2f" % (100.0 * @dataset.frustrated(section)) %>%
               </td>
               <td class='echart' id='<%= "echart-#{i+=1}" %>'>
-                <%= render "echart", exceptions: @minutes.apdex(section)["frustrated"], i: i, url: nil, height: 90 %>
+                <%= render "echart", exceptions: @minutes.apdex(section)["frustrated"], parent_selector: "#echart-#{i}", url: nil, height: 90 %>
               </td>
             </tr>
           <thead>

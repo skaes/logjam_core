@@ -88,6 +88,22 @@ module Logjam
       soft_exceptions.values.inject(0){|s,v| s += v.to_i}
     end
 
+    def all_exceptions
+      result = exceptions.clone
+      soft_exceptions.each do |e, soft|
+        if hard = result[e]
+          result[e] = hard + soft
+        else
+          result[e] = soft
+        end
+      end
+      result
+    end
+
+    def overall_exception_count
+      exception_count + soft_exception_count
+    end
+
     def js_exceptions
       @page_info["js_exceptions"] ||= {}
     end
