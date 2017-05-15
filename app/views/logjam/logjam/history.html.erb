@@ -75,12 +75,18 @@
           }
         });
       }
-      response.exception_names.forEach(function(e,i){
-        var id = "backend-exception" + i;
-        $("#exception_counts").append("<div id='" + id + "'></div>");
-        logjam_history_bar_chart(response.data, id, e, js_params, "x");
-      });
-      $("#spinner").hide();
+      function add_exceptions(i) {
+        if (i == response.exception_names.length) {
+          $('#spinner').hide();
+        } else {
+          var id = "backend-exception" + i;
+          var e = response.exception_names[i];
+          $("#exception_counts").append("<div id='" + id + "'></div>");
+          logjam_history_bar_chart(response.data, id, e, js_params, "x");
+          window.setTimeout(function(){ add_exceptions(i+1); }, 0);
+        }
+      };
+      add_exceptions(0);
     }
   });
 </script>
