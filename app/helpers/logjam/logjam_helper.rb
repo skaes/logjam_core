@@ -512,10 +512,10 @@ module Logjam
         next unless s >= 2
         next if s <= error_level
         error_level = s
-        error_line = safe_h(l.to_s)
+        error_line = l.to_s
         break if exception && error_line =~ regex
       end
-      h(error_line[0..100])
+      safe_h(error_line[0..100])
     end
 
     def format_log_level(l)
