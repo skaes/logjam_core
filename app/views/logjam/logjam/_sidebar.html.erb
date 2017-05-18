@@ -20,10 +20,10 @@
         <% klass = params[:section] == "backend" ? "enabled" : "disabled" %>
         <% active1, active2 = params[:grouping] == "request" ? %w(active inactive) : %w(inactive active) %>
         <li class="<%= klass %>">
-          <%= clean_link_to(fa_icon("tachometer", :title => "Actions") + " Actions", {:action => '', :grouping => "page"}, :class => active2) %>
+          <%= clean_link_to(fa_icon("tachometer", :title => "Actions") + " Actions", {:id => nil, :action => '', :grouping => "page"}, :class => active2) %>
         </li>
         <li class="<%= klass %>">
-          <%= clean_link_to(fa_icon("list", :title => "Requests") + " Requests", {:action => '', :section => "backend", :grouping => "request"}, :class => active1) %>
+          <%= clean_link_to(fa_icon("list", :title => "Requests") + " Requests", {:id => nil, :action => '', :section => "backend", :grouping => "request"}, :class => active1) %>
         </li>
       </ul>
 
