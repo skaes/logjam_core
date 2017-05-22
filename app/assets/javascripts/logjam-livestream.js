@@ -189,7 +189,8 @@ function logjam_live_stream_chart(params){
     .style("stroke", function(d,i){ return colors[i]; })
     .style("fill", function(d,i){ return colors[i]; });
 
-  var request_count_formatter = d3.format(",.0f");
+  var request_count_formatter = d3.format(",.2r");
+  var perf_data_formatter = d3.format(",.2r");
 
   vis.selectAll(".rlabel")
     .data([50,25,0])
@@ -214,8 +215,19 @@ function logjam_live_stream_chart(params){
       for (var j = 0; j < num_areas; ++j) sum_slot += data[j][i];
       if (sum_slot > max_y) max_y = sum_slot;
     };
+    var max_requests = d3.max(request_counts);
     y = d3.scaleLinear().domain([0, max_y]).range([h,0]).nice();
-    y2 = d3.scaleLinear().domain([0, d3.max(request_counts)]).range([50,0]).nice();
+    y2 = d3.scaleLinear().domain([0, max_requests]).range([50,0]).nice();
+    if (max_requests < 10) {
+      request_count_formatter = d3.format(",.2r");
+    } else {
+      request_count_formatter = d3.format(",.0d");
+    }
+    if (max_y < 10) {
+      perf_data_formatter = d3.format(",.2r");
+    } else {
+      perf_data_formatter = d3.format(",.0d");
+    }
   };
 
   /* add stream data to the chart */
@@ -290,7 +302,6 @@ function logjam_live_stream_chart(params){
         continue;
       }
       var severity = severity_image(severity_value);
-      var response_code = e["response_code"];
       var action = e["action"];
       var time = e["time"].slice(11,19);
       var desc = e["description"].substring(0,80);
@@ -390,7 +401,7 @@ function logjam_live_stream_chart(params){
       .style("font", "10px Helvetica Neue")
       .style("stroke", "none")
       .style("fill", "#000")
-      .text(String)
+      .text(perf_data_formatter)
       .attr("x", 0)
       .attr("y", y)
       .attr("dx", -10)
