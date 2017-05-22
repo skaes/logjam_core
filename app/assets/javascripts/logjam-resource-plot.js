@@ -104,7 +104,7 @@ function logjam_resource_plot(params) {
     tooltip_formatter = function(d){ return d3.format(".0f")(d/1000) + "k"; };
   }
   else {
-    y_tick_precision = params.js_max < 10 ? ".1f" : ".0f";
+    y_tick_precision = (params.max_y < 10 || params.zoomed_max_y < 10) ? ".1f" : ".0f";
     y_ticks_formatter = d3.format(y_tick_precision);
     if (params.plot_kind == "time")
       tooltip_formatter = function(d){ return d3.format(".1f")(d) + " ms"; };
