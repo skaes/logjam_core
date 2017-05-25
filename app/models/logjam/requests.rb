@@ -121,7 +121,7 @@ module Logjam
         "page" => 1, "user_id" => 1, "response_code" => 1, "severity" => 1,
         "started_at" => 1, "metrics" => 1, "minute" => 1
       }
-      fields["lines"] = {'$slice' => -1000} if @options[:response_code] || @options[:severity] || @options[:exceptions]
+      fields["lines"] = {'$slice' => -1000} if @options[:response_code] || @options[:severity] || @options[:exceptions] || @options[:soft_exceptions]
 
       query_opts = {
         :projection => fields,
