@@ -4,9 +4,9 @@
 # limit resident size to 5 GB, which is plenty
 # ulimit -m 5000000
 exec 2>&1
-if [ -x /opt/logjam/bin/logjam-httpd ]; then
-  httpd=/opt/logjam/bin/logjam-httpd
+if [ -x /opt/logjam/bin/logjam-fhttpd ]; then
+  httpd=/opt/logjam/bin/logjam-fhttpd
 else
-  httpd=/usr/local/bin/logjam-httpd
+  httpd=/usr/local/bin/logjam-fhttpd
 fi
 exec $httpd -p HTTPD_PORT -d 73 "$@"
