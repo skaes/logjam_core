@@ -135,6 +135,14 @@ module Logjam
       callers.values.inject(0){|s,v| s += v.to_i}
     end
 
+    def senders
+      @page_info["senders"] ||= {}
+    end
+
+    def senders_count
+      senders.values.inject(0){|s,v| s += v.to_i}
+    end
+
     def add(other)
       @page_info["count"] += other.backend_count
       @page_info["page_count"] += other.page_count
@@ -415,8 +423,13 @@ module Logjam
       @js_exception_count ||= js_exceptions.values.inject(0){|s,v| s += v}
     end
 
-    def call_relationships(app)
-      query, log = build_query("Totals.call_relationships", {:page => /#/}, :projection => { page: 1, callers: 1 })
+    # Returns a map from actions of the current app to a list of
+    # callers from other apps. Or senders, if field param is "senders".
+    def relationships(app, field = :callers)
+      field_str, field_sym = field.to_s, field.to_sym
+      cache_key = "Totals.call_relationships"
+      cache_key << "(#{field_str})" if field_str != "callers"
+      query, log = build_query(cache_key, {:page => /#/}, :projection => { :page => 1, field_sym => 1 })
       rows = with_conditional_caching(log) do |payload|
         rs = query.to_a
         payload[:rows] = rs.size
@@ -424,9 +437,9 @@ module Logjam
         rs
       end
       rows.each_with_object({}) do |r,o|
-        callers = r['callers']
+        callers_or_senders = r[field_str]
         page = r['page']
-        o["#{app}-#{page}"] = callers unless callers.blank? || page !~ /#/
+        o["#{app}-#{page}"] = callers_or_senders unless callers_or_senders.blank? || page !~ /#/
       end
     end
 

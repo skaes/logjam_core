@@ -519,13 +519,18 @@ module Logjam
       end
     end
 
-    def get_transform(group)
+    def get_relationship_key(group)
+      # The importer replaces dots in the application-action pair with the
+      # unicode character '∙', so we need to reverse this transformation here.
+      # The key depends on how to group the results: either by 'application',
+      # 'module', or 'action'.
       case group
       when 'module'
         ->(k) do
           p = k.gsub('∙','.').split('-')
+          # extract the module
           m = p[1].split(/(::)|#/)[0]
-          # TODO: dirty hack
+          # TODO: dirty hack (but for what?)
           m = p[0].capitalize if m =~ /Controller\z/
           "#{p[0]}-#{m}"
         end
@@ -535,34 +540,36 @@ module Logjam
         ->(k){ k.gsub('∙','.') }
       end
     end
-    private :get_transform
+    private :get_relationship_key
 
-    def get_relationship_data(group=nil, filter=nil, sort=nil)
+    def get_relationship_data(group: nil, filter: nil, sort: nil, kind: 'callers')
+      # compute a map from caller, callee pairs to how often the call happened
       filter_regexp = /#{filter}/i unless filter.blank?
-      transform = get_transform(group)
+      transform = get_relationship_key(group)
       data = Hash.new(0)
       databases = Logjam.grep(Logjam.databases, :env => @env, :date => @date)
       databases.each do |db_name|
         begin
           stream = Logjam.stream_for(db_name)
           db = Logjam.connection_for(db_name).db(db_name).database
-          relationships = Totals.new(db).call_relationships(stream.app)
-          relationships.each do |callee, callers|
-            callee = transform.call(callee)
-            callers.each do |caller, count|
-              caller = transform.call(caller)
-              next if filter_regexp && "#{caller},#{callee}" !~ filter_regexp
-              data[[caller, callee]] += count.to_i
+          relationships = Totals.new(db).relationships(stream.app, kind)
+          relationships.each do |callee_or_consumer, callers_or_senders|
+            callee_or_consumer = transform.call(callee_or_consumer)
+            callers_or_senders.each do |caller_or_sender, count|
+              caller_or_sender = transform.call(caller_or_sender)
+              next if filter_regexp && "#{caller_or_sender},#{callee_or_consumer}" !~ filter_regexp
+              data[[caller_or_sender, callee_or_consumer]] += count.to_i
             end
           end
         rescue => e
           logger.error e
         end
       end
+      # convert data into an array and sort it
       data = data.map{|p,c| {source: p[0], target: p[1], count: c}}
       case sort
-      when 'caller' then data.sort_by!{|p| [p[:source],p[:target]]}
-      when 'callee' then data.sort_by!{|p| [p[:target],p[:source]]}
+      when 'caller', 'sender' then data.sort_by!{|p| [p[:source],p[:target]]}
+      when 'callee', 'consumer' then data.sort_by!{|p| [p[:target],p[:source]]}
       when 'count'  then data.sort_by!{|p| -p[:count]}
       end
       data
@@ -571,15 +578,23 @@ module Logjam
 
     def call_relationships
       redirect_on_empty_dataset and return
-      params[:group] ||= 'module'
+      params[:group] ||= 'application'
+      params[:relationship] ||= 'callers'
       params[:sort] ||= 'caller'
+      params[:kind] ||= 'senders'
       # only filter data when explicitly requested
       filter = params[:filter_data].to_s == '1' ? params[:filter].to_s : ''
-      data = get_relationship_data(params[:group], filter, params[:sort])
-
+      data = get_relationship_data(group: params[:group], filter: filter,
+                                   sort: params[:sort], kind: params[:kind])
       respond_to do |format|
         format.html do
-          @title = "Call relationships across all aplications"
+          @relationship_name, @source_name, @target_name, @counter_name =
+            case params[:kind]
+            when 'callers' then ["Call relationships", "Caller", "Callee", "#Calls"]
+            when 'senders' then ["Message consumption", "Sender", "Consumer", "#Messages"]
+            else ["Unknown relationship" , "Source", "Target", "Count"]
+            end
+          @title = "#{@relationship_name} across all applications"
           @data = data
         end
         format.json do
@@ -587,12 +602,12 @@ module Logjam
         end
         format.csv do
           str = CSV.generate(:col_sep => ';') do |csv|
-            csv << %w(Caller Callee Calls)
+            csv << [@source_name, @target_name, @counter_name]
             data.each do |p|
               csv << p.values_at(:source, :target, :count)
             end
           end
-          send_data str, :filename => "call_relationships.csv"
+          send_data str, :filename => "#{@relationship_name.downcase.gsub(' ', '_')}.csv"
         end
       end
     end

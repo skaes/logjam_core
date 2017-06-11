@@ -4,7 +4,7 @@
   <div id="logjam-content" class="app-dashboard">
     <div class="flex">
       <div class="controls item col-1">
-        <h2>Call relationships (<span id="call-count"><%= @data.size %></span>)</h2>
+        <h2><%= @relationship_name %> (<span id="call-count"><%= @data.size %></span>)</h2>
         <%= form_tag(params, :method => :get) do %>
           <%= hidden_field_tag :app, @app %>
           <%= hidden_field_tag :env, @env %>
@@ -20,6 +20,7 @@
           <%= hidden_field_tag :app, @app %>
           <%= hidden_field_tag :env, @env %>
           <%= hidden_field_tag :page, @page %>
+          <%= hidden_field_tag :kind, params[:kind] %>
           <%= hidden_field_tag :group, params[:group] %>
           <%= hidden_field_tag :sort, params[:sort] %>
           <%= hidden_field_tag :filter, params[:filter], :id => "graph-filter" %>
@@ -29,6 +30,7 @@
           <%= hidden_field_tag :app, @app %>
           <%= hidden_field_tag :env, @env %>
           <%= hidden_field_tag :page, @page %>
+          <%= hidden_field_tag :kind, params[:kind] %>
           <%= hidden_field_tag :group, params[:group] %>
           <%= hidden_field_tag :sort, params[:sort] %>
           <%= submit_tag "Download CSV", :id => "download-button", :name => nil, :class => "btn" %>
@@ -38,15 +40,15 @@
       <div id="callers" class="item col-1">
         <table class="full_stats" style="max-width: 500px;">
           <tr>
-            <th>Caller</th>
-            <th>Callee</th>
-            <th class="right">#Calls</th>
+            <th><%= @source_name %></th>
+            <th><%= @target_name %></th>
+            <th class="right"><%= @counter_name%></th>
           </tr>
           <% @data.each do |h| %>
-            <% caller, callee, count = h.values_at(:source, :target, :count) %>
+            <% source, target, count = h.values_at(:source, :target, :count) %>
             <tr class='full_stats'>
-              <td class="name"><%= caller %></td>
-              <td class="name"><%= callee %></td>
+              <td class="name"><%= source %></td>
+              <td class="name"><%= target %></td>
               <td class="number"><%= integer_number(count) %></td>
             </tr>
           <% end %>

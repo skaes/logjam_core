@@ -31,7 +31,7 @@
     <%-
       json_urls = {}
       %w(application module action).each do |group|
-         json_urls[group] = url_for(params.slice(:app,:env,:sort,:filter).merge(
+         json_urls[group] = url_for(params.slice(:app,:env,:sort,:filter,:kind).merge(
             :action => "call_relationships", :format => :json, :filter_data => 1, :group => group, :only_path => false))
       end
     -%>
