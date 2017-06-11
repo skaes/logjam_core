@@ -3,6 +3,7 @@ require 'csv'
 module Logjam
 
   class LogjamController < ApplicationController
+    before_action :permit_params
     before_action :verify_date
     before_action :redirect_to_clean_url, :except => [:live_stream, :auto_complete_for_controller_action_page]
     before_action :verify_app_env, :except => [:call_relationships, :call_graph]
@@ -736,11 +737,13 @@ module Logjam
       @days = database_info.days(@app, @env)
     end
 
-    def prepare_params
+    def permit_params
       # TODO: fix this security hole
       params.permit!
-      get_date
+    end
 
+    def prepare_params
+      get_date
       begin
         @db = Logjam.db(@date, @app, @env)
       rescue
