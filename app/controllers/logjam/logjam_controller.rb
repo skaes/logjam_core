@@ -578,10 +578,9 @@ module Logjam
 
     def call_relationships
       redirect_on_empty_dataset and return
-      params[:group] ||= 'application'
-      params[:relationship] ||= 'callers'
+      params[:group] ||= 'module'
       params[:sort] ||= 'caller'
-      params[:kind] ||= 'senders'
+      params[:kind] ||= 'callers'
       # only filter data when explicitly requested
       filter = params[:filter_data].to_s == '1' ? params[:filter].to_s : ''
       data = get_relationship_data(group: params[:group], filter: filter,

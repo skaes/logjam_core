@@ -23,6 +23,7 @@ function submit_filter_form() {
      .removeSearch("start_minute", parameter_defaults.start_minute)
      .removeSearch("end_minute", parameter_defaults.end_minute)
      .removeSearch("auto_refresh", parameter_defaults.auto_refresh)
+     .removeSearch("kind", parameter_defaults.kind)
      .removeSearch("interval", parameter_defaults.interval);
   document.location.href = uri.toString();
 }
@@ -33,6 +34,7 @@ function go_home() {
   $("#resource").val(parameter_defaults.resource);
   $("#section").val(parameter_defaults.section);
   $("#scale").val(parameter_defaults.scale);
+  $("#kind").val(parameter_defaults.kind);
   $("#grouping-function").val(parameter_defaults.grouping_function);
   $("#start-minute").val(parameter_defaults.start_minute);
   $("#end-minute").val(parameter_defaults.end_minute);

@@ -54,12 +54,12 @@
             <% end %>
           </li>
           <li>
-            <%= clean_link_to(:action => "call_relationships", :filter => @app, :section => 'backend', :kind => params[:kind] || 'callers') do %>
+            <%= clean_link_to(:action => "call_relationships", :filter => @app, :section => 'backend', :kind => 'callers') do %>
               <i class="fa fa-cloud"></i> Call Relationships
             <% end %>
           </li>
           <li>
-            <%= clean_link_to(:action => "call_relationships", :filter => @app, :section => 'backend', :kind => params[:kind] || 'senders') do %>
+            <%= clean_link_to(:action => "call_relationships", :filter => @app, :section => 'backend', :kind => 'senders') do %>
               <i class="fa fa-inbox"></i> Message Consumption
             <% end %>
           </li>

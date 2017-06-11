@@ -9,6 +9,7 @@
           <%= hidden_field_tag :app, @app %>
           <%= hidden_field_tag :env, @env %>
           <%= hidden_field_tag :page, @page %>
+          <%= hidden_field_tag :kind, params[:kind] %>
           <span>Group by:</span>
           <%= select_tag 'group', options_for_select(callers_grouping_options, params[:group]), :onchange => "form.submit()" %>
           <span>Sort by:</span>
