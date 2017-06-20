@@ -352,23 +352,31 @@ module Logjam
           redirect_on_empty_dataset and return
           @page_size = 25
           @page = params[:page]
-          if (@response_code = params[:above].to_i) >= 400
+          @response_code = params[:above].to_i
+          @sampling_rate_400s = @stream.sampling_rate_400s if (400..499).include?(@response_code)
+          if @response_code >= 400
             @title = "Requests with response code above #{@response_code}"
             @error_count = @dataset.response_codes_above(@response_code)
+            if @response_code < 500 && @sampling_rate_400s &&  @sampling_rate_400s < 1
+              # TODO: this is way to expensive to calculate so we just approximate it.
+              # We should store the actual count of stored requests in mongo.
+              @stored_error_count = @sampling_rate_400s * @error_count
+              @approximated = true
+            end
           else
             @response_code = params[:response_code].to_i
             @title = "Requests with response code #{@response_code}"
             @error_count = @dataset.response_codes[@response_code] || 0
           end
-          @sampling_rate_400s = @stream.sampling_rate_400s if (400..499).include?(@response_code)
           q = Requests.new(@db, "minute", @page, :response_code => @response_code,
                            :limit => @page_size, :skip => params[:offset].to_i, :above => params[:above].present?)
           @requests = q.all
           offset = params[:offset].to_i
-          @page_count = @error_count/@page_size + 1
+          @stored_error_count ||= @error_count
+          @page_count = @stored_error_count/@page_size + 1
           @current_page = offset/@page_size + 1
           @last_page = @page_count
-          @last_page_offset = @error_count/@page_size*@page_size
+          @last_page_offset = @stored_error_count/@page_size*@page_size
           @next_page_offset = offset + @page_size
           @previous_page_offset = [offset - @page_size, 0].max
           render "errors"
