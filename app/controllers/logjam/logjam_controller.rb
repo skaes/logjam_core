@@ -352,21 +352,28 @@ module Logjam
           redirect_on_empty_dataset and return
           @page_size = 25
           @page = params[:page]
-          @response_code = params[:above].to_i
-          @sampling_rate_400s = @stream.sampling_rate_400s if (400..499).include?(@response_code)
-          if @response_code >= 400
-            @title = "Requests with response code above #{@response_code}"
-            @error_count = @dataset.response_codes_above(@response_code)
-            if @response_code < 500 && @sampling_rate_400s &&  @sampling_rate_400s < 1
-              # TODO: this is way to expensive to calculate so we just approximate it.
-              # We should store the actual count of stored requests in mongo.
-              @stored_error_count = @sampling_rate_400s * @error_count
-              @approximated = true
-            end
+          if params[:above].present?
+            @response_code = params[:above].to_i
           else
             @response_code = params[:response_code].to_i
+          end
+          if params[:above].present? && @response_code >= 400
+            @title = "Requests with response code above #{@response_code}"
+            @error_count = @dataset.response_codes_above(@response_code)
+          else
             @title = "Requests with response code #{@response_code}"
             @error_count = @dataset.response_codes[@response_code] || 0
+          end
+          @sampling_rate_400s = @stream.sampling_rate_400s if (400..499).include?(@response_code)
+          # TODO: this is way to expensive to calculate so we just approximate it.
+          # We should store the actual count of stored requests in mongo.
+          if @response_code < 500 && @sampling_rate_400s &&  @sampling_rate_400s < 1
+            @stored_error_count = @sampling_rate_400s * @error_count
+            @approximated = true
+            @skip_last = true
+          else
+            @stored_error_count = @error_count
+            @skip_last = false
           end
           q = Requests.new(@db, "minute", @page, :response_code => @response_code,
                            :limit => @page_size, :skip => params[:offset].to_i, :above => params[:above].present?)
