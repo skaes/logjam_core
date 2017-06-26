@@ -559,9 +559,9 @@ module Logjam
     update_known_databases if dropped > 0
   end
 
-  def drop_all_databases(app = '.+?', delay = 0)
+  def drop_all_databases(app: '.+?', env: '.+?', delay: 0)
     dropped = 0
-    db_match = db_name_format(:app => app)
+    db_match = db_name_format(:app => app, :env => env)
     connections.each do |_,connection|
       names = connection.database_names
       names.each do |name|
