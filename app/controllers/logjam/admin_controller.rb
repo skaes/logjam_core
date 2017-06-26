@@ -9,6 +9,7 @@ module Logjam
       get_database_info
       respond_to do |format|
         format.html do
+          params.permit!
           @sorted_database_info = sorted_database_info
         end
         format.json do
