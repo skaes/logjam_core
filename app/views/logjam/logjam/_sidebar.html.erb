@@ -2,8 +2,7 @@
 
 <section id="logjam-sidebar" class="open">
 
-  <% action = %w(index show).include?(action_name) ? "" : action_name %>
-  <%= form_tag(params.except(:id).merge(:action => action), :method => :get, :id => "filter-form", :autocomplete => "off") do -%>
+  <%= form_tag(params.except(:id), :method => :get, :id => "filter-form", :autocomplete => "off") do -%>
 
     <div class="menu-wrapper">
       <ul class="logjam-menu">
@@ -20,10 +19,10 @@
         <% klass = params[:section] == "backend" ? "enabled" : "disabled" %>
         <% active1, active2 = params[:grouping] == "request" ? %w(active inactive) : %w(inactive active) %>
         <li class="<%= klass %>">
-          <%= clean_link_to(fa_icon("tachometer", :title => "Actions") + " Actions", {:id => nil, :action => '', :grouping => "page"}, :class => active2) %>
+          <%= clean_link_to(fa_icon("tachometer", :title => "Actions") + " Actions", {:id => nil, :action => 'index', :grouping => "page"}, :class => active2) %>
         </li>
         <li class="<%= klass %>">
-          <%= clean_link_to(fa_icon("list", :title => "Requests") + " Requests", {:id => nil, :action => '', :section => "backend", :grouping => "request"}, :class => active1) %>
+          <%= clean_link_to(fa_icon("list", :title => "Requests") + " Requests", {:id => nil, :action => 'index', :section => "backend", :grouping => "request"}, :class => active1) %>
         </li>
       </ul>
 

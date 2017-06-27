@@ -11,7 +11,6 @@ var parameters = <%= raw Oj.dump(params.to_hash) %>,
     application_auto_complete_url = '<%= raw auto_complete_url_for_application_page %>';
 <% end %>
 
-<% action = action_name == "index" ? "" : action_name %>
 <header id="logjam-header">
   <h1 class="logo">LOGJAM</h1>
   <% unless @only_one_app %>

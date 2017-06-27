@@ -41,7 +41,7 @@ module Logjam
     end
 
     def home_url
-      url_for(params.except(:id).merge(:action => ''))
+      url_for(params.except(:id).merge(:action => 'index'))
     end
 
     def history_url
@@ -49,7 +49,7 @@ module Logjam
     end
 
     def self_url
-      url_for(params.merge(:action => (action_name == "index" ? "" : action_name)))
+      url_for(params)
     end
 
     def auto_complete_url_for_action_page
