@@ -12,6 +12,7 @@ Rails.application.routes.draw do
       get "/auto_complete_for_applications_page" => :auto_complete_for_applications_page
 
       get "/:year/:month/:day" => :index
+      get "/:year/:month/:day/index" => :index
       get "/:year/:month/:day/allocated_objects_distribution" => :allocated_objects_distribution
       get "/:year/:month/:day/allocated_size_distribution" => :allocated_size_distribution
       get "/:year/:month/:day/apdex_overview" => :apdex_overview
