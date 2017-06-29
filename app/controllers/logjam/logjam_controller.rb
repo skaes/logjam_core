@@ -478,14 +478,16 @@ module Logjam
       redirect_on_empty_dataset and return
       params[:sort] ||= 'count'
       params[:group] ||= 'module'
-      @totals = Totals.new(@db, ["callers"], @page)
-      @callers = @totals.callers
+      params[:kind] ||= 'callers'
+      head(:bad_request) unless %w(callers senders).include?(params[:kind])
+      @totals = Totals.new(@db, [params[:kind]], @page)
+      @callers = @totals.send(params[:kind].to_sym)
       if transform = get_relationship_key(params[:group])
         @callers = @callers.each_with_object(Hash.new(0)){|(k,v),h| h[transform.call(k)] += v}
       end
       respond_to do |format|
         format.html do
-          @title = "Callers"
+          @title = params[:kind] == 'senders' ? "Message Senders" : "API Callers"
           @callers =
             case params[:sort]
             when 'name'
@@ -495,7 +497,7 @@ module Logjam
             end
           @call_count = @callers.blank? ? 0 : @callers.map(&:second).sum
           @request_count = @totals.count
-          @caller_minutes = Minutes.new(@db, ["callers"], @page, @totals.page_names, 2).callers
+          @caller_minutes = Minutes.new(@db, [params[:kind]], @page, @totals.page_names, 2).send(params[:kind])
           # puts @caller_minutes.inspect
           if transform
             minutes = Hash.new{|h,k| h[k] = Hash.new(0)}

@@ -56,6 +56,10 @@ module Logjam
       @callers ||= extract_sub_hash('callers')
     end
 
+    def senders
+      @senders ||= extract_sub_hash('senders')
+    end
+
     def response
       @response_codes ||= extract_sub_hash('response')
     end
@@ -111,7 +115,7 @@ module Logjam
     end
 
     def compound_resources
-      %w(apdex fapdex papdex xapdex exceptions soft_exceptions js_exceptions severity callers response)
+      %w(apdex fapdex papdex xapdex exceptions soft_exceptions js_exceptions severity callers senders response)
     end
 
     def self.counter_for_field(f)

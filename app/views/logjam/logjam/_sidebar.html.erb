@@ -46,9 +46,9 @@
         </li>
 
         <% unless @only_one_app %>
-          <% klass = @dataset && @dataset.has_callers? ? "enabled" : "disabled" %>
-          <li class="<%= klass %>">
-            <%= clean_link_to(:action =>"callers") do %>
+          <% klass1 = (@dataset && @dataset.has_callers?) ? "enabled" : "disabled" %>
+          <li class="<%= klass1 %>">
+            <%= clean_link_to(:action => "callers", :kind => 'callers') do %>
             <i class="fa fa-phone"></i> Callers
             <% end %>
           </li>
@@ -57,9 +57,15 @@
               <i class="fa fa-cloud"></i> Call Relationships
             <% end %>
           </li>
+          <% klass2 = (@dataset && @dataset.has_senders?) ? "enabled" : "disabled" %>
+          <li class="<%= klass2 %>">
+            <%= clean_link_to(:action => "callers", :kind => 'senders') do %>
+            <i class="fa fa-paper-plane"></i> Msg Senders
+            <% end %>
+          </li>
           <li>
             <%= clean_link_to(:action => "call_relationships", :filter => @app, :section => 'backend', :kind => 'senders') do %>
-              <i class="fa fa-inbox"></i> Message Consumption
+              <i class="fa fa-inbox"></i> Msg Relationships
             <% end %>
           </li>
         <% end %>

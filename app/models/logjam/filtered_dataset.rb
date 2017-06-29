@@ -194,7 +194,7 @@ module Logjam
       @summary ||=
         begin
           all_resources = Resource.time_resources + Resource.call_resources + Resource.memory_resources + Resource.heap_resources + Resource.frontend_resources + Resource.dom_resources
-          resources = (all_resources & @collected_resources) - %w(heap_growth) + %w(apdex fapdex papdex xapdex response callers)
+          resources = (all_resources & @collected_resources) - %w(heap_growth) + %w(apdex fapdex papdex xapdex response callers senders)
           Totals.new(@db, resources, page, totals.page_names)
         end
     end
@@ -211,6 +211,10 @@ module Logjam
 
     def has_callers?
       summary.callers_count > 0
+    end
+
+    def has_senders?
+      summary.senders_count > 0
     end
 
     def has_frontend?

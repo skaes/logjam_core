@@ -415,6 +415,15 @@ module Logjam
       @callers_count ||= callers.values.inject(0){|s,v| s += v}
     end
 
+    def senders
+      # callers unfortunately have dots in their names
+      @senders_hash ||= the_pages.inject(Hash.new(0)){|h,p| p.senders.each{|k,v| h[k.gsub('∙','.')] += v.to_i}; h}
+    end
+
+    def senders_count
+      @senders_count ||= senders.values.inject(0){|s,v| s += v}
+    end
+
     def js_exceptions
       @js_exceptions_hash ||= the_pages.inject(Hash.new(0)){|h,p| p.js_exceptions.each{|k,v| h[k] += v.to_i}; h}
     end
