@@ -26,34 +26,34 @@ namespace :logjam do
       Logjam.ensure_indexes
     end
 
-    desc "drop old databases"
+    desc "drop old databases DELAY=5"
     task :drop_old => :environment do
-      delay = (ENV['REPAIR_DELAY'] || 5).to_i
+      delay = (ENV['DELAY'] || 5).to_i
       Logjam.drop_old_databases(delay)
     end
 
-    desc "drop empty databases"
+    desc "drop empty databases APPLICATION=regexp DELAY=5"
     task :drop_empty => :environment do
-      delay = (ENV['REPAIR_DELAY'] || 5).to_i
+      delay = (ENV['DELAY'] || 5).to_i
       app = ENV['APPLICATION'] || '.+?'
       Logjam.drop_empty_databases(app, delay)
     end
 
-    desc "drop applications APPLICATIONS=a,b,c"
+    desc "drop applications APPLICATIONS=a,b,c DELAY=5"
     task :drop_apps => :environment do
-      delay = (ENV['REPAIR_DELAY'] || 5).to_i
+      delay = (ENV['DELAY'] || 5).to_i
       Logjam.drop_applications(ENV['APPLICATIONS'].to_s.split(/\s*,\s*/), delay)
     end
 
-    desc "drop environments ENVS=a,b,c"
+    desc "drop environments ENVS=a,b,c DELAY=5"
     task :drop_envs => :environment do
-      delay = (ENV['REPAIR_DELAY'] || 5).to_i
+      delay = (ENV['DELAY'] || 5).to_i
       Logjam.drop_environments(ENV['ENVS'].to_s.split(/\s*,\s*/), delay)
     end
 
-    desc "reomve frontend fields from all dbs DATE=yesterday DROP_DELAY=5"
+    desc "reomve frontend fields from all dbs DATE=yesterday DELAY=5"
     task :drop_frontend_fields => :environment do
-      delay = (ENV['DROP_DELAY'] || 5).to_i
+      delay = (ENV['DELAY'] || 5).to_i
       date = (ENV['DATE'] || Date.today-1).to_date
       Logjam.drop_frontend_fields(date, delay)
     end
@@ -70,9 +70,9 @@ namespace :logjam do
       end
     end
 
-    desc "remove old data"
+    desc "remove old data DELAY=5"
     task :clean => :drop_old do
-      delay = (ENV['REPAIR_DELAY'] || 5).to_i
+      delay = (ENV['DELAY'] || 5).to_i
       Logjam.remove_old_requests(delay)
     end
 
@@ -249,7 +249,7 @@ namespace :logjam do
       system("sv status #{services}")
     end
 
-    desc "Restart logjam daemons"
+    desc "Restart logjam daemons DELAY=1"
     task :restart do
       interrupted=false
       trap('INT'){interrupted=true}
@@ -257,7 +257,7 @@ namespace :logjam do
       service_paths.each do |service|
         next unless service =~ daemon_match
         system("sv force-restart #{service}")
-        sleep((ENV['RESTART_DELAY']||1).to_i)
+        sleep((ENV['DELAY']||1).to_i)
         break if interrupted
       end
     end
