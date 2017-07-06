@@ -21,11 +21,10 @@
           </thead>
           <tbody>
             <% @exceptions.each do |r| %>
-            <tr class='full_stats'>
-              <% error_link_params = { :action =>"show", :id => Logjam::JsExceptions.request_id_from_exception(r) } %>
-              <% logjam_action_link = r['logjam_action'].to_s.sub(/\A(.+?)::([^#]*)\z/, '\1') %>
-              <td><%= clean_link_to(request_started_at(r), error_link_params, :title => "show exception") %></td>
-              <td><%= clean_link_to(r['logjam_action'], { :action => "index", :grouping => "page", :page => logjam_action_link }, :title => "show page stats") %></td>
+            <% request_url = clean_url_for(:action =>"show", :id => Logjam::JsExceptions.request_id_from_exception(r)) %>
+            <tr class="full_stats clickable" data-href="<%= request_url %>" title="show exception details">
+              <td><%= request_started_at(r) %></td>
+              <td><%= r['logjam_action'] %></td>
               <td><%= r["description"] %></td>
             </tr>
             <% end %>
