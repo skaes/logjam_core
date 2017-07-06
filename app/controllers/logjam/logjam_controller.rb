@@ -257,6 +257,8 @@ module Logjam
           unless @request || @js_exceptions.present?
             render :file => "#{Rails.root}/public/404.html", :status => :not_found
           end
+          # HACK: remove :id from params before generating any urls to avoid above 404 when changing app
+          params.delete(:id)
         end
         format.json do
           render :json => Oj.dump(@request||["NOT FOUND"], :mode => :compat)
