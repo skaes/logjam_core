@@ -226,10 +226,12 @@ module Logjam
     end
 
     RESOURCES_EXCLUDED_FROM_PLOT = %w(total_time allocated_memory requests heap_growth page_time frontend_time)
-    LINE_PLOTTED_RESOURCES = %w(ajax_time gc_time dom_interactive)
+    LINE_PLOTTED_RESOURCES = %w(ajax_time gc_time dom_interactive total_time_max)
 
     def plotted_resources
-      (Resource.resources_for_type(plot_kind) & @collected_resources) - RESOURCES_EXCLUDED_FROM_PLOT
+      resources = (Resource.resources_for_type(plot_kind) & @collected_resources)
+      resources << "total_time_max" if resources.include?("total_time")
+      resources - RESOURCES_EXCLUDED_FROM_PLOT
     end
 
     def plot_data(section)
@@ -271,6 +273,9 @@ module Logjam
               total = ajax_time.to_f
             end
             totals << total if total > 0
+            if plot_resources.include?("total_time_max")
+              total = row["total_time_max"]
+            end
             max_total = total if max_total < total
             nonzero += 1 if total > 0
           end

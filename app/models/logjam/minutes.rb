@@ -155,7 +155,9 @@ module Logjam
       # aggregate values according to given interval
       sums = {}
       counts = Hash.new{ |h,k| h[k] = Hash.new(0.0) }
-      counted_resources = @resources - compound_resources
+      maxs = {}
+      maxed_resources = @resources.select{|r| r =~ /_max\z/}
+      counted_resources = @resources - compound_resources - maxed_resources
       hashed_resources = @resources & compound_resources
       while row = rows.shift
         slot = row["minute"] / interval
@@ -167,6 +169,12 @@ module Logjam
           v = row[f].to_f
           v /= 40 if f == "allocated_bytes" # HACK!!!
           sum_sofar[f] += v
+        end
+        maxs_so_far = (maxs[slot] ||= Hash.new(0.0))
+        maxed_resources.each do |r|
+          new_val = row[r].to_f
+          old_val = maxs_so_far[r]
+          maxs_so_far[r] = new_val if new_val > old_val
         end
         hashed_resources.each do |r|
           unless (h = sum_sofar[r]).is_a?(Hash)
@@ -189,6 +197,10 @@ module Logjam
             resource_hash[field] = v/cnt
           end
         end
+      end
+
+      maxs.each do |minute, resource_hash|
+        sums[minute].merge!(resource_hash)
       end
 
       @counts = counts

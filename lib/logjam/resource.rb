@@ -62,7 +62,7 @@ module Logjam
       end
 
       def color(resource, transparency=0)
-        c = colors[resource]
+        c = colors[resource.sub(/_max\z/,'')]
         if transparency==0
           c
         else

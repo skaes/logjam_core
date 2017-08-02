@@ -16,6 +16,7 @@
     :request_counts => @request_counts.reverse.drop_while{|d|d==0}.reverse,
     :gc_time => @lines[line_attr] ? @lines[line_attr].reverse.drop_while{|_,d| d==0}.reverse : nil,
     :dom_interactive => @lines["dom_interactive"] ? @lines["dom_interactive"].reverse.drop_while{|_,d| d==0}.reverse : nil,
+    :total_time_max => @lines["total_time_max"] ? @lines["total_time_max"].reverse.drop_while{|_,d| d==0}.reverse : nil,
     :max_y => @js_max,
     :zoomed_max_y => @js_zoom * 1.5,
     :selected_slice => params[:start_minute].to_i,

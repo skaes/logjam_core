@@ -7,6 +7,7 @@ function logjam_resource_plot(params) {
       request_counts       = params.request_counts,
       gc_time              = params.gc_time,
       dom_interactive      = params.dom_interactive,
+      total_time_max       = params.total_time_max,
       max_y                = params.max_y,
       zoomed_max_y         = params.zoomed_max_y,
       selected_slice       = params.selected_slice,
@@ -388,6 +389,23 @@ function logjam_resource_plot(params) {
           .style("fill", "none");
   }
 
+  /* Total time max */
+  if (total_time_max != null) {
+    var total_time_max_line = d3.line()
+          .x(function(d){ return x(d[0]+0.5); })
+          .y(function(d){ return y(d[1]); })
+          .curve(d3.curveStepAfter);
+
+    var dlg = vis.append("g")
+      .data([total_time_max]);
+
+    var da_total_time_max_line = dlg.append("path")
+          .attr("class", "total_time_max")
+          .attr("d", total_time_max_line)
+          .style("stroke", "rgba(0,0,0,1)")
+          .style("fill", "none");
+  }
+
   /* Dom interative */
   if (dom_interactive != null) {
     var interactive_line = d3.line()
@@ -426,6 +444,12 @@ function logjam_resource_plot(params) {
       da_gc_line.transition()
         .duration(zoom_interval)
         .attr("d", gc_line);
+    };
+
+    if (total_time_max != null) {
+      da_total_time_max_line.transition()
+        .duration(zoom_interval)
+        .attr("d", total_time_max_line);
     };
 
     if (dom_interactive != null) {
