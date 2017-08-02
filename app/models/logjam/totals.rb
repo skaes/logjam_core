@@ -35,6 +35,10 @@ module Logjam
       @page_info["#{resource}_max"] || 0.0
     end
 
+    def has_max?(resource)
+      !!@page_info["#{resource}_max"]
+    end
+
     def sum(resource)
       @page_info[resource] || 0
     end

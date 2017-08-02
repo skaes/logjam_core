@@ -172,6 +172,7 @@ module Logjam
         end
         maxs_so_far = (maxs[slot] ||= Hash.new(0.0))
         maxed_resources.each do |r|
+          next unless row.has_key?(r)
           new_val = row[r].to_f
           old_val = maxs_so_far[r]
           maxs_so_far[r] = new_val if new_val > old_val

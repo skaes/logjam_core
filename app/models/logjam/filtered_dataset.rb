@@ -273,8 +273,8 @@ module Logjam
               total = ajax_time.to_f
             end
             totals << total if total > 0
-            if plot_resources.include?("total_time_max")
-              total = row["total_time_max"]
+            if plot_resources.include?("total_time_max") && (v = row["total_time_max"])
+              total = v if v > 0
             end
             max_total = total if max_total < total
             nonzero += 1 if total > 0

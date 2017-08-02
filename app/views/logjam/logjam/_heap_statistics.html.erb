@@ -12,7 +12,9 @@
     <td class="number"><%= sometimes_link_requests(page, :page, :grouping => "request", :page => without_module(page.page)) %></td>
     <td class="number"><%= number_with_precision(page.avg(resource), :precision => 0, :delimiter => ",") %></td>
     <td class="number"><%= sometimes_link_stddev(page, resource) %></td>
+    <% if @display_maximums %>
     <td class="number"><%= number_with_precision(page.max(resource), :precision => 0, :delimiter => ",") %></td>
+    <% end %>
     <td class="number"><%= number_with_delimiter(page.sum(resource).to_i) %></td>
   </tr>
 <% end -%>

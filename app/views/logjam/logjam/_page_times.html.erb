@@ -4,6 +4,7 @@
   resource_name = hrn(resource)
   options = {:resource => resource}
   data = @dataset.do_the_query(@section, options)
+  @display_maximums = data.any?{|page| page.has_max?(resource)}
 -%>
 
 <table class='full_stats'>
@@ -14,7 +15,9 @@
         <th class="right<%= sorted_by_grouping_function('count') %>" <%= raw html_attributes_for_grouping_function("count", "number of requests") %>>requests</th>
         <th class="right<%= sorted_by_grouping_function('avg') %>" <%= raw html_attributes_for_grouping_function("avg", "average") %>>avg <%= resource_name %></th>
         <th class="right<%= sorted_by_grouping_function('stddev') %>" <%= raw html_attributes_for_grouping_function("stddev", "standard deviation")%>>stddev <%= resource_name %></th>
+        <% if @display_maximums %>
         <th class="right<%= sorted_by_grouping_function('max') %>" <%= raw html_attributes_for_grouping_function("max", "maximum") %>>max <%= resource_name %></th>
+        <% end %>
         <th class="right<%=sorted_by_grouping_function('') %>" <%= raw html_attributes_for_grouping_function("sum", "sum") %>>sum <%= resource_name %></th>
         <% if @dataset.accumulates_time? -%>
           <% options.merge!(:resource_total => @dataset.sum(resource))-%>

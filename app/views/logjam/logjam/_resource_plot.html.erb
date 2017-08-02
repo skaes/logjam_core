@@ -4,7 +4,6 @@
   end
 %>
 
-
 <%
   line_attr = @lines.include?("gc_time") ? "gc_time" : "ajax_time"
   js_params = {
@@ -14,9 +13,9 @@
     :colors   => (@resources.reverse+@lines.keys).map{|r| Logjam::Resource.color(r,0.8)}+["rgba(128,128,128,0.2)"],
     :legend   => (@resources.reverse+@lines.keys+%w(requests/second)).map{|c| c.gsub(/_/,' ')},
     :request_counts => @request_counts.reverse.drop_while{|d|d==0}.reverse,
-    :gc_time => @lines[line_attr] ? @lines[line_attr].reverse.drop_while{|_,d| d==0}.reverse : nil,
-    :dom_interactive => @lines["dom_interactive"] ? @lines["dom_interactive"].reverse.drop_while{|_,d| d==0}.reverse : nil,
-    :total_time_max => @lines["total_time_max"] ? @lines["total_time_max"].reverse.drop_while{|_,d| d==0}.reverse : nil,
+    :gc_time => pairs_without_trailing_zeros(@lines[line_attr]),
+    :dom_interactive => pairs_without_trailing_zeros(@lines["dom_interactive"]),
+    :total_time_max => pairs_without_trailing_zeros(@lines["total_time_max"]),
     :max_y => @js_max,
     :zoomed_max_y => @js_zoom * 1.5,
     :selected_slice => params[:start_minute].to_i,
