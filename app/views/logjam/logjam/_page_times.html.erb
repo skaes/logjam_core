@@ -4,7 +4,7 @@
   resource_name = hrn(resource)
   options = {:resource => resource}
   data = @dataset.do_the_query(@section, options)
-  @display_maximums = data.any?{|page| page.has_max?(resource)}
+  @display_maximums = @dataset.grouping? && data.any?{|page| page.has_max?(resource)}
 -%>
 
 <table class='full_stats'>
