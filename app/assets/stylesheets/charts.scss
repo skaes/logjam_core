@@ -1,7 +1,7 @@
 @import 'mixins.scss';
 @import 'constants.scss';
 
-.xlabel, .ylabel, .legend, .label, .rlabel, .tooltip {
+.xlabel, .ylabel, .legend, .label, .rlabel, .tooltip, .zoom_button {
   font-size: 8px;
   stroke: none;
   fill: $black;

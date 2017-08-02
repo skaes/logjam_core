@@ -83,6 +83,21 @@ function logjam_resource_plot(params) {
     .attr("text-anchor", "middle")
     .text("Time of day");
 
+  /* Zoom button */
+  vis.selectAll(".zoom_button")
+    .data([1])
+    .enter()
+    .append("svg:text")
+    .attr("class", "zoom_button")
+    .attr("dy", h+30)
+    .attr("dx", w)
+    .style("font", "11px Helvetica Neue")
+    .style("fill", "rgba(0,0,255,0.7)")
+    .style("cursor", "pointer")
+    .attr("text-anchor", "end")
+    .text("Zoom out")
+    .exit().remove();
+
   /* X-axis and ticks. */
   vis.selectAll(".yrule")
     .data(xticks)
@@ -402,7 +417,7 @@ function logjam_resource_plot(params) {
     var da_total_time_max_line = dlg.append("path")
           .attr("class", "total_time_max")
           .attr("d", total_time_max_line)
-          .style("stroke", "rgba(0,0,0,1)")
+          .style("stroke", function(){ return zoomed ? "rgba(0,0,0,0)" : "rgba(0,0,0,1)"; })
           .style("fill", "none");
   }
 
@@ -457,6 +472,11 @@ function logjam_resource_plot(params) {
         .duration(zoom_interval)
         .attr("d", interactive_line);
     };
+
+    vis.selectAll(".zoom_button")
+      .transition()
+      .duration(zoom_interval)
+      .text(zoomed ? "Zoom out" : "Zoom in");
   }
 
   vis.selectAll(".event")
