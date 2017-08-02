@@ -696,7 +696,7 @@ module Logjam
         format.html do
           get_app_env
           redirect_on_empty_dataset and return
-          @resources = Logjam::Resource.time_resources-%w(total_time gc_time)
+          @resources = (Logjam::Resource.time_resources-%w(total_time gc_time)) & @collected_resources
           ws_port = RUBY_PLATFORM =~ /darwin/ ? 9608 : 8080
           @socket_url = "ws://#{request.host}:#{ws_port}/"
           @key = params[:page].to_s
