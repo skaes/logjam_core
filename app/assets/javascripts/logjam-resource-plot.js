@@ -417,7 +417,7 @@ function logjam_resource_plot(params) {
     var da_total_time_max_line = dlg.append("path")
           .attr("class", "total_time_max")
           .attr("d", total_time_max_line)
-          .style("stroke", function(){ return zoomed ? "rgba(0,0,0,0)" : "rgba(0,0,0,1)"; })
+          .style("stroke", "rgba(0,0,0,0)")
           .style("fill", "none");
   }
 
@@ -464,6 +464,7 @@ function logjam_resource_plot(params) {
     if (total_time_max != null) {
       da_total_time_max_line.transition()
         .duration(zoom_interval)
+        .style("stroke", zoomed ? "rgba(0,0,0,0)" : "rgba(0,0,0,0.8)")
         .attr("d", total_time_max_line);
     };
 
