@@ -31,6 +31,10 @@ module Logjam
       @page_info[Apdex.counter(resource)]
     end
 
+    def max(resource)
+      @page_info["#{resource}_max"] || 0.0
+    end
+
     def sum(resource)
       @page_info[resource] || 0
     end
@@ -152,6 +156,7 @@ module Logjam
         begin
           @page_info[r] = sum(r) + other.sum(r)
           @page_info["#{r}_sq"] = sum_sq(r) + other.sum_sq(r)
+          @page_info["#{r}_max"] = [max(r), other.max(r)].max
         rescue
           Rails.logger.error("MUUUU[#{r}]: #{@page_info.inspect}, !!! #{sum(r)}  !!! #{other.send :inspect}")
           raise
@@ -251,6 +256,7 @@ module Logjam
       @pattern = pattern
       @page_names = page_name_list
       @sum = {}
+      @max = {}
       @avg = {}
       @sum_sq = {}
       @stddev = {}
@@ -303,7 +309,7 @@ module Logjam
         when :apdex
           pages.sort_by!{|r| v = r.apdex_score(resource); v.nan? ? 1.1 : v}
         else
-          raise "unknown sort method: #{order}" unless order.to_s =~ /^(.+)_(sum|avg|stddev)$/
+          raise "unknown sort method: #{order}" unless order.to_s =~ /^(.+)_(sum|avg|stddev|max)$/
           resource, function = $1, $2
           pages.sort_by!{|r| v = r.send(function, resource); v.is_a?(Float) && v.nan? ? 0 : -v}
         end
@@ -351,6 +357,10 @@ module Logjam
         end
       end
       @request_counts[section]
+    end
+
+    def max(resource)
+      @max[resource] ||= the_pages.map{|p| p.max(resource)}.max
     end
 
     def sum(resource)
@@ -505,7 +515,8 @@ module Logjam
         [@apdex, @fapdex, @papdex, @xapdex, @response, @severity, @exceptions, @soft_exceptions, @js_exceptions, @callers].compact + @resources
 
       sq_fields = @resources.map{|r| "#{r}_sq"}
-      fields = { :projection => _fields(all_fields.concat(sq_fields)) }
+      max_fields = @resources.map{|r| "#{r}_max"}
+      fields = { :projection => _fields(all_fields.concat(sq_fields).concat(max_fields)) }
 
       query, log  = build_query("Totals.find", selector, fields)
       rows = with_conditional_caching(log) do |payload|

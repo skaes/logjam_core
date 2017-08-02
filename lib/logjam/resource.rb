@@ -157,7 +157,7 @@ module Logjam
       end
 
       def grouping_functions
-        %w(sum avg stddev count apdex)
+        %w(sum avg max stddev count apdex)
       end
 
       def grouping?(grouping)
@@ -173,6 +173,8 @@ module Logjam
           "average #{name}"
         when :stddev
           "standard deviation of #{name}"
+        when :max
+          "maximum #{name}"
         when :count
           "number of requests"
         when :apdex

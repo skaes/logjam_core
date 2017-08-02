@@ -90,7 +90,7 @@ module Logjam
     def accumulates_time?
       [:time, :frontend].include?(Resource.resource_type(resource)) &&
         grouping? &&
-        [:sum, :avg, :stddev, :count, :apdex, :fapdex, :papdex, :xapdex].include?(grouping_function.to_sym)
+        [:sum, :avg, :max, :stddev, :count, :apdex, :fapdex, :papdex, :xapdex].include?(grouping_function.to_sym)
     end
 
     def intervals_per_day

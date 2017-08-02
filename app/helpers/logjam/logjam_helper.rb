@@ -405,6 +405,14 @@ module Logjam
       page.blank? ? page : page.sub(/^::(.)/){$1}
     end
 
+    def sorted_by_grouping_function(gf)
+      if params[:grouping_function].to_s == gf
+        " sorted"
+      else
+        " "
+      end
+    end
+
     def html_attributes_for_grouping_function(gf, title)
       if gf.to_sym == @dataset.grouping_function
         %{class="sorted" title="sorted by #{title}"}
