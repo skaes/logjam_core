@@ -244,7 +244,11 @@ module Logjam
     end
 
     def sometimes_link_requests(result, grouping, options)
-      n = number_with_delimiter(result.count(params[:resource]).to_i)
+      if options.has_key?(:n)
+        n = options.delete(:n)
+      else
+        n = number_with_delimiter(result.count(params[:resource]).to_i)
+      end
       if :page == grouping.to_sym && result.page != "Others..."
         clean_link_to(n, options.merge(:action => "index"), :"data-tooltip" => "show requests")
       else
