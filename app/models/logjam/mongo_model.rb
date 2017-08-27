@@ -10,6 +10,59 @@ module Logjam
     def logger; Rails.logger; end
     def self.logger; Rails.logger; end
 
+    def self.convert_pair(key, val)
+      case val
+      when Float, Integer
+        { key => val }
+      when Hash
+        val.each_with_object({}) do |(k,v), h|
+          h.merge!(convert_pair("#{key}.#{k}", v))
+        end
+      else
+        raise "unexpected value for key #{key}: #{v.class}(#{v.inspect})"
+      end
+    end
+
+    def self.to_upsert(hash, keys: %w(_id page))
+      selector = hash.slice(*keys).except("_id")
+
+      flat_hash = {}
+      hash.except(*keys).each do |k,v|
+        flat_hash.merge!( convert_pair(k,v) )
+      end
+      incs = flat_hash.select{|k,_| k !~ /_max\z/}
+      maxs = flat_hash.select{|k,_| k =~ /_max\z/}
+      {:selector => selector, :incs => incs, :maxs => maxs}
+    end
+
+    def self.merge_stats(db, source_db, collection_name, keys)
+      collection = db.collection(collection_name)
+      source_collection = source_db.collection(collection_name)
+      source_collection.find.each do |row|
+        params = to_upsert(row, keys: keys)
+        operation = { '$inc' => params[:incs] }
+        operation.merge!('$max' => params[:maxs]) unless params[:maxs].empty?
+        begin
+          collection.update_one(params[:selector], operation, :upsert => true)
+        rescue => e
+          puts "collection #{collection_name}: update failed: #{e}"
+        end
+      end
+    end
+
+    def self.merge_collection(db, source_db, collection_name, use_id: true)
+      collection = db.collection(collection_name)
+      source_collection = source_db.collection(collection_name)
+      source_collection.find.each do |row|
+        begin
+          row.delete("_id") unless use_id
+          collection.insert_one(row)
+        rescue => e
+          puts "collection #{collection_name}: insert failed: #{e}"
+        end
+      end
+    end
+
     private
 
     def instrument(query, &block)

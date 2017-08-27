@@ -109,6 +109,22 @@ namespace :logjam do
       end
     end
 
+    desc "merge database"
+    task :merge_database => :environment do
+      date = (ENV['DATE'] || Date.today).to_date
+      app = ENV['APP']
+      env = ENV['ENV']
+      other_db = ENV['OTHER_DB']
+      Logjam.merge_database(date: date, app: app, env: env, other_db: other_db)
+    end
+
+    desc "merge databases"
+    task :merge_databases => :environment do
+      date = (ENV['DATE'] || Date.today).to_date
+      other_db = ENV['OTHER_DB']
+      Logjam.merge_databases(date: date, other_db: other_db)
+    end
+
     desc "list all stored user agents strings"
     task :user_agents => :environment do
       agents = Logjam.user_agents

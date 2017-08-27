@@ -661,6 +661,28 @@ module Logjam
     end
   end
 
+  def merge_database(date:, app:, env:, other_db:)
+    db = db(date, app, env)
+    name = db_name(date, app, env)
+    other_db = Mongo::Client.new([other_db], {:connect_timeout => 60, :socket_timeout => 60 }).db(name).database
+    MongoModel.merge_stats(db, other_db, "totals", %w(_id page))
+    MongoModel.merge_stats(db, other_db, "minutes", %w(_id page minute))
+    MongoModel.merge_stats(db, other_db, "quants", %w(_id kind page quant))
+    MongoModel.merge_stats(db, other_db, "agents", %w(_id agent))
+    # MongoModel.merge_collection(db, other_db, "requests", use_id: true)
+    MongoModel.merge_collection(db, other_db, "events", use_id: false)
+    MongoModel.merge_collection(db, other_db, "js_exceptions", use_id: false)
+  end
+
+  def merge_databases(date:, other_db:)
+    dbs = grep(databases, :date => date)
+    dbs.each do |db_name|
+      puts "merging #{db_name}"
+      app, env = extract_db_params(db_name)
+      merge_database(date: date, app: app, env: env, other_db: other_db)
+    end
+  end
+
   @@database_config ||= {}
   def database_config(env = Rails.env)
     @@database_config[env] ||=
