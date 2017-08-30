@@ -218,7 +218,6 @@ namespace :logjam do
 
     desc "Install logjam daemons"
     task :install => :environment do
-      puts "Installing logjam daemons for rails env: #{Rails.env}"
       require "fileutils"
       system("mkdir -p #{service_dir}")
       installed_services = []
