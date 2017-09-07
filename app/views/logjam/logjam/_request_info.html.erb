@@ -1,7 +1,15 @@
 <div class="item col-8 icon-action">
   <%= clean_link_to(:page => params[:page], :grouping => "request") do %>
   <h2>Requests</h2>
-  <div class="value"><%= memory_number @dataset.count_requests(@section) %></div>
+  <div class="value">
+    <%= memory_number @dataset.count_requests(@section) %>
+  </div>
+  <% used_GB = @db.command(:dbStats => 1, :scale => 1_073_741_824).first["storageSize"]
+     color = used_GB < 10 ? "green" : "red"
+  %>
+  <div class="storage" style="color:<%= color %>">
+    Using <%= number_with_precision(used_GB, :precision => 2) %> of 20 GB max disk storage
+  </div>
   <% end %>
 </div>
 
