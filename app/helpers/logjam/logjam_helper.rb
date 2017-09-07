@@ -568,7 +568,7 @@ module Logjam
       end
       l = (safe_h line).strip
       vlevel = virtual_log_level(l, level)
-      if l =~ /X-Logjam-Request-Id: (\S+)/
+      if l =~ /X-Logjam-Request-Id: ([-\w]+)/i
         request_id = $1
         l.sub!(request_id, sometimes_link_to_request(request_id))
       end
