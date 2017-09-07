@@ -167,6 +167,11 @@
         <li>
           <%= link_to(fa_icon("cogs") + " Admin Space", admin_storage_path) %>
         </li>
+        <% if url = Logjam.github_issue_url %>
+        <li>
+          <%= link_to(fa_icon("bug") + " Create Issue", Logjam.github_issue_url, target: "_blank") %>
+        </li>
+        <% end %>
       </ul>
   </div>
 

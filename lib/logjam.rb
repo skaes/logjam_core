@@ -178,6 +178,15 @@ module Logjam
     @@sampling_rate_400s = r
   end
 
+  @@github_issue_url = "https://github.com/skaes/logjam_app/issues/new"
+  def self.github_issue_url
+    @@github_issue_url
+  end
+
+  def self.github_issue_url=(r)
+    @@github_issue_url = r
+  end
+
   @@devices = nil
   def self.devices
     @@devices
