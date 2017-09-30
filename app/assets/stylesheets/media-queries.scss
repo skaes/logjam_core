@@ -1,7 +1,7 @@
 @import 'mixins.scss';
 @import 'constants.scss';
 
- /* Retina Display  */
+// retina display
 @media only screen and (-webkit-min-device-pixel-ratio: 2) {
   th.sorted {
     background-image: image-url('table_sorted_desc2x.png');
@@ -16,6 +16,7 @@
   }
 }
 
+// very wide view: large monitor, 3 column layout: items, graph&details stacked, items
 @media all and (min-width: 1500px) {
   .xxl-view .app-dashboard {
     display: -webkit-flex;
@@ -37,10 +38,8 @@
 
       .item {
         width: auto !important;
-
-        .value {
-          position: static;
-          margin: 5px 0
+        &.has-storage {
+          min-height: 120px;
         }
       }
     }
@@ -63,6 +62,8 @@
   }
 }
 
+// medium
+// one row of items (n columns), one column graph and perf details
 @media all and (max-width: 1100px) {
   #logjam-header {
     position: static;
@@ -115,7 +116,7 @@
     left: 0 !important;
     min-height: 0;
     max-width: 100%;
-    overflow-y: scroll; /* has to be scroll, not auto */
+    overflow-y: scroll; // has to be scroll, not auto
     -webkit-overflow-scrolling: touch;
     width: 100%;
     display: none;
@@ -141,18 +142,17 @@
   }
 }
 
-/* iPad Portrait  */
+// iPad Portrait
 @media all and (max-width: 800px) {
   .app-overview {
     display: flex;
     flex-direction: row;
     width: 100%;
-     overflow-x: scroll; /* has to be scroll, not auto */
+    overflow-x: scroll; // has to be scroll, not auto
     -webkit-overflow-scrolling: touch;
 
     .item {
       min-width: 220px;
-
     }
   }
 
@@ -165,7 +165,8 @@
     }
   }
 }
-/* smartphone landscape */
+
+// smartphone landscape
 @media all and (max-width: 750px) {
   .app-dashboard {
     margin: 0 !important;
@@ -175,6 +176,7 @@
       padding-right: 5px;
       .item {
         overflow-y: scroll;
+        min-height: 70px;
       }
     }
   }
@@ -210,7 +212,20 @@
   }
 }
 
-/* smartphone portrait */
+// iphone 6 portrait (and smaller)
+@media all and (max-width: 375px) {
+    .app-dashboard {
+        .flex {
+            .item {
+                &.has-storage {
+                    min-height: 100px;
+                }
+            }
+        }
+    }
+}
+
+// smartphone portrait (up to iphone 5)
 @media all and (max-width: 320px) {
   #logjam-header {
     display: block;
