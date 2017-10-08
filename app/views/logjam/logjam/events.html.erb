@@ -1,0 +1,24 @@
+<%= render "header" %>
+<div id="logjam-container">
+  <%= render "sidebar" %>
+  <div id="logjam-content" class="app-dashboard">
+    <div class="flex">
+      <div class="item">
+        <h2>
+          <%= @title %> (<%= @events.size %>)
+        </h2>
+        <table class="full_stats">
+          <tr><th>Time</th><th>Cluster</th><th>Message</th><th>UUID</th></tr>
+          <% @events.sort_by{|e| e["started_at"]}.reverse.each do |e| %>
+          <tr class="full_stats">
+            <td><%= e["started_at"][11..18] %></td>
+            <td><%= e["cluster"]||"-" %></td>
+            <td><%= e["label"] %></td>
+            <td><%= e["uuid"] %></td>
+          </tr>
+          <% end %>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

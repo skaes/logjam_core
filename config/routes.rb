@@ -24,6 +24,7 @@ Rails.application.routes.draw do
       get "/:year/:month/:day/error_overview" => :error_overview
       get "/:year/:month/:day/errors" => :errors
       get "/:year/:month/:day/exceptions" => :exceptions
+      get "/:year/:month/:day/events" => :events
       get "/:year/:month/:day/history" => :history
       get "/:year/:month/:day/js_exception_types" => :js_exception_types
       get "/:year/:month/:day/js_exceptions" => :js_exceptions

@@ -70,6 +70,21 @@ module Logjam
     end
     private :fetch_json_data_for_index
 
+    def events
+      respond_to do |format|
+        format.html do
+          redirect_on_empty_dataset and return
+          @events = Events.new(@db).events
+          @title = "Notifications"
+        end
+        format.json do
+          prepare_params
+          events = Events.new(@db).events
+          render :json => Oj.dump(events, :mode => :compat)
+        end
+      end
+    end
+
     def history
       respond_to do |format|
         format.html do
