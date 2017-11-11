@@ -3,7 +3,7 @@
 %>
 <div class="flex">
   <% tiles.each do |name, value| -%>
-    <div class="item col-4" style="word-wrap:break-word">
+    <div class="item col-4 blue-links" style="word-wrap:break-word">
       <h2><%= hrn name %></h2>
       <%= name == "started_at" ? value.to_s.sub(/(\d)T(\d)/,'\1 \2').sub(/(\d)\+/, '\1 +') : value %>
     </div>

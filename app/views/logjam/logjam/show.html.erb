@@ -27,8 +27,8 @@
     <% if @request.present? %>
 
     <div class="flex">
-      <div class="item col-1">
-        <h2 id="request-details">Request details for action
+      <div class="item col-1 blue-links">
+        <h2>Request details for action
           <%
              page, minute = @request["page"], @request["minute"]
              _params = params.except(:utf8, :id, :action).merge(:page => page)

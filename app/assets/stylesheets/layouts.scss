@@ -146,13 +146,14 @@
   padding: 2px;
 }
 
-#request-details {
+.blue-links {
   a {
     color: blue;
     text-transform: none;
     &:hover { color: blue; }
   }
 }
+
 
 th.sortable:hover {
   background: $white image-url('table_sort_desc.png') top right no-repeat;
