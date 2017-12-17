@@ -8,7 +8,7 @@
 -%>
 
 <table class='full_stats'>
-    <% if @dataset.grouping? -%>
+  <% if @dataset.grouping? -%>
     <thead>
       <tr>
         <th><%= @dataset.grouping_name %></th>
@@ -29,7 +29,11 @@
       </tr>
     </thead>
     <%= render "#{resource_type}_statistics", options.merge(:pages => data) %>
-
+  <% elsif data.empty? -%>
+    <div class="message">
+      Logjam only stores requests slower than a given time threshold or requests with certain error codes
+      to aid debugging. Unfortunately, no such requests matching your search criteria are stored in the database.
+    </div>
   <% else -%>
     <thead>
       <tr>
@@ -41,6 +45,5 @@
       </tr>
     </thead>
     <%= render "request_statistics", options.merge(:requests => data) %>
-
   <% end -%>
 </table>
