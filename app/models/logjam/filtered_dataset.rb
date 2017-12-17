@@ -137,6 +137,14 @@ module Logjam
         end
     end
 
+    def stored_requests
+      @stored_requests ||=
+        begin
+          query_opts = {start_minute: @start_minute, end_minute: @end_minute}
+          Requests.new(@db, resource, page, query_opts).count
+        end
+    end
+
     def do_the_query(section = :backend, options = {})
       options = {:grouping => self.grouping, :resource => self.resource}.merge!(options)
       grouping = options[:grouping]

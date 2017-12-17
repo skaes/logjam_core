@@ -14,11 +14,18 @@
           and <%= minute_to_human(@dataset.end_minute) %>,
           sorted by <%= resource_name %>
         </h2>
+        <% if @request_count == 0 %>
+        <div class="message">
+          Logjam only stores requests slower than a given time threshold or requests with certain error codes
+          to aid debugging. Unfortunately, no such requests matching your search criteria are stored in the database.
+        </div>
+        <% else %>
         <%= render "result_navigator" %>
         <table class='full_stats'>
           <tr><th>severity</th><th>rc</th><th>time</th><th>action</th><th class="sorted"><%= resource_name %></th></tr>
           <%= render "request_statistics", options.merge(:requests => @requests) %>
         </table>
+        <% end %>
       </div>
     </div>
   </div>

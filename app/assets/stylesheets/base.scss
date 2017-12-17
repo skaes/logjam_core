@@ -118,3 +118,14 @@ input[type="text"]:disabled
     margin-left: 10px;
     text-transform: none;
 }
+
+.message {
+    margin: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 15px;
+    background: #ffe3e3;
+    color: maroon;
+    width: 75%;
+    line-height: 1.5;
+}
