@@ -160,6 +160,37 @@ module Logjam
     @@ignored_request_uri = uri
   end
 
+  def self.default_web_socket_uri(request)
+   "#{web_socket_protocol}://#{request.host}:#{web_socket_port}/"
+  end
+
+  @@web_socket_uri = nil
+  def self.web_socket_uri(request)
+    @@web_socket_uri || default_web_socket_uri(request)
+  end
+
+  def self.web_socket_uri=(uri)
+    @@web_socket_uri = uri
+  end
+
+  @@web_socket_protocol = "ws"
+  def self.web_socket_protocol
+    @@web_socket_protocol
+  end
+
+  def self.web_socket_protocol=(protocol)
+    @@web_socket_protocol = protocol
+  end
+
+  @@web_socket_port = RUBY_PLATFORM =~ /darwin/ ? 9608 : 8080
+  def self.web_socket_port
+    @@web_socket_port
+  end
+
+  def self.web_socket_port=(port)
+    @@web_socket_port = port
+  end
+
   @@backend_only_requests = ""
   def self.backend_only_requests
     @@backend_only_requests
