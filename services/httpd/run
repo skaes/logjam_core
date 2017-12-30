@@ -9,4 +9,9 @@ if [ -x /opt/logjam/bin/logjam-fhttpd ]; then
 else
   httpd=/usr/local/bin/logjam-fhttpd
 fi
+
+if test -f /etc/default/logjam; then
+    set -a; source /etc/default/logjam; set +a
+fi
+
 exec $httpd -p HTTPD_PORT -d 73 "$@"
