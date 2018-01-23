@@ -10,7 +10,7 @@ function submit_filter_form() {
   var action = new URI ($("#filter-form").attr("action"));
   var x = $("#filter-form").serialize();
   var uri = new URI();
-  uri.pathname(action.pathname());
+  uri.pathname(action.pathname().replace(/\/show\/.*$/, ''));
   uri.search(x);
   uri.removeSearch("utf8")
      .removeSearch("page", parameter_defaults.page)
