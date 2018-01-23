@@ -2,7 +2,7 @@
 $(function(){
   $('.sidebar-collapse', '#logjam-sidebar').on('click', function(){
     $('#logjam-sidebar').toggleClass('closed');
-  })
+  });
 });
 
 
@@ -17,7 +17,7 @@ $(function(){
       $('#auto_refresh').val('1');
       submit_filter_form();
     }
-  })
+  });
 
   /* choose the enviroment */
   $('.enviroment-chooser .btn', '#logjam-header').on('mousedown', function(event){
