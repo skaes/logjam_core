@@ -135,6 +135,12 @@ module Logjam
       n
     end
 
+    def five_hundreds
+      n = 0
+      response.each_pair{|k,v| n += v.to_i if k =~ /^5/}
+      n
+    end
+
     def callers
       @page_info["callers"] ||= {}
     end

@@ -97,7 +97,7 @@ module Logjam
           page = /^#{page}$/ if @page =~ /\A::/ && page_names.include?(page)
           page = /^::#{page}$/ if @page !~ /\A::/ && page_names.include?("::#{page}")
           page = 'all_pages' if @page == '' || @page == '::'
-          resources = %w(apdex papdex xapdex severity exceptions soft_exceptions total_time) + Resource.all_resources
+          resources = %w(apdex papdex xapdex response severity exceptions soft_exceptions total_time) + Resource.all_resources
           databases = Logjam.grep(Logjam.databases, :app => @app, :env => @env)
           data = []
           today = Date.today
@@ -115,7 +115,9 @@ module Logjam
                 :exceptions => summary.overall_exception_count,
                 :apdex_score => summary.apdex_score(:backend),
                 :exception_counts => summary.all_exceptions,
+                :five_hundreds => summary.five_hundreds,
               }
+              hash[:availability] = 100 - 100.0 * hash[:five_hundreds] / hash[:request_count]
               if (v = summary.apdex_score(:page)) && v.to_f.finite? && v>0
                 hash[:papdex_score] = v
               end

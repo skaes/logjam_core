@@ -12,7 +12,9 @@
         <% if @section.to_s == 'backend' %>
         <div id="apdex_score"></div>
         <div id="total_time"></div>
+        <div id="availability"></div>
         <div id="request_count"></div>
+        <div id="five_hundreds"></div>
         <div id="errors"></div>
         <div id="warnings"></div>
         <div id="exceptions"></div>
@@ -63,6 +65,8 @@
         logjam_history_bar_chart(response.data, "apdex_score", "apdex_score",js_params, "m");
         logjam_history_bar_chart(response.data, "request_count", "request_count",js_params, "m");
         logjam_history_bar_chart(response.data, "total_time", "total_time", js_params, "m");
+        logjam_history_bar_chart(response.data, "five_hundreds", "five_hundreds", js_params, "m");
+        logjam_history_bar_chart(response.data, "availability", "availability", js_params, "m");
         logjam_history_bar_chart(response.data, "errors", "errors", js_params, "m");
         logjam_history_bar_chart(response.data, "warnings", "warnings", js_params, "m");
         logjam_history_bar_chart(response.data, "exceptions", "exceptions", js_params, "m");
