@@ -535,7 +535,7 @@ module Logjam
     end
 
     def cleanup_line(l, request_id=nil)
-      request_id ? l : CGI.unescape(l.gsub('+', '%2B')).gsub('<', '&lt;').gsub('>', '&gt;')
+      request_id ? l : CGI.unescape(l.gsub('+', '%2B')).gsub('<', '&lt;').gsub('>', '&gt;').gsub(/\e\[[\d;]*m/, '')
     rescue => e
       logger.error("#{e.class}(#{e})")
       l
