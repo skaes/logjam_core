@@ -534,7 +534,7 @@ module Logjam
       severity_icon(l)
     end
 
-    def allow_breaks(l, request_id=nil)
+    def cleanup_line(l, request_id=nil)
       request_id ? l : CGI.unescape(l.gsub('+', '%2B')).gsub('<', '&lt;').gsub('>', '&gt;')
     rescue => e
       logger.error("#{e.class}(#{e})")
@@ -555,7 +555,7 @@ module Logjam
         bt.sub!(/(\(\S+? \[\S+?\.pm:\d+\])/){|x| "\n" << x}
         bt.gsub!(/(\n\n)/, "\n")
       end
-      "<span class='error'>#{allow_breaks(bt, request_id)}</span>"
+      "<span class='error'>#{cleanup_line(bt, request_id)}</span>"
     end
 
     def format_log_line(line)
@@ -572,7 +572,7 @@ module Logjam
         request_id = $1
         l.sub!(request_id, sometimes_link_to_request(request_id))
       end
-      colored_line = vlevel > 1 ? format_backtrace(l, request_id) : allow_breaks(l, request_id)
+      colored_line = vlevel > 1 ? format_backtrace(l, request_id) : cleanup_line(l, request_id)
       "#{format_log_level(level)} #{format_timestamp(timestamp.to_s)} <span class='lb'>#{colored_line}</span>"
     end
 
