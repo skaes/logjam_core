@@ -42,6 +42,10 @@ pre {
   padding: 4px!important;
   font-size: 11px;
   white-space: pre-wrap;
+  overflow-wrap: break-word; /* official */
+  word-wrap: break-word; /* original name of overflow-wrap */
+  word-break: break-all; /* not nice in WebKit */
+  word-break: break-word; /* non standard for WebKit */
 
   a {
     color: blue;
