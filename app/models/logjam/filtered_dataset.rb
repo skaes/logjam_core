@@ -102,7 +102,7 @@ module Logjam
     end
 
     def live_stream?
-      (@date == Date.today || Rails.env.development?) && (page.blank? || page == "all_pages" || page == "::" || namespace?)
+      page.blank? || page == "all_pages" || page == "::" || namespace?
     end
 
     def empty?(resource = 'total_time')

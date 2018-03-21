@@ -711,7 +711,7 @@ module Logjam
     def live_stream
       respond_to do |format|
         format.html do
-          get_app_env
+          redirect_on_missing_date_params and return
           redirect_on_empty_dataset and return
           @resources = (Logjam::Resource.time_resources-%w(total_time gc_time)) & @collected_resources
           @socket_url = Logjam.web_socket_uri(request)
@@ -878,6 +878,10 @@ module Logjam
           :grouping => params[:grouping], :grouping_function => params[:grouping_function]}, params)
         redirect_to new_params
       end
+    end
+
+    def redirect_on_missing_date_params
+      redirect_to_clean_url if params[:year].blank? || params[:month].blank? || params[:day].blank?
     end
 
     def print_params
