@@ -873,6 +873,7 @@ module Logjam
           :page => params[:page].to_s.sub(/\A::/,''), :response => params[:response],
           :resource => params[:resource],
           :sort => params[:sort], :group => params[:group], :filter => params[:filter],
+          :exclude_response => params[:exclude_response],
           :offset => params[:offset], :error_type => params[:error_type],
           :scale => params[:scale],
           :grouping => params[:grouping], :grouping_function => params[:grouping_function]}, params)
