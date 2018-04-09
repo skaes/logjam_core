@@ -50,7 +50,7 @@
     legend: (@resources.reverse+%w(requests/second)).map{|r| r.gsub(/_/,' ')},
     socket_url: @socket_url,
     socket_greeting: "#{@app}-#{@env},#{@key}",
-    app_env: "app=#{@app}&env=#{@env}&exclude_status=#{@exclude_status}",
+    app_env: "app=#{@app}&env=#{@env}&exclude_response=#{@exclude_response}",
     transparent_ico_path: asset_path("t.png")
   }
 %>
