@@ -17,7 +17,7 @@
 //= require jquery.autocomplete
 //= require jquery.tipsy
 //= require select2
-//= require d3.v4.min
+//= require d3.v5.min
 //= require logjam-filter
 //= require uri
 //= require logjam-header
@@ -27,6 +27,7 @@
 //= require logjam-simple-pie
 //= require logjam-resource-plot
 //= require logjam-quants-plot
+//= require logjam-heatmap-plot
 //= require logjam-history-bar-chart
 //= require logjam-livestream
 //= require logjam-call-graph

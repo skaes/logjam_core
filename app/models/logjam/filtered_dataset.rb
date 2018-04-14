@@ -331,6 +331,10 @@ module Logjam
       @the_quants = Quants.new(@db, resources, page, kind)
     end
 
+    def has_histograms?
+      Histograms.new(@db, resource, page).count > 0
+    end
+
     BUCKETS = [
       1,            #    1   ms               1 object            1   KB
       3,            #    3   ms               3 objects           3   KB
