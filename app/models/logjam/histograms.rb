@@ -10,7 +10,17 @@ module Logjam
       super(db, "histograms")
       @pattern = pattern
       @pattern = "all_pages" if @pattern.blank? || @pattern == '::'
-      @pattern = Regexp.new(/#{@pattern}/) unless @pattern == "all_pages"
+      @is_a_module = modules.include?("::#{pattern}")
+      @is_a_page = page_names.include?(pattern)
+      @ignore_modules = false
+      if @is_a_page
+        # no need to change pattern
+      elsif @is_a_module
+        @pattern = "::#{@pattern}"
+      else
+        @ignore_modules = true
+        @pattern = Regexp.new(/#{@pattern}/)
+      end
       @resources = resources
       compute
     end
@@ -42,16 +52,34 @@ module Logjam
       end
     end
 
+    def page_names
+      @page_names ||=
+        begin
+          query = "Histograms.distinct(:page)"
+          with_conditional_caching(query) do |payload|
+            rows = @collection.find.distinct(:page)
+            payload[:rows] = rows.size
+            rows.to_a
+          end
+        end
+    end
+
+    def modules
+      page_names.grep(/^::/)
+    end
+
     private
 
     def compute
       selector = { :page => @pattern } #, :resource => { '$in' => @resources } }
-      fields = { :projection => _fields(["minute", "resource", "histogram"])}
+      fields = { :projection => _fields(["page", "minute", "resource", "histogram"])}
       query, log = build_query("Histograms.find", selector, fields)
       rows = with_conditional_caching(log) do |payload|
         rs = []
         query.each do |row|
           row.delete("_id")
+          page = row.delete("page")
+          next if @ignore_modules && (page == "all_pages" || page.starts_with?("::"))
           rs << row
         end
         payload[:rows] = rs.size

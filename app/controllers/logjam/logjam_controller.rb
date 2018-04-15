@@ -715,7 +715,10 @@ module Logjam
         format.html do
           redirect_on_empty_dataset and return
           interval = params[:interval].to_i
-          @histograms = Histograms.new(@db, @resources, @page).histograms(interval)
+          histograms = Histograms.new(@db, @resources, @page)
+          # logger.debug "PAGE NAMES: #{histograms.page_names}"
+          # logger.debug "MODULES: #{histograms.modules}"
+          @histograms = histograms.histograms(interval)
         end
       end
     end
