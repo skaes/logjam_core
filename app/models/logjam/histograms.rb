@@ -79,7 +79,7 @@ module Logjam
         query.each do |row|
           row.delete("_id")
           page = row.delete("page")
-          next if @ignore_modules && (page == "all_pages" || page.starts_with?("::"))
+          next if @ignore_modules && page.starts_with?("::")
           rs << row
         end
         payload[:rows] = rs.size
