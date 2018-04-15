@@ -710,11 +710,12 @@ module Logjam
 
     def heatmaps
       @title = "Heatmaps"
+      @resources = %w(total_time page_time ajax_time)
       respond_to do |format|
         format.html do
           redirect_on_empty_dataset and return
           interval = params[:interval].to_i
-          @histograms = Histograms.new(@db, "total_time", @page).histograms(interval)
+          @histograms = Histograms.new(@db, @resources, @page).histograms(interval)
         end
       end
     end

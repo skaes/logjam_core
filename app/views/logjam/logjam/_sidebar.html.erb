@@ -47,7 +47,7 @@
         <% klass = @dataset && @dataset.has_histograms? ? "enabled" : "disabled" %>
         <li class="<%= klass %>">
           <%= clean_link_to(:page => without_module(@page), :action => :heatmaps, :section => :backend, :resource => 'total_time') do %>
-          <i class="fa fa-map"></i> Heatmap
+          <i class="fa fa-map"></i> Heatmaps
           <% end %>
         </li>
 

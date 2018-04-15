@@ -1,8 +1,9 @@
 function logjam_heatmap_plot(params) {
-  var data                 = params.data,
-      interval             = params.interval,
-      legend               = params.legend,
-      container            = params.container;
+  var data      = params.data,
+      interval  = params.interval,
+      legend    = params.legend,
+      container = params.container,
+      resource  = params.resource;
 
   var B = params.data["0"].length;
 
@@ -48,7 +49,16 @@ function logjam_heatmap_plot(params) {
   var maxBucket = d3.max(tiles, function(d){ return d.bucket; });
 
   //d3.interpolateRgb.gamma(3)("rgb(168, 204, 255)", "rgb(0,0,255)"))
-  var color = d3.scaleSequential(d3.interpolateBlues)
+
+  var colorInterpolator;
+  if (resource == 'page_time') {
+    colorInterpolator = d3.interpolateGreens;
+  } else if (resource == 'ajax_time') {
+    colorInterpolator = d3.interpolateReds;
+  } else {
+    colorInterpolator = d3.interpolateBlues;
+  }
+  var color = d3.scaleSequential(colorInterpolator)
       .domain([1, maxValue]);
 
   /* The root panel. */
