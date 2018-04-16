@@ -682,8 +682,8 @@ module Logjam
     # Safari does not do proper flex box, so break it manually (arrhg)
     def order_and_slice_quants_tiles(resources)
       rc = resources.clone
-      total = rc.delete('total_time')
-      wait = rc.delete('wait_time')
+      total = rc.delete('total_time') || rc.delete('page_time')
+      wait = rc.delete('wait_time') || rc.delete('ajax_time')
       ordered = [total, wait].compact.concat(rc)
       # total and wait could be nil, so ...
       first = ordered.shift
