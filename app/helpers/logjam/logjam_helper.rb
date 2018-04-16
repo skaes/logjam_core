@@ -691,7 +691,7 @@ module Logjam
       second = ordered.shift
       return [[first]] if second.nil?
       # did I already mention that Safari blows?
-      [[first,second]].concat(rc.each_slice(3).to_a)
+      [[first,second]].concat(ordered.each_slice(3).to_a)
     end
 
     def pairs_without_trailing_zeros(data)
