@@ -21,7 +21,7 @@ function logjam_heatmap_plot(params) {
       xticks = d3.range(25).map(function(h){ return h/interval*60; }),
       x      = d3.scaleLinear().domain([0, 1440/interval]).range([0, w]),
       y      = d3.scaleLinear().domain([0, B]).range([h, 0]).nice(),
-      cardWidth = interval,
+      cardWidth = x(2*interval)-x(interval)+1,
       cardHeight = h/B;
 
   /* tiles */
