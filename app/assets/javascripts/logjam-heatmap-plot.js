@@ -1,7 +1,6 @@
 function logjam_heatmap_plot(params) {
   var data      = params.data,
       interval  = params.interval,
-      legend    = params.legend,
       container = params.container,
       resource  = params.resource;
 
@@ -36,6 +35,8 @@ function logjam_heatmap_plot(params) {
     }).filter(function(e){
       return e.value > 0;
     }));
+
+  var origMaxValue = d3.max(tiles, function(d){ return d.value; });
 
   if (params.scale == 'logarithmic') {
     tiles.forEach(function(d){
@@ -157,5 +158,44 @@ function logjam_heatmap_plot(params) {
   cards.select("title").text(function(d) { return d.value; });
 
   cards.exit().remove();
+
+  var defs = vis.append("defs");
+
+  var gradientId = "linearGradient-"+resource;
+  var linearGradient = defs.append("linearGradient")
+      .attr("id", gradientId)
+      .attr("x1", "0%")
+      .attr("y1", "0%")
+      .attr("x2", "100%")
+      .attr("y2", "0%");
+
+  linearGradient.append("stop")
+    .attr("offset", "0%")
+    .attr("stop-color", color(1)); //light blue
+
+  linearGradient.append("stop")
+    .attr("offset", "100%")
+    .attr("stop-color", color(maxValue)); //dark blue
+
+  // Legend
+  vis.append("rect")
+    .attr("x", 0)
+    .attr("y", h+20)
+    .attr("width", w/2-70)
+    .attr("height", 15)
+    .style("stroke-width", 0)
+    .style("fill", "url(#"+gradientId+")");
+
+  var legendScale = d3.scaleLinear()
+      .domain([1, origMaxValue])
+      .range([0, w/2-70-1]);
+
+  var legend = d3.axisBottom()
+      .scale(legendScale)
+      .tickArguments([10, "s"]);
+
+  vis.append("g")
+    .attr("transform", "translate(0,"+(h+35)+")")
+    .call(legend);
 
 }
