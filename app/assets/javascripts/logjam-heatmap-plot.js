@@ -58,8 +58,9 @@ function logjam_heatmap_plot(params) {
   } else {
     colorInterpolator = d3.interpolateBlues;
   }
+  // by not using the full scale, we make low number of requests more visible
   var color = d3.scaleSequential(colorInterpolator)
-      .domain([1, maxValue]);
+      .domain([-0.1 * maxValue, maxValue]);
 
   /* The root panel. */
   var vis = d3.select(params.container)
