@@ -160,24 +160,11 @@ function logjam_heatmap_plot(params) {
   cards.exit().remove();
 
   // Legend
-  var width = w/2-70-1;
-
-  console.log(d3.range(width));
-
-  var bars = vis.selectAll(".mybars")
-    .data(d3.range(width))
-      .enter().append("rect")
-      .attr("class", "mybars")
-      .attr("x", function(d, i) { return i; })
-      .attr("y", h+20)
-      .attr("height", 15)
-      .attr("width", 1)
-      .style("stroke", "none")
-      .style("fill", function(d, i ) { return color((maxValue*1.0/width)*i); });
+  var legendWidth = w/2-70-1;
 
   var legendScale = d3.scaleLinear()
       .domain([1, origMaxValue])
-      .range([0, w/2-70-1]);
+      .range([0, legendWidth-1]);
 
   var legend = d3.axisBottom()
       .scale(legendScale)
@@ -187,4 +174,14 @@ function logjam_heatmap_plot(params) {
     .attr("transform", "translate(0,"+(h+35)+")")
     .call(legend);
 
+  vis.selectAll(".mybars")
+    .data(d3.range(legendWidth))
+    .enter().append("rect")
+    .attr("class", "mybars")
+    .attr("x", function(d, i) { return i; })
+    .attr("y", h+20)
+    .attr("height", 15)
+    .attr("width", 1)
+    .style("stroke", "none")
+    .style("fill", function(d, i ) { return color((maxValue*1.0/legendWidth)*i); });
 }
