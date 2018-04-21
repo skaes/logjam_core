@@ -719,6 +719,7 @@ module Logjam
           # logger.debug "PAGE NAMES: #{histograms.page_names}"
           # logger.debug "MODULES: #{histograms.modules}"
           @histograms = histograms.histograms(interval)
+          # logger.debug "HISTOGRAMS: #{@histograms.inspect}"
         end
       end
     end

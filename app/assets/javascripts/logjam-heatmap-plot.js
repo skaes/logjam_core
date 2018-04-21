@@ -141,6 +141,15 @@ function logjam_heatmap_plot(params) {
   var cards = vis.selectAll(".card")
        .data(tiles, function(d) { return d.minute+':'+d.bucket; });
 
+  var tooltip_text = "";
+  var tooltip_formatter = d3.format(",d");
+
+  function format(value) {
+    if (params.scale == 'logarithmic')
+      value = Math.pow(Math.E, value);
+    return tooltip_formatter(value) + " requests";
+  }
+
   cards.append("title");
 
   cards.enter().append("rect")
@@ -149,6 +158,9 @@ function logjam_heatmap_plot(params) {
     .attr("class", "card")
     .attr("width", cardWidth)
     .attr("height", cardHeight)
+    .on("mousemove", function(d){ tooltip_text = format(d.value);})
+    .on("mouseover", function(d){ tooltip_text = format(d.value);})
+    .on("mouseout", function(d){ tooltip_text = ""; })
     .style("stroke-width", 0)
     .style("fill", function(d){ return color(d.value);});
 
@@ -158,6 +170,17 @@ function logjam_heatmap_plot(params) {
   cards.select("title").text(function(d) { return d.value; });
 
   cards.exit().remove();
+
+  $('.card').tipsy({
+    trigger: 'hover',
+    follow: 'x',
+    offset: 0,
+    offsetX: 0,
+    offsetY: -20,
+    gravity: 's',
+    html: false,
+    title: function() { return tooltip_text; }
+  });
 
   // Legend
   var legendWidth = w/2-70-1;
