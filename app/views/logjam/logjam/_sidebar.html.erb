@@ -38,11 +38,17 @@
 
         <% klass = @dataset && @dataset.has_distribution_plot? ? "enabled" : "disabled" %>
         <li class="<%= klass %>">
-          <% scatter_title = "view #{distribution_kind(@dataset.resource).to_s.gsub(/_/," ")} plot" %>
-            <%= clean_link_to(:page => without_module(@page), :action => distribution_kind(@dataset.resource),
-                              :section => ::Logjam::Resource.section(@dataset.resource)) do %>
+          <%= clean_link_to(:page => without_module(@page), :action => distribution_kind(@dataset.resource),
+                            :section => ::Logjam::Resource.section(@dataset.resource)) do %>
             <i class="fa fa-signal" style="transform:scale(-1,1) translate(-6px,-1px);"></i> Distribution Plot
-            <% end %>
+          <% end %>
+        </li>
+
+        <% klass = @dataset && @dataset.has_histograms? ? "enabled" : "disabled" %>
+        <li class="<%= klass %>">
+          <%= clean_link_to(:page => without_module(@page), :action => :heatmaps, :section => :backend, :resource => 'total_time') do %>
+          <i class="fa fa-map"></i> Heatmaps
+          <% end %>
         </li>
 
         <% unless @only_one_app %>

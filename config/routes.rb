@@ -37,6 +37,7 @@ Rails.application.routes.draw do
       get "/:year/:month/:day/show/:id" => :show
       get "/:year/:month/:day/totals_overview" => :totals_overview
       get "/:year/:month/:day/user_agents" => :user_agents
+      get "/:year/:month/:day/heatmaps" => :heatmaps
     end
 
     get "/" => :index, :page => "::"

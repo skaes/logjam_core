@@ -708,6 +708,22 @@ module Logjam
       end
     end
 
+    def heatmaps
+      @title = "Heatmaps"
+      @resources = %w(total_time page_time ajax_time)
+      respond_to do |format|
+        format.html do
+          redirect_on_empty_dataset and return
+          interval = params[:interval].to_i
+          histograms = Histograms.new(@db, @resources, @page)
+          # logger.debug "PAGE NAMES: #{histograms.page_names}"
+          # logger.debug "MODULES: #{histograms.modules}"
+          @histograms = histograms.histograms(interval)
+          # logger.debug "HISTOGRAMS: #{@histograms.inspect}"
+        end
+      end
+    end
+
     def live_stream
       respond_to do |format|
         format.html do

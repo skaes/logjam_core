@@ -1,0 +1,41 @@
+<%= render "header" %>
+<div id="logjam-container">
+  <%= render "sidebar" %>
+  <div id="logjam-content" class="app-dashboard">
+    <div class="flex">
+      <div class="item col-1">
+        <h2><%= @title %> <%= hpn("for") %></h2>
+        <%= render "scale_toggle" %>
+      </div>
+    </div>
+    <% @resources.each do |resource| %>
+      <% next if @histograms[resource].blank? %>
+      <% js_params = {
+           container: "#histogram-#{resource}",
+           interval: params[:interval].to_i,
+           data: @histograms[resource],
+           scale: params[:scale],
+           resource: resource,
+         }
+      %>
+       <div class="flex">
+        <div class="item col-1">
+          <h2><%= resource.humanize %></h2>
+          <div id="<%= "histogram-#{resource}" %>"></div>
+          <script>
+            (function(){
+                var histogram_params = <%=raw Oj.dump(js_params) %>;
+                $(function(){
+                   logjam_heatmap_plot(histogram_params);
+                });
+                $(window, document).on('resize', function(){
+                   $('#<%= "histogram-#{resource}" %>').html('');
+                   logjam_heatmap_plot(histogram_params);
+                });
+              })();
+          </script>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -671,6 +671,18 @@ module Logjam
     end
   end
 
+  def self.drop_histograms(from_date, to_date, delay=5)
+    for date in from_date..to_date
+      dbs = grep(databases, :date => date)
+      dbs.each do |db_name|
+        db = connection_for(db_name).db(db_name)
+        puts "dropping histograms collection from #{db_name}"
+        db["histograms"].drop
+        sleep delay
+      end
+    end
+  end
+
   def list_databases_without_requests()
     db_info = []
     databases_sorted_by_date.each do |db_name|

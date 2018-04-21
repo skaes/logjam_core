@@ -51,11 +51,19 @@ namespace :logjam do
       Logjam.drop_environments(ENV['ENVS'].to_s.split(/\s*,\s*/), delay)
     end
 
-    desc "reomve frontend fields from all dbs DATE=yesterday DELAY=5"
+    desc "remove frontend fields from all dbs DATE=yesterday DELAY=5"
     task :drop_frontend_fields => :environment do
       delay = (ENV['DELAY'] || 5).to_i
       date = (ENV['DATE'] || Date.today-1).to_date
       Logjam.drop_frontend_fields(date, delay)
+    end
+
+    desc "drop old histogram collections"
+    task :drop_old_histograms => :environment do
+      delay = (ENV['DELAY'] || 5).to_i
+      from_date = (ENV['FROM_DATE'] || Date.today-1).to_date
+      to_date = (ENV['TO_DATE'] || Date.today-1).to_date
+      Logjam.drop_histograms(from_date, to_date, delay)
     end
 
     desc "drop all databases"
@@ -66,7 +74,7 @@ namespace :logjam do
         puts "destruction initiated"
         Logjam.drop_all_databases
       else
-        puts "aborted!"
+        puts "destruction aborted!"
       end
     end
 
