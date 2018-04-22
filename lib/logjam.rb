@@ -502,11 +502,11 @@ module Logjam
   end
 
   def databases_sorted_by_date
-    get_known_databases.sort_by{|db| db =~ /^([-a-z]+)-(\d[-0-9]+)/ && "#{$2}-#{$1}"}
+    get_known_databases.sort_by{|db| (db =~ /^([^-]+)-(\d[-0-9]+)/ && "#{$2}-#{$1}")}
   end
 
   def databases_sorted_by_date_with_connections
-    get_known_databases_with_connections.sort_by{|db| db =~ /^([-a-z]+)-(\d[-0-9]+)/ && "#{$2}-#{$1}"}
+    get_known_databases_with_connections.sort_by{|db| db =~ /^([^-]+)-(\d[-0-9]+)/ && "#{$2}-#{$1}"}
   end
 
   def import_databases(from_host, database_names, options = {})
