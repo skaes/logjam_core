@@ -129,9 +129,13 @@ module Logjam
   end
 
   @@frontend_timings_collector = nil
+  @@frontend_timings_collector_port = 9705
   def self.frontend_timings_collector=(spec)
     spec[-1] = "" if spec && spec[-1] == "/"
     @@frontend_timings_collector = spec
+    if port = URI.parse(spec.to_s).port
+      @@frontend_timings_collector_port = port
+    end
   end
 
   def self.frontend_timings_collector
@@ -139,7 +143,7 @@ module Logjam
   end
 
   def self.frontend_timings_collector_port
-    (frontend_timings_collector || ':9705').split(':')[1].to_i
+    @@frontend_timings_collector_port
   end
 
   @@allow_cross_domain_ajax = false
