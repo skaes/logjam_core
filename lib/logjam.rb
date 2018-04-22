@@ -129,17 +129,20 @@ module Logjam
   end
 
   @@frontend_timings_collector = nil
-  @@frontend_timings_collector_port = 9705
   def self.frontend_timings_collector=(spec)
     spec[-1] = "" if spec && spec[-1] == "/"
     @@frontend_timings_collector = spec
-    if port = URI.parse(spec.to_s).port
-      @@frontend_timings_collector_port = port
-    end
   end
 
   def self.frontend_timings_collector
     @@frontend_timings_collector
+  end
+
+  @@frontend_timings_collector_port = 9705
+  def self.frontend_timings_collector_port=(port)
+    if (p = port.to_i) > 0
+      @@frontend_timings_collector_port = p
+    end
   end
 
   def self.frontend_timings_collector_port
