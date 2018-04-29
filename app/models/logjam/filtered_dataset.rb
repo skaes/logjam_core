@@ -332,7 +332,7 @@ module Logjam
     end
 
     def has_histograms?
-      Histograms.new(@db, 'total_time', page).count > 0
+      Histograms.new(@db, %w(total_time), page).count > 0
     end
 
     BUCKETS = [

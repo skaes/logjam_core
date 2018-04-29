@@ -7,7 +7,7 @@ module Logjam
     end
 
     def initialize(db, resources, pattern)
-      super(db, "histograms")
+      super(db, "heatmaps")
       @pattern = pattern
       @pattern = "all_pages" if @pattern.blank? || @pattern == '::'
       @is_a_module = modules.include?("::#{pattern}")
@@ -44,7 +44,7 @@ module Logjam
     end
 
     def count
-      selector = { :page => @pattern } #, :resource => { '$in' => @resources } }
+      selector = { :page => @pattern }
       query, log = build_query("Histograms.count", selector)
       with_conditional_caching(query) do |payload|
         payload[:rows] = 1
@@ -71,8 +71,8 @@ module Logjam
     private
 
     def compute
-      selector = { :page => @pattern } #, :resource => { '$in' => @resources } }
-      fields = { :projection => _fields(["page", "minute", "resource", "histogram"])}
+      selector = { :page => @pattern }
+      fields = { :projection => _fields(["page", "minute"] + @resources)}
       query, log = build_query("Histograms.find", selector, fields)
       rows = with_conditional_caching(log) do |payload|
         rs = []
@@ -88,8 +88,10 @@ module Logjam
 
       histograms = @histograms = Hash.new {|h,r| h[r] = self.class.empty_histograms }
       while row = rows.shift
-        histogram = histograms[row["resource"]][row["minute"]]
-        row["histogram"].each_with_index{ |v,j| histogram[j] += v }
+        @resources.each do |resource|
+          histogram = histograms[resource][row["minute"]]
+          row[resource].each{ |index, count| histogram[index.to_i] += count }
+        end
       end
 
       # logger.debug("HISTOGRAMS(#{@pattern.inspect}): #{@histograms.inspect}")
