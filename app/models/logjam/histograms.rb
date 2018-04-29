@@ -89,8 +89,10 @@ module Logjam
       histograms = @histograms = Hash.new {|h,r| h[r] = self.class.empty_histograms }
       while row = rows.shift
         @resources.each do |resource|
-          histogram = histograms[resource][row["minute"]]
-          row[resource].each{ |index, count| histogram[index.to_i] += count }
+          if measurements = row[resource]
+            histogram = histograms[resource][row["minute"]]
+            measurements.each{ |index, count| histogram[index.to_i] += count }
+          end
         end
       end
 
