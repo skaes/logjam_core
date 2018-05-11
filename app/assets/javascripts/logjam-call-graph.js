@@ -7,7 +7,7 @@ function logjam_graph_app_data(appCallers) {
       cw = 700,
       ch = 420;
 
-  var fill = d3.scaleOrdinal(d3.schemeCategory20c);
+  var fill = d3.scaleOrdinal(d3.schemeSet3);
 
   var chord = d3.chord()
         .padAngle(.02)
@@ -166,7 +166,7 @@ function logjam_graph_app_data(appCallers) {
 function logjam_load_graph_data(group, json_urls) {
   d3.selectAll("svg").remove();
   $("#spinner").show();
-  d3.json(json_urls[group], function(error, appCallers) {
+  d3.json(json_urls[group]).then(function(appCallers) {
     logjam_graph_app_data(appCallers);
     $("#spinner").hide();
   });
