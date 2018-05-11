@@ -7,7 +7,14 @@ function logjam_graph_app_data(appCallers) {
       cw = 700,
       ch = 420;
 
-  var fill = d3.scaleOrdinal(d3.schemeSet3);
+  function colors(s) {
+    return s.match(/.{6}/g).map(function(x) {
+      return "#" + x;
+    });
+  };
+
+  var category20c = colors("1f77b4aec7e8ff7f0effbb782ca02c98df8ad62728ff98969467bdc5b0d58c564bc49c94e377c2f7b6d27f7f7fc7c7c7bcbd22dbdb8d17becf9edae5");
+  var fill = d3.scaleOrdinal(category20c);
 
   var chord = d3.chord()
         .padAngle(.02)
