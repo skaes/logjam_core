@@ -63,6 +63,34 @@ module Logjam
       end
     end
 
+    def self.rename_callers_and_senders(db, collection_name, from_app, to_app)
+      collection = db.collection(collection_name)
+      selector = {'$or' => [ { 'callers' => {'$exists' => 1} }, { 'senders' => {'$exists' => 1} }]}
+      collection.find(selector, :projection => {'callers' => 1,  'senders' => 1}).each do |row|
+        deletions = {}
+        increments = {}
+        (row['callers']||[]).each do |kaller, count|
+          if kaller =~ /\A#{from_app}-(.*)\z/
+            deletions["callers.#{kaller}"] = 1
+            increments["callers.#{to_app}-#{$1}"] = count
+          end
+        end
+        (row['senders']||[]).each do |sender, count|
+          if sender =~ /\A#{from_app}-(.*)\z/
+            deletions["senders.#{sender}"] = 1
+            increments["senders.#{to_app}-#{$1}"] = count
+          end
+        end
+        next if increments.empty?
+        operation = { '$inc' => increments, '$unset' => deletions }
+        begin
+          collection.update_one({"_id" => row["_id"]}, operation, :upsert => false)
+        rescue => e
+          puts "collection #{collection_name}: update failed: #{e}"
+        end
+      end
+    end
+
     private
 
     def instrument(query, &block)

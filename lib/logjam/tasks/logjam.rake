@@ -145,6 +145,17 @@ namespace :logjam do
       Logjam.merge_databases(date: date, other_db: other_db)
     end
 
+    desc "rename caller and sender references from FROM_APP to TO_APP between FROM_DATE an TO_DATE"
+    task :rename_caller_and_sender_references => :environment do
+      from_date = (ENV['FROM_DATE'] || Date.today).to_date
+      to_date = (ENV['TO_DATE'] || Date.today).to_date
+      from_app = ENV['FROM_APP']
+      to_app = ENV['TO_APP']
+      (from_date..to_date).each do |date|
+        Logjam.rename_callers_and_senders(date: date, from_app: from_app, to_app: to_app)
+      end
+    end
+
     desc "list all stored user agents strings"
     task :user_agents => :environment do
       agents = Logjam.user_agents

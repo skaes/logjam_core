@@ -753,6 +753,18 @@ module Logjam
     end
   end
 
+  def rename_callers_and_senders(date:, from_app:, to_app:)
+    dbs = grep(databases, :date => date)
+    dbs.each do |db_name|
+      puts "renaming callers and senders in #{db_name}"
+      app, env = extract_db_params(db_name)
+      next if app == from_app
+      db = db(date, app, env)
+      MongoModel.rename_callers_and_senders(db, "totals", from_app, to_app)
+      MongoModel.rename_callers_and_senders(db, "minutes", from_app, to_app)
+    end
+  end
+
   @@database_config ||= {}
   def database_config(env = Rails.env)
     @@database_config[env] ||=
