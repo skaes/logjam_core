@@ -720,25 +720,32 @@ module Logjam
     end
   end
 
-  def merge_database(date:, app:, env:, other_db:)
+  def merge_database(date:, app:, env:, other_db:, other_app:, merge_requests: false)
     db = db(date, app, env)
-    name = db_name(date, app, env)
-    other_db = Mongo::Client.new([other_db], {:connect_timeout => 60, :socket_timeout => 60 }).db(name).database
-    MongoModel.merge_stats(db, other_db, "totals", %w(_id page))
-    MongoModel.merge_stats(db, other_db, "minutes", %w(_id page minute))
-    MongoModel.merge_stats(db, other_db, "quants", %w(_id kind page quant))
-    MongoModel.merge_stats(db, other_db, "agents", %w(_id agent))
-    # MongoModel.merge_collection(db, other_db, "requests", use_id: true)
-    MongoModel.merge_collection(db, other_db, "events", use_id: false)
-    MongoModel.merge_collection(db, other_db, "js_exceptions", use_id: false)
+    source_db_name = db_name(date, other_app || app, env)
+    if other_db.present?
+      source_db = Mongo::Client.new([other_db], {:connect_timeout => 60, :socket_timeout => 60 }).db(source_db_name).database
+    elsif other_app.blank?
+      raise ArgumentError.new("merging dbs on same mongo connection requires two different applications")
+    else
+      source_db = db(date, other_app, env)
+    end
+    MongoModel.merge_stats(db, source_db, "totals", %w(_id page))
+    MongoModel.merge_stats(db, source_db, "minutes", %w(_id page minute))
+    MongoModel.merge_stats(db, source_db, "quants", %w(_id kind page quant))
+    MongoModel.merge_stats(db, source_db, "heatmaps", %w(_id page minute))
+    MongoModel.merge_stats(db, source_db, "agents", %w(_id agent))
+    MongoModel.merge_collection(db, source_db, "requests", use_id: true) if merge_requests
+    MongoModel.merge_collection(db, source_db, "events", use_id: false)
+    MongoModel.merge_collection(db, source_db, "js_exceptions", use_id: false)
   end
 
-  def merge_databases(date:, other_db:)
+  def merge_databases(date:, other_db:, other_app:)
     dbs = grep(databases, :date => date)
     dbs.each do |db_name|
       puts "merging #{db_name}"
       app, env = extract_db_params(db_name)
-      merge_database(date: date, app: app, env: env, other_db: other_db)
+      merge_database(date: date, app: app, env: env, other_db: other_db, other_app: other_app)
     end
   end
 

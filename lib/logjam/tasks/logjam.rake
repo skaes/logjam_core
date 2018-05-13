@@ -117,16 +117,18 @@ namespace :logjam do
       end
     end
 
-    desc "merge database"
+    desc "merge database DATE= APP= ENV= OTHER_DB=<connection spec, optional>, OTHER_APP=<optional> MERGE_REQUESTS=0|1"
     task :merge_database => :environment do
       date = (ENV['DATE'] || Date.today).to_date
       app = ENV['APP']
       env = ENV['ENV']
       other_db = ENV['OTHER_DB']
-      Logjam.merge_database(date: date, app: app, env: env, other_db: other_db)
+      other_app = ENV['OTHER_APP']
+      merge_requests = ENV['MERGE_REQUESTS'] == "1"
+      Logjam.merge_database(date: date, app: app, env: env, other_db: other_db, other_app: other_app)
     end
 
-    desc "merge databases"
+    desc "merge databases DATE=<today> OTHER_DB=<connection spec>"
     task :merge_databases => :environment do
       date = (ENV['DATE'] || Date.today).to_date
       other_db = ENV['OTHER_DB']
