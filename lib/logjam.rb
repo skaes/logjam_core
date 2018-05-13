@@ -720,7 +720,7 @@ module Logjam
     end
   end
 
-  def merge_database(date:, app:, env:, other_db:, other_app:, merge_requests: false)
+  def merge_database(date:, app:, env:, other_db:, other_app:, merge_requests: false, merge_stats: true)
     db = db(date, app, env)
     source_db_name = db_name(date, other_app || app, env)
     if other_db.present?
@@ -730,14 +730,18 @@ module Logjam
     else
       source_db = db(date, other_app, env)
     end
-    MongoModel.merge_stats(db, source_db, "totals", %w(_id page))
-    MongoModel.merge_stats(db, source_db, "minutes", %w(_id page minute))
-    MongoModel.merge_stats(db, source_db, "quants", %w(_id kind page quant))
-    MongoModel.merge_stats(db, source_db, "heatmaps", %w(_id page minute))
-    MongoModel.merge_stats(db, source_db, "agents", %w(_id agent))
-    MongoModel.merge_collection(db, source_db, "requests", use_id: true) if merge_requests
-    MongoModel.merge_collection(db, source_db, "events", use_id: false)
-    MongoModel.merge_collection(db, source_db, "js_exceptions", use_id: false)
+    if merge_stats
+      MongoModel.merge_stats(db, source_db, "totals", %w(_id page))
+      MongoModel.merge_stats(db, source_db, "minutes", %w(_id page minute))
+      MongoModel.merge_stats(db, source_db, "quants", %w(_id kind page quant))
+      MongoModel.merge_stats(db, source_db, "heatmaps", %w(_id page minute))
+      MongoModel.merge_stats(db, source_db, "agents", %w(_id agent))
+      MongoModel.merge_collection(db, source_db, "events", use_id: false)
+      MongoModel.merge_collection(db, source_db, "js_exceptions", use_id: false)
+    end
+    if merge_requests
+      MongoModel.merge_collection(db, source_db, "requests", use_id: true)
+    end
   end
 
   def merge_databases(date:, other_db:, other_app:)
