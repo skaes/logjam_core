@@ -605,14 +605,14 @@ module Logjam
       filter = params[:filter_data].to_s == '1' ? params[:filter].to_s : ''
       data = get_relationship_data(group: params[:group], filter: filter,
                                    sort: params[:sort], kind: params[:kind])
+      @relationship_name, @source_name, @target_name, @counter_name =
+         case params[:kind]
+         when 'callers' then ["Call relationships", "Caller", "Callee", "#Calls"]
+         when 'senders' then ["Message consumption", "Sender", "Consumer", "#Messages"]
+         else ["Unknown relationship" , "Source", "Target", "Count"]
+         end
       respond_to do |format|
         format.html do
-          @relationship_name, @source_name, @target_name, @counter_name =
-            case params[:kind]
-            when 'callers' then ["Call relationships", "Caller", "Callee", "#Calls"]
-            when 'senders' then ["Message consumption", "Sender", "Consumer", "#Messages"]
-            else ["Unknown relationship" , "Source", "Target", "Count"]
-            end
           @title = "#{@relationship_name} across all applications"
           @data = data
         end
