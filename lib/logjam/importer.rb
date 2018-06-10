@@ -39,6 +39,7 @@ module Logjam
       indented(2, "livestream")
       indented(3, "pub = \"tcp://%s:9607\"" % [Logjam.bind_ip_for_zmq_spec])
       indented(1, "threads")
+      indented(2, "subscribers = %d" % [Logjam.importer_subscriber_threads])
       indented(2, "parsers = %d" % [Logjam.importer_parser_threads])
       indented(2, "updaters = %d" % [Logjam.importer_updater_threads])
       indented(2, "writers = %d" % [Logjam.importer_writer_threads])

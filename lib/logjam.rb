@@ -92,6 +92,15 @@ module Logjam
     @@statsd_namespace
   end
 
+  @@importer_subscriber_threads = 1
+  def self.importer_subscriber_threads
+    @@importer_subscriber_threads
+  end
+
+  def self.importer_subscriber_threads=(n)
+    @@importer_subscriber_threads = n
+  end
+
   @@importer_parser_threads = 8
   def self.importer_parser_threads
     @@importer_parser_threads
