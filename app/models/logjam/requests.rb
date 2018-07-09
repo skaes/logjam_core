@@ -125,7 +125,7 @@ module Logjam
 
       query_opts = {
         :projection => fields,
-        :sort => NON_METRIC_FIELDS.include?(@resource) ? {@resource => -1} : {"metrics.n" => 1, "metrics.v" => -1},
+        :sort => NON_METRIC_FIELDS.include?(@resource) ? {@resource => -1} : {"metrics.v" => -1},
         :limit => @options[:limit] || 25,
         :skip => @options[:skip]
       }
