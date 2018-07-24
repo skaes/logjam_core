@@ -54,7 +54,7 @@ function logjam_history_bar_chart(data, divid, metric, params, kind) {
     data_max = 1.0;
     data_min = d3.min([0.92, data_min]);
     formatter = d3.format(".2f");
-  } else if (metric.match(/request_count|errors|warnings|exceptions|five_hundreds/i) || !is_metric()) {
+  } else if (metric.match(/request_count|errors|error_rate|warnings|exceptions|five_hundreds/i) || !is_metric()) {
     if (data_max - data_min > 10) {
       formatter = d3.format(",.0d");
     } else {
