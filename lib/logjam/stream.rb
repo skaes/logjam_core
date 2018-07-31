@@ -86,6 +86,11 @@ module Logjam
       @backend_only_requests ||= Logjam.backend_only_requests
     end
 
+    def api_requests(*args)
+      @api_requests = args.first if args.first
+      @api_requests
+    end
+
     def sampling_rate_400s(*args)
       @sampling_rate_400s = args.first if args.first
       @sampling_rate_400s ||= Logjam.sampling_rate_400s
@@ -101,6 +106,7 @@ module Logjam
         :request_cleaning_threshold => request_cleaning_threshold,
         :database_cleaning_threshold => database_cleaning_threshold,
         :sampling_rate_400s => sampling_rate_400s,
+        :api_requests => api_requests,
       }
     end
 
