@@ -117,20 +117,22 @@ module Logjam
     end
 
     def all
+      sel = selector
       fields = {
         "page" => 1, "user_id" => 1, "response_code" => 1, "severity" => 1,
-        "started_at" => 1, "metrics" => 1, "minute" => 1
+        "started_at" => 1, "minute" => 1
       }
+      fields["metrics.$"] = 1 if sel["metrics.n"]
       fields["lines"] = {'$slice' => -1000} if @options[:response_code] || @options[:severity] || @options[:exceptions] || @options[:soft_exceptions]
 
       query_opts = {
         :projection => fields,
-        :sort => NON_METRIC_FIELDS.include?(@resource) ? {@resource => -1} : {"metrics.v" => -1},
         :limit => @options[:limit] || 25,
         :skip => @options[:skip]
       }
+      query_opts[:sort] = {@resource => -1} if NON_METRIC_FIELDS.include?(@resource)
 
-      query, log = build_query("Requests.find", selector, query_opts)
+      query, log = build_query("Requests.find", sel, query_opts)
       rows = with_conditional_caching(log) do |payload|
         # explain = @collection.find(selector, query_opts.dup).explain
         # logger.debug explain.inspect
