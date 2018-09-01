@@ -116,13 +116,25 @@ module Logjam
       query_opts.merge!(options)
     end
 
+    def build_metrics_query(name, selector, opts = {})
+      stages = []
+      stages << {'$project' => opts[:projection]}
+      stages << {'$unwind' => '$metrics'}
+      stages << {'$match' => selector}
+      stages << {'$sort' => {'metrics.v' => -1}}
+      stages << {'$skip' => opts[:skip]}
+      stages << {'$limit' => opts[:limit]}
+      log = "#{name}.aggregate(#{stages.to_json})"
+
+      [@collection.find.aggregate(stages), log]
+    end
+
     def all
       sel = selector
       fields = {
         "page" => 1, "user_id" => 1, "response_code" => 1, "severity" => 1,
         "started_at" => 1, "minute" => 1
       }
-      fields["metrics.$"] = 1 if sel["metrics.n"]
       fields["lines"] = {'$slice' => -1000} if @options[:response_code] || @options[:severity] || @options[:exceptions] || @options[:soft_exceptions]
 
       query_opts = {
@@ -130,9 +142,18 @@ module Logjam
         :limit => @options[:limit] || 25,
         :skip => @options[:skip]
       }
-      query_opts[:sort] = {@resource => -1} if NON_METRIC_FIELDS.include?(@resource)
+      if NON_METRIC_FIELDS.include?(@resource)
+        query_opts[:sort] = {@resource => -1}
+        query, log = build_query("Requests.find", sel, query_opts)
+      elsif sel.keys == ["metrics.n"]
+        # just use the index
+        query_opts[:projection]["metrics"] = 1
+        query, log = build_query("Requests.find", sel, query_opts)
+      else
+        query_opts[:projection]["metrics"] = 1
+        query, log = build_metrics_query("Requests.find", sel, query_opts)
+      end
 
-      query, log = build_query("Requests.find", sel, query_opts)
       rows = with_conditional_caching(log) do |payload|
         # explain = @collection.find(selector, query_opts.dup).explain
         # logger.debug explain.inspect
@@ -180,7 +201,11 @@ module Logjam
 
     def convert_metrics(row)
       if metrics = row.delete("metrics")
-        metrics.each{|m| row[m["n"]] = m["v"]}
+        if metrics.is_a? Hash
+          row[metrics["n"]] = metrics["v"]
+        else
+          metrics.each {|m| row[m["n"]] = m["v"] }
+        end
       end
     end
 
