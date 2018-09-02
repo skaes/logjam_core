@@ -31,8 +31,9 @@ module Logjam
       params
     end
 
-    def initialize(options = {})
+    def initialize(stream, options = {})
       # puts options.inspect
+      @stream = stream
       @date = options[:date]
       @app = options[:app]
       @env = options[:env]
@@ -143,6 +144,10 @@ module Logjam
           query_opts = {start_minute: @start_minute, end_minute: @end_minute}
           Requests.new(@db, resource, page, query_opts).count
         end
+    end
+
+    def request_collection_expired?
+      @date < Date.today - @stream.request_cleaning_threshold
     end
 
     def do_the_query(section = :backend, options = {})

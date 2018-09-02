@@ -1,0 +1,8 @@
+<div class="message">
+  <% if @dataset.request_collection_expired? %>
+  The requests collection has expired.
+  <% else %>
+  Logjam only stores requests slower than a given time threshold or requests with certain error codes
+  to aid debugging. Unfortunately, no such requests matching your search criteria are stored in the database.
+  <% end %>
+</div>

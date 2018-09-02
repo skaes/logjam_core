@@ -30,10 +30,7 @@
     </thead>
     <%= render "#{resource_type}_statistics", options.merge(:pages => data) %>
   <% elsif data.empty? -%>
-    <div class="message">
-      Logjam only stores requests slower than a given time threshold or requests with certain error codes
-      to aid debugging. Unfortunately, no such requests matching your search criteria are stored in the database.
-    </div>
+    <%= render "no_requests_found" %>
   <% else -%>
     <thead>
       <tr>

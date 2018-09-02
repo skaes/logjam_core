@@ -10,6 +10,11 @@
              <span class="warning-box">[400s sampled at <%= @sampling_rate_400s*100 %>%]</span>
           <% end %>
         </h2>
+        <% if @dataset.request_collection_expired? %>
+          <div class="message" %>
+            The requests collection has expired.
+          </div>
+        <% else %>
         <%= render "result_navigator" %>
         <table class="full_stats">
           <tr><th>Severity</th><th>RC</th><th>Time</th><th>Action</th><th>Log Excerpt</th></tr>
@@ -25,6 +30,7 @@
           </tr>
           <% end %>
         </table>
+        <% end %>
       </div>
     </div>
   </div>

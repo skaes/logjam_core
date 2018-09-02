@@ -834,7 +834,7 @@ module Logjam
 
     def dataset_from_params(strip_namespace = false)
       return false unless prepare_params
-      @dataset = FilteredDataset.new(
+      @dataset = FilteredDataset.new(@stream,
         :date => @date,
         :app => @app,
         :env => @env,
