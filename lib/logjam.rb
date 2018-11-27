@@ -579,18 +579,23 @@ module Logjam
   def drop_old_databases(delay = 60)
     dropped = 0
     databases_sorted_by_date_with_connections.each do |db_name, connection|
-      date = db_date(db_name)
-      stream = stream_for(db_name) || Logjam
-      # puts "db cleaning threshold for #{db_name}: #{stream.database_cleaning_threshold}"
-      if Date.today - stream.database_cleaning_threshold > date
-        puts "removing old database: #{db_name}"
-        begin
-          connection.use(db_name).database.drop
-        rescue => e
-          puts e.message
+      begin
+        date = db_date(db_name)
+        stream = stream_for(db_name) || Logjam
+        # puts "db cleaning threshold for #{db_name}: #{stream.database_cleaning_threshold}"
+        if Date.today - stream.database_cleaning_threshold > date
+          puts "removing old database: #{db_name}"
+          begin
+            connection.use(db_name).database.drop
+          rescue => e
+            puts e.message
+          end
+          sleep delay
+          dropped += 1
         end
-        sleep delay
-        dropped += 1
+      rescue => e
+        $stderr.puts "error dropping old database: #{db_name}"
+        $stderr.puts "#{e.class}(#{e.message})"
       end
     end
     update_known_databases if dropped > 0
