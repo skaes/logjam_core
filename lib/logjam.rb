@@ -554,8 +554,8 @@ module Logjam
 
   def remove_old_requests(delay = 60)
     databases_sorted_by_date_with_connections.each do |db_name, connection|
-      if request_collection_expired?(db_name)
-        begin
+      begin
+        if request_collection_expired?(db_name)
           db = connection.use(db_name).database
           coll = db["requests"]
           if coll.find.count > 0
@@ -568,10 +568,10 @@ module Logjam
             end
             sleep delay
           end
-        rescue => e
-          $stderr.puts "error cleaning requests for: #{db_name}"
-          $stderr.puts "#{e.class}(#{e.message})"
         end
+      rescue => e
+        $stderr.puts "error cleaning requests for: #{db_name}"
+        $stderr.puts "#{e.class}(#{e.message})"
       end
     end
   end
