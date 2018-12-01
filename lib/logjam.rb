@@ -3,38 +3,6 @@ require 'oj'
 
 Oj.default_options = {:mode => :compat, :time_format => :ruby}
 
-# monkey patch Mongo::Client
-require 'mongo/client'
-class Mongo::Client
-  # provide a db method. should be removed at some point
-  alias_method :db, :use
-end
-
-# monkey patch Mongo::Socket to avoid excessive allocations
-require 'mongo/socket'
-class Mongo::Socket
-  private
-  def read_from_socket(length)
-    data = String.new
-    deadline = (Time.now + timeout) if timeout
-    begin
-      while (data.length < length)
-        n = length - data.length
-        n = 4096 if n > 4096
-        data << @socket.read_nonblock(n)
-      end
-    rescue IO::WaitReadable
-      select_timeout = (deadline - Time.now) if deadline
-      unless Kernel::select([@socket], nil, [@socket], select_timeout)
-        raise Timeout::Error.new("Took more than #{timeout} seconds to receive data.")
-      end
-      retry
-    end
-
-    data
-  end
-end
-
 module Logjam
   extend self
 
@@ -353,7 +321,7 @@ module Logjam
   def db(date, app, env)
     name = db_name(date, app, env)
     connection = connection_for(name)
-    connection.db(name).database
+    connection.use(name).database
   end
 
   def db_name(date, app, env)
@@ -409,7 +377,7 @@ module Logjam
   end
 
   def global_db(connection)
-    connection.db "logjam-global"
+    connection.use "logjam-global"
   end
 
   def meta_collection(connection)
@@ -489,7 +457,7 @@ module Logjam
     databases_sorted_by_date.each do |db_name|
       begin
         puts "#{db_name}: reindexing"
-        db = connection_for(db_name).db(db_name)
+        db = connection_for(db_name).use(db_name)
         index_with_mongo_rescue("totals") do
           Totals.ensure_indexes(db["totals"], options)
         end
@@ -685,7 +653,7 @@ module Logjam
   def self.drop_frontend_fields(date, delay=5)
     dbs = grep(databases, :date => date)
     dbs.each do |db_name|
-      db = connection_for(db_name).db(db_name)
+      db = connection_for(db_name).use(db_name)
       puts "dropping frontend fields from #{db_name}"
       drop_frontend_fields_from_db(db)
       sleep delay
@@ -696,7 +664,7 @@ module Logjam
     for date in from_date..to_date
       dbs = grep(databases, :date => date)
       dbs.each do |db_name|
-        db = connection_for(db_name).db(db_name)
+        db = connection_for(db_name).use(db_name)
         puts "dropping histograms collection from #{db_name}"
         db["histograms"].drop
         sleep delay
@@ -729,7 +697,7 @@ module Logjam
   def update_severities
     databases.each do |db_name|
       puts "updating severities: #{db_name}"
-      db = connection_for(db_name).db(db_name)
+      db = connection_for(db_name).use(db_name)
       Totals.update_severities(db)
     end
   end
@@ -738,7 +706,7 @@ module Logjam
     db = db(date, app, env)
     source_db_name = db_name(date, other_app || app, env)
     if other_db.present?
-      source_db = Mongo::Client.new([other_db], {:connect_timeout => 60, :socket_timeout => 60 }).db(source_db_name).database
+      source_db = Mongo::Client.new([other_db], {:connect_timeout => 60, :socket_timeout => 60 }).use(source_db_name).database
     elsif other_app.blank?
       raise ArgumentError.new("merging dbs on same mongo connection requires two different applications")
     else
