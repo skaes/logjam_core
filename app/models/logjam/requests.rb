@@ -76,6 +76,17 @@ module Logjam
         end
     end
 
+    def modules
+      @modules ||=
+        begin
+          modules = Set.new
+          page_names.each do |page|
+            modules.add $1 if page =~ /\A::([^:]+)\z/
+          end
+          modules
+        end
+    end
+
     def selector(options={})
       if NON_METRIC_FIELDS.include?(@resource)
         query_opts = {}
@@ -145,6 +156,10 @@ module Logjam
       if NON_METRIC_FIELDS.include?(@resource)
         query_opts[:sort] = {@resource => -1}
         query, log = build_query("Requests.find", sel, query_opts)
+      elsif collection_names.include?("metrics")
+        metrics = Metrics.new(@database, self, @resource, pattern, @options).all
+        threads = metrics.map{|row| Thread.new { find(row["rid"]) } }
+        return threads.map{|t| t.join.value}
       elsif sel.keys == ["metrics.n"]
         # just use the index
         query_opts[:projection]["metrics"] = 1

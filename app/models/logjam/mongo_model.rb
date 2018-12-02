@@ -149,5 +149,8 @@ module Logjam
       [query, log]
     end
 
+    def collection_names
+      @database.collection_names
+    end
   end
 end
