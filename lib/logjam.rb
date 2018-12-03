@@ -373,7 +373,9 @@ module Logjam
   end
 
   def databases
-    get_known_databases
+    Rails.cache.fetch("logjam-known-databases", expires_in: 5.minutes) do
+      get_known_databases
+    end
   end
 
   def global_db(connection)
