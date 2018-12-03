@@ -525,15 +525,11 @@ module Logjam
       begin
         if request_collection_expired?(db_name)
           db = connection.use(db_name).database
-          coll = db["requests"]
-          if coll.find.count > 0
-            puts "removing old requests: #{db_name}"
-            coll.drop
-            begin
-              db.command(:repairDatabase => 1)
-            rescue => e
-              $stderr.puts "#{e.class}(#{e.message})" unless e.message =~ /repairDatabase is a deprecated command/
-            end
+          collection_names = db.collection_names
+          %w(requests metrics).each do |collection_name|
+            next unless collection_names.include?(collection_name)
+            puts "removing collection #{collection_name} from #{db_name}"
+            db[collection_name].drop
             sleep delay
           end
         end
