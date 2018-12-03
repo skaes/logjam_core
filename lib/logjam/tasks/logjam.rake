@@ -78,6 +78,14 @@ namespace :logjam do
       end
     end
 
+    desc "drop metrics collection"
+    task :drop_metrics => :environment do
+      delay = (ENV['DELAY'] || 5).to_i
+      from_date = (ENV['FROM_DATE'] || Date.today-1).to_date
+      to_date = (ENV['TO_DATE'] || Date.today-1).to_date
+      Logjam.drop_metrics(from_date, to_date, delay)
+    end
+
     desc "remove old data DELAY=5"
     task :clean => :drop_old do
       delay = (ENV['DELAY'] || 5).to_i

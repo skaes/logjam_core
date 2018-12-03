@@ -669,6 +669,20 @@ module Logjam
     end
   end
 
+  def self.drop_metrics(from_date, to_date, delay=5)
+    require 'byebug'
+    for date in from_date..to_date
+      dbs = grep(databases, :date => date)
+      dbs.each do |db_name|
+        db = connection_for(db_name).use(db_name).database
+        next unless db.collection_names.include?("metrics")
+        puts "dropping metrics collection from #{db_name}"
+        db["metrics"].drop
+        sleep delay
+      end
+    end
+  end
+
   def list_databases_without_requests()
     db_info = []
     databases_sorted_by_date.each do |db_name|
