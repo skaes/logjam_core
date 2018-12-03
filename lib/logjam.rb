@@ -661,6 +661,7 @@ module Logjam
       dbs = grep(databases, :date => date)
       dbs.each do |db_name|
         db = connection_for(db_name).use(db_name).database
+        next unless db.collection_names.include?("histograms")
         puts "dropping histograms collection from #{db_name}"
         db["histograms"].drop
         sleep delay
