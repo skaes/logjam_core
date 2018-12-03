@@ -723,6 +723,7 @@ module Logjam
     end
     if merge_requests
       MongoModel.merge_collection(db, source_db, "requests", use_id: true)
+      MongoModel.merge_collection(db, source_db, "metrics", use_id: true)
     end
   end
 
