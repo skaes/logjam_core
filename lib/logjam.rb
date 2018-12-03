@@ -457,7 +457,7 @@ module Logjam
     databases_sorted_by_date.each do |db_name|
       begin
         puts "#{db_name}: reindexing"
-        db = connection_for(db_name).use(db_name)
+        db = connection_for(db_name).use(db_name).database
         index_with_mongo_rescue("totals") do
           Totals.ensure_indexes(db["totals"], options)
         end
@@ -653,7 +653,7 @@ module Logjam
   def self.drop_frontend_fields(date, delay=5)
     dbs = grep(databases, :date => date)
     dbs.each do |db_name|
-      db = connection_for(db_name).use(db_name)
+      db = connection_for(db_name).use(db_name).database
       puts "dropping frontend fields from #{db_name}"
       drop_frontend_fields_from_db(db)
       sleep delay
@@ -664,7 +664,7 @@ module Logjam
     for date in from_date..to_date
       dbs = grep(databases, :date => date)
       dbs.each do |db_name|
-        db = connection_for(db_name).use(db_name)
+        db = connection_for(db_name).use(db_name).database
         puts "dropping histograms collection from #{db_name}"
         db["histograms"].drop
         sleep delay
@@ -697,7 +697,7 @@ module Logjam
   def update_severities
     databases.each do |db_name|
       puts "updating severities: #{db_name}"
-      db = connection_for(db_name).use(db_name)
+      db = connection_for(db_name).use(db_name).database
       Totals.update_severities(db)
     end
   end
