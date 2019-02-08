@@ -40,16 +40,22 @@ module Logjam
 
     private
     def get_database_info
-      @database_info = []
-      @total_bytes = 0
-      Logjam.connections.each do |host,conn|
-        conn.list_databases.each do |db|
-          size = db["sizeOnDisk"]
-          @database_info << [host, db["name"], size]
-          @total_bytes += size
-        end
-      end
+      @database_info = get_cached_database_info
+      @total_bytes = @database_info.inject(0){|sum, info| info[2] + sum}
       @database_info.reject!{|i| i[1] !~ /\Alogjam/}
+    end
+
+    def get_cached_database_info
+      Rails.cache.fetch("logjam-database-info", expires_in: 1.minutes) do
+        info = []
+        Logjam.connections.each do |host,conn|
+          conn.list_databases.each do |db|
+            size = db["sizeOnDisk"]
+            info << [host, db["name"], size]
+          end
+        end
+        info
+      end
     end
 
     def sorted_database_info
