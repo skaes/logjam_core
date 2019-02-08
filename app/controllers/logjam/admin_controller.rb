@@ -21,7 +21,7 @@ module Logjam
             csv << %w(Host Application Enviroment Day Size)
             sorted_database_info.each do |host, db_name, size|
               app, env, date = Logjam.extract_db_params(db_name)
-              csv << [host, app, env, date, size]
+              csv << [host, app, env, date, size.to_i]
             end
           end
           render :plain => str, :format => :csv
