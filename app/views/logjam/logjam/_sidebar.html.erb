@@ -11,6 +11,9 @@
           <% unless @only_one_app %>
           <%= clean_link_to(fa_icon("list-ol", :title => "Leaders") + " Leaders", {:action => "leaders"}) %>
           <% end %>
+          <% unless Logjam.graylog_base_urls[@env.to_sym].blank? %>
+          <%= link_to(image_tag("graylog.png", :title => "Graylog", :class => "graylog-icon") + " Graylog", graylog_uri(@app, @env, @page), :target => "_blank") %>
+          <% end %>
         </li>
       </ul>
 

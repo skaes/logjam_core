@@ -6,6 +6,12 @@ Oj.default_options = {:mode => :compat, :time_format => :ruby}
 module Logjam
   extend self
 
+  # set this if you forward logjam messages to graylog
+  @@graylog_base_urls = {}
+  def self.graylog_base_urls
+    @@graylog_base_urls
+  end
+
   # set this if your rabbitmq brokers have a flaky connection
   @@use_heart_beats = false
   def self.use_heart_beats

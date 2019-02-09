@@ -698,5 +698,25 @@ module Logjam
       res = (data||[]).reverse.drop_while{|_,d| d==0}.reverse
       res.blank? ? nil : res
     end
+
+    def graylog_escape(s)
+      s.gsub(/([:\\\/+\-!(){}\[\]^"~*?])/) do |c|
+        "\\" + c
+      end.gsub('&&', "\\&&").gsub('||', "\\||")
+    end
+
+    def graylog_uri(app, env, page)
+      app = graylog_escape("#{app}-#{env}")
+      page = graylog_escape(page.to_s)
+      fields = "source,app,message,code"
+      query = "app:#{app}"
+      unless page.blank?
+        page = '"' + page + '"' if page.include?('#')
+        query << " AND message:#{page}"
+      end
+      uri = URI.parse(Logjam.graylog_base_urls[env.to_sym])
+      uri.query = {fields: fields, q:  query, relative: 3600}.to_query
+      uri.to_s
+    end
   end
 end
