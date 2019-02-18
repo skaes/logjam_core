@@ -941,5 +941,12 @@ module Logjam
       response.headers['Access-Control-Allow-Origin'] = '*' if Logjam.allow_cross_domain_ajax
     end
 
+    def default_url_options
+      defaults = {
+        app: params[:app].presence || default_app,
+        env: params[:env].presence || default_env,
+      }
+      (super() || {}).merge(defaults)
+    end
   end
 end
