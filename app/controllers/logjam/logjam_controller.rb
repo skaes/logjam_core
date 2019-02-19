@@ -855,9 +855,7 @@ module Logjam
       logger.debug "DATASET BE EMTPTY = #{@dataset.empty?}"
       if @dataset.empty?
         if !@dataset.top_level? && !request.referer.to_s.include?("app=#{@app}")
-          new_params = FilteredDataset.clean_url_params(params.merge(:page => '',
-                                                                     :default_app => @default_app,
-                                                                     :default_env => @default_env), params)
+          new_params = FilteredDataset.clean_url_params(params.merge(:page => ''), params)
           redirect_to new_params.to_hash
         else
           render "empty_dataset"

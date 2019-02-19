@@ -32,11 +32,11 @@
       <ul class="logjam-menu separator">
         <% klass = (@dataset && @dataset.live_stream?) ? "enabled" : "disabled" %>
         <li class="<%= klass %>">
-          <%= link_to(fa_icon("play-circle", :title => "view live stream") + " Livestream", clean_params(params.slice(:app,:env,:page).merge(:action => "live_stream"))) %>
+          <%= link_to(fa_icon("play-circle", :title => "view live stream") + " Livestream", action: "live_stream") %>
         </li>
 
         <li>
-          <%= clean_link_to(fa_icon("history", :title => "Performace History") + " History", :action => "history") %>
+          <%= clean_link_to(fa_icon("history", :title => "Performace History") + " History", action: "history") %>
         </li>
 
         <% klass = @dataset && @dataset.has_distribution_plot? ? "enabled" : "disabled" %>
