@@ -7,7 +7,7 @@ class LogjamControllerTest < ActionDispatch::IntegrationTest
 
   test "root url gets redirected to index for current day" do
     get "/"
-    assert_redirected_to prefixed("?page=")
+    assert_redirected_to prefixed("?app=logjam&default_app=logjam&default_env=test&env=test&page=")
   end
 
   test "showing the index page" do
