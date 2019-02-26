@@ -16,19 +16,7 @@ module Logjam
     end
 
     def self.clean_url_params(params, old_params)
-      default_app = params.delete(:default_app) || Logjam.default_app
-      params = params.reject{|k,v| old_params[k] == v && (v.blank? || is_default?(k, v)) }
-      if app = params[:app]
-        params.delete(:app) if app == default_app
-        if env = params[:env]
-          if default_env = params.delete(:default_env)
-            params.delete(:env) if env == default_env
-          else
-            params.delete(:env) if env == Logjam.default_env(app)
-          end
-        end
-      end
-      params
+      params.reject { |k, v| old_params[k] == v && (v.blank? || is_default?(k, v)) }
     end
 
     def initialize(stream, options = {})
