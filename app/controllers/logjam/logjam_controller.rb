@@ -118,6 +118,7 @@ module Logjam
                 :five_hundreds => summary.five_hundreds,
               }
               hash[:availability] = 100 - 100.0 * hash[:five_hundreds] / hash[:request_count]
+              hash[:error_rate] = 100.0 * hash[:five_hundreds] / hash[:request_count]
               if (v = summary.apdex_score(:page)) && v.to_f.finite? && v>0
                 hash[:papdex_score] = v
               end

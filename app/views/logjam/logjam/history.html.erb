@@ -16,6 +16,7 @@
         <div id="request_count"></div>
         <div id="five_hundreds"></div>
         <div id="errors"></div>
+        <div id="error_rate"></div>
         <div id="warnings"></div>
         <div id="exceptions"></div>
         <div id="time"></div>
@@ -68,6 +69,7 @@
         logjam_history_bar_chart(response.data, "five_hundreds", "five_hundreds", js_params, "m");
         logjam_history_bar_chart(response.data, "availability", "availability", js_params, "m");
         logjam_history_bar_chart(response.data, "errors", "errors", js_params, "m");
+        logjam_history_bar_chart(response.data, "error_rate", "error_rate", js_params, "m");
         logjam_history_bar_chart(response.data, "warnings", "warnings", js_params, "m");
         logjam_history_bar_chart(response.data, "exceptions", "exceptions", js_params, "m");
       }
