@@ -54,7 +54,7 @@ module Logjam
     end
 
     def to_hash
-      info = @databases.map{|s| s =~ /\Alogjam-(.+?)-(.+?)-(.+)\z/ && {:app => $1, :env => $2, :date => $3} }.compact
+      info = @databases.map{|s| s =~ NAME_FORMAT && {:app => $1, :env => $2, :date => $3}}.compact
       { :databases => info }
     end
   end

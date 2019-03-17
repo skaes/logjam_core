@@ -42,7 +42,7 @@
           </thead>
           <tbody>
             <% @callers.each_with_index do |(caller, count), i| %>
-              <% app, controller = caller.split('-') %>
+              <% app, controller = caller.split('@', 2) %>
               <% url = clean_url_for(params.merge(:app => app, :page => controller.to_s)) %>
               <tr>
                 <td><%= app %></td>

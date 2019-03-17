@@ -235,6 +235,25 @@ module Logjam
     @@streams["livestream-#{name}"] = LiveStream.new(name, &block)
   end
 
+  # regexp matcher for application names
+  @@app_regex = nil
+  def self.app_regex
+    @@app_regex ||=
+      begin
+        applications = production_streams.map{|name, stream| stream.app}.uniq
+        /\A(#{applications.join('|')})-(.*)\z/
+      end
+  end
+
+  # extract app from a app-action pair
+  def self.extract_app(pair)
+    if pair =~ app_regex
+      [$1, $2]
+    else
+      pair.split('-', 2)
+    end
+  end
+
   def self.base_url=(base_url)
     ActiveSupport::Deprecation.warn('Logjam.base_url= is depreated.')
   end
@@ -335,8 +354,8 @@ module Logjam
   end
 
   def db_name_format(options={})
-    opts = {:app => '.+?', :env => '.+?'}.merge(options)
-    /^logjam-(#{opts[:app]})-(#{opts[:env]})-((.+?)-(.+?)-(.+?))$/
+    opts = {:app => '.+', :env => '[^-]+'}.merge(options)
+    /\Alogjam-(#{opts[:app]})-(#{opts[:env]})-((\d+?)-(\d+?)-(\d+?))\z/
   end
 
   def db_date(db_name)
@@ -345,6 +364,10 @@ module Logjam
 
   def extract_db_params(db_name)
     db_name =~ db_name_format && [$1, $2, $3, $4]
+  end
+
+  def app_for(db_name)
+    db_name =~ db_name_format && $1
   end
 
   def self.stream_for(db_name)
@@ -369,7 +392,7 @@ module Logjam
   end
 
   def grep(databases, options = {})
-    opts = {:app => '.+?', :env => '.+?'}.merge(options)
+    opts = {:app => '.+', :env => '[^-]+'}.merge(options)
     dbs = databases.grep(db_name_format(opts))
     if date = options[:date]
       dbs.grep(/#{sanitize_date(date)}/)
@@ -573,7 +596,7 @@ module Logjam
     update_known_databases if dropped > 0
   end
 
-  def drop_empty_databases(app = '.+?', delay = 60)
+  def drop_empty_databases(app = '.+', delay = 60)
     dropped = 0
     db_match = db_name_format(:app => app)
     connections.each do |_,connection|
@@ -592,7 +615,7 @@ module Logjam
     update_known_databases if dropped > 0
   end
 
-  def drop_all_databases(app: '.+?', env: '.+?', delay: 0)
+  def drop_all_databases(app: '.+', env: '[^-]+' , delay: 0)
     dropped = 0
     db_match = db_name_format(:app => app, :env => env)
     connections.each do |_,connection|
@@ -790,5 +813,52 @@ module Logjam
       end
     end
     user_agents.values.sort_by{|a| -a.backend}
+  end
+
+  def list_action_names(from_date:, to_date:)
+    names = Set.new
+    databases_sorted_by_date_with_connections.each do |db_name, connection|
+      date = db_date(db_name)
+      next if date < from_date || date > to_date
+      db = connection.use(db_name).database
+      pages = Totals.new(db).page_names
+      names.merge(pages)
+    end
+    names.to_a.sort_by{|s|s}.each do |n|
+      puts n
+    end
+  end
+
+  def list_action_name_characters(from_date:, to_date:)
+    used_characters_by_app = Hash.new{|h,k| h[k] = Set.new}
+    databases_sorted_by_date_with_connections.each do |db_name, connection|
+      date = db_date(db_name)
+      next if date < from_date || date > to_date
+      unless app = app_for(db_name)
+        $stderr.puts("could not extract app from databse name: #{db_name}")
+        app = "unknown"
+      end
+      db = connection.use(db_name).database
+      pages = Totals.new(db).page_names
+      pages.each do |page|
+        page.chars.each do |s|
+          used_characters_by_app[s] << app
+        end
+      end
+    end
+    used_characters = used_characters_by_app.keys.sort_by{|s|s}
+    used = used_characters.join
+    asciis = (32..127).map(&:chr).to_set
+    remmaining_ascii_codes = (asciis - used_characters.to_set).to_a.sort_by{|s|s}
+    remaining = remmaining_ascii_codes.join
+    puts "used characters:#{used}"
+    puts "remaining chars:#{remaining}"
+    puts "apps using special characters"
+    normal_chars = (("0".."9").to_a + ("A".."Z").to_a + ("a".."z").to_a).join + "_:#"
+    used_characters.each do |c|
+      next if normal_chars.include?(c)
+      apps = used_characters_by_app[c].to_a.sort_by{|s|s}
+      puts "#{c} #{apps.join(" ")}"
+    end
   end
 end

@@ -12,6 +12,24 @@ module Logjam
       @page_info["ajax_count"] ||= 0
       @page_info["frontend_count"] ||= 0
       @resources = resources
+      fix_separators("callers")
+      fix_separators("senders")
+    end
+
+    def self.fix_callers_or_senders(h)
+      h.each_with_object({}) do |(k,v), hash|
+        if !k.include?("@")
+          app, rest = Logjam.extract_app(k)
+          k = "#{app}@#{rest}"
+        end
+        hash[k] = (hash[k]||0) + v
+      end
+    end
+
+    def fix_separators(key)
+      h = @page_info[key]
+      return unless h
+      @page_info[key] = Total.fix_callers_or_senders(h)
     end
 
     def page
@@ -468,7 +486,7 @@ module Logjam
       rows.each_with_object({}) do |r,o|
         callers_or_senders = r[field_str]
         page = r['page']
-        o["#{app}-#{page}"] = callers_or_senders unless callers_or_senders.blank? || page !~ /#/
+        o["#{app}@#{page}"] = Total.fix_callers_or_senders(callers_or_senders) unless callers_or_senders.blank? || page !~ /#/
       end
     end
 

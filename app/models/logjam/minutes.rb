@@ -105,10 +105,15 @@ module Logjam
 
     # extract a field stored as a sub hash of counters from the minutes records
     def extract_sub_hash(key)
+      fix_key = key == "callers" || key == "senders"
       hash = Hash.new{|h,e| h[e] = Hash.new(0)}
       @minutes.each do |m,h|
         (h[key]||{}).each do |e,c|
-          hash[e][m] = c
+          if fix_key && !e.include?("@")
+            app, rest = Logjam.extract_app(e)
+            e = "#{app}@#{rest}"
+          end
+          hash[e][m] += c
         end
       end
       hash

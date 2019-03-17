@@ -169,6 +169,20 @@ namespace :logjam do
       agents = Logjam.user_agents
       Logjam::Agents.dump_array(agents)
     end
+
+    desc "list all action names in all applications between FROM_DATE an TO_DATE"
+    task :list_action_names => :environment do
+      from_date = (ENV['FROM_DATE'] || Date.today).to_date
+      to_date = (ENV['TO_DATE'] || Date.today).to_date
+      Logjam.list_action_names(from_date: from_date, to_date: to_date)
+    end
+
+    desc "list all characters used in action names in all applications between FROM_DATE an TO_DATE"
+    task :list_action_name_characters => :environment do
+      from_date = (ENV['FROM_DATE'] || Date.today).to_date
+      to_date = (ENV['TO_DATE'] || Date.today).to_date
+      Logjam.list_action_name_characters(from_date: from_date, to_date: to_date)
+    end
   end
 
   namespace :device do

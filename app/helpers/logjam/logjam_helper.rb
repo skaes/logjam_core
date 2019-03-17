@@ -293,7 +293,10 @@ module Logjam
     end
 
     def sometimes_link_to_request(request_id)
-      app, env, oid = request_id.split('-')
+      parts = request_id.split('-')
+      oid = parts.pop
+      env = parts.pop
+      app = parts.join('-')
       if @database_info.db_exists?(@date, app, env) && Requests.exists?(@date, app, env, oid)
         params = { :app => app, :env => env, :action => "show", :id => oid }
         clean_link_to(request_id, params, :"data-tooltip" => "show request")

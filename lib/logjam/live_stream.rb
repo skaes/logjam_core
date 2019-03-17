@@ -6,7 +6,9 @@ module Logjam
       @name = "livestream-#{env}"
       @tag = "development"
       @host = "localhost"
-      @app, @env = @name.split('-')
+      parts = name.split('-')
+      @env = parts.pop
+      @app = parts.join('-')
       raise "logjam stream configuration error: missing envrironment name #{@env}" unless @env
       instance_eval &block if block_given?
     end

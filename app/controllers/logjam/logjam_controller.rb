@@ -502,9 +502,8 @@ module Logjam
       head(:bad_request) unless %w(callers senders).include?(params[:kind])
       @totals = Totals.new(@db, [params[:kind]], @page)
       @callers = @totals.send(params[:kind].to_sym)
-      if transform = get_relationship_key(params[:group])
-        @callers = @callers.each_with_object(Hash.new(0)){|(k,v),h| h[transform.call(k)] += v}
-      end
+      transform = get_relationship_key(params[:group])
+      @callers = @callers.each_with_object(Hash.new(0)){|(k,v),h| h[transform.call(k)] += v}
       respond_to do |format|
         format.html do
           @title = params[:kind] == 'senders' ? "Message Senders" : "API Callers"
@@ -518,15 +517,11 @@ module Logjam
           @call_count = @callers.blank? ? 0 : @callers.map(&:second).sum
           @request_count = @totals.count
           @caller_minutes = Minutes.new(@db, [params[:kind]], @page, @totals.page_names, 2).send(params[:kind])
-          # puts @caller_minutes.inspect
-          if transform
-            minutes = Hash.new{|h,k| h[k] = Hash.new(0)}
-            @caller_minutes = @caller_minutes.each_with_object(minutes) do |(k,h),calls|
-              callee = transform.call(k)
-              counts = calls[callee]
-              h.each {|m,c| counts[m] += c}
-            end
-            # puts @caller_minutes.inspect
+          minutes = Hash.new{|h,k| h[k] = Hash.new(0)}
+          @caller_minutes = @caller_minutes.each_with_object(minutes) do |(k,h),calls|
+            callee = transform.call(k)
+            counts = calls[callee]
+            h.each {|m,c| counts[m] += c}
           end
         end
         format.json do
@@ -534,7 +529,7 @@ module Logjam
           page.sub!(/\A::/,'')
           app = page == '' ? @app : "#{@app}::"
           target = "#{app}#{page}"
-          array = @callers.map{|k,v| {source: k.sub('-','::'), target: target, count: v}}
+          array = @callers.map{|k,v| {source: k.sub('@','::'), target: target, count: v}}
           render :json => Oj.dump(array, :mode => :compat)
         end
       end
@@ -548,15 +543,15 @@ module Logjam
       case group
       when 'module'
         ->(k) do
-          p = k.gsub('∙','.').split('-')
+          app, action = k.gsub('∙','.').split('@',2)
           # extract the module
-          m = p[1].split(/(::)|#/)[0]
+          m = action.split(/(::)|#/)[0]
           # TODO: dirty hack (but for what?)
-          m = p[0].capitalize if m =~ /Controller\z/
-          "#{p[0]}-#{m}"
+          m = app.capitalize if m =~ /Controller\z/
+          "#{app}@#{m}"
         end
       when 'application'
-        ->(k){ k.gsub('∙','.').split('-')[0] }
+        ->(k){ k.gsub('∙','.').split('@').first }
       else
         ->(k){ k.gsub('∙','.') }
       end
@@ -575,6 +570,7 @@ module Logjam
           db = Logjam.connection_for(db_name).use(db_name).database
           relationships = Totals.new(db).relationships(stream.app, kind)
           relationships.each do |callee_or_consumer, callers_or_senders|
+            puts callee_or_consumer, callers_or_senders.inspect
             callee_or_consumer = transform.call(callee_or_consumer)
             callers_or_senders.each do |caller_or_sender, count|
               caller_or_sender = transform.call(caller_or_sender)
@@ -587,7 +583,7 @@ module Logjam
         end
       end
       # convert data into an array and sort it
-      data = data.map{|p,c| {source: p[0], target: p[1], count: c}}
+      data = data.map{|p,c| {source: p[0].sub('@','::'), target: p[1].sub('@','::'), count: c}}
       case sort
       when 'caller', 'sender' then data.sort_by!{|p| [p[:source],p[:target]]}
       when 'callee', 'consumer' then data.sort_by!{|p| [p[:target],p[:source]]}
