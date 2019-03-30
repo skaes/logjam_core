@@ -290,28 +290,41 @@ module Logjam
         format.html do
           @page_size = 25
           offset = params[:offset].to_i
+          eselector = nil
           case params[:error_type]
           when "internal"
             @title = "Internal Server Errors"
             qopts = { :response_code => 500 }
             @error_count = @dataset.response_codes[500]
+            @resources = %w(response)
+            eselector = ->(minutes) { minutes.response["500"] }
           when "exceptions"
             @title = "Requests with exception «#{params[:exception]}»"
             qopts = { :exceptions => params[:exception] }
             @error_count = @dataset.exceptions[params[:exception]]
+            @resources = %w(exceptions)
+            eselector = ->(minutes) { minutes.exceptions[params[:exception]] }
           when "soft_exceptions"
             @title = "Requests with exception «#{params[:exception]}» logged (log-level below ERROR)"
             qopts = { :soft_exceptions => params[:exception] }
             @error_count = @dataset.soft_exceptions[params[:exception]]
+            @resources = %w(soft_exceptions)
+            eselector = ->(minutes) { minutes.soft_exceptions[params[:exception]] }
           else
-            severity, @title, @error_count = case params[:error_type]
-                                             when "logged_warning"; then [2, "Logged Warnings", @dataset.logged_error_count(2)]
-                                             when "logged_error"; then [3, "Logged Errors", @dataset.logged_error_count_above(3)]
-                                             when "logged_fatal"; then [4, "Logged Fatal Errors", @dataset.logged_error_count_above(4)]
-                                             else [3, "Logged Errors", @dataset.logged_error_count_above(3)]
-                                             end
+            severity, @title, @error_count =
+                              case params[:error_type]
+                              when "logged_warning" then [2, "Logged Warnings", @dataset.logged_error_count(2)]
+                              when "logged_error"; then [3, "Logged Errors", @dataset.logged_error_count_above(3)]
+                              when "logged_fatal"; then [4, "Logged Fatal Errors", @dataset.logged_error_count_above(4)]
+                              else [3, "Logged Errors", @dataset.logged_error_count_above(3)]
+                              end
+            @resources = %w(severity)
             qopts = { :severity => severity }
+            eselector = ->(minutes) { minutes.severity_above(severity.to_s) }
           end
+          totals = Totals.new(@db, @resources, @page.blank? ? 'all_pages' : @page)
+          minutes = Minutes.new(@db, @resources, @page, totals.page_names, 2)
+          @timeline = eselector.call(minutes)
           qopts.merge!(:limit => @page_size, :skip => offset)
           if (restricted = params.include?(:starte_minute) || params.include?(:end_minute))
             qopts[:start_minute] = params[:start_minute].to_i

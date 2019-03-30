@@ -12,6 +12,27 @@
              <span class="warning-box">[400s sampled at <%= @sampling_rate_400s*100 %>%]</span>
           <% end %>
         </h2>
+        <div>
+          <table class="full_stats">
+            <colgroup>
+              <col span="1" style="width: 10%;">
+              <col span="1">
+            </colgroup>
+            <tbody>
+              <tr class="full_stats">
+                <% url = clean_url_for(:action => "errors", :error_type => "internal") %>
+                <td><b>Timeline</b><br>
+                  <% if params[:start_minute].to_i>0 %>
+                    <%= link_to(fa_icon("volume-up") + " Show all", clean_url_for(:action => "errors", :error_type => "internal", :start_minute => 0, :end_minute => 1440)) %>
+                  <% end %>
+                </td>
+                <td class="echart" id="timeline">
+                  <%= render "echart", exceptions: @timeline, parent_selector: "#timeline", url: url, height: 50, start_minute: params[:start_minute], end_minute: params[:end_minute] %>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
         <% if @dataset.request_collection_expired? %>
           <div class="message" %>
             The requests collection has expired.

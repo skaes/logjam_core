@@ -68,16 +68,29 @@ module Logjam
       @severity ||= extract_sub_hash('severity')
     end
 
+    def severity_above(sev)
+      i = sev.to_i
+      severity.each_with_object(Hash.new(0)) do |(k,h),s|
+        h.each{|m,c| s[m] += c} if k.to_i >= i
+      end
+    end
+
     def exception_summary
-      @excpetion_summary ||= exceptions.each_with_object(Hash.new(0)){|(_,h),s| h.each{|m,c| s[m] += c}}
+      @excpetion_summary ||= exceptions.each_with_object(Hash.new(0)) do |(_,h),s|
+        h.each{|m,c| s[m] += c}
+      end
     end
 
     def soft_exception_summary
-      @soft_excpetion_summary ||= soft_exceptions.each_with_object(Hash.new(0)){|(_,h),s| h.each{|m,c| s[m] += c}}
+      @soft_excpetion_summary ||= soft_exceptions.each_with_object(Hash.new(0)) do |(_,h),s|
+        h.each{|m,c| s[m] += c}
+      end
     end
 
     def js_exception_summary
-      @js_exception_summary ||= js_exceptions.each_with_object(Hash.new(0)){|(_,h),s| h.each{|m,c| s[m] += c}}
+      @js_exception_summary ||= js_exceptions.each_with_object(Hash.new(0)) do |(_,h),s|
+        h.each{|m,c| s[m] += c}
+      end
     end
 
     def apdex(section = :backend)
