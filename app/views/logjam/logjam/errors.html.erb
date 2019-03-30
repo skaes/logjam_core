@@ -20,10 +20,10 @@
             </colgroup>
             <tbody>
               <tr class="full_stats">
-                <% url = clean_url_for(:action => "errors", :error_type => params[:error_type]) %>
+                <% url = clean_url_for(:action => @action_name, :error_type => params[:error_type]) %>
                 <td><b>Timeline</b><br>
                   <% if params[:start_minute].to_i>0 %>
-                    <%= link_to(fa_icon("volume-up") + " Show all", clean_url_for(:action => "errors", :error_type => params[:error_type], :start_minute => 0, :end_minute => 1440)) %>
+                    <%= link_to(fa_icon("volume-up") + " Show all", clean_url_for(:action => @action_name, :error_type => params[:error_type], :start_minute => 0, :end_minute => 1440)) %>
                   <% end %>
                 </td>
                 <td class="echart" id="timeline">

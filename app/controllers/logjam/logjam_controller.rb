@@ -339,6 +339,7 @@ module Logjam
           @last_page_offset = @error_count/@page_size*@page_size
           @next_page_offset = offset + @page_size
           @previous_page_offset = [offset - @page_size, 0].max
+          @action_name = "errors"
         end
       end
     end
@@ -418,6 +419,7 @@ module Logjam
           @last_page_offset = @stored_error_count/@page_size*@page_size
           @next_page_offset = offset + @page_size
           @previous_page_offset = [offset - @page_size, 0].max
+          @action_name = "response_codes"
           render "errors"
         end
       end
