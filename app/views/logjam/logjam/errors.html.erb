@@ -6,6 +6,8 @@
       <div class="item">
         <h2>
           <%= @title %> <%= hpn("for") %> (<%= integer_number(@error_count) %>)
+          between <%= minute_to_human(@dataset.start_minute) %>
+          and <%= minute_to_human(@dataset.end_minute) %>
           <% if @sampling_rate_400s && @sampling_rate_400s < 1.0 %>
              <span class="warning-box">[400s sampled at <%= @sampling_rate_400s*100 %>%]</span>
           <% end %>

@@ -289,18 +289,19 @@ module Logjam
       respond_to do |format|
         format.html do
           @page_size = 25
+          offset = params[:offset].to_i
           case params[:error_type]
           when "internal"
             @title = "Internal Server Errors"
-            q = Requests.new(@db, "minute", @page, :response_code => 500, :limit => @page_size, :skip => params[:offset].to_i)
+            qopts = { :response_code => 500 }
             @error_count = @dataset.response_codes[500]
           when "exceptions"
             @title = "Requests with exception «#{params[:exception]}»"
-            q = Requests.new(@db, "minute", @page, :exceptions => params[:exception], :limit => @page_size, :skip => params[:offset].to_i)
+            qopts = { :exceptions => params[:exception] }
             @error_count = @dataset.exceptions[params[:exception]]
           when "soft_exceptions"
             @title = "Requests with exception «#{params[:exception]}» logged (log-level below ERROR)"
-            q = Requests.new(@db, "minute", @page, :soft_exceptions => params[:exception], :limit => @page_size, :skip => params[:offset].to_i)
+            qopts = { :soft_exceptions => params[:exception] }
             @error_count = @dataset.soft_exceptions[params[:exception]]
           else
             severity, @title, @error_count = case params[:error_type]
@@ -309,10 +310,16 @@ module Logjam
                                              when "logged_fatal"; then [4, "Logged Fatal Errors", @dataset.logged_error_count_above(4)]
                                              else [3, "Logged Errors", @dataset.logged_error_count_above(3)]
                                              end
-            q = Requests.new(@db, "minute", @page, :severity => severity, :limit => @page_size, :skip => params[:offset].to_i)
+            qopts = { :severity => severity }
           end
+          qopts.merge!(:limit => @page_size, :skip => offset)
+          if (restricted = params.include?(:starte_minute) || params.include?(:end_minute))
+            qopts[:start_minute] = params[:start_minute].to_i
+            qopts[:end_minute] = params[:end_minute].to_i
+          end
+          q = Requests.new(@db, "minute", @page, qopts)
           @requests = q.all
-          offset = params[:offset].to_i
+          @error_count = q.count if restricted
           @page_count = @error_count/@page_size + 1
           @current_page = offset/@page_size + 1
           @last_page = @page_count
