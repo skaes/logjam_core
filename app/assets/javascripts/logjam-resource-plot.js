@@ -304,6 +304,18 @@ function logjam_resource_plot(params) {
       return m;
   }
 
+  function restore_selection() {
+    mouse_down_start = -1;
+    vis.selectAll(".selection")
+      .attr("x", x(start_minute/interval))
+      .attr("width", x(end_minute/interval) - x(start_minute/interval) + 1)
+      .attr("display", start_minute>0 ? null : "none");
+  }
+
+  $(document).mouseup(function() {
+      restore_selection();
+    });
+
   function start_time_selection(di) {
     d3.event.stopPropagation();
     d3.event.preventDefault();

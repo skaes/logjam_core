@@ -89,6 +89,7 @@ function logjam_echart(params) {
   }
 
   function mouse_up_event(d, i) {
+    d3.event.stopPropagation();
     var p = d3.mouse(this);
     var di = Math.ceil(x.invert(p[0]))-1;
     if (allow_selection) {
@@ -183,11 +184,25 @@ function logjam_echart(params) {
     }
   }
 
+  function restore_selection() {
+    mouse_down_start = -1;
+    vis.selectAll(".selection")
+      .attr("x", x(start/2))
+      .attr("width", x(end/2) - x(start/2) + 1)
+      .attr("display", start>0 ? null : "none");
+  }
+
   function select_minutes(start, end) {
     var uri = new URI(url);
     uri.removeSearch(["start_minute", "end_minute"])
       .addSearch("start_minute", 2*start)
       .addSearch("end_minute", 2*end);
     document.location.href = uri.toString();
+  }
+
+  if (allow_selection) {
+    $(document).mouseup(function() {
+      restore_selection();
+    });
   }
 }

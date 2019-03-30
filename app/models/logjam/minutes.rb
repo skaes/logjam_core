@@ -64,6 +64,13 @@ module Logjam
       @response_codes ||= extract_sub_hash('response')
     end
 
+    def response_above(code)
+      i = code.to_i
+      response.each_with_object(Hash.new(0)) do |(k,h),s|
+        h.each{|m,c| s[m] += c} if k.to_i >= i
+      end
+    end
+
     def severity
       @severity ||= extract_sub_hash('severity')
     end

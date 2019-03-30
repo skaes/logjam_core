@@ -399,6 +399,14 @@ module Logjam
             @stored_error_count = @error_count
             @skip_last = false
           end
+          resources = %w(response)
+          totals = Totals.new(@db, resources, @page.blank? ? 'all_pages' : @page)
+          minutes = Minutes.new(@db, resources, @page, totals.page_names, 2)
+          if params[:above].present?
+            @timeline = minutes.response_above(@response_code.to_s)
+          else
+            @timeline = minutes.response[@response_code.to_s]
+          end
           q = Requests.new(@db, "minute", @page, :response_code => @response_code,
                            :limit => @page_size, :skip => params[:offset].to_i, :above => params[:above].present?)
           @requests = q.all
