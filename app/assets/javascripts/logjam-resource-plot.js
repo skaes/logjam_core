@@ -10,8 +10,8 @@ function logjam_resource_plot(params) {
       total_time_max       = params.total_time_max,
       max_y                = params.max_y,
       zoomed_max_y         = params.zoomed_max_y,
-      selected_slice       = params.selected_slice,
-      selected_slice_width = params.selected_slice_width,
+      start_minute         = params.start_minute,
+      end_minute           = params.end_minute,
       container            = params.container,
       max_request_count    = d3.max(request_counts);
 
@@ -59,20 +59,26 @@ function logjam_resource_plot(params) {
     submit_minutes(start, end, resource);
   }
 
+  function select_minutes(start, end) {
+    submit_minutes(start*interval, end*interval, $('#resource').val());
+  }
+
   function reset_minutes(){
     submit_minutes(0, 1440, $('#resource').val());
   }
 
   /* The root panel. */
   var vis = d3.select(params.container)
-        .append("svg")
-        .attr("width", w+50)
-        .attr("height", h+80)
-        .style("stroke", "#999")
-        .style("strokeWidth", 1.0)
-        .on("click", update_y_scale)
-        .append("g")
-        .attr("transform", "translate(40,10)");
+      .append("svg")
+      .attr("width", w+50)
+      .attr("height", h+80)
+      .style("stroke", "#999")
+      .style("strokeWidth", 1.0)
+      .on("click", function(d) { if (!ignore_click) zoom_in_or_out(); else ignore_click = false; })
+      .on("mousemove", function(d,i) { mouse_over_root(d, i, this); })
+      .on("mouseup", function(d,i) { mouse_up_over_root(d, i, this); })
+      .append("g")
+      .attr("transform", "translate(40,10)");
 
   /* X-label */
   vis.append("svg:text")
@@ -286,11 +292,91 @@ function logjam_resource_plot(params) {
     .style("fill", "none");
 
   var request_tooltip_text = "";
+  var mouse_down_start = -1;
+  var ignore_click = false;
+
+  function valid_minute(m) {
+    if (m < 0)
+      return 0;
+    else if (m > 1440/interval)
+      return 1440/interval;
+    else
+      return m;
+  }
+
+  function start_time_selection(di) {
+    d3.event.stopPropagation();
+    d3.event.preventDefault();
+    vis.selectAll(".selection")
+      .attr("x", x(di))
+      .attr("width", 1)
+      .attr("display", null);
+  }
+
+  function update_time_selection(di) {
+    d3.event.stopPropagation();
+    d3.event.preventDefault();
+    if (mouse_down_start > 0) {
+      var m = valid_minute(di);
+      if (m >= mouse_down_start) {
+        vis.selectAll(".selection")
+          .attr("width", x(m) - x(mouse_down_start) + 1);
+      } else {
+        vis.selectAll(".selection")
+          .attr("x", x(m))
+          .attr("width", x(mouse_down_start) - x(m) + 1);
+      }
+    }
+  }
+
+  function finish_time_selection(di) {
+    d3.event.stopPropagation();
+    d3.event.preventDefault();
+    if (mouse_down_start >= 0) {
+      var m = valid_minute(di);
+      if (m >= mouse_down_start)
+        select_minutes(mouse_down_start, m);
+      else
+        select_minutes(m, mouse_down_start);
+      mouse_down_start = -1;
+      ignore_click = true;
+    }
+  }
 
   function mouse_over_requests(d, i, n) {
     var p = d3.mouse(n);
     var di = Math.ceil(x.invert(p[0]))-1;
     request_tooltip_text = d3.format("d")(request_counts[di]) + " req/sec" + time_suffix(di*interval);
+    update_time_selection(di);
+  }
+
+  function mouse_down_over_requests(d, i, n) {
+    var p = d3.mouse(n);
+    var di = Math.ceil(x.invert(p[0]))-1;
+    mouse_down_start = di;
+    start_time_selection(di);
+  }
+
+  function mouse_up_over_requests(d, i, n) {
+    var p = d3.mouse(n);
+    var di = Math.ceil(x.invert(p[0]))-1;
+    finish_time_selection(di);
+  }
+
+  function mouse_out_of_requests() {
+    request_tooltip_text = "";
+  }
+
+  function mouse_over_root(d, i, n) {
+    var p = d3.mouse(n);
+    var di = Math.ceil(x.invert(p[0]-40))-1;
+    update_time_selection(di);
+  }
+
+  function mouse_up_over_root(d, i, n) {
+    var p = d3.mouse(n);
+    var di = Math.ceil(x.invert(p[0]-40))-1;
+    finish_time_selection(di);
   }
 
   vis.selectAll(".request_count")
@@ -299,10 +385,12 @@ function logjam_resource_plot(params) {
     .attr("class", "request_count")
     .style("fill", "rgba(128,128,128,0.2)")
     .style("cursor", "pointer")
-    .on("click", function(d,i){ restrict_minutes(d3.mouse(this), $('#resource').val());})
+    // .on("click", function(d,i){ d3.event.stopPropagation(); })
+    .on("mousedown", function(d,i){ mouse_down_over_requests(d, i, this);})
+    .on("mouseup", function(d,i){ mouse_up_over_requests(d, i, this);})
     .on("mouseover", function(d,i){ mouse_over_requests(d, i, this);})
     .on("mousemove", function(d,i){ mouse_over_requests(d, i, this);})
-    .on("mouseout", function(d,i){ request_tooltip_text = ""; })
+    .on("mouseout", function(d,i){ mouse_out_of_requests(); })
     .style("stroke", "rgba(128,128,128,0.3)")
     .style("stroke-width", 1)
     .attr("d", request_area);
@@ -318,14 +406,28 @@ function logjam_resource_plot(params) {
     title: function() { return request_tooltip_text; }
   });
 
+  $('.selection').tipsy({
+    trigger: 'hover',
+    follow: 'x',
+    offset: 0,
+    offsetX: 0,
+    offsetY: -20,
+    gravity: 's',
+    html: false,
+    title: function() { return request_tooltip_text; }
+  });
+
   vis.append("rect")
+    .attr("class", "selection")
     .attr("y", 0)
-    .attr("x", x(selected_slice/interval))
-    .attr("width", selected_slice_width)
     .attr("height", 50)
-    .attr("display", function(){ return selected_slice>0 ? null : "none"; })
+    .attr("x", x(start_minute/interval))
+    .attr("width", x(end_minute/interval) - x(start_minute/interval) + 1)
+    .attr("display", start_minute>0 ? null : "none")
+    .style("pointer-events", "none")
     .style("stroke", "none")
-    .style("fill", "rgba(255,0,0,0.3)");
+    .style("fill", "rgba(255,0,0,0.3)")
+  ;
 
   var layer_tooltip_text = "";
   var tooltime_formatter = d3.format("02d");
@@ -341,6 +443,7 @@ function logjam_resource_plot(params) {
     var di = Math.ceil(x.invert(p[0]))-1;
     var dp = data[i][di];
     layer_tooltip_text = tooltip_formatter(dp[1]) + " " + legend[i] + time_suffix(dp[0]*interval);
+    update_time_selection(dp[0]);
   }
 
   function stackup(d) {
@@ -439,7 +542,7 @@ function logjam_resource_plot(params) {
   }
 
   var zoomed = true;
-  function update_y_scale() {
+  function zoom_in_or_out() {
     var new_max_y = zoomed ? max_y : zoomed_max_y;
     zoomed = !zoomed;
     y.domain([0, new_max_y]).nice();
