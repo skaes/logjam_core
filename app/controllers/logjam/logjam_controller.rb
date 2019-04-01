@@ -455,6 +455,10 @@ module Logjam
           @next_page_offset = offset + @page_size
           @previous_page_offset = [offset - @page_size, 0].max
           @skip_last = true
+          resources = [ @dataset.resource ]
+          totals = Totals.new(@db, resources, @page.blank? ? 'all_pages' : @page)
+          minutes = Minutes.new(@db, resources, @page, totals.page_names, 2)
+          @timeline = @section == :frontend ? minutes.counts["frontend_count"] : minutes.counts["count"]
         end
       end
     end

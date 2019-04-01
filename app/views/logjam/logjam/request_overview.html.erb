@@ -14,6 +14,27 @@
           and <%= minute_to_human(@dataset.end_minute) %>,
           sorted by <%= resource_name %>
         </h2>
+                <div>
+          <table class="full_stats">
+            <colgroup>
+              <col span="1" style="width: 10%;">
+              <col span="1">
+            </colgroup>
+            <tbody>
+              <tr class="full_stats">
+                <% url = clean_url_for(:action => "request_overview") %>
+                <td><b>Timeline</b><br>
+                  <% if params[:start_minute].to_i>0 || (1..1439).include?(params[:end_minute].to_i) %>
+                    <%= link_to(fa_icon("volume-up") + " Show all", clean_url_for(:action => "request_overview", :start_minute => nil, :end_minute => nil)) %>
+                  <% end %>
+                </td>
+                <td class="echart" id="timeline">
+                  <%= render "echart", exceptions: @timeline, parent_selector: "#timeline", url: url, height: 50, start_minute: params[:start_minute], end_minute: params[:end_minute] %>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
         <% if @request_count == 0 %>
         <%= render "no_requests_found" %>
         <% else %>
