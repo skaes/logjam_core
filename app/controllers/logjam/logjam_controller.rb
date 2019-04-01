@@ -408,8 +408,12 @@ module Logjam
           else
             @timeline = minutes.response[@response_code.to_s]
           end
-          q = Requests.new(@db, "minute", @page, :response_code => @response_code,
-                           :limit => @page_size, :skip => params[:offset].to_i, :above => params[:above].present?)
+          qopts = { :response_code => @response_code, :limit => @page_size, :skip => params[:offset].to_i, :above => params[:above].present? }
+          if params.include?(:starte_minute) || params.include?(:end_minute)
+            qopts[:start_minute] = params[:start_minute].to_i
+            qopts[:end_minute] = params[:end_minute].to_i
+          end
+          q = Requests.new(@db, "minute", @page, qopts)
           @requests = q.all
           offset = params[:offset].to_i
           @stored_error_count ||= @error_count
