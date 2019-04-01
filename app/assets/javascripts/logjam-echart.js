@@ -70,7 +70,6 @@ function logjam_echart(params) {
     title: function() { return tooltip_text; }
   });
 
-
   function mouse_click_event() {
     if (ignore_click) {
       ignore_click = false;
@@ -84,6 +83,7 @@ function logjam_echart(params) {
     var di = Math.ceil(x.invert(p[0]))-1;
     if (allow_selection) {
       mouse_down_start = di;
+      mouse_down_end = di;
       start_time_selection(di);
     }
   }
@@ -92,8 +92,9 @@ function logjam_echart(params) {
     d3.event.stopPropagation();
     var p = d3.mouse(this);
     var di = Math.ceil(x.invert(p[0]))-1;
+    update_time_selection(di);
     if (allow_selection) {
-      finish_time_selection(di);
+      finish_time_selection();
     }
   }
 
@@ -133,7 +134,7 @@ function logjam_echart(params) {
       .attr("height", 50)
       .attr("x", x(start/2))
       .attr("width", x(end/2) - x(start/2) + 1)
-      .attr("display", start>0 ? null : "none")
+      .attr("display", (start>0||end<1440) ? null : "none")
       .style("pointer-events", "none")
       .style("stroke", "none")
       .style("fill", "rgba(255,0,0,0.3)");
@@ -147,6 +148,7 @@ function logjam_echart(params) {
   }
 
   var mouse_down_start = -1;
+  var mouse_down_end = -1;
   var ignore_click = false;
 
   function valid_minute(m) {
@@ -158,9 +160,15 @@ function logjam_echart(params) {
       return m;
   }
 
+  function log_selection() {
+    console.log("["+mouse_down_start+","+mouse_down_end+"]");
+  }
+
   function update_time_selection(di) {
     if (mouse_down_start > 0) {
       var m = valid_minute(di);
+      mouse_down_end = m;
+      log_selection();
       if (m >= mouse_down_start) {
         vis.selectAll(".selection")
           .attr("width", x(m) - x(mouse_down_start) + 1);
@@ -172,20 +180,21 @@ function logjam_echart(params) {
     }
   }
 
-  function finish_time_selection(di) {
+  function finish_time_selection() {
     if (mouse_down_start >= 0) {
-      var m = valid_minute(di);
-      if (m >= mouse_down_start)
-        select_minutes(mouse_down_start, m);
+      if (mouse_down_end >= mouse_down_start)
+        select_minutes(mouse_down_start, mouse_down_end);
       else
-        select_minutes(m, mouse_down_start);
+        select_minutes(mouse_down_end, mouse_down_start);
       mouse_down_start = -1;
+      mouse_down_end = -1;
       ignore_click = true;
     }
   }
 
   function restore_selection() {
     mouse_down_start = -1;
+    mouse_down_end = -1;
     vis.selectAll(".selection")
       .attr("x", x(start/2))
       .attr("width", x(end/2) - x(start/2) + 1)
@@ -202,7 +211,7 @@ function logjam_echart(params) {
 
   if (allow_selection) {
     $(document).mouseup(function() {
-      restore_selection();
+      finish_time_selection();
     });
   }
 }
