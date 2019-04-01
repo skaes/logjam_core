@@ -160,15 +160,14 @@ function logjam_echart(params) {
       return m;
   }
 
-  function log_selection() {
-    console.log("["+mouse_down_start+","+mouse_down_end+"]");
-  }
+  // function log_selection() {
+  //   console.log("["+mouse_down_start+","+mouse_down_end+"]");
+  // }
 
   function update_time_selection(di) {
     if (mouse_down_start > 0) {
       var m = valid_minute(di);
       mouse_down_end = m;
-      log_selection();
       if (m >= mouse_down_start) {
         vis.selectAll(".selection")
           .attr("width", x(m) - x(mouse_down_start) + 1);
