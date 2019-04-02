@@ -14,12 +14,17 @@ module Logjam
     end
 
     def count
-
+      selector = self.selector
+      query = "Metrics.count(#{selector.inspect})"
+      with_conditional_caching(query) do |payload|
+        payload[:rows] = 1
+        @collection.find(selector).count
+      end
     end
 
     def selector
       opts = {"metric" => @metric}
-      if pattern.present? && pattern != "all_pages"
+      if pattern.present? && pattern != "all_pages" && pattern != "::"
         if @requests.modules.include?(pattern.sub(/^::/,''))
           opts.merge!(:module => pattern.sub(/^::/,''))
         elsif @requests.page_names.include?(pattern)

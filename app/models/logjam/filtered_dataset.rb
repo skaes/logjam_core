@@ -130,7 +130,8 @@ module Logjam
       @stored_requests ||=
         begin
           query_opts = {start_minute: @start_minute, end_minute: @end_minute}
-          Requests.new(@db, resource, page, query_opts).count
+          requests = Requests.new(@db, resource, page, query_opts)
+           Metrics.new(@db, requests, resource, page, query_opts).count
         end
     end
 
