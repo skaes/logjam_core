@@ -60,7 +60,11 @@ function logjam_resource_plot(params) {
   }
 
   function select_minutes(start, end) {
-    submit_minutes(start*interval, end*interval, $('#resource').val());
+    if (mouse_down_resource != "") {
+      submit_minutes(start*interval, end*interval, mouse_down_resource);
+    } else {
+      submit_minutes(start*interval, end*interval, $('#resource').val());
+    }
   }
 
   function reset_minutes(){
@@ -343,6 +347,7 @@ function logjam_resource_plot(params) {
   var request_tooltip_text = "";
   var mouse_down_start = -1;
   var mouse_down_end = -1;
+  var mouse_down_resource = "";
   var ignore_click = false;
 
   function valid_minute(m) {
@@ -361,6 +366,7 @@ function logjam_resource_plot(params) {
   function restore_selection() {
     mouse_down_start = -1;
     mouse_down_end = -1;
+    mouse_down_resource = "";
     vis.selectAll(".selection")
       .attr("x", x(start_minute/interval))
       .attr("width", x(end_minute/interval) - x(start_minute/interval) + 1)
@@ -413,6 +419,7 @@ function logjam_resource_plot(params) {
         select_minutes(mouse_down_end, mouse_down_start);
       mouse_down_start = -1;
       mouse_down_end = -1;
+      mouse_down_resource = "";
       ignore_click = true;
     }
   }
@@ -519,6 +526,7 @@ function logjam_resource_plot(params) {
     var di = Math.ceil(x.invert(p[0]))-1;
     mouse_down_start = di;
     mouse_down_end = di;
+    mouse_down_resource = legend[i];
     start_time_selection(di);
   }
 
