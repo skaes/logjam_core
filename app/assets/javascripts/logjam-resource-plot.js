@@ -90,19 +90,69 @@ function logjam_resource_plot(params) {
     .text("Time of day");
 
   /* Zoom button */
+  vis.selectAll(".zoom_rect1")
+    .data([1])
+    .enter()
+    .append("rect")
+    .attr("class", "zoom_rect1")
+    .attr("y", h+15)
+    .attr("x", w-55)
+    .attr("width", 55)
+    .attr("height", 20)
+    .attr("rx", 5)
+    .attr("ry", 5)
+    .style("fill", "rgba(0,0,255,0.1)")
+    .style("stroke", "rgba(128,128,128,0.7)")
+    .style("cursor", "pointer")
+    .exit().remove();
+
   vis.selectAll(".zoom_button")
     .data([1])
     .enter()
     .append("svg:text")
     .attr("class", "zoom_button")
     .attr("dy", h+30)
-    .attr("dx", w)
+    .attr("dx", w-3)
     .style("font", "11px Helvetica Neue")
     .style("fill", "rgba(0,0,255,0.7)")
     .style("cursor", "pointer")
     .attr("text-anchor", "end")
     .text("Zoom out")
     .exit().remove();
+
+  if (start_minute>0||end_minute<1440) {
+    /* Show all button */
+    vis.selectAll(".zoom_rect2")
+      .data([1])
+      .enter()
+      .append("rect")
+      .attr("class", "zoom_rect2")
+      .attr("y", h+15)
+      .attr("x", 0)
+      .attr("width", 100)
+      .attr("height", 20)
+      .attr("rx", 5)
+      .attr("ry", 5)
+      .style("fill", "rgba(0,0,255,0.1)")
+      .style("stroke", "rgba(128,128,128,0.7)")
+      .style("cursor", "pointer")
+      .exit().remove();
+
+    vis.selectAll(".show_all_button")
+      .data([1])
+      .enter()
+      .append("svg:text")
+      .attr("class", "show_all_button")
+      .attr("dy", h+30)
+      .attr("dx", 4)
+      .style("font", "11px Helvetica Neue")
+      .style("fill", "rgba(0,0,255,0.7)")
+      .style("cursor", "pointer")
+      .attr("text-anchor", "start")
+      .text("Lift time restriction")
+      .on("click", reset_minutes)
+      .exit().remove();
+  }
 
   /* X-axis and ticks. */
   vis.selectAll(".yrule")
@@ -111,7 +161,6 @@ function logjam_resource_plot(params) {
     .append("line")
     .attr("class", "yrule")
     .style("stroke", function(d, i){ return (i%24)==0 ? "#999" : "rgba(128,128,128,.2)"; })
-  //    .style("stroke-width", function(d, i){ return (i%24)==0 ? 2 : 1; })
     .attr("x1", x)
     .attr("y1", 0)
     .attr("x2", x)
@@ -293,6 +342,7 @@ function logjam_resource_plot(params) {
 
   var request_tooltip_text = "";
   var mouse_down_start = -1;
+  var mouse_down_end = -1;
   var ignore_click = false;
 
   function valid_minute(m) {
@@ -304,21 +354,28 @@ function logjam_resource_plot(params) {
       return m;
   }
 
+  function log_selection(prefix) {
+    console.log(""+prefix+"["+mouse_down_start+","+mouse_down_end+"]");
+  }
+
   function restore_selection() {
     mouse_down_start = -1;
+    mouse_down_end = -1;
     vis.selectAll(".selection")
       .attr("x", x(start_minute/interval))
       .attr("width", x(end_minute/interval) - x(start_minute/interval) + 1)
-      .attr("display", start_minute>0 ? null : "none");
+      .attr("display", (start_minute>0||end_minute<1440) ? null : "none");
   }
 
   $(document).mouseup(function() {
-      restore_selection();
-    });
+    finish_time_selection();
+  });
 
   function start_time_selection(di) {
-    d3.event.stopPropagation();
-    d3.event.preventDefault();
+    if (d3.event) {
+      d3.event.stopPropagation();
+      d3.event.preventDefault();
+    }
     vis.selectAll(".selection")
       .attr("x", x(di))
       .attr("width", 1)
@@ -326,10 +383,13 @@ function logjam_resource_plot(params) {
   }
 
   function update_time_selection(di) {
-    d3.event.stopPropagation();
-    d3.event.preventDefault();
+    if (d3.event) {
+      d3.event.stopPropagation();
+      d3.event.preventDefault();
+    }
     if (mouse_down_start > 0) {
       var m = valid_minute(di);
+      mouse_down_end = m;
       if (m >= mouse_down_start) {
         vis.selectAll(".selection")
           .attr("width", x(m) - x(mouse_down_start) + 1);
@@ -341,16 +401,18 @@ function logjam_resource_plot(params) {
     }
   }
 
-  function finish_time_selection(di) {
-    d3.event.stopPropagation();
-    d3.event.preventDefault();
+  function finish_time_selection() {
+    if (d3.event) {
+      d3.event.stopPropagation();
+      d3.event.preventDefault();
+    }
     if (mouse_down_start >= 0) {
-      var m = valid_minute(di);
-      if (m >= mouse_down_start)
-        select_minutes(mouse_down_start, m);
+      if (mouse_down_end >= mouse_down_start)
+        select_minutes(mouse_down_start, mouse_down_end);
       else
-        select_minutes(m, mouse_down_start);
+        select_minutes(mouse_down_end, mouse_down_start);
       mouse_down_start = -1;
+      mouse_down_end = -1;
       ignore_click = true;
     }
   }
@@ -366,13 +428,15 @@ function logjam_resource_plot(params) {
     var p = d3.mouse(n);
     var di = Math.ceil(x.invert(p[0]))-1;
     mouse_down_start = di;
+    mouse_down_end = di;
     start_time_selection(di);
   }
 
   function mouse_up_over_requests(d, i, n) {
     var p = d3.mouse(n);
     var di = Math.ceil(x.invert(p[0]))-1;
-    finish_time_selection(di);
+    update_time_selection(di);
+    finish_time_selection();
   }
 
   function mouse_out_of_requests() {
@@ -388,7 +452,8 @@ function logjam_resource_plot(params) {
   function mouse_up_over_root(d, i, n) {
     var p = d3.mouse(n);
     var di = Math.ceil(x.invert(p[0]-40))-1;
-    finish_time_selection(di);
+    update_time_selection(di);
+    finish_time_selection();
   }
 
   vis.selectAll(".request_count")
@@ -397,7 +462,6 @@ function logjam_resource_plot(params) {
     .attr("class", "request_count")
     .style("fill", "rgba(128,128,128,0.2)")
     .style("cursor", "pointer")
-    // .on("click", function(d,i){ d3.event.stopPropagation(); })
     .on("mousedown", function(d,i){ mouse_down_over_requests(d, i, this);})
     .on("mouseup", function(d,i){ mouse_up_over_requests(d, i, this);})
     .on("mouseover", function(d,i){ mouse_over_requests(d, i, this);})
@@ -435,7 +499,7 @@ function logjam_resource_plot(params) {
     .attr("height", 50)
     .attr("x", x(start_minute/interval))
     .attr("width", x(end_minute/interval) - x(start_minute/interval) + 1)
-    .attr("display", start_minute>0 ? null : "none")
+    .attr("display", (start_minute>0||end_minute<1440) ? null : "none")
     .style("pointer-events", "none")
     .style("stroke", "none")
     .style("fill", "rgba(255,0,0,0.3)")
@@ -448,6 +512,14 @@ function logjam_resource_plot(params) {
     var h = Math.floor(n / 60);
     var m = Math.floor(n % 60);
     return(" ~ " + tooltime_formatter(h) + ":" + tooltime_formatter(m));
+  }
+
+  function mouse_down_over_layer(d, i, n) {
+    var p = d3.mouse(n);
+    var di = Math.ceil(x.invert(p[0]))-1;
+    mouse_down_start = di;
+    mouse_down_end = di;
+    start_time_selection(di);
   }
 
   function mouse_over_layer(d, i, n) {
@@ -484,7 +556,7 @@ function logjam_resource_plot(params) {
     .attr("class", "layer")
     .style("fill", function(d,i) { return colors[i]; })
     .style("cursor", function(d,i) { return(legend[i] == "free slots" ? "arrow" : "pointer"); })
-    .on("click", function(d,i){ restrict_minutes(d3.mouse(this), legend[i]); })
+    .on("mousedown", function(d,i){ mouse_down_over_layer(d, i, this);})
     .on("mousemove", function(d,i){ mouse_over_layer(d, i, this);})
     .on("mouseover", function(d,i){ mouse_over_layer(d, i, this);})
     .on("mouseout", function(d,i){ layer_tooltip_text = ""; })
