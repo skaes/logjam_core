@@ -333,8 +333,6 @@ function logjam_resource_plot(params) {
     .on("mousemove", mouse_over_event)
     .on("mouseout",  mouse_over_out);
 
-
-
   /* top x axis */
   vis.append("line")
     .attr("y1", 0)
@@ -385,6 +383,7 @@ function logjam_resource_plot(params) {
     vis.selectAll(".selection")
       .attr("x", x(di))
       .attr("width", 1)
+      .attr("height", h)
       .attr("display", null);
   }
 
@@ -499,18 +498,6 @@ function logjam_resource_plot(params) {
     html: false,
     title: function() { return request_tooltip_text; }
   });
-
-  vis.append("rect")
-    .attr("class", "selection")
-    .attr("y", 0)
-    .attr("height", 50)
-    .attr("x", x(start_minute/interval))
-    .attr("width", x(end_minute/interval) - x(start_minute/interval) + 1)
-    .attr("display", (start_minute>0||end_minute<1440) ? null : "none")
-    .style("pointer-events", "none")
-    .style("stroke", "none")
-    .style("fill", "rgba(255,0,0,0.3)")
-  ;
 
   var layer_tooltip_text = "";
   var tooltime_formatter = d3.format("02d");
@@ -640,6 +627,18 @@ function logjam_resource_plot(params) {
     y.domain([0, new_max_y]).nice();
     redraw();
   }
+
+  vis.append("rect")
+    .attr("class", "selection")
+    .attr("y", 0)
+    .attr("height", 50)
+    .attr("x", x(start_minute/interval))
+    .attr("width", x(end_minute/interval) - x(start_minute/interval) + 1)
+    .attr("display", (start_minute>0||end_minute<1440) ? null : "none")
+    .style("pointer-events", "none")
+    .style("stroke", "none")
+    .style("fill", "rgba(255,0,0,0.3)")
+  ;
 
   function redraw() {
     // Update
