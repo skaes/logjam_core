@@ -3,7 +3,7 @@ module Logjam
   class MongoModel
     def initialize(db, collection_name)
       @database = db
-      @perform_caching = Logjam.db_date(@database.name) < Date.today
+      @perform_caching = Logjam.db_date(@database.name) < Date.today && Logjam.perform_caching
       @collection = db.collection(collection_name)
     end
 

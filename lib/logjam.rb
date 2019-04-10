@@ -402,7 +402,11 @@ module Logjam
   end
 
   def databases
-    Rails.cache.fetch("logjam-known-databases", expires_in: 5.minutes) do
+    if perform_caching
+      Rails.cache.fetch("logjam-known-databases", expires_in: 5.minutes) do
+        get_known_databases
+      end
+    else
       get_known_databases
     end
   end
@@ -861,4 +865,10 @@ module Logjam
       puts "#{c} #{apps.join(" ")}"
     end
   end
+
+  # don't use memcache if environment variable LOGJAM_USE_CACHE is '0'
+  def perform_caching
+    (ENV['LOGJAM_USE_CACHE'] ||= '1') != '0'
+  end
+
 end
