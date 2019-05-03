@@ -291,7 +291,7 @@ module Logjam
           @page_size = 25
           offset = params[:offset].to_i
           eselector = nil
-          @events = Events.new(@db).events
+          @events = Events.new(@db).combined_events
           case params[:error_type]
           when "internal"
             @title = "Internal Server Errors"
@@ -425,7 +425,7 @@ module Logjam
           @next_page_offset = offset + @page_size
           @previous_page_offset = [offset - @page_size, 0].max
           @action_name = "response_codes"
-          @events = Events.new(@db).events
+          @events = Events.new(@db).combined_events
           render "errors"
         end
       end
@@ -473,6 +473,7 @@ module Logjam
           @resources = %w(exceptions js_exceptions severity response)
           @totals = Totals.new(@db, @resources, @page.blank? ? 'all_pages' : @page)
           @minutes = Minutes.new(@db, @resources, @page, @totals.page_names, 2)
+          @events = Events.new(@db).combined_events
         end
       end
     end
@@ -610,7 +611,6 @@ module Logjam
           db = Logjam.connection_for(db_name).use(db_name).database
           relationships = Totals.new(db).relationships(stream.app, kind)
           relationships.each do |callee_or_consumer, callers_or_senders|
-            puts callee_or_consumer, callers_or_senders.inspect
             callee_or_consumer = transform.call(callee_or_consumer)
             callers_or_senders.each do |caller_or_sender, count|
               caller_or_sender = transform.call(caller_or_sender)

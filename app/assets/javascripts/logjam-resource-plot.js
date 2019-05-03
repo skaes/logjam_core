@@ -309,7 +309,7 @@ function logjam_resource_plot(params) {
   function mouse_over_event(d, i) {
     var mouseCoords = d3.mouse(this);
     d3.select("#eventLine"+i).style("stroke", "rgba(255,0,0,.5)");
-    event_tooltip_text = d[1] + time_suffix(Math.floor(d[0]));
+    event_tooltip_text = d[1].split("\n").map(function(s){return $("<p>").text(s).html();}).join("<br>");
   }
 
   function mouse_over_out() {
@@ -702,7 +702,7 @@ function logjam_resource_plot(params) {
     offsetX: 10,
     offsetY: 20,
     gravity: 'w',
-    html: false,
+    html: true,
     title: function() { return event_tooltip_text; }
   };
 

@@ -240,7 +240,7 @@ module Logjam
       @plot_data[section] ||=
         begin
           resources = plotted_resources
-          events = Events.new(@db).events
+          events = Events.new(@db).combined_events
           mins = Minutes.new(@db, resources, page, totals.page_names, interval)
           minutes = mins.minutes
           counts = section == :frontend ? mins.counts["frontend_count"] : mins.counts["count"]

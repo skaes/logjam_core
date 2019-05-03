@@ -166,7 +166,7 @@ function logjam_echart(params) {
   var event_tooltip_text = "";
 
   function mouse_over_triangle_event(d, i) {
-    event_tooltip_text = d[1];
+    event_tooltip_text = d[1].split("\n").map(function(s){return $("<p>").text(s).html();}).join("<br>");
   }
 
   function mouse_over_triangle_out() {
@@ -180,7 +180,7 @@ function logjam_echart(params) {
     offsetX: 10,
     offsetY: 20,
     gravity: 'w',
-    html: false,
+    html: true,
     title: function() { return event_tooltip_text; }
   };
 

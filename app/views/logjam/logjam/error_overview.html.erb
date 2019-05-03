@@ -36,7 +36,7 @@
               <td></td>
               <td class="number"><%= integer_number(overview.values.sum) %></td>
               <td class="echart" id='<%= "echart-#{i+=1}" %>'>
-                <%= render "echart", exceptions: overview, parent_selector: "#echart-#{i}", url: url, height: 100, start_minute: nil, end_minute: nil %>
+                <%= render "echart", events: @events, exceptions: overview, parent_selector: "#echart-#{i}", url: url, height: 100, start_minute: nil, end_minute: nil %>
               </td>
             </tr>
           </tbody>

@@ -15,6 +15,19 @@ module Logjam
       @events ||= compute
     end
 
+    def combined_events
+      combined = []
+      events.each do |e|
+        last_event = combined.last
+        if last_event.nil? || e["minute"] > last_event["minute"] + 5
+          combined << e
+        else
+          last_event["label"] << "\n" << e["label"]
+        end
+      end
+      combined
+    end
+
     private
 
     def compute
