@@ -291,6 +291,7 @@ module Logjam
           @page_size = 25
           offset = params[:offset].to_i
           eselector = nil
+          @events = Events.new(@db).events
           case params[:error_type]
           when "internal"
             @title = "Internal Server Errors"
@@ -424,6 +425,7 @@ module Logjam
           @next_page_offset = offset + @page_size
           @previous_page_offset = [offset - @page_size, 0].max
           @action_name = "response_codes"
+          @events = Events.new(@db).events
           render "errors"
         end
       end

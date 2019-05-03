@@ -1,5 +1,6 @@
 function logjam_echart(params) {
   var data   = params.data,
+      events = params.events,
       url    = params.url,
       max_y  = params.max_y,
       max_x  = params.max_x,
@@ -19,7 +20,7 @@ function logjam_echart(params) {
   var vis = d3.select(params.parent)
      .append("svg")
      .attr("width", w)
-     .attr("height", h)
+      .attr("height", events.length == 0 ? h : h+5)
      .style("stroke", "lightsteelblue")
      .style("strokeWidth", 1.0)
      .on("mousedown", mouse_down_event)
@@ -29,15 +30,6 @@ function logjam_echart(params) {
      .on("mouseout",  mouse_over_out)
      .style("cursor", function(){ return url ? "pointer" : "arrow"; })
      .on("click", mouse_click_event)
-  ;
-
-  var xaxis = vis.append("svg:line")
-        .style("fill", "#999")
-        .style("stroke", "#999")
-        .attr("x1", 0)
-        .attr("y1", h)
-        .attr("x2", w_r)
-        .attr("y2", h)
   ;
 
   vis.selectAll(".rlabel")
@@ -55,7 +47,7 @@ function logjam_echart(params) {
   var line = d3.line()
         .x(function(d,i) { return x(d[0]); })
         .y(function(d) { return y(d[1]); })
-        .curve(d3.curveCardinal)
+        .curve(d3.curveMonotoneY)
   ;
 
   var tooltip = $(params.parent + ' svg');
@@ -111,7 +103,7 @@ function logjam_echart(params) {
     if (xc) {
       n = xc[1];
     }
-    tooltip_text = tooltip_formatter((n <= 0) ? 0 : n) + " ~ " + hour + ":" + minute1 + "-" + minute2 ;
+    tooltip_text = tooltip_formatter((n <= 0) ? 0 : n) + " ~ " + hour + ":" + minute1 + " - " + hour + ":" + minute2 ;
     if (allow_selection) {
       update_time_selection(di);
     }
@@ -127,17 +119,73 @@ function logjam_echart(params) {
     .style("fill", "none")
   ;
 
+  var xaxis = vis.append("svg:line")
+      .style("fill", "#999")
+      .style("stroke", "#999")
+      .attr("x1", 0)
+      .attr("y1", h)
+      .attr("x2", w_r)
+      .attr("y2", h)
+  ;
+
   if (allow_selection) {
     vis.append("rect")
       .attr("class", "selection")
       .attr("y", 0)
-      .attr("height", 50)
+      .attr("height", h)
       .attr("x", x(start/2))
       .attr("width", x(end/2) - x(start/2) + 1)
       .attr("display", (start>0||end<1440) ? null : "none")
       .style("pointer-events", "none")
       .style("stroke", "none")
       .style("fill", "rgba(255,0,0,0.3)");
+  }
+
+  vis.selectAll(".event")
+    .data(events)
+    .enter()
+    .append("polygon")
+    .attr("class", "event")
+    .attr("points", function(d,i) {
+      var xCenter = x(d[0] / 2),
+          y       = h+5,
+          p1      = [xCenter - 4, y],
+          p2      = [xCenter + 4, y],
+          p3      = [xCenter, y - 5];
+
+      var what = [p1, p2, p3].map(function(point) { return point[0] + "," + point[1]; }).join(" ");
+      return what;
+    })
+    .style("stroke", "rgba(255,0,0,0)")
+    .style("fill", "rgba(255,0,0,0.7)")
+    .on("mouseover", mouse_over_triangle_event)
+    .on("mousemove", mouse_over_triangle_event)
+    .on("mouseout",  mouse_over_triangle_out)
+  ;
+
+  var event_tooltip_text = "";
+
+  function mouse_over_triangle_event(d, i) {
+    event_tooltip_text = d[1];
+  }
+
+  function mouse_over_triangle_out() {
+    event_tooltip_text = "";
+  }
+
+  var event_tooltip_options = {
+    trigger: 'hover',
+    follow: 'x',
+    offset: 0,
+    offsetX: 10,
+    offsetY: 20,
+    gravity: 'w',
+    html: false,
+    title: function() { return event_tooltip_text; }
+  };
+
+  if (events.length > 0) {
+    $('.event').tipsy(event_tooltip_options);
   }
 
   function start_time_selection(di) {
