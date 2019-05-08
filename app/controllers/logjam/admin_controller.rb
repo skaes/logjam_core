@@ -46,9 +46,9 @@ module Logjam
     end
 
     def get_cached_database_info
-      get_info = lambda {
+      get_info = lambda(_cache_key) {
         info = []
-        Logjam.connections.each do |host,conn|
+        Logjam.connections.each do |host, conn|
           conn.list_databases.each do |db|
             size = db["sizeOnDisk"]
             info << [host, db["name"], size]
@@ -59,7 +59,7 @@ module Logjam
       if Logjam.perform_caching
         Rails.cache.fetch("logjam-database-info", expires_in: 1.minutes, &get_info)
       else
-        get_info.call()
+        get_info.call(nil)
       end
     end
 
