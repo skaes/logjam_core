@@ -129,6 +129,7 @@
 
               if(logjamRequestId && logjamRequestAction) {
                 var requestData = {
+                  status:               request.status,
                   logjam_caller_id:     logjamPageRequestId,
                   logjam_caller_action: logjamPageAction,
                   logjam_request_id:    logjamRequestId,
