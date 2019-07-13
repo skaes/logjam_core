@@ -33,8 +33,8 @@ module Logjam
       indented(3, "pull = \"tcp://%s:9605\"" % [Logjam.bind_ip_for_zmq_spec])
       indented(3, "pub = \"tcp://%s:9651\"" % [Logjam.bind_ip_for_zmq_spec])
       indented(2, "bindings")
-      @endpoints.each_with_index do |p,i|
-        indented(3, "bind%d = \"%s\"" % [i, p])
+      @endpoints.each do |p|
+        indented(3, "bind = \"%s\"" % [p])
       end
       indented(2, "livestream")
       indented(3, "pub = \"tcp://%s:9607\"" % [Logjam.bind_ip_for_zmq_spec])
@@ -57,9 +57,9 @@ module Logjam
       indented(1, "databases")
       # TODO: make timeouts configurable and add user and password
       timeouts = "connectTimeoutMS=5000&socketTimeoutMS=60000"
-      @database_keys.each_with_index do |name, i|
+      @database_keys.each do |name|
         db = @databases[name]
-        connection_uri = "db%d = \"mongodb://%s:%d/?%s\"" % [i, db['host'], db['port'], timeouts]
+        connection_uri = "db = \"mongodb://%s:%d/?%s\"" % [db['host'], db['port'], timeouts]
         indented(2, connection_uri)
       end
     end
@@ -83,8 +83,9 @@ module Logjam
         end
         if s.import_threshold != Logjam.import_threshold || !s.import_thresholds.blank?
           indented(3, "import_threshold = %d" % s.import_threshold)
-          s.import_thresholds.each do |t|
-            indented(4, "%s = %d" % t)
+          s.import_thresholds.each do |prefix, value|
+            indented(4, "prefix = \"%s\"" % [prefix])
+            indented(5, "threshold = %d" % [value])
           end
         end
         if s.sampling_rate_400s != Logjam.sampling_rate_400s
