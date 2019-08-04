@@ -80,6 +80,12 @@
         <% end %>
 
         <li>
+          <%= clean_link_to(:action => "response_code_overview", :section => 'backend') do %>
+            <i class="fa fa-reply"></i> Responses
+          <% end %>
+        </li>
+
+        <li>
           <%= clean_link_to(:action => "error_overview", :section => 'backend') do %>
             <i class="fa fa-warning"></i> Problems
           <% end %>
