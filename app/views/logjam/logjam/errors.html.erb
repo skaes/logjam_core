@@ -58,3 +58,10 @@
     </div>
   </div>
 </div>
+<script type="text/javascript">
+logjam_echart($('.echart').first().data().params);
+$(window).on('resize', function(){
+  $('.echart svg').remove();
+  logjam_echart($('.echart').first().data().params);
+  });
+</script>

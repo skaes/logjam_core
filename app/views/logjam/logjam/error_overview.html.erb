@@ -134,3 +134,15 @@
     </div>
   </div>
 </div>
+<script type="text/javascript">
+  adjustWidthOfFirstTwoColumns();
+  $('.echart').each(function(){
+    logjam_echart($(this).data().params);
+  });
+  $(window).on('resize', function(){
+    $('.echart svg').remove();
+    $('.echart').each(function(){
+      logjam_echart($(this).data().params);
+    });
+  });
+</script>

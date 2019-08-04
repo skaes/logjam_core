@@ -262,3 +262,21 @@ function logjam_echart(params) {
     });
   }
 }
+
+function adjustWidthOfFirstTwoColumns() {
+  var rows = $('tr.full_stats');
+  var nameWidths = rows.map(function(){
+    return $(this).children().first().width();
+  });
+  var maxNameWidth = Math.max.apply(null, nameWidths);
+  var numWidths = rows.map(function(){
+    return $(this).children().first().next().width();
+  });
+  var maxNumWidth = Math.max.apply(null, numWidths);
+  rows.each(function(){
+    var name = $(this).children().first();
+    var num = name.next();
+    name.width(maxNameWidth);
+    num.width(maxNumWidth);
+  });
+}

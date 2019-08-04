@@ -14,7 +14,7 @@
           and <%= minute_to_human(@dataset.end_minute) %>,
           sorted by <%= resource_name %>
         </h2>
-                <div>
+        <div>
           <table class="full_stats">
             <colgroup>
               <col span="1" style="width: 10%;">
@@ -48,3 +48,10 @@
     </div>
   </div>
 </div>
+<script type="text/javascript">
+logjam_echart($('.echart').first().data().params);
+$(window).on('resize', function(){
+  $('svg').remove();
+  logjam_echart($('.echart').first().data().params);
+  });
+</script>

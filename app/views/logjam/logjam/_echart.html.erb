@@ -12,7 +12,8 @@
    js_params[:data] = (0..js_params[:max_x]).each_with_object({}){|i,h|h[i]=0}.merge!(exceptions).map{|k,v| [k,v]}
 %>
 <script type="text/javascript">
-  $(function(){
-    logjam_echart(<%=raw Oj.dump(js_params)%>);
-  })
+(function(){
+  var data = <%=raw Oj.dump(js_params)%>;
+  $(data.parent).data("params", data);
+  })();
 </script>

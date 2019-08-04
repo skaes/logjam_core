@@ -15,7 +15,7 @@
             <tr>
               <th>Exception</th>
               <th>Count</th>
-              <th class="echart">Distribution over time (0-24h, 2 minute intervals)</th>
+              <th class="left">Distribution over time (0-24h, 2 minute intervals)</th>
             </tr>
           </thead>
           <tbody>
@@ -37,3 +37,15 @@
     </div>
   </div>
 </div>
+<script type="text/javascript">
+  adjustWidthOfFirstTwoColumns();
+  $('.echart').each(function(){
+    logjam_echart($(this).data().params);
+  });
+  $(window).on('resize', function(){
+    $('.echart svg').remove();
+    $('.echart').each(function(){
+      logjam_echart($(this).data().params);
+    });
+  });
+</script>
