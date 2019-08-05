@@ -470,7 +470,7 @@ module Logjam
         format.html do
           redirect_on_empty_dataset and return
           @title = "Problem Overview"
-          @resources = %w(exceptions js_exceptions severity response)
+          @resources = %w(exceptions soft_exceptions js_exceptions severity response)
           @totals = Totals.new(@db, @resources, @page.blank? ? 'all_pages' : @page)
           @minutes = Minutes.new(@db, @resources, @page, @totals.page_names, 2)
           @events = Events.new(@db).combined_events
