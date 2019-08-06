@@ -370,6 +370,10 @@ module Logjam
     db_name =~ db_name_format && $1
   end
 
+  def self.stream_defined?(db_name)
+    db_name =~ db_name_format && @@streams["#{$1}-#{$2}"]
+  end
+
   def self.stream_for(db_name)
     if db_name =~ db_name_format
       stream = @@streams["#{$1}-#{$2}"]

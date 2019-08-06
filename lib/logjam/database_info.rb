@@ -6,7 +6,7 @@ module Logjam
     attr_reader :databases
 
     def initialize
-      @databases = Logjam.databases
+      @databases = Logjam.databases.select{ |db_name| Logjam.stream_defined?(db_name) }
       @databases << Logjam.db_name(Date.today, "logjam", Rails.env) if @databases.empty?
       @info = {}
       @databases.each do |dbname|
