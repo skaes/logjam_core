@@ -94,6 +94,9 @@ module Logjam
         if s.backend_only_requests != Logjam.backend_only_requests
           indented(3, "backend_only_requests = \"%s\"" % s.backend_only_requests)
         end
+        unless s.api_requests.empty?
+          indented(3, "api_requests = \"%s\"" % s.api_requests.join(','))
+        end
       end
     end
 
