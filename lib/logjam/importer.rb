@@ -97,6 +97,9 @@ module Logjam
         unless s.api_requests.empty?
           indented(3, "api_requests = \"%s\"" % s.api_requests.join(','))
         end
+        if s.ignored_request_uri != Logjam.ignored_request_uri
+          indented(3, "ignored_request_uri = \"%s\"" % s.ignored_request_uri)
+        end
       end
     end
 
