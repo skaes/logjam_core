@@ -20,7 +20,7 @@ function logjam_echart(params) {
   var vis = d3.select(params.parent)
      .append("svg")
      .attr("width", w)
-      .attr("height", events.length == 0 ? h : h+5)
+     .attr("height", events.length == 0 ? h : h+5)
      .style("stroke", "lightsteelblue")
      .style("strokeWidth", 1.0)
      .on("mousedown", mouse_down_event)
@@ -115,7 +115,7 @@ function logjam_echart(params) {
 
   vis.append("svg:path")
     .attr("d", line(data))
-    .style("stroke", "#006567")
+    .style("stroke", url == null ? "#ff0000" : "#006567")
     .style("fill", "none")
   ;
 
