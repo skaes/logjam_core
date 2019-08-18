@@ -20,4 +20,4 @@ if test -f /etc/default/logjam; then
     set -a; source /etc/default/logjam; set +a
 fi
 
-exec $importer -c LOGJAM_SERVICE_TARGET_DIR/importer.conf "$@"
+exec $importer -c LOGJAM_SERVICE_TARGET_DIR/importer.conf -L LOGJAM_URL "$@"

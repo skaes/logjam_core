@@ -6,6 +6,16 @@ Oj.default_options = {:mode => :compat, :time_format => :ruby}
 module Logjam
   extend self
 
+  # set this to the url under which logjam is reachable
+  @@logjam_url = nil
+  def self.logjam_url
+    @@logjam_url
+  end
+
+  def self.logjam_url=(url)
+    @@logjam_url= url
+  end
+
   # set this if you forward logjam messages to graylog
   @@graylog_base_urls = {}
   def self.graylog_base_urls

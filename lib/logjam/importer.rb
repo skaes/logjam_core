@@ -46,8 +46,6 @@ module Logjam
     def generate_backend
       indented(0, "backend")
       generate_databases
-      generate_defaults
-      generate_streams
     end
 
     def generate_databases
@@ -69,35 +67,6 @@ module Logjam
       end
       indented(2, "backend_only_requests = \"%s\"" % Logjam.backend_only_requests)
       indented(2, "sampling_rate_400s = %s" % Logjam.sampling_rate_400s.to_f.to_s)
-    end
-
-    def generate_streams
-      indented(1, "streams")
-      @streams.values.each do |s|
-        indented(2, s.name)
-        if (s.database != "default")
-          indented(3, "db = %d" % [s.database_number])
-        end
-        if s.import_threshold != Logjam.import_threshold || !s.import_thresholds.blank?
-          indented(3, "import_threshold = %d" % s.import_threshold)
-          s.import_thresholds.each do |prefix, value|
-            indented(4, "prefix = \"%s\"" % [prefix])
-            indented(5, "threshold = %d" % [value])
-          end
-        end
-        if s.sampling_rate_400s != Logjam.sampling_rate_400s
-          indented(3, "sampling_rate_400s = #{s.sampling_rate_400s.to_f}")
-        end
-        if s.backend_only_requests != Logjam.backend_only_requests
-          indented(3, "backend_only_requests = \"%s\"" % s.backend_only_requests)
-        end
-        unless s.api_requests.empty?
-          indented(3, "api_requests = \"%s\"" % s.api_requests.join(','))
-        end
-        if s.ignored_request_uri != Logjam.ignored_request_uri
-          indented(3, "ignored_request_uri = \"%s\"" % s.ignored_request_uri)
-        end
-      end
     end
 
     def generate_metrics

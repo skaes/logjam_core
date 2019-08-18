@@ -236,6 +236,7 @@ namespace :logjam do
       source_dir = "#{template_dir}/#{template_name}"
       substitutions.merge!(:LOGJAM_DIR => ENV['LOGJAM_DIR'] || app_dir,
                            :LOGJAM_SERVICE_TARGET_DIR => target_dir,
+                           :LOGJAM_URL => Logjam.logjam_url,
                            :RAILSENV => ENV['RAILS_ENV'] || "development",
                            :GEMHOME => Gem.dir,
                            :GEMPATH => clean_path((Gem.path+Gem.default_path).uniq),
