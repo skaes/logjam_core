@@ -808,6 +808,14 @@ module Logjam
       end
   end
 
+  def database_keys
+    %w[default] + (database_config.keys - %w[default])
+  end
+
+  def database_number(db_name)
+    database_keys.index(db_name)
+  end
+
   def user_agents
     user_agents = Agents.create_stats_hash
     databases_sorted_by_date_with_connections.each do |db_name, connection|

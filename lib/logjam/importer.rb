@@ -20,9 +20,6 @@ module Logjam
         s.is_a?(Logjam::LiveStream) || (s.env == "development" && Rails.env.production?)
       end
       @environments = @streams.values.map(&:env).uniq
-      @endpoints = @streams.values.map{|s| s.importer.devices}.flatten.uniq
-      @databases = Logjam.database_config
-      @database_keys = (%w(default) + (@databases.keys - %w(default)))
     end
 
     def generate_frontend
@@ -33,7 +30,7 @@ module Logjam
       indented(3, "pull = \"tcp://%s:9605\"" % [Logjam.bind_ip_for_zmq_spec])
       indented(3, "pub = \"tcp://%s:9651\"" % [Logjam.bind_ip_for_zmq_spec])
       indented(2, "bindings")
-      @endpoints.each do |p|
+      Logjam.devices.each do |p|
         indented(3, "bind = \"%s\"" % [p])
       end
       indented(2, "livestream")
@@ -57,8 +54,8 @@ module Logjam
       indented(1, "databases")
       # TODO: make timeouts configurable and add user and password
       timeouts = "connectTimeoutMS=5000&socketTimeoutMS=60000"
-      @database_keys.each do |name|
-        db = @databases[name]
+      Logjam.database_keys.each do |name|
+        db = Logjam.database_config[name]
         connection_uri = "db = \"mongodb://%s:%d/?%s\"" % [db['host'], db['port'], timeouts]
         indented(2, connection_uri)
       end
@@ -77,9 +74,9 @@ module Logjam
     def generate_streams
       indented(1, "streams")
       @streams.values.each do |s|
-        indented(2, s.importer_exchange_name.sub(/^request-stream-/,''))
+        indented(2, s.name)
         if (s.database != "default")
-          indented(3, "db = %d" % [@database_keys.index(s.database)])
+          indented(3, "db = %d" % [s.database_number])
         end
         if s.import_threshold != Logjam.import_threshold || !s.import_thresholds.blank?
           indented(3, "import_threshold = %d" % s.import_threshold)

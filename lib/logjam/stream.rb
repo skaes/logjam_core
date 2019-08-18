@@ -13,20 +13,7 @@ module Logjam
       @app = parts.join('-')
       raise "logjam stream configuration error: missing application name #{@app}" unless @app
       raise "logjam stream configuration error: missing environment name #{@env}" unless @env
-      @importer = Importer.new(self)
       instance_eval(&block) if block_given?
-    end
-
-    def importer(&block)
-      if block_given?
-        @importer.instance_eval(&block)
-      else
-        @importer
-      end
-    end
-
-    def importer_exchange_name
-      [importer.exchange, @app, @env].compact.join("-")
     end
 
     def tag(*args)
@@ -46,6 +33,10 @@ module Logjam
     def database(*args)
       @database = args.first if args.first
       @database || "default"
+    end
+
+    def database_number
+      Logjam.database_number(database)
     end
 
     def frontend_page(*args)
@@ -105,7 +96,10 @@ module Logjam
         :ignored_request_uri => ignored_request_uri,
         :backend_only_requests => backend_only_requests,
         :import_threshold => import_threshold,
+        :import_thresholds => import_thresholds,
         :request_cleaning_threshold => request_cleaning_threshold,
+        :database_name => database,
+        :database_number => database_number,
         :database_cleaning_threshold => database_cleaning_threshold,
         :sampling_rate_400s => sampling_rate_400s,
         :api_requests => api_requests,
@@ -152,17 +146,5 @@ module Logjam
         @devices
       end
     end
-
-    class Importer < Context
-      def initialize(stream)
-        super
-        hosts    "localhost"
-        exchange "request-stream"
-        queue    "logjam3-importer-queue"
-        type     :amqp
-        devices  Logjam.devices
-      end
-    end
-
   end
 end
