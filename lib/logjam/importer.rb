@@ -59,16 +59,6 @@ module Logjam
       end
     end
 
-    def generate_defaults
-      indented(1, "defaults")
-      indented(2, "import_threshold = %d" % Logjam.import_threshold)
-      unless Logjam.ignored_request_uri.blank?
-        indented(2, "ignored_request_uri = \"%s\"" % Logjam.ignored_request_uri)
-      end
-      indented(2, "backend_only_requests = \"%s\"" % Logjam.backend_only_requests)
-      indented(2, "sampling_rate_400s = %s" % Logjam.sampling_rate_400s.to_f.to_s)
-    end
-
     def generate_metrics
       indented(0, "metrics")
       %w(time call memory heap frontend dom).each do |t|
