@@ -42,17 +42,22 @@
           </thead>
           <tbody>
             <% @callers.each_with_index do |(caller, count), i| %>
-              <% app, controller = caller.split('@', 2) %>
-              <% url = clean_url_for(params.merge(:app => app, :page => controller.to_s)) if app != "unknown" %>
+              <% app, controller = caller.split('@', 2)
+                 if app == "unknown"
+                   url = graylog_uri(@app, @env, @page, :unknown_callers => true) if Logjam.graylog_base_urls[@env.to_sym].present?
+                 else
+                   url = clean_url_for(params.merge(:app => app, :page => controller.to_s))
+                 end
+              %>
               <tr>
                 <td><%= app %></td>
                 <td><%= url ? link_to(controller || app , url) : (controller || app)  %></td>
                 <td class="number"><%= integer_number(count) %></td>
                 <td class='echart' id='<%= "echart-#{i}" %>'>
-                    <%= render "echart", :exceptions => @caller_minutes[caller], parent_selector: "#echart-#{i}", :url => url,  start_minute: nil, end_minute: nil %>
-                </td>
-              </tr>
-            <% end %>
+                    <%= render "echart", :exceptions => @caller_minutes[caller], parent_selector: "#echart-#{i}", :url => url,  start_minute: nil, end_minute: nil, highlight: (app == "unknown") %>
+</td>
+</tr>
+<% end %>
           </tbody>
         </table>
       </div>

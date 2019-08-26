@@ -26,7 +26,7 @@
               <td class='number'><%= link_to integer_number(c), url %></td>
               <% echart_id = "echart-#{i}" %>
               <td class='echart' id='<%= echart_id %>'>
-                <%= render "echart", exceptions: @minutes.exceptions[e], parent_selector: "##{echart_id}", url: url, start_minute: nil, end_minute: nil %>
+                <%= render "echart", exceptions: @minutes.exceptions[e], parent_selector: "##{echart_id}", url: url, start_minute: nil, end_minute: nil, highlight: false %>
               </td>
             </tr>
             <% end %>
@@ -56,7 +56,7 @@
                 <td class='number'><%= link_to integer_number(c), url %></td>
                 <% echart_id = "soft-echart-#{i}" %>
                 <td class='echart' id='<%= echart_id %>'>
-                  <%= render "echart", exceptions: @soft_minutes.soft_exceptions[e], parent_selector: "##{echart_id}", url: url, start_minute: nil, end_minute: nil %>
+                  <%= render "echart", exceptions: @soft_minutes.soft_exceptions[e], parent_selector: "##{echart_id}", url: url, start_minute: nil, end_minute: nil, highlight: false %>
                 </td>
               </tr>
             <% end %>

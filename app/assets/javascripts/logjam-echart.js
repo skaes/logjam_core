@@ -1,16 +1,17 @@
 function logjam_echart(params) {
-  var data   = params.data,
-      events = params.events,
-      url    = params.url,
-      max_y  = params.max_y,
-      max_x  = params.max_x,
-      start  = params.start_minute,
-      end    = params.end_minute,
-      h      = params.height,
-      w      = $(params.parent).width(),
-      w_r    = w - 30,
-      x      = d3.scaleLinear().domain([0, 1440/2]).range([0, w_r]),
-      y      = d3.scaleLinear().domain([0, max_y]).range([h, 0]).nice(),
+  var data = params.data,
+      events= params.events,
+      url = params.url,
+      highlight = params.highlight,
+      max_y = params.max_y,
+      max_x = params.max_x,
+      start = params.start_minute,
+      end = params.end_minute,
+      h = params.height,
+      w = $(params.parent).width(),
+      w_r = w - 30,
+      x = d3.scaleLinear().domain([0, 1440/2]).range([0, w_r]),
+      y = d3.scaleLinear().domain([0, max_y]).range([h, 0]).nice(),
 
       tooltip_formatter = d3.format(",.2s"),
       tooltip_timeformatter = d3.format("02d");
@@ -115,7 +116,7 @@ function logjam_echart(params) {
 
   vis.append("svg:path")
     .attr("d", line(data))
-    .style("stroke", url == null ? "#ff0000" : "#006567")
+    .style("stroke", highlight ? "#ff0000" : "#006567")
     .style("fill", "none")
   ;
 

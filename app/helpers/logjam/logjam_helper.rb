@@ -707,11 +707,12 @@ module Logjam
       end.gsub('&&', "\\&&").gsub('||', "\\||")
     end
 
-    def graylog_uri(app, env, page)
+    def graylog_uri(app, env, page = nil, options = {})
       app = graylog_escape("#{app}-#{env}")
       page = graylog_escape(page.to_s)
       fields = "source,app,message,code"
       query = "app:#{app}"
+      query << " AND caller_app:unknown" if options[:unknown_callers]
       unless page.blank?
         page = '"' + page + '"' if page.include?('#')
         query << " AND message:#{page}"

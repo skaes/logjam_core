@@ -29,7 +29,7 @@
                   <% end %>
                 </td>
                 <td class="echart" id="timeline">
-                  <%= render "echart", exceptions: @timeline, parent_selector: "#timeline", url: url, height: 50, start_minute: params[:start_minute], end_minute: params[:end_minute] %>
+                  <%= render "echart", exceptions: @timeline, parent_selector: "#timeline", url: url, height: 50, start_minute: params[:start_minute], end_minute: params[:end_minute], highlight: false %>
                 </td>
               </tr>
             </tbody>
