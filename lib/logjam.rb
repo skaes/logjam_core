@@ -363,9 +363,15 @@ module Logjam
     "logjam-#{app}-#{env}-#{sanitize_date(date)}"
   end
 
+  DB_NAME_FORMAT = /\Alogjam-(.+)-([^-]+)-((\d+?)-(\d+?)-(\d+?))\z/
+
   def db_name_format(options={})
-    opts = {:app => '.+', :env => '[^-]+'}.merge(options)
-    /\Alogjam-(#{opts[:app]})-(#{opts[:env]})-((\d+?)-(\d+?)-(\d+?))\z/
+    if options.blank?
+      DB_NAME_FORMAT
+    else
+      opts = {:app => '.+', :env => '[^-]+'}.merge(options)
+      /\Alogjam-(#{opts[:app]})-(#{opts[:env]})-((\d+?)-(\d+?)-(\d+?))\z/
+    end
   end
 
   def db_date(db_name)
