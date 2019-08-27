@@ -375,23 +375,23 @@ module Logjam
   end
 
   def db_date(db_name)
-    db_name =~ db_name_format && Date.parse($3)
+    db_name =~ DB_NAME_FORMAT && Date.parse($3)
   end
 
   def extract_db_params(db_name)
-    db_name =~ db_name_format && [$1, $2, $3, $4]
+    db_name =~ DB_NAME_FORMAT && [$1, $2, $3, $4]
   end
 
   def app_for(db_name)
-    db_name =~ db_name_format && $1
+    db_name =~ DB_NAME_FORMAT && $1
   end
 
-  def self.stream_defined?(db_name)
-    db_name =~ db_name_format && @@streams["#{$1}-#{$2}"]
+  def self.stream_defined?(app, env)
+    @@streams["#{app}-#{env}"]
   end
 
   def self.stream_for(db_name)
-    if db_name =~ db_name_format
+    if db_name =~ DB_NAME_FORMAT
       stream = @@streams["#{$1}-#{$2}"]
       if stream
         stream
@@ -408,7 +408,7 @@ module Logjam
   end
 
   def iso_date_string(db_name)
-    db_name =~ db_name_format && $3
+    db_name =~ DB_NAME_FORMAT && $3
   end
 
   def grep(databases, options = {})

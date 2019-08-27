@@ -2,19 +2,20 @@ module Logjam
   # stores database info as two level hash { app => { env => [day1, day2, ...]}}
   class DatabaseInfo
 
-    NAME_FORMAT = Logjam.db_name_format
     attr_reader :databases
 
     def initialize
-      @databases = Logjam.databases.select{ |db_name| Logjam.stream_defined?(db_name) }
-      @databases << Logjam.db_name(Date.today, "logjam", Rails.env) if @databases.empty?
       @info = {}
-      @databases.each do |dbname|
-        if dbname =~ NAME_FORMAT
-          app, env, date = $1, $2, $3
-          ((@info[app] ||= {})[env] ||= []) << date
+      @databases = Logjam.databases
+      @databases << Logjam.db_name(Date.today, "logjam", Rails.env) if @databases.empty?
+      @databases.map! do |db_name|
+        if db_name =~ Logjam::DB_NAME_FORMAT && Logjam.stream_defined?($1, $2)
+          ((@info[$1] ||= {})[$2] ||= []) << $3
+        else
+          nil
         end
       end
+      @databases.compact!
     end
 
     def apps
