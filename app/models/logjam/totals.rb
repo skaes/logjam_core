@@ -139,7 +139,6 @@ module Logjam
     end
 
     def error_count
-      # response["500"].to_i
       severity["3"].to_i + severity["4"].to_i
     end
 

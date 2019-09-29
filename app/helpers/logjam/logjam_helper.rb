@@ -143,8 +143,21 @@ module Logjam
       %w(application module action)
     end
 
+    def count_to_human(count, precision: 2)
+      case
+      when count.to_f.nan?
+        "NaN"
+      when count < 100_000
+        integer_number(count)
+      else
+        "#{number_with_precision(count.to_f / 1_000_000, :precision => precision, :delimiter => ',')}M"
+      end
+    end
+
     def seconds_to_human(seconds)
       case
+      when seconds.to_f.nan?
+        "NaN"
       when seconds < 60
         "#{number_with_precision(seconds, :precision => 2, :delimiter => ',')}s"
       when seconds < 3600
@@ -316,9 +329,9 @@ module Logjam
       else
         params = { :app => @app, :env => @env, :action => "errors", :page => without_module(page.page) }
         errors = error_count == 0 ? error_count :
-          clean_link_to(integer_number(error_count), params.merge(:error_type => "logged_error"), :class => "error data-tooltip-bottom-nose-right", :"data-tooltip" => "show errors")
+          clean_link_to(count_to_human(error_count), params.merge(:error_type => "logged_error"), :class => "error data-tooltip-bottom-nose-right", :"data-tooltip" => "show errors")
         warnings = warning_count == 0 ? warning_count :
-          clean_link_to(integer_number(warning_count), params.merge(:error_type => "logged_warning"), :class => "warn data-tooltip-bottom-nose-right", :"data-tooltip" => "show warnings")
+          clean_link_to(count_to_human(warning_count), params.merge(:error_type => "logged_warning"), :class => "warn data-tooltip-bottom-nose-right", :"data-tooltip" => "show warnings")
         raw "#{errors}/#{warnings}"
       end
     end
@@ -326,12 +339,33 @@ module Logjam
     def sometimes_link_400s(page)
       n = page.four_hundreds
       if n == 0
-        ""
+        "0"
       elsif page.page == "Others..."
-        integer_number(n)
+        count_to_human(n)
       else
         params = { :app => @app, :env => @env, :action => "response_codes", :above => 400, :page => without_module(page.page) }
-        link_to(integer_number(n), params, :class => "warn", :"data-tooltip" => "show 400s")
+        link_to(count_to_human(n), params, :class => "warn", :"data-tooltip" => "show 400s")
+      end
+    end
+
+    def sometimes_link_500s(page)
+      n = page.five_hundreds
+      if n == 0
+        "0"
+      elsif page.page == "Others..."
+        count_to_human(n)
+      else
+        params = { :app => @app, :env => @env, :action => "response_codes", :above => 500, :page => without_module(page.page) }
+        link_to(count_to_human(n), params, :class => "error", :"data-tooltip" => "show 500s")
+      end
+    end
+
+    def sometimes_link_response_errors(page)
+      n = page.five_hundreds + page.four_hundreds
+      if n == 0
+        ""
+      else
+        sometimes_link_500s(page) + "/" + sometimes_link_400s(page)
       end
     end
 

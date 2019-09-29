@@ -21,5 +21,6 @@
       <%= clean_link_to(number_with_precision(truncated_apdex(page.apdex_score), :precision => 2), :action => "apdex_overview", :page => page.page) %>
     </td>
     <td class="number"><%= sometimes_link_errors(page) %></td>
+    <td class="number"><%= raw sometimes_link_response_errors(page) %></td>
   </tr>
 <% end -%>

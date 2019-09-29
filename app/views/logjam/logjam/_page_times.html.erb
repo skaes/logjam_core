@@ -24,6 +24,7 @@
           <th class="center<%= sorted_by_grouping_function('apdex') %>" <%= raw html_attributes_for_grouping_function("apdex", "apdex score") %>>apdex score</th>
           <% if backend? -%>
           <th class="right">errors/&#8203;warnings</th>
+          <th class="right">500s/&#8203;400s</th>
           <% end -%>
         <% end -%>
       </tr>
