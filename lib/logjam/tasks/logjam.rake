@@ -2,6 +2,7 @@ require "rake/testtask"
 
 namespace :test do
   Rake::TestTask.new(:logjam) do |t|
+    t.warning = false
     t.libs << "test"
     t.pattern = 'vendor/logjam/test/**/*_test.rb'
   end
