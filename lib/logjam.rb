@@ -209,6 +209,42 @@ module Logjam
     @@sampling_rate_400s = r
   end
 
+  @@http_buckets = [0.001, 0.0025, 0.005, 0.010, 0.025, 0.050, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25, 50, 100]
+  def self.http_buckets
+    @@http_buckets
+  end
+
+  def self.http_buckets=(r)
+    @@http_buckets = r
+  end
+
+  @@jobs_buckets = [0.001, 0.0025, 0.005, 0.010, 0.025, 0.050, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25, 50, 100]
+  def self.jobs_buckets
+    @@jobs_buckets
+  end
+
+  def self.jobs_buckets=(r)
+    @@jobs_buckets = r
+  end
+
+  @@page_buckets = [0.005, 0.010, 0.025, 0.050, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25, 50, 100, 250]
+  def self.page_buckets
+    @@page_buckets
+  end
+
+  def self.page_buckets=(r)
+    @@page_buckets = r
+  end
+
+  @@ajax_buckets = [0.005, 0.010, 0.025, 0.050, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25, 50, 100, 250]
+  def self.ajax_buckets
+    @@ajax_buckets
+  end
+
+  def self.ajax_buckets=(r)
+    @@ajax_buckets = r
+  end
+
   @@github_issue_url = "https://github.com/skaes/logjam_app/issues/new"
   def self.github_issue_url
     @@github_issue_url

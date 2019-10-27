@@ -89,6 +89,26 @@ module Logjam
       @sampling_rate_400s ||= Logjam.sampling_rate_400s
     end
 
+    def http_buckets(*args)
+      @http_buckets = args.first if args.first
+      @http_bucktes ||= Logjam.http_buckets
+    end
+
+    def jobs_buckets(*args)
+      @jobs_buckets = args.first if args.first
+      @jobs_bucktes ||= Logjam.jobs_buckets
+    end
+
+    def page_buckets(*args)
+      @page_buckets = args.first if args.first
+      @page_bucktes ||= Logjam.page_buckets
+    end
+
+    def ajax_buckets(*args)
+      @ajax_buckets = args.first if args.first
+      @ajax_buckets ||= Logjam.ajax_buckets
+    end
+
     def to_hash
       {
         :app => app,
@@ -103,6 +123,10 @@ module Logjam
         :database_cleaning_threshold => database_cleaning_threshold,
         :sampling_rate_400s => sampling_rate_400s,
         :api_requests => api_requests,
+        :http_buckets => http_buckets,
+        :jobs_buckets => jobs_buckets,
+        :page_buckets => page_buckets,
+        :ajax_buckets => ajax_buckets,
       }
     end
 
