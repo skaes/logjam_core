@@ -19,7 +19,7 @@ module Logjam
       @interval = interval
       @pattern = "all_pages" if @pattern.blank? || @pattern == "::"
       @pattern = "::#{@pattern}" if page_names.include?("::#{pattern}")
-      @pattern = Regexp.new(/#{@pattern}/) unless @pattern == "all_pages" || page_names.include?(@pattern)
+      @pattern = Regexp.new(/#{Regexp.escape(@pattern)}/) unless @pattern == "all_pages" || page_names.include?(@pattern)
       if resources == ["fapdex"]
         @counters = ["frontend_count"]
       elsif resources == ["papdex"]

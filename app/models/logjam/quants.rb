@@ -15,7 +15,7 @@ module Logjam
       super(db, "quants")
       @pattern = pattern
       @pattern = "all_pages" if @pattern.blank? || @pattern == '::'
-      @pattern = Regexp.new(/#{@pattern}/) unless @pattern == "all_pages"
+      @pattern = Regexp.new(/#{Regexp.escape(@pattern)}/) unless @pattern == "all_pages"
       @kind = kind
       @resources = resources
       compute

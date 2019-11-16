@@ -19,7 +19,7 @@ module Logjam
         @pattern = "::#{@pattern}"
       else
         @ignore_modules = true
-        @pattern = Regexp.new(/#{@pattern}/)
+        @pattern = Regexp.new(/#{Regexp.escape(@pattern)}/)
       end
       @resources = resources
       compute
@@ -45,7 +45,7 @@ module Logjam
 
     def count
       selector = { :page => @pattern }
-      query, log = build_query("Histograms.count", selector)
+      query, _ = build_query("Histograms.count", selector)
       with_conditional_caching(query) do |payload|
         payload[:rows] = 1
         @collection.find(selector).count

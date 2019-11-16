@@ -353,13 +353,14 @@ module Logjam
 
     def actions
       page = pattern.to_s.sub(/\A::/,'')
+      escaped_page = Regexp.escape(page)
       match =
         case
         when page.is_a?(Regexp) then page
         when page.blank? then /\#/
-        when page_names.include?(page) then /^#{page}$/
-        when page_names.grep(/^#{page}/).size > 0 then /^#{page}/
-        else /#{page}/
+        when page_names.include?(page) then /^#{escaped_page}$/
+        when page_names.grep(/^#{escaped_page}/).size > 0 then /^#{escaped_page}/
+        else /#{escaped_page}/
         end
       page_names.select{|p| p =~ match }
     end

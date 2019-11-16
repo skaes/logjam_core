@@ -25,14 +25,15 @@ module Logjam
     def selector
       opts = {"metric" => @metric}
       if pattern.present? && pattern != "all_pages" && pattern != "::"
+        escaped_pattern = Regexp.escape(pattern)
         if @requests.modules.include?(pattern.sub(/^::/,''))
           opts.merge!(:module => pattern.sub(/^::/,''))
         elsif @requests.page_names.include?(pattern)
           opts.merge!(:page => pattern)
-        elsif @requests.page_names.detect{|p| p =~ /^#{pattern}/}
-          opts.merge!(:page => /^#{pattern}/)
+        elsif @requests.page_names.detect{|p| p =~ /^#{escaped_pattern}/}
+          opts.merge!(:page => /^#{escaped_pattern}/)
         else
-          opts.merge!(:page => /#{pattern}/)
+          opts.merge!(:page => /#{escaped_pattern}/)
         end
       end
       opts.merge!(:minute => {'$gte' => @start_minute}) if @start_minute
