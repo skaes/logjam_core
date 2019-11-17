@@ -20,6 +20,7 @@ function submit_filter_form() {
      .removeSearch("time_range", parameter_defaults.time_range)
      .removeSearch("grouping", parameter_defaults.grouping)
      .removeSearch("grouping_function", parameter_defaults.grouping_function)
+     .removeSearch("error_type", parameter_defaults.error_type)
      .removeSearch("start_minute", parameter_defaults.start_minute)
      .removeSearch("end_minute", parameter_defaults.end_minute)
      .removeSearch("auto_refresh", parameter_defaults.auto_refresh)
@@ -36,6 +37,7 @@ function go_home() {
   $("#scale").val(parameter_defaults.scale);
   $("#kind").val(parameter_defaults.kind);
   $("#grouping-function").val(parameter_defaults.grouping_function);
+  $("#error-type").val(parameter_defaults.error_type);
   $("#start-minute").val(parameter_defaults.start_minute);
   $("#end-minute").val(parameter_defaults.end_minute);
   $("#interval").val(parameter_defaults.interval);
