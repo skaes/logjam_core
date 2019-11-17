@@ -173,6 +173,10 @@ module Logjam
       @totals ||= Totals.new(@db, %w(apdex fapdex papdex xapdex response severity exceptions soft_exceptions js_exceptions) + resource_fields, page)
     end
 
+    def database_storage_size
+      totals.database_storage_size
+    end
+
     def namespace?
       totals.page_names.include?("::#{page.sub(/\A::/,'')}")
     end

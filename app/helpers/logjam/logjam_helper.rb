@@ -755,5 +755,11 @@ module Logjam
       uri.query = {fields: fields, q:  query, relative: 3600}.to_query
       uri.to_s
     end
+
+    def cached_database_storage_size
+      Rails.cache.fetch("#{@app}-#{@env}-#{@date}.database_storage_size", :expires_in => 5.minutes) do
+        @dataset.database_storage_size
+      end
+    end
   end
 end

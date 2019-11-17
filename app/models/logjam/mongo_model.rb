@@ -91,6 +91,13 @@ module Logjam
       end
     end
 
+    def database_storage_size
+      instrument("#{@database.name}.storage_size") do |payload|
+        payload[:rows] = 1
+        @database.command(:dbStats => 1, :scale => 1_073_741_824).first["storageSize"]
+      end
+    end
+
     private
 
     def instrument(query, &block)

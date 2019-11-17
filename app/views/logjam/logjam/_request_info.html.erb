@@ -4,8 +4,9 @@
   <div class="value">
     <%= memory_number @dataset.count_requests(@section) %>
   </div>
-  <% used_GB = @db.command(:dbStats => 1, :scale => 1_073_741_824).first["storageSize"]
-     color = used_GB < 15 ? "green" : "red"
+  <%
+    used_GB = cached_database_storage_size
+    color = used_GB < 15 ? "green" : "red"
   %>
   <div class="storage" style="color:<%= color %>">
     Using <%= number_with_precision(used_GB, :precision => 2) %> of 30 GB max disk storage
