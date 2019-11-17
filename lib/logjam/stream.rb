@@ -36,7 +36,7 @@ module Logjam
     end
 
     def database_number
-      Logjam.database_number(database)
+      @database_number ||= Logjam.database_number(database)
     end
 
     def frontend_page(*args)

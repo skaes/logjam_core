@@ -14,7 +14,7 @@ module Logjam
         end
         format.json do
           db_info = @database_info.map{|h,n,s|{:host => h, :db => n, :size => s}}
-          render :json => Oj.dump({:db_info => db_info}, :mode => :compat)
+          render :json => Oj.dump({:db_info => db_info})
         end
         format.csv do
           str = CSV.generate(:col_sep => ';') do |csv|
@@ -33,7 +33,7 @@ module Logjam
       respond_to do |format|
         format.json do
           streams = Logjam.production_streams
-          render :json => Oj.dump(streams, :mode => :compat)
+          render :json => Oj.dump(streams)
         end
       end
     end

@@ -1,7 +1,7 @@
 require 'mongo'
 require 'oj'
 
-Oj.default_options = {:mode => :compat, :time_format => :ruby}
+Oj.default_options = {:mode => :custom, :time_format => :ruby, :use_to_hash => true}
 
 module Logjam
   extend self
@@ -861,7 +861,7 @@ module Logjam
   end
 
   def database_keys
-    %w[default] + (database_config.keys - %w[default])
+    @database_keys ||= %w[default] + (database_config.keys - %w[default])
   end
 
   def database_number(db_name)

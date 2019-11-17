@@ -46,7 +46,7 @@ module Logjam
         format.json do
           prepare_params
           pages, events = fetch_json_data_for_index(@db, @page)
-          render :json => Oj.dump({:pages => pages, :events => events}, :mode => :compat)
+          render :json => Oj.dump({:pages => pages, :events => events})
         end
       end
     end
@@ -80,7 +80,7 @@ module Logjam
         format.json do
           prepare_params
           events = Events.new(@db).events
-          render :json => Oj.dump(events, :mode => :compat)
+          render :json => Oj.dump(events)
         end
       end
     end
@@ -177,7 +177,7 @@ module Logjam
             :data => data
           }
           # logger.debug json_hash.inspect
-          render :json => Oj.dump(json_hash, :mode => :compat)
+          render :json => Oj.dump(json_hash)
         end
       end
     end
@@ -230,7 +230,7 @@ module Logjam
       respond_to do |format|
         format.html
         format.json do
-          render :json => Oj.dump(@applications, :mode => :compat)
+          render :json => Oj.dump(@applications)
         end
         format.csv do
           str = CSV.generate(:col_sep => ';') do |csv|
@@ -255,7 +255,7 @@ module Logjam
         end
         format.json do
           agents = agent_collection.find
-          render :json => Oj.dump(agents, :mode => :compat)
+          render :json => Oj.dump(agents)
         end
         format.csv do
           agents = agent_collection.find(select: Agents::BACKEND)
@@ -279,7 +279,7 @@ module Logjam
           params.delete(:id)
         end
         format.json do
-          render :json => Oj.dump(@request||["NOT FOUND"], :mode => :compat)
+          render :json => Oj.dump(@request||["NOT FOUND"])
         end
       end
     end
@@ -571,7 +571,7 @@ module Logjam
           app = page == '' ? @app : "#{@app}::"
           target = "#{app}#{page}"
           array = @callers.map{|k,v| {source: k.sub('@','::'), target: target, count: v}}
-          render :json => Oj.dump(array, :mode => :compat)
+          render :json => Oj.dump(array)
         end
       end
     end
@@ -654,7 +654,7 @@ module Logjam
           @data = data
         end
         format.json do
-          render :json => Oj.dump(data, :mode => :compat)
+          render :json => Oj.dump(data)
         end
         format.csv do
           str = CSV.generate(:col_sep => ';') do |csv|
@@ -783,7 +783,7 @@ module Logjam
             h[:date] =~ /\A(\d+)-(\d+)-(\d+)\z/
             h[:totals] = "#{request.base_url}/#{$1}/#{$2}/#{$3}/index.json?app=#{h[:app]}&env=#{h[:env]}"
           end
-          render :json => Oj.dump(info, :mode => :compat)
+          render :json => Oj.dump(info)
         end
       end
     end
