@@ -10,25 +10,24 @@ module Logjam
       super(db, "heatmaps")
       @pattern = pattern
       @pattern = "all_pages" if @pattern.blank? || @pattern == '::'
-      @is_a_module = modules.include?("::#{pattern}")
-      @is_a_page = page_names.include?(pattern)
+      is_a_module = modules.include?("::#{pattern}")
+      is_a_page = page_names.include?(pattern)
       @ignore_modules = false
-      if @is_a_page
+      if is_a_page || @pattern == "all_pages"
         # no need to change pattern
-      elsif @is_a_module
+      elsif is_a_module
         @pattern = "::#{@pattern}"
       else
         @ignore_modules = true
         @pattern = Regexp.new(/#{Regexp.escape(@pattern)}/)
       end
       @resources = resources
-      compute
     end
 
     def histograms(interval)
-      return @histograms if @histograms.empty?
+      return the_histograms if the_histograms.empty?
       histograms_for_resource = Hash.new { |h,r| h[r] = {} }
-      @histograms.each do |resource, histograms|
+      the_histograms.each do |resource, histograms|
         max_minute = histograms.keys.max
         max_bucket_index = histograms.values.map do |buckets|
           buckets.map.with_index{|v,i| v > 0 ? i : nil}.compact.max
@@ -70,6 +69,10 @@ module Logjam
 
     private
 
+    def the_histograms
+      @histograms ||= compute
+    end
+
     def compute
       selector = { :page => @pattern }
       fields = { :projection => _fields(["page", "minute"] + @resources)}
@@ -86,7 +89,7 @@ module Logjam
         rs
       end
 
-      histograms = @histograms = Hash.new {|h,r| h[r] = self.class.empty_histograms }
+      histograms = Hash.new {|h,r| h[r] = self.class.empty_histograms }
       while row = rows.shift
         @resources.each do |resource|
           if measurements = row[resource]
@@ -96,7 +99,9 @@ module Logjam
         end
       end
 
-      # logger.debug("HISTOGRAMS(#{@pattern.inspect}): #{@histograms.inspect}")
+      # logger.debug("HISTOGRAMS(#{@pattern.inspect}): #{histograms.inspect}")
+
+      histograms
     end
 
   end
