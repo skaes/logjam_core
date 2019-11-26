@@ -21,8 +21,8 @@
           <tbody>
             <% @totals.response_codes.keys.sort.each_with_index do |rc,i| %>
             <tr class='full_stats'>
-              <% url = rc.to_i >= 400 ? clean_url_for(:action => "response_codes", :response_code => rc, :above => nil) : false  %>
-              <td><%= rc.to_i < 400 ? raw("<span class='dead-link'>#{rc}</span>") : link_to(rc, url) %></td>
+              <% url = rc.to_i >= 400  || rc.to_i == 0 ? clean_url_for(:action => "response_codes", :response_code => rc, :above => nil) : false  %>
+              <td><%= rc.to_i < 400 && rc.to_i != 0 ? raw("<span class='dead-link'>#{rc}</span>") : link_to(rc, url) %></td>
               <td class='number'><%= sometimes_link_response_code(rc, @totals.response_codes[rc]) %></td>
               <td class='echart' id='<%= "echart-#{i+=1}" %>'>
                 <%= render "echart", exceptions: @minutes.response[rc.to_s], parent_selector: "#echart-#{i}", url: url, start_minute: nil, end_minute: nil, highlight: false %>

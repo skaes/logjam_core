@@ -371,10 +371,10 @@ module Logjam
 
     def response_code_link_options(code, n)
       params = { :app => @app, :env => @env, :action => "response_codes", :page => @page }
-      if n == 0 || code.to_s =~ /[0-3]xx\z/
+      if n == 0 || code.to_s =~ /[1-3]xx\z/
         [nil, {}]
       else code.to_s =~ /xx\z/
-        params[:above] = code.to_s.sub('xx', '00')
+        params[:above] = code.to_s.sub('xx', '00') unless code == "0xx"
         [ clean_url_for(params), {:tr_class => "clickable", :class => "error", :title => "show requests with response #{code}"}]
       end
     end
@@ -387,7 +387,7 @@ module Logjam
       elsif code.to_s =~ /xx\z/
         params[:above] = code.to_s.sub('xx', '00')
         clean_link_to(text, params, :class => "error", :"data-tooltip" => "show requests with response #{code}")
-      elsif code.to_i < 400
+      elsif code.to_i < 400 && code.to_i > 0
         text
       else
         params[:response_code] = code
