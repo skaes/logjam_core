@@ -225,13 +225,17 @@ module Logjam
     end
 
     def primary_key(id)
-      case id.length
-      when 24
-        BSON::ObjectId.from_string(id)
-      when 32
-        BSON::Binary.new(id, :uuid_old)
-      else
+      if id.is_a?(BSON::ObjectId)
         id
+      else
+        case id.length
+        when 24
+          BSON::ObjectId.from_string(id)
+        when 32
+          BSON::Binary.new(id, :uuid_old)
+        else
+          id
+        end
       end
     end
 
