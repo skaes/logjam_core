@@ -529,12 +529,13 @@ module Logjam
     protected
 
     def selector
+      escaped_pattern = Regexp.escape(pattern.to_s)
       case
       when pattern.is_a?(Regexp) then {:page => pattern}
       when pattern.blank? then {:page => /\#/}
       when page_names.include?(pattern) then {:page => pattern}
-      when page_names.grep(/^#{pattern}/).size > 0 then {:page => /^#{pattern}/}
-      else {:page => /#{pattern}/}
+      when page_names.grep(/^#{escaped_pattern}/).size > 0 then {:page => /^#{escaped_pattern}/}
+      else {:page => /#{escaped_pattern}/}
       end.merge!(:count => {'$gt' => 0})
     end
 
