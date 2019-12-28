@@ -18,6 +18,9 @@ fi
 
 if test -f /etc/default/logjam; then
     set -a; source /etc/default/logjam; set +a
+    LOGJAM_URI=${LOGJAM_URI:-LOGJAM_URL}
+else
+    LOGJAM_URI=LOGJAM_URL
 fi
 
-exec $importer -c LOGJAM_SERVICE_TARGET_DIR/importer.conf -L LOGJAM_URL "$@"
+exec $importer -c LOGJAM_SERVICE_TARGET_DIR/importer.conf -L "$LOGJAM_URI" "$@"
