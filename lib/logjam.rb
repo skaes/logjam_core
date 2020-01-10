@@ -935,4 +935,29 @@ module Logjam
     (ENV['LOGJAM_USE_CACHE'] ||= '1') != '0'
   end
 
+  def get_collection_info(db)
+    db.collection_names.sort.map do |c|
+      [c, db.command(collstats: c).first.slice(:count, :size, :storageSize, :totalIndexSize, :avgObjSize).symbolize_keys]
+    end
+  end
+
+  def get_cached_database_info
+    get_info = -> (*_args) {
+      info = []
+      connections.each do |host, conn|
+        conn.list_databases.each do |db_hash|
+          db_name = db_hash["name"]
+          db_size = db_hash["sizeOnDisk"]
+          info << [host, db_name, db_size]
+        end
+      end
+      info
+    }
+    if perform_caching
+      Rails.cache.fetch("logjam-database-info", expires_in: 5.minutes, &get_info)
+    else
+      get_info.call
+    end
+  end
+
 end

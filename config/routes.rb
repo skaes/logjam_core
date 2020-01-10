@@ -19,11 +19,13 @@ Rails.application.routes.draw do
       get "/:year/:month/:day/call_graph" => :call_graph
       get "/:year/:month/:day/call_relationships" => :call_relationships
       get "/:year/:month/:day/callers" => :callers
+      get "/:year/:month/:day/database_information" => :database_information
       get "/:year/:month/:day/enlarged_plot" => :enlarged_plot
       get "/:year/:month/:day/error_overview" => :error_overview
       get "/:year/:month/:day/errors" => :errors
-      get "/:year/:month/:day/exceptions" => :exceptions
       get "/:year/:month/:day/events" => :events
+      get "/:year/:month/:day/exceptions" => :exceptions
+      get "/:year/:month/:day/heatmaps" => :heatmaps
       get "/:year/:month/:day/history" => :history
       get "/:year/:month/:day/js_exception_types" => :js_exception_types
       get "/:year/:month/:day/js_exceptions" => :js_exceptions
@@ -36,7 +38,6 @@ Rails.application.routes.draw do
       get "/:year/:month/:day/show/:id" => :show
       get "/:year/:month/:day/totals_overview" => :totals_overview
       get "/:year/:month/:day/user_agents" => :user_agents
-      get "/:year/:month/:day/heatmaps" => :heatmaps
     end
 
     get "/" => :index, :page => "::"

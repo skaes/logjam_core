@@ -30,37 +30,21 @@ module Logjam
     end
 
     def streams
+      @streams = Logjam.production_streams
       respond_to do |format|
+        format.html {}
         format.json do
-          streams = Logjam.production_streams
-          render :json => Oj.dump(streams)
+          render :json => Oj.dump(@streams)
         end
       end
     end
 
     private
+
     def get_database_info
-      @database_info = get_cached_database_info
+      @database_info = Logjam.get_cached_database_info
       @total_bytes = @database_info.inject(0){|sum, info| info[2] + sum}
       @database_info.reject!{|i| i[1] !~ /\Alogjam/}
-    end
-
-    def get_cached_database_info
-      get_info = -> (*_args) {
-        info = []
-        Logjam.connections.each do |host, conn|
-          conn.list_databases.each do |db|
-            size = db["sizeOnDisk"]
-            info << [host, db["name"], size]
-          end
-        end
-        info
-      }
-      if Logjam.perform_caching
-        Rails.cache.fetch("logjam-database-info", expires_in: 5.minutes, &get_info)
-      else
-        get_info.call
-      end
     end
 
     def sorted_database_info
