@@ -692,19 +692,6 @@ module Logjam
       end
     end
 
-    def database_information
-      respond_to do |format|
-        format.json do
-          info = database_info.to_hash
-          info[:databases].each do |h|
-            h[:date] =~ /\A(\d+)-(\d+)-(\d+)\z/
-            h[:totals] = "#{request.base_url}/#{$1}/#{$2}/#{$3}/index.json?app=#{h[:app]}&env=#{h[:env]}"
-          end
-          render :json => Oj.dump(info)
-        end
-      end
-    end
-
     private
 
     def database_info

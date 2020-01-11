@@ -19,7 +19,6 @@ Rails.application.routes.draw do
       get "/:year/:month/:day/call_graph" => :call_graph
       get "/:year/:month/:day/call_relationships" => :call_relationships
       get "/:year/:month/:day/callers" => :callers
-      get "/:year/:month/:day/database_information" => :database_information
       get "/:year/:month/:day/enlarged_plot" => :enlarged_plot
       get "/:year/:month/:day/error_overview" => :error_overview
       get "/:year/:month/:day/errors" => :errors
