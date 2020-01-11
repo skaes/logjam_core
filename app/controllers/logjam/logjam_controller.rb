@@ -104,9 +104,11 @@ module Logjam
           databases.each do |db_name|
             date_str = Logjam.iso_date_string(db_name)
             date = Date.parse(date_str)
-            next if date == today
+            # we only show historic data, so ignore anything newer than yesterday
+            next if date >= today
             db = Logjam.connection_for(db_name).use(db_name).database
             if summary = Totals.new(db, resources, page).pages(:limit => 1).try(:first)
+              # database has at least one action
               hash = {
                 :date => date_str,
                 :request_count => summary.count,
@@ -132,35 +134,29 @@ module Logjam
                  end
               end
             else
-              hash = { :date => date_str }
+              # empty database
+              hash = { :date => date_str, :exception_counts => {} }
             end
             data << hash
           end
-          data = data.sort_by{|d| d[:date]}  # .drop_while{|d| !d.has_key?(:request_count)}
-          data << { :date => (Date.parse(data.last[:date])+1).iso8601 } unless data.empty?
-          # fill in data for mising databases
-          tmp = [data.shift]
-          while !data.empty?
-            last_date = Date.parse(tmp.last[:date])
-            next_date = Date.parse(data.first[:date])
-            if  next_date - last_date == 1
-              tmp << data.shift
-            else
-              tmp << {
-                :date => (last_date+1).iso8601,
-                :request_count =>0,
-                :errors => 0,
-                :warnings => 0,
-                :exceptions => 0,
-                :apdex_score => 0,
-                :exception_counts => {},
-              }
+          data = data.sort_by{|d| d[:date]}
+          # fill in data for missing databases
+          unless data.empty?
+            tmp = [data.shift]
+            while !data.empty?
+              last_date = Date.parse(tmp.last[:date])
+              next_date = Date.parse(data.first[:date])
+              if next_date - last_date == 1
+                tmp << data.shift
+              else
+                tmp << { :date => (last_date+1).iso8601, :exception_counts => {} }
+              end
             end
+            data = tmp
           end
-          data = tmp
           collected_resources = data.inject(Set.new){|s,d| s.union(d.keys)}
           resources.reject!{|r| !collected_resources.include?(r.to_sym)}
-          collected_exception_names = data.inject(Set.new){|s,d| s.union((d[:exception_counts]||{}).keys)}.to_a.sort
+          collected_exception_names = data.inject(Set.new){|s,d| s.union(d[:exception_counts].keys)}.to_a.sort
           # logger.debug collected_exception_names.inspect
           # logger.debug data.inspect
           data = data.select{|d| d.keys.size > 1 }
