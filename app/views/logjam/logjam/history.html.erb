@@ -55,7 +55,7 @@
     var js_params = <%= raw Oj.dump(js_params) %>;
     response.data.forEach(function(d){ d.date = new Date(d.date); })
     if (response.data.length < 2) {
-      // $("#spinner").text("Shiver me timbers! You have only " + response.data.length + " days worth o' data. This view requires at least two days o' data.");
+      $("#spinner").text("Shiver me timbers! You have only " + response.data.length + " days worth o' data. This view requires at least two days o' data.");
     } else {
       if (js_params.section == 'frontend') {
         logjam_history_bar_chart(response.data, "papdex_score", "papdex_score", js_params, "m");
