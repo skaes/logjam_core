@@ -668,6 +668,19 @@ module Logjam
     empty.sort.join("\n")
   end
 
+  def list_object_counts
+    object_count = Hash.new(0)
+    get_known_databases_with_connections.each do |db_name, connection|
+      db = connection.use(db_name).database
+      stats = db.command(:dbStats => 1).first
+      next unless stats.present?
+      count = stats["objects"].to_i
+      stream = stream_for(db_name)
+      object_count[stream.name] += count
+    end
+    object_count.to_a.sort_by{|n,c| [c,n]}.map{|n,c| "#{n}:#{c}"}.join("\n")
+  end
+
   def drop_empty_databases(app = '.+', delay = 60)
     dropped = 0
     db_match = db_name_format(:app => app)
