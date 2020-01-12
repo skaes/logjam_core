@@ -88,7 +88,7 @@ module Logjam
     def history
       respond_to do |format|
         format.html do
-          redirect_on_empty_dataset and return
+          dataset_from_params
         end
         format.json do
           prepare_params

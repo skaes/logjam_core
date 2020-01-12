@@ -108,6 +108,11 @@ namespace :logjam do
       puts Logjam.databases_sorted_by_date
     end
 
+    desc "list empty databases"
+    task :list_empty_databases => :environment do
+      puts Logjam.list_empty_databases
+    end
+
     desc "import databases"
     task :import_databases => :environment do
       from_host = ENV['FROM_HOST']

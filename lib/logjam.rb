@@ -400,6 +400,7 @@ module Logjam
   end
 
   DB_NAME_FORMAT = /\Alogjam-(.+)-([^-]+)-((\d+?)-(\d+?)-(\d+?))\z/
+  # $1 => app, $2 => env, $3 => date
 
   def db_name_format(options={})
     if options.blank?
@@ -415,7 +416,7 @@ module Logjam
   end
 
   def extract_db_params(db_name)
-    db_name =~ DB_NAME_FORMAT && [$1, $2, $3, $4]
+    db_name =~ DB_NAME_FORMAT && [$1, $2, $3]
   end
 
   def app_for(db_name)
@@ -577,11 +578,11 @@ module Logjam
   end
 
   def databases_sorted_by_date
-    get_known_databases.sort_by{|db| (db =~ /^([^-]+)-(\d[-0-9]+)/ && "#{$2}-#{$1}")}
+    get_known_databases.sort_by{|db| (db =~ DB_NAME_FORMAT && "#{$3}-#{$2}-#{$1}")}
   end
 
   def databases_sorted_by_date_with_connections
-    get_known_databases_with_connections.sort_by{|db| db =~ /^([^-]+)-(\d[-0-9]+)/ && "#{$2}-#{$1}"}
+    get_known_databases_with_connections.sort_by{|db, _| db =~ DB_NAME_FORMAT && "#{$3}-#{$2}-#{$1}"}
   end
 
   def import_databases(from_host, database_names, options = {})
@@ -654,6 +655,17 @@ module Logjam
       end
     end
     update_known_databases if dropped > 0
+  end
+
+  def list_empty_databases
+    empty = []
+    get_known_databases_with_connections.each do |db_name, connection|
+      db = connection.use(db_name).database
+      stats = db.command(:dbStats => 1).first
+      next unless stats.present? && (stats[:objects] || stats["objects"]) == 0
+      empty << db_name
+    end
+    empty.sort.join("\n")
   end
 
   def drop_empty_databases(app = '.+', delay = 60)
