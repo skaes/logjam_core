@@ -11,7 +11,9 @@
         </tr>
         <% @streams.each do |name, s| %>
           <tr>
-            <td><%= link_to(name, :action => :collstats,  params: {app: s.app, env: s.env, date: Date.yesterday })%></td>
+            <td>
+              <%= link_to(name, database_information_path(app: s.app, env: s.env)) %>
+            </td>
           </tr>
         <% end %>
       </table>
