@@ -32,7 +32,7 @@ module Logjam
     def streams
       @streams = Logjam.production_streams
       respond_to do |format|
-#        format.html {}
+        format.html {}
         format.json do
           render :json => Oj.dump(@streams)
         end
