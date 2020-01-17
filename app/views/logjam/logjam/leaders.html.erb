@@ -4,8 +4,17 @@
   <div id="logjam-content" class="app-dashboard">
     <div class="flex">
       <div class="controls item col-1">
-        <h2>Leader board
+        <h2>Leader board (user facing backend requests)
           <div id="admin-control">
+            <%= form_tag(params, :method => :get) do %>
+            <% if params[:showall].to_i == 1 %>
+            <%= submit_tag "Hide backend only apps", :id => "showall-button", :class => "btn", :name => nil %>
+            <%= hidden_field_tag :showall, 0  %>
+            <% else %>
+            <%= submit_tag "Show all apps", :id => "showall-button", :class => "btn", :name => nil %>
+            <%= hidden_field_tag :showall, 1  %>
+            <% end %>
+            <% end %>
             <%= form_tag(params.merge(:format => :csv), :method => :get) do %>
             <%= hidden_field_tag :showall, params[:showall] %>
             <%= submit_tag "Download CSV", :id => "download-button", :class => "btn", :name => nil %>
