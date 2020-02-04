@@ -56,7 +56,7 @@ module Logjam
         begin
           query = "Histograms.distinct(:page)"
           with_conditional_caching(query) do |payload|
-            rows = @collection.find.distinct(:page)
+            rows = @collection.distinct(:page)
             payload[:rows] = rows.size
             rows.to_a
           end

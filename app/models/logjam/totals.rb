@@ -300,7 +300,7 @@ module Logjam
         begin
           query = "Totals.distinct(:page)"
           with_conditional_caching(query) do |payload|
-            rows = @collection.find.distinct(:page, :count => {'$gt' => 0})
+            rows = @collection.distinct(:page, :count => {'$gt' => 0})
             payload[:rows] = rows.size
             rows
           end
