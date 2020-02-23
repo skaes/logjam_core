@@ -49,6 +49,11 @@ module Logjam
       @ignored_request_uri ||= Logjam.ignored_request_uri
     end
 
+    def max_inserts_per_second(*args)
+      @max_inserts_per_second = args.first.to_i if args.first
+      @max_inserts_per_second ||= Logjam.max_inserts_per_second
+    end
+
     def import_threshold(*args)
       @import_threshold = args.first.to_i if args.first
       @import_threshold ||= Logjam.import_threshold
@@ -115,6 +120,7 @@ module Logjam
         :env => env,
         :ignored_request_uri => ignored_request_uri,
         :backend_only_requests => backend_only_requests,
+        :max_inserts_per_second => max_inserts_per_second,
         :import_threshold => import_threshold,
         :import_thresholds => import_thresholds,
         :request_cleaning_threshold => request_cleaning_threshold,

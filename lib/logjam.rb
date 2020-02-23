@@ -309,6 +309,15 @@ module Logjam
     ''
   end
 
+  @@max_inserts_per_second = 100
+  def self.max_inserts_per_second=(max_inserts_per_second)
+    @@max_inserts_per_second = max_inserts_per_second.to_i
+  end
+
+  def self.max_inserts_per_second
+    @@max_inserts_per_second
+  end
+
   @@import_threshold = 0
   def self.import_threshold=(import_threshold)
     @@import_threshold = import_threshold.to_i
