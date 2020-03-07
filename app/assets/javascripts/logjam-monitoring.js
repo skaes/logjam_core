@@ -91,7 +91,12 @@
 
           monitoringMeasures.rts = rts;
 
-          (new Image()).src=monitoringCollector+"page?"+_toQuery(monitoringMeasures);
+          var tracking_url = monitoringCollector+"page?"+_toQuery(monitoringMeasures);
+
+          if (typeof navigator.sendBeacon === "function")
+            navigator.sendBeacon(tracking_url);
+          else
+            (new Image()).src = tracking_url;
         }, 20);
       },
 
@@ -123,7 +128,7 @@
               }
 
               if(logjamRequestId && logjamRequestAction) {
-                (new Image()).src=monitoringCollector+"ajax?"+_toQuery({
+                var requestData = {
                   logjam_caller_id:     logjamPageRequestId,
                   logjam_caller_action: logjamPageAction,
                   logjam_request_id:    logjamRequestId,
@@ -131,7 +136,12 @@
                   rts:                  [monitoringStart, +new Date()],
                   url:                  monitoringUrl.replace((location.protocol + "//" + location.host) , "").replace("//", "/").split("?")[0],
                   v:                    1
-                });
+                };
+                var tracking_url = monitoringCollector+"ajax?"+_toQuery(requestData);
+                if (typeof navigator.sendBeacon === "function")
+                  navigator.sendBeacon(tracking_url);
+                else
+                  (new Image()).src = tracking_url;
               }
             }
           }, false);
