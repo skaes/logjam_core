@@ -39,10 +39,10 @@ function logjam_history_bar_chart(data, divid, metric, params, kind) {
       data_min = d3.min(relevant_data, function(d){ return is_metric() ? d[metric] : d.exception_counts[metric]; }),
       data_max = d3.max(relevant_data, function(d){ return is_metric() ? d[metric] : d.exception_counts[metric]; });
 
-  if (typeof data_min == 'undefined')
+  if (typeof data_min == 'undefined' || (data_min == 0 && data_max == 0))
     return; // no data
 
-  if (data_min == data_max)
+  if (data_min == data_max || metric == "request_count")
     data_min = 0;
 
   // make space for the last day
