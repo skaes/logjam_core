@@ -77,7 +77,15 @@ namespace :logjam do
 
     desc "list known databases"
     task :list_known_databases => :environment do
-      puts Logjam::DatabaseManager.databases_sorted_by_date
+      from_date = (ENV['FROM_DATE'] || Date.today-10000).to_date
+      before_date = (ENV['BEFORE_DATE'] || Date.today+10000).to_date
+      pattern = Regexp.new("^#{ENV['APPLICATIONS'] || '.*'}$")
+      dbs = Logjam.databases_sorted_by_date
+      dbs.each do |db_name|
+        date = Logjam.db_date(db_name)
+        app = Logjam.app_for(db_name)
+        puts db_name if date < before_date && date >= from_date && app =~ pattern
+      end
     end
 
     desc "list empty databases"
