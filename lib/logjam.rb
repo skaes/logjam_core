@@ -875,12 +875,15 @@ module Logjam
   def rename_callers_and_senders(date:, from_app:, to_app:)
     dbs = grep(databases, :date => date)
     dbs.each do |db_name|
-      puts "renaming callers and senders in #{db_name}"
       app, env = extract_db_params(db_name)
       next if app == from_app
       db = db(date, app, env)
-      MongoModel.rename_callers_and_senders(db, "totals", from_app, to_app)
-      MongoModel.rename_callers_and_senders(db, "minutes", from_app, to_app)
+      if renamed = MongoModel.rename_callers_and_senders(db, "totals", from_app, to_app)
+        MongoModel.rename_callers_and_senders(db, "minutes", from_app, to_app)
+        puts "renamed callers and senders in #{db_name}"
+      else
+        puts "nothing renamed in #{db_name}"
+      end
     end
   end
 

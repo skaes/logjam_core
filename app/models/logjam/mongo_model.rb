@@ -66,6 +66,7 @@ module Logjam
     def self.rename_callers_and_senders(db, collection_name, from_app, to_app)
       collection = db.collection(collection_name)
       selector = {'$or' => [ { 'callers' => {'$exists' => 1} }, { 'senders' => {'$exists' => 1} }]}
+      renamed = false
       collection.find(selector, :projection => {'callers' => 1,  'senders' => 1}).each do |row|
         deletions = {}
         increments = {}
@@ -82,6 +83,7 @@ module Logjam
           end
         end
         next if increments.empty?
+        renamed = true
         operation = { '$inc' => increments, '$unset' => deletions }
         begin
           collection.update_one({"_id" => row["_id"]}, operation, :upsert => false)
@@ -89,6 +91,7 @@ module Logjam
           puts "collection #{collection_name}: update failed: #{e}"
         end
       end
+      renamed
     end
 
     def database_storage_size
