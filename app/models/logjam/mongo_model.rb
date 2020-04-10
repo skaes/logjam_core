@@ -71,15 +71,15 @@ module Logjam
         deletions = {}
         increments = {}
         (row['callers']||[]).each do |kaller, count|
-          if kaller =~ /\A#{from_app}-(.*)\z/
+          if kaller =~ /\A#{from_app}([@-])(.*)\z/
             deletions["callers.#{kaller}"] = 1
-            increments["callers.#{to_app}-#{$1}"] = count
+            increments["callers.#{to_app}#{$1}#{$2}"] = count
           end
         end
         (row['senders']||[]).each do |sender, count|
-          if sender =~ /\A#{from_app}-(.*)\z/
+          if sender =~ /\A#{from_app}([@-])(.*)\z/
             deletions["senders.#{sender}"] = 1
-            increments["senders.#{to_app}-#{$1}"] = count
+            increments["senders.#{to_app}#{$1}#{$2}"] = count
           end
         end
         next if increments.empty?
