@@ -40,6 +40,32 @@ Rails.application.routes.draw do
       get "/:year/:month/:day/user_agents" => :user_agents
     end
 
+    get "/allocated_objects_distribution" => :allocated_objects_distribution
+    get "/allocated_size_distribution" => :allocated_size_distribution
+    get "/apdex_overview" => :apdex_overview
+    get "/call_graph" => :call_graph
+    get "/call_relationships" => :call_relationships
+    get "/callers" => :callers
+    get "/database_information" => :database_information
+    get "/enlarged_plot" => :enlarged_plot
+    get "/error_overview" => :error_overview
+    get "/errors" => :errors
+    get "/events" => :events
+    get "/exceptions" => :exceptions
+    get "/heatmaps" => :heatmaps
+    get "/history" => :history
+    get "/js_exception_types" => :js_exception_types
+    get "/js_exceptions" => :js_exceptions
+    get "/leaders" => :leaders
+    get "/live_stream" => :live_stream
+    get "/request_overview" => :request_overview
+    get "/request_time_distribution" => :request_time_distribution
+    get "/response_code_overview" => :response_code_overview
+    get "/response_codes" => :response_codes
+    get "/show/:id" => :show
+    get "/totals_overview" => :totals_overview
+    get "/user_agents" => :user_agents
+
     get "/" => :index, :page => "::"
   end
 
