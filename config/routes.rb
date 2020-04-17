@@ -72,5 +72,6 @@ Rails.application.routes.draw do
   controller "logjam/admin" do
     get "/admin/storage" => :index, :as => "admin_storage"
     get "/admin/streams" => :streams
+    get "/admin/resources" => :resources
   end
 end

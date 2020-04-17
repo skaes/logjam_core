@@ -23,6 +23,12 @@ module Logjam
           end
       end
 
+      def resources
+        resource_map.each_with_object({}) do |(resource, entries), h|
+          h[resource] = entries.map(&:keys).flatten
+        end
+      end
+
       def all_resources
         @all_resources ||= resource_map.values.flatten.map(&:keys).flatten
       end

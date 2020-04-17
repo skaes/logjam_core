@@ -39,6 +39,16 @@ module Logjam
       end
     end
 
+    def resources
+      @resources = Logjam::Resource.resources
+      respond_to do |format|
+        format.html {}
+        format.json do
+          render :json => Oj.dump(@resources)
+        end
+      end
+    end
+
     private
 
     def get_database_info
