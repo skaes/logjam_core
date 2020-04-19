@@ -363,6 +363,14 @@ module Logjam
     @@database_flush_interval
   end
 
+  def database_connect_timeout
+    (ENV['LOGJAMDB_CONNECT_TIMEOUT'] || 60).to_i
+  end
+
+  def database_socket_timeout
+    (ENV['LOGJAMDB_SOCKET_TIMEOUT'] || 60).to_i
+  end
+
   @@mongo_connections = {}
   def mongo_connection(connection_name)
     config = database_config[connection_name] || database_config['default']
@@ -370,7 +378,7 @@ module Logjam
     @@mongo_connections[key] ||=
       begin
         connection_spec = "#{config['host']}:#{config['port']}"
-        options = { :connect_timeout => 60, :socket_timeout => 60 }
+        options = { :connect_timeout => database_connect_timeout, :socket_timeout => database_socket_timeout }
         if config['user'] && config['pass']
           options.merge!(:user => config['user'], :password => config['pass'])
         end
