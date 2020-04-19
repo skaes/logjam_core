@@ -52,50 +52,10 @@ namespace :logjam do
       Logjam.drop_environments(ENV['ENVS'].to_s.split(/\s*,\s*/), delay)
     end
 
-    desc "remove frontend fields from all dbs DATE=yesterday DELAY=5"
-    task :drop_frontend_fields => :environment do
-      delay = (ENV['DELAY'] || 5).to_i
-      date = (ENV['DATE'] || Date.today-1).to_date
-      Logjam.drop_frontend_fields(date, delay)
-    end
-
-    desc "drop old histogram collections"
-    task :drop_old_histograms => :environment do
-      delay = (ENV['DELAY'] || 5).to_i
-      from_date = (ENV['FROM_DATE'] || Date.today-1).to_date
-      to_date = (ENV['TO_DATE'] || Date.today-1).to_date
-      Logjam.drop_histograms(from_date, to_date, delay)
-    end
-
-    desc "drop all databases"
-    task :drop_all_databases => :environment do
-      puts "are you sure to drop all databases from #{Logjam.connections.keys.join(', ')}?"
-      print "type YES to proceed: "
-      if STDIN.gets.chomp == "YES"
-        puts "destruction initiated"
-        Logjam.drop_all_databases
-      else
-        puts "destruction aborted!"
-      end
-    end
-
-    desc "drop metrics collection"
-    task :drop_metrics => :environment do
-      delay = (ENV['DELAY'] || 5).to_i
-      from_date = (ENV['FROM_DATE'] || Date.today-1).to_date
-      to_date = (ENV['TO_DATE'] || Date.today-1).to_date
-      Logjam.drop_metrics(from_date, to_date, delay)
-    end
-
     desc "remove old data DELAY=5"
     task :clean => :drop_old do
       delay = (ENV['DELAY'] || 5).to_i
       Logjam.remove_old_requests(delay)
-    end
-
-    desc "update severities"
-    task :update_severities => :environment do
-      Logjam.update_severities
     end
 
     desc "update known databases"
@@ -116,24 +76,6 @@ namespace :logjam do
     desc "list object count"
     task :list_object_counts => :environment do
       puts Logjam.list_object_counts
-    end
-
-    desc "import databases"
-    task :import_databases => :environment do
-      from_host = ENV['FROM_HOST']
-      from_file = ENV['FROM_FILE']
-      delay = (ENV['DELAY'] || 60).to_i
-      drop_existing = ENV['DROP_DB'] == "1"
-      if from_host.blank?
-        $stderr.puts "no host specified to copy database from. please specify FROM_HOST=..."
-        exit 1
-      elsif from_file.blank? || ! File.exists?(from_file) || ! File.readable?(from_file)
-        $stderr.puts "no file given or not readable. use FROM_FILE=..."
-        exit 1
-      else
-        databases_to_copy = File.readlines(from_file).map(&:strip).map(&:chomp).sort
-        Logjam.import_databases(from_host, databases_to_copy, delay: delay, drop_existing: drop_existing)
-      end
     end
 
     desc "merge database DATE= APP= ENV= OTHER_DB=<connection spec, optional>, OTHER_APP=<optional> MERGE_REQUESTS=0|1"
@@ -162,17 +104,6 @@ namespace :logjam do
       date = (ENV['DATE'] || Date.today).to_date
       other_db = ENV['OTHER_DB']
       Logjam.merge_databases(date: date, other_db: other_db)
-    end
-
-    desc "rename caller and sender references from FROM_APP to TO_APP between FROM_DATE an TO_DATE"
-    task :rename_caller_and_sender_references => :environment do
-      from_date = (ENV['FROM_DATE'] || Date.today).to_date
-      to_date = (ENV['TO_DATE'] || Date.today).to_date
-      from_app = ENV['FROM_APP']
-      to_app = ENV['TO_APP']
-      (from_date..to_date).each do |date|
-        Logjam.rename_callers_and_senders(date: date, from_app: from_app, to_app: to_app)
-      end
     end
 
     desc "list all stored user agents strings"
