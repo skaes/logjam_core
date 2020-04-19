@@ -8,36 +8,36 @@ module Logjam
 
   # set this to the url under which logjam is reachable
   @@logjam_url = nil
-  def self.logjam_url
+  def logjam_url
     @@logjam_url
   end
 
-  def self.logjam_url=(url)
+  def logjam_url=(url)
     @@logjam_url= url
   end
 
   # set this if you forward logjam messages to graylog
   @@graylog_base_urls = {}
-  def self.graylog_base_urls
+  def graylog_base_urls
     @@graylog_base_urls
   end
 
   # set this if your rabbitmq brokers have a flaky connection
   @@use_heart_beats = false
-  def self.use_heart_beats
+  def use_heart_beats
     @@use_heart_beats
   end
 
-  def self.use_heart_beats=(use_heart_beats)
+  def use_heart_beats=(use_heart_beats)
     @@use_heart_beats = use_heart_beats
   end
 
   @@dryrun = false
-  def self.dryrun
+  def dryrun
     @@dryrun
   end
 
-  def self.dryrun=(dry)
+  def dryrun=(dry)
     @@dryrun = dry
   end
 
@@ -45,245 +45,245 @@ module Logjam
   # "127.0.0.1", to avoid potential security holes. Set it to
   # "0.0.0.0" for multi machine installs behind a firewall.
   @@bind_ip = "127.0.0.1"
-  def self.bind_ip
+  def bind_ip
     @@bind_ip
   end
 
-  def self.bind_ip=(ip)
+  def bind_ip=(ip)
     @@bind_ip = ip
   end
 
-  def self.bind_ip_for_zmq_spec
+  def bind_ip_for_zmq_spec
     @@bind_ip == "0.0.0.0" ? "*" : @@bind_ip
   end
 
   @@statsd_endpoint = nil
   # either udp://host:port or tcp://host:port
-  def self.statsd_endpoint=(spec)
+  def statsd_endpoint=(spec)
     @@statsd_endpoint = spec
   end
 
-  def self.statsd_endpoint
+  def statsd_endpoint
     @@statsd_endpoint
   end
 
   @@statsd_namespace = "logjam"
-  def self.statsd_namespace=(namespace)
+  def statsd_namespace=(namespace)
     @@statsd_namespace = namespace
   end
 
-  def self.statsd_namespace
+  def statsd_namespace
     @@statsd_namespace
   end
 
   @@importer_subscriber_threads = 1
-  def self.importer_subscriber_threads
+  def importer_subscriber_threads
     @@importer_subscriber_threads
   end
 
-  def self.importer_subscriber_threads=(n)
+  def importer_subscriber_threads=(n)
     @@importer_subscriber_threads = n
   end
 
   @@importer_parser_threads = 8
-  def self.importer_parser_threads
+  def importer_parser_threads
     @@importer_parser_threads
   end
 
-  def self.importer_parser_threads=(n)
+  def importer_parser_threads=(n)
     @@importer_parser_threads = n
   end
 
   @@importer_updater_threads = 10
-  def self.importer_updater_threads
+  def importer_updater_threads
     @@importer_updater_threads
   end
 
-  def self.importer_updater_threads=(n)
+  def importer_updater_threads=(n)
     @@importer_updater_threads = n
   end
 
   @@importer_writer_threads = 10
-  def self.importer_writer_threads
+  def importer_writer_threads
     @@importer_writer_threads
   end
 
-  def self.importer_writer_threads=(n)
+  def importer_writer_threads=(n)
     @@importer_writer_threads = n
   end
 
   @@importer_io_threads = 1
-  def self.importer_io_threads
+  def importer_io_threads
     @@importer_io_threads
   end
 
-  def self.importer_io_threads=(n)
+  def importer_io_threads=(n)
     @@importer_io_threads = n
   end
 
   @@frontend_timings_collector = nil
-  def self.frontend_timings_collector=(spec)
+  def frontend_timings_collector=(spec)
     spec[-1] = "" if spec && spec[-1] == "/"
     @@frontend_timings_collector = spec
   end
 
-  def self.frontend_timings_collector
+  def frontend_timings_collector
     @@frontend_timings_collector
   end
 
   @@frontend_timings_collector_port = 9705
-  def self.frontend_timings_collector_port=(port)
+  def frontend_timings_collector_port=(port)
     if (p = port.to_i) > 0
       @@frontend_timings_collector_port = p
     end
   end
 
-  def self.frontend_timings_collector_port
+  def frontend_timings_collector_port
     @@frontend_timings_collector_port
   end
 
   @@allow_cross_domain_ajax = false
-  def self.allow_cross_domain_ajax
+  def allow_cross_domain_ajax
     @@allow_cross_domain_ajax
   end
 
-  def self.allow_cross_domain_ajax=(ip)
+  def allow_cross_domain_ajax=(ip)
     @@allow_cross_domain_ajax = ip
   end
 
   @@ignored_request_uri = nil
-  def self.ignored_request_uri
+  def ignored_request_uri
     @@ignored_request_uri
   end
 
-  def self.ignored_request_uri=(uri)
+  def ignored_request_uri=(uri)
     @@ignored_request_uri = uri
   end
 
-  def self.default_web_socket_uri(request)
+  def default_web_socket_uri(request)
    "#{web_socket_protocol}://#{request.host}:#{web_socket_port}/"
   end
 
   @@web_socket_uri = nil
-  def self.web_socket_uri(request)
+  def web_socket_uri(request)
     @@web_socket_uri || default_web_socket_uri(request)
   end
 
-  def self.web_socket_uri=(uri)
+  def web_socket_uri=(uri)
     @@web_socket_uri = uri
   end
 
   @@web_socket_protocol = "ws"
-  def self.web_socket_protocol
+  def web_socket_protocol
     @@web_socket_protocol
   end
 
-  def self.web_socket_protocol=(protocol)
+  def web_socket_protocol=(protocol)
     @@web_socket_protocol = protocol
   end
 
   @@web_socket_port = RUBY_PLATFORM =~ /darwin/ ? 9608 : 8080
-  def self.web_socket_port
+  def web_socket_port
     @@web_socket_port
   end
 
-  def self.web_socket_port=(port)
+  def web_socket_port=(port)
     @@web_socket_port = port
   end
 
   @@backend_only_requests = ""
-  def self.backend_only_requests
+  def backend_only_requests
     @@backend_only_requests
   end
 
-  def self.backend_only_requests=(prefixes)
+  def backend_only_requests=(prefixes)
     @@backend_only_requests = prefixes
   end
 
   @@sampling_rate_400s = 1
-  def self.sampling_rate_400s
+  def sampling_rate_400s
     @@sampling_rate_400s
   end
 
-  def self.sampling_rate_400s=(r)
+  def sampling_rate_400s=(r)
     @@sampling_rate_400s = r
   end
 
   @@http_buckets = [0.001, 0.0025, 0.005, 0.010, 0.025, 0.050, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25, 50, 100]
-  def self.http_buckets
+  def http_buckets
     @@http_buckets
   end
 
-  def self.http_buckets=(r)
+  def http_buckets=(r)
     @@http_buckets = r
   end
 
   @@jobs_buckets = [0.001, 0.0025, 0.005, 0.010, 0.025, 0.050, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25, 50, 100]
-  def self.jobs_buckets
+  def jobs_buckets
     @@jobs_buckets
   end
 
-  def self.jobs_buckets=(r)
+  def jobs_buckets=(r)
     @@jobs_buckets = r
   end
 
   @@page_buckets = [0.005, 0.010, 0.025, 0.050, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25, 50, 100, 250]
-  def self.page_buckets
+  def page_buckets
     @@page_buckets
   end
 
-  def self.page_buckets=(r)
+  def page_buckets=(r)
     @@page_buckets = r
   end
 
   @@ajax_buckets = [0.005, 0.010, 0.025, 0.050, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25, 50, 100, 250]
-  def self.ajax_buckets
+  def ajax_buckets
     @@ajax_buckets
   end
 
-  def self.ajax_buckets=(r)
+  def ajax_buckets=(r)
     @@ajax_buckets = r
   end
 
   @@github_issue_url = "https://github.com/skaes/logjam_app/issues/new"
-  def self.github_issue_url
+  def github_issue_url
     @@github_issue_url
   end
 
-  def self.github_issue_url=(r)
+  def github_issue_url=(r)
     @@github_issue_url = r
   end
 
   @@devices = nil
-  def self.devices
+  def devices
     @@devices
   end
 
-  def self.devices=(devices)
+  def devices=(devices)
     @@devices = devices
   end
 
   @@streams = {}
-  def self.streams(tag=nil)
+  def streams(tag=nil)
     tag.blank? ? @@streams : @@streams.slice(*@@streams.values.select{|v| v.tag == tag}.map(&:name))
   end
 
-  def self.production_streams
+  def production_streams
     streams.reject{|name,stream| stream.is_a?(LiveStream) || stream.env == "development"}
   end
 
   # declare a performance data stream
-  def self.stream(name, &block)
+  def stream(name, &block)
     @@streams[name] = Stream.new(name, &block)
   end
 
-  def self.livestream(name, &block)
+  def livestream(name, &block)
     @@streams["livestream-#{name}"] = LiveStream.new(name, &block)
   end
 
   # regexp matcher for application names
   @@app_regex = nil
-  def self.app_regex
+  def app_regex
     @@app_regex ||=
       begin
         applications = production_streams.map{|name, stream| stream.app}.uniq
@@ -292,7 +292,7 @@ module Logjam
   end
 
   # extract app from a app-action pair
-  def self.extract_app(pair)
+  def extract_app(pair)
     if pair =~ app_regex
       [$1, $2]
     else
@@ -300,66 +300,66 @@ module Logjam
     end
   end
 
-  def self.base_url=(base_url)
+  def base_url=(base_url)
     ActiveSupport::Deprecation.warn('Logjam.base_url= is depreated.')
   end
 
-  def self.base_url
+  def base_url
     ActiveSupport::Deprecation.warn('Logjam.base_url is depreated.')
     ''
   end
 
   @@max_inserts_per_second = 100
-  def self.max_inserts_per_second=(max_inserts_per_second)
+  def max_inserts_per_second=(max_inserts_per_second)
     @@max_inserts_per_second = max_inserts_per_second.to_i
   end
 
-  def self.max_inserts_per_second
+  def max_inserts_per_second
     @@max_inserts_per_second
   end
 
   @@import_threshold = 0
-  def self.import_threshold=(import_threshold)
+  def import_threshold=(import_threshold)
     @@import_threshold = import_threshold.to_i
   end
 
-  def self.import_threshold
+  def import_threshold
     @@import_threshold
   end
 
   @@import_thresholds = []
-  def self.import_thresholds=(import_thresholds)
+  def import_thresholds=(import_thresholds)
     @@import_thresholds = import_thresholds
   end
 
-  def self.import_thresholds
+  def import_thresholds
     @@import_thresholds
   end
 
   @@request_cleaning_threshold = 120
-  def self.request_cleaning_threshold=(request_cleaning_threshold)
+  def request_cleaning_threshold=(request_cleaning_threshold)
     @@request_cleaning_threshold = request_cleaning_threshold.to_i
   end
 
-  def self.request_cleaning_threshold
+  def request_cleaning_threshold
     @@request_cleaning_threshold
   end
 
   @@database_cleaning_threshold = 365
-  def self.database_cleaning_threshold=(database_cleaning_threshold)
+  def database_cleaning_threshold=(database_cleaning_threshold)
     @@database_cleaning_threshold = database_cleaning_threshold.to_i
   end
 
-  def self.database_cleaning_threshold
+  def database_cleaning_threshold
     @@database_cleaning_threshold
   end
 
   @@database_flush_interval = 1
-  def self.database_flush_interval=(database_flush_interval)
+  def database_flush_interval=(database_flush_interval)
     @@database_flush_interval = database_flush_interval.to_i
   end
 
-  def self.database_flush_interval
+  def database_flush_interval
     @@database_flush_interval
   end
 
@@ -432,11 +432,11 @@ module Logjam
     db_name =~ DB_NAME_FORMAT && $1
   end
 
-  def self.stream_defined?(app, env)
+  def stream_defined?(app, env)
     @@streams["#{app}-#{env}"]
   end
 
-  def self.stream_for(db_name)
+  def stream_for(db_name)
     if db_name =~ DB_NAME_FORMAT
       stream = @@streams["#{$1}-#{$2}"]
       if stream
@@ -759,7 +759,7 @@ module Logjam
     update_known_databases if dropped > 0
   end
 
-  def self.drop_frontend_fields_from_db(db)
+  def drop_frontend_fields_from_db(db)
     counts = %w(frontend_count ajax_count page_count)
     metrics = %w(frontend_time ajax_time page_time load_time processing_time response_time request_time connect_time style_nodes script_nodes html_nodes)
     metrics_sq = metrics.map{|m| "#{m}_sq"}
@@ -771,7 +771,7 @@ module Logjam
     db["quants"].remove({"kind" => "f"})
   end
 
-  def self.drop_frontend_fields(date, delay=5)
+  def drop_frontend_fields(date, delay=5)
     dbs = grep(databases, :date => date)
     dbs.each do |db_name|
       db = connection_for(db_name).use(db_name).database
@@ -781,7 +781,7 @@ module Logjam
     end
   end
 
-  def self.drop_histograms(from_date, to_date, delay=5)
+  def drop_histograms(from_date, to_date, delay=5)
     for date in from_date..to_date
       dbs = grep(databases, :date => date)
       dbs.each do |db_name|
@@ -794,8 +794,7 @@ module Logjam
     end
   end
 
-  def self.drop_metrics(from_date, to_date, delay=5)
-    require 'byebug'
+  def drop_metrics(from_date, to_date, delay=5)
     for date in from_date..to_date
       dbs = grep(databases, :date => date)
       dbs.each do |db_name|
