@@ -896,8 +896,8 @@ module Logjam
 
     def default_url_options
       defaults = {
-        app: params[:app].presence || default_app,
-        env: params[:env].presence || default_env,
+        app: params[:app].presence || @default_app,
+        env: params[:env].presence || @default_env,
       }
       (super() || {}).merge(defaults)
     end
