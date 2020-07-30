@@ -851,7 +851,7 @@ module Logjam
     end
   end
 
-  def list_callers(from_date:, to_date:, merge_from:, merge_to:)
+  def merge_callers(from_date:, to_date:, merge_from:, merge_to:)
     databases_sorted_by_date_with_connections.each do |db_name, connection|
       date = db_date(db_name)
       next if date < from_date || date > to_date
