@@ -837,6 +837,30 @@ module Logjam
     user_agents.values.sort_by{|a| -a.backend}
   end
 
+  def list_callers(from_date:, to_date:)
+    names = Set.new
+    databases_sorted_by_date_with_connections.each do |db_name, connection|
+      date = db_date(db_name)
+      next if date < from_date || date > to_date
+      db = connection.use(db_name).database
+      caller_names = Totals.new(db).caller_names
+      names.merge(caller_names)
+    end
+    names.to_a.sort_by{|s|s}.each do |n|
+      puts n
+    end
+  end
+
+  def list_callers(from_date:, to_date:, merge_from:, merge_to:)
+    databases_sorted_by_date_with_connections.each do |db_name, connection|
+      date = db_date(db_name)
+      next if date < from_date || date > to_date
+      db = connection.use(db_name).database
+      Totals.new(db).merge_callers(merge_from, merge_to)
+      names.merge(caller_names)
+    end
+  end
+
   def list_action_names(from_date:, to_date:)
     names = Set.new
     databases_sorted_by_date_with_connections.each do |db_name, connection|

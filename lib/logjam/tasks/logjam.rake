@@ -112,14 +112,30 @@ namespace :logjam do
       Logjam::Agents.dump_array(agents)
     end
 
-    desc "list all action names in all applications between FROM_DATE an TO_DATE"
+    desc "list all caller names in all applications between FROM_DATE and TO_DATE"
+    task :list_callers => :environment do
+      from_date = (ENV['FROM_DATE'] || Date.today).to_date
+      to_date = (ENV['TO_DATE'] || Date.today).to_date
+      Logjam.list_callers(from_date: from_date, to_date: to_date)
+    end
+
+    desc "merge caller names in all applications between FROM_DATE and TO_DATE"
+    task :merge_callers => :environment do
+      from_date = (ENV['FROM_DATE'] || Date.today).to_date
+      to_date = (ENV['TO_DATE'] || Date.today).to_date
+      merge_from = ENV['MERGE_FROM']
+      merge_to = ENV['MERGE_TO']
+      Logjam.merge_callers(from_date: from_date, to_date: to_date, merge_from: merge_from, merge_to: merge_to)
+    end
+
+    desc "list all action names in all applications between FROM_DATE and TO_DATE"
     task :list_action_names => :environment do
       from_date = (ENV['FROM_DATE'] || Date.today).to_date
       to_date = (ENV['TO_DATE'] || Date.today).to_date
       Logjam.list_action_names(from_date: from_date, to_date: to_date)
     end
 
-    desc "list all characters used in action names in all applications between FROM_DATE an TO_DATE"
+    desc "list all characters used in action names in all applications between FROM_DATE and TO_DATE"
     task :list_action_name_characters => :environment do
       from_date = (ENV['FROM_DATE'] || Date.today).to_date
       to_date = (ENV['TO_DATE'] || Date.today).to_date

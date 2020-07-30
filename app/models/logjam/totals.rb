@@ -307,6 +307,15 @@ module Logjam
         end
     end
 
+    def caller_names
+      query = "Totals.find({page:'all_pages'},{callers:1})"
+      with_conditional_caching(query) do |payload|
+        rows = @collection.find({:page => 'all_pages'}, {projection: {callers: 1}}).limit(1).to_a
+        payload[:rows] = rows.size
+        rows.map{|r| (r["callers"]||{}).keys}.first || []
+      end
+    end
+
     def collected_resources
       @collected_resources ||=
         begin
