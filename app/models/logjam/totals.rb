@@ -316,10 +316,6 @@ module Logjam
       end
     end
 
-    def merge_callers(merge_from, merge_to)
-      raise "not yet implemented"
-    end
-
     def collected_resources
       @collected_resources ||=
         begin

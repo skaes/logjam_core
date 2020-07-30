@@ -851,13 +851,34 @@ module Logjam
     end
   end
 
+  def collection_merge_callers(db, db_name, collection_name, merge_from, merge_to)
+    pattern = Regexp.new(merge_from)
+    collection = db[collection_name]
+    collection.find({}, {projection: {page: 1, callers: 1}}).each do |row|
+      deletions, call_count = {}, 0
+      (row["callers"]||{}).each do |k, v|
+        if k =~ pattern
+          deletions["callers.#{k}"] = ""
+          call_count += v
+        end
+      end
+      if call_count > 0
+        puts "updating #{db_name}.#{collection_name}: #{row['page']}"
+        deletions.each_slice(1000) do |slice|
+          collection.update_one({_id: row['_id']}, {'$unset': Hash[slice]})
+        end
+        collection.update_one({_id: row['_id']}, {'$inc': {"callers.#{merge_to}" => call_count}})
+      end
+    end
+  end
+
   def merge_callers(from_date:, to_date:, merge_from:, merge_to:)
     databases_sorted_by_date_with_connections.each do |db_name, connection|
       date = db_date(db_name)
       next if date < from_date || date > to_date
       db = connection.use(db_name).database
-      Totals.new(db).merge_callers(merge_from, merge_to)
-      names.merge(caller_names)
+      collection_merge_callers(db, db_name, "totals", merge_from, merge_to)
+      collection_merge_callers(db, db_name, "minutes", merge_from, merge_to)
     end
   end
 
