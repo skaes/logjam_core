@@ -300,7 +300,12 @@ module Logjam
           else
             @response_code = params[:response_code].to_i
           end
-          if params[:above].present? && @response_code >= 400
+          @show_code = true
+          if params[:above].present? && @response_code == 0
+            @title = "Requests"
+            @error_count = @dataset.stored_requests
+            @show_code = false
+          elsif params[:above].present? && @response_code >= 400
             @title = "Requests with response code above #{@response_code}"
             @error_count = @dataset.response_codes_above(@response_code)
           else
@@ -310,7 +315,7 @@ module Logjam
           @sampling_rate_400s = @stream.sampling_rate_400s if (400..499).include?(@response_code)
           # TODO: this is way to expensive to calculate so we just approximate it.
           # We should store the actual count of stored requests in mongo.
-          if @response_code < 500 && @sampling_rate_400s &&  @sampling_rate_400s < 1
+          if @response_code > 0 && @response_code < 500 && @sampling_rate_400s && @sampling_rate_400s < 1
             @stored_error_count = @sampling_rate_400s * @error_count
             @approximated = true
             @skip_last = true
@@ -366,7 +371,7 @@ module Logjam
           @dataset.limit = @page_size
           @dataset.offset = offset
           @requests = @dataset.do_the_query(@section)
-          @request_count = @dataset.stored_requests
+          @request_count = @dataset.stored_metrics
           @page_count = @request_count/@page_size + 1
           @current_page = offset/@page_size + 1
           @last_page = @page_count

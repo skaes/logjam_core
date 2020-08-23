@@ -24,11 +24,19 @@
               <% url = rc.to_i >= 400  || rc.to_i == 0 ? clean_url_for(:action => "response_codes", :response_code => rc, :above => nil) : false  %>
               <td><%= rc.to_i < 400 && rc.to_i != 0 ? raw("<span class='dead-link'>#{rc}</span>") : link_to(rc, url) %></td>
               <td class='number'><%= sometimes_link_response_code(rc, @totals.response_codes[rc]) %></td>
-              <td class='echart' id='<%= "echart-#{i+=1}" %>'>
-                <%= render "echart", exceptions: @minutes.response[rc.to_s], parent_selector: "#echart-#{i}", url: url, start_minute: nil, end_minute: nil, highlight: false %>
+              <td class='echart' id='<%= "echart-#{i+1}" %>'>
+                <%= render "echart", exceptions: @minutes.response[rc.to_s], parent_selector: "#echart-#{i+1}", url: url, start_minute: nil, end_minute: nil, highlight: false %>
               </td>
             </tr>
             <% end %>
+            <tr class='full_stats extra-padding-top'>
+              <% url = clean_url_for(:action => "response_codes", :response_code => 0, :above => 0)  %>
+              <td> <%= link_to("All", url) %></td>
+              <td class='number'><%= sometimes_link_response_code("0xx", @totals.response_codes.values.sum, force_link: true) %></td>
+              <td class='echart' id='<%= "echart-0" %>'>
+                <%= render "echart", exceptions: @minutes.response_above(0), parent_selector: "#echart-0", url: url, start_minute: nil, end_minute: nil, highlight: false %>
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>

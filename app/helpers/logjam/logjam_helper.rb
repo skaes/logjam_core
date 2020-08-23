@@ -379,14 +379,18 @@ module Logjam
       end
     end
 
-    def sometimes_link_response_code(code, n)
+    def sometimes_link_response_code(code, n, force_link: false)
       text = memory_number(n)
       params = { :app => @app, :env => @env, :action => "response_codes", :page => @page }
-      if n == 0 || code.to_s =~ /[0-3]xx\z/
+      if n == 0 || (code.to_s =~ /[0-3]xx\z/ && !force_link)
         text
       elsif code.to_s =~ /xx\z/
         params[:above] = code.to_s.sub('xx', '00')
-        clean_link_to(text, params, :class => "error", :"data-tooltip" => "show requests with response #{code}")
+        if force_link
+          clean_link_to(text, params, :class => "green", :"data-tooltip" => "show requests with response above #{params[:above].gsub("000","0")}")
+        else
+          clean_link_to(text, params, :class => "error", :"data-tooltip" => "show requests with response #{code}")
+        end
       elsif code.to_i < 400 && code.to_i > 0
         text
       else
