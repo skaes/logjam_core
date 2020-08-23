@@ -251,7 +251,7 @@ module Logjam
           q = Requests.new(@db, "minute", @page, qopts)
           @requests = q.all
           @error_count = q.count if restricted
-          @page_count = @error_count/@page_size + 1
+          @page_count = (@error_count.to_f/@page_size).ceil
           @current_page = offset/@page_size + 1
           @last_page = @page_count
           @last_page_offset = @error_count/@page_size*@page_size
@@ -279,8 +279,8 @@ module Logjam
           options[:limit] = @page_size
 
           @exceptions = exceptions.find(options)
+          @page_count = (@error_count.to_f/@page_size).ceil
           @current_page = offset/@page_size + 1
-          @page_count = @error_count/@page_size + 1
           @last_page = @page_count
           @last_page_offset = @error_count/@page_size*@page_size
           @next_page_offset = offset + @page_size
@@ -340,7 +340,7 @@ module Logjam
           @requests = q.all
           offset = params[:offset].to_i
           @stored_error_count ||= @error_count
-          @page_count = @stored_error_count/@page_size + 1
+          @page_count = (@stored_error_count.to_f/@page_size).ceil
           @current_page = offset/@page_size + 1
           @last_page = @page_count
           @last_page_offset = @stored_error_count/@page_size*@page_size
@@ -372,7 +372,7 @@ module Logjam
           @dataset.offset = offset
           @requests = @dataset.do_the_query(@section)
           @request_count = @dataset.stored_metrics
-          @page_count = @request_count/@page_size + 1
+          @page_count = (@request_count.to_f/@page_size).ceil
           @current_page = offset/@page_size + 1
           @last_page = @page_count
           @last_page_offset = @request_count/@page_size*@page_size
