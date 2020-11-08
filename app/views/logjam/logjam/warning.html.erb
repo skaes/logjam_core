@@ -2,10 +2,11 @@
 <div id="logjam-container" class="xxl-view">
   <%= render "sidebar" %>
   <div id="logjam-content" class="app-dashboard">
-
     <div class="flex">
       <div class="item">
-        <p class="warning">Shiver me timbers! Thar be nothin' in t' database!</p>
+        <div class="message large">
+          <%= @warning %>
+        </div>
       </div>
     </div>
   </div>

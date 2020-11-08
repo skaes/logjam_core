@@ -41,7 +41,7 @@ module Logjam
     end
 
     def home_url
-      url_for(params.except(:id).merge(:action => 'index'))
+      url_for(params.except(:id).merge(action: 'index'))
     end
 
     def history_url
@@ -61,31 +61,31 @@ module Logjam
     end
 
     def collected_frontend_time_resources
-      (Logjam::Resource.frontend_resources - %w[frontend_time]) & @collected_resources
+      (Logjam::Resource.frontend_resources - %w[frontend_time]) & (@collected_resources || [])
     end
 
     def collected_dom_resources
-      Logjam::Resource.dom_resources & @collected_resources
+      Logjam::Resource.dom_resources & (@collected_resources || [])
     end
 
     def collected_time_resources
-      Logjam::Resource.time_resources & @collected_resources
+      Logjam::Resource.time_resources & (@collected_resources || [])
     end
 
     def collected_call_resources
-      Logjam::Resource.call_resources & @collected_resources
+      Logjam::Resource.call_resources & (@collected_resources || [])
     end
 
     def collected_memory_resources
-      Logjam::Resource.memory_resources & @collected_resources
+      Logjam::Resource.memory_resources & (@collected_resources || [])
     end
 
     def collected_heap_resources
-      Logjam::Resource.heap_resources & @collected_resources
+      Logjam::Resource.heap_resources & (@collected_resources || [])
     end
 
     def collected_dom_resources
-      Logjam::Resource.dom_resources & @collected_resources
+      Logjam::Resource.dom_resources & (@collected_resources || [])
     end
 
     def grouping_options

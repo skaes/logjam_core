@@ -352,17 +352,23 @@ module Logjam
     (ENV['LOGJAMDB_SOCKET_TIMEOUT'] || 60).to_i
   end
 
+  def database_server_selection_timeout
+    (ENV['LOGJAMDB_SERVER_SELECTION_TIMEOUT'] || 30).to_i
+  end
+
   @@mongo_connections = {}
   def mongo_connection(connection_name)
-    config = database_config[connection_name] || database_config['default']
-    key = "#{config['host']}-#{config['port']}"
+    config = (database_config[connection_name] || database_config['default']).symbolize_keys
+    key = "#{config[:host]}-#{config[:port]}"
     @@mongo_connections[key] ||=
       begin
-        connection_spec = "#{config['host']}:#{config['port']}"
-        options = { :connect_timeout => database_connect_timeout, :socket_timeout => database_socket_timeout }
-        if config['user'] && config['pass']
-          options.merge!(:user => config['user'], :password => config['pass'])
-        end
+        connection_spec = "#{config[:host]}:#{config[:port]}"
+        options = {
+          :connect_timeout => database_connect_timeout,
+          :socket_timeout => database_socket_timeout,
+          :server_selection_timeout => database_server_selection_timeout,
+        }
+        options.merge!(config.except(:host, :port))
         Mongo::Client.new([connection_spec], options)
       end
   rescue

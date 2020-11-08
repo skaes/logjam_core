@@ -4,12 +4,14 @@
 
   <%= form_tag(params.except(:id), :method => :get, :id => "filter-form", :autocomplete => "off") do -%>
 
+  <% klass0 = @dataset.present? ? "enabled" : "disabled" %>
+
     <div class="menu-wrapper">
       <ul class="logjam-menu">
         <li>
           <%= link_to(fa_icon("home", :title => "Home") + " Home", {}, {:href=> '#', :onclick => "go_home()"}) %>
           <% unless @only_one_app %>
-          <%= clean_link_to(fa_icon("list-ol", :title => "Leaders") + " Leaders", {:action => "leaders"}) %>
+          <%= clean_link_to(fa_icon("list-ol", :title => "Leaders") + " Leaders", {:action => "leaders"}, :class => klass0) %>
           <% end %>
           <% unless Logjam.graylog_base_urls[@env.to_sym].blank? %>
           <%= link_to(image_tag("graylog.png", :title => "Graylog", :class => "graylog-icon") + " Graylog", graylog_uri(@app, @env, @page), :target => "_blank") %>
@@ -35,14 +37,15 @@
           <%= link_to(fa_icon("play-circle", :title => "view live stream") + " Livestream", action: "live_stream") %>
         </li>
 
-        <li>
+        <li class="<%= klass0 %>">
           <%= clean_link_to(fa_icon("history", :title => "Performace History") + " History", action: "history") %>
         </li>
 
         <% klass = @dataset && @dataset.has_distribution_plot? ? "enabled" : "disabled" %>
+        <% resource = @dataset ? @dataset.resource : Logjam::FilteredDataset::DEFAULTS[:resource] %>
         <li class="<%= klass %>">
-          <%= clean_link_to(:page => without_module(@page), :action => distribution_kind(@dataset.resource),
-                            :section => ::Logjam::Resource.section(@dataset.resource)) do %>
+          <%= clean_link_to(:page => without_module(@page), :action => distribution_kind(resource),
+                            :section => ::Logjam::Resource.section(resource)) do %>
             <i class="fa fa-signal" style="transform:scale(-1,1) translate(-6px,-1px);"></i> Distribution Plot
           <% end %>
         </li>
@@ -61,7 +64,7 @@
             <i class="fa fa-phone"></i> Callers
             <% end %>
           </li>
-          <li>
+          <li class="<%= klass0 %>">
             <%= clean_link_to(:action => "call_relationships", :filter => @app, :section => 'backend', :kind => 'callers') do %>
               <i class="fa fa-cloud"></i> Call Relationships
             <% end %>
@@ -72,26 +75,26 @@
             <i class="fa fa-paper-plane"></i> Msg Senders
             <% end %>
           </li>
-          <li>
+          <li class="<%= klass0 %>">
             <%= clean_link_to(:action => "call_relationships", :filter => @app, :section => 'backend', :kind => 'senders') do %>
               <i class="fa fa-inbox"></i> Msg Relationships
             <% end %>
           </li>
         <% end %>
 
-        <li>
+        <li class="<%= klass0 %>">
           <%= clean_link_to(:action => "response_code_overview", :section => 'backend') do %>
             <i class="fa fa-reply"></i> Responses
           <% end %>
         </li>
 
-        <li>
+        <li class="<%= klass0 %>">
           <%= clean_link_to(:action => "error_overview", :section => 'backend') do %>
             <i class="fa fa-warning"></i> Problems
           <% end %>
         </li>
 
-        <li>
+        <li class="<%= klass0 %>">
           <%= clean_link_to(:action => "events", :section => 'backend') do %>
             <i class="fa fa-envelope"></i> Notifications
           <% end %>
@@ -100,7 +103,8 @@
       </ul>
 
       <ul class="logjam-menu separator">
-        <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:time) %>><i class="fa fa-clock-o"></i> Backend Time</a>
+        <% dropdown_klass = @dataset && @dataset.has_distribution_plot? ? "dropdown enabled" : "dropdown disabled" %>
+        <li class="<%= dropdown_klass %>"><a <%= raw html_attributes_for_resource_type(:time) %>><i class="fa fa-clock-o"></i> Backend Time</a>
           <ul>
             <% collected_time_resources.reverse.each do |r| %>
               <li <% if params[:resource] == r %>class="active"<% end %>>
@@ -111,7 +115,7 @@
         </li>
 
         <% unless collected_frontend_time_resources.empty? %>
-          <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:frontend) %>><i class="fa fa-clock-o"></i> Frontend Time</a>
+          <li class="<%= dropdown_klass %>"><a <%= raw html_attributes_for_resource_type(:frontend) %>><i class="fa fa-clock-o"></i> Frontend Time</a>
             <ul>
               <% collected_frontend_time_resources.reverse.each do |r| %>
                 <li <% if params[:resource] == r %>class="active"<% end %>>
@@ -123,7 +127,7 @@
         <% end %>
 
         <% unless collected_call_resources.empty? %>
-          <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:call) %>><i class="fa fa-phone"></i> Calls</a>
+          <li class="<%= dropdown_klass %>"><a <%= raw html_attributes_for_resource_type(:call) %>><i class="fa fa-phone"></i> Calls</a>
             <ul>
               <% collected_call_resources.reverse.each do |r| %>
                 <li <% if params[:resource] == r %>class="active"<% end %>>
@@ -135,7 +139,7 @@
         <% end %>
 
         <% unless collected_memory_resources.empty? %>
-          <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:memory) %>><i class="fa fa-th"></i> Allocations</a>
+          <li class="<%= dropdown_klass %>"><a <%= raw html_attributes_for_resource_type(:memory) %>><i class="fa fa-th"></i> Allocations</a>
             <ul>
               <% collected_memory_resources.reverse.each do |r| %>
                 <li <% if params[:resource] == r %>class="active"<% end %>>
@@ -159,7 +163,7 @@
         <% end %>
 
         <% unless collected_dom_resources.empty? %>
-          <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:dom) %>><i class="fa fa-tree"></i> HTML</a>
+          <li class="<%= dropdown_klass %>"><a <%= raw html_attributes_for_resource_type(:dom) %>><i class="fa fa-tree"></i> HTML</a>
             <ul>
               <% collected_dom_resources.reverse.each do |r| %>
               <li <% if params[:resource] == r %>class="active"<% end %>>
@@ -172,23 +176,23 @@
       </ul>
 
       <ul class="logjam-menu separator">
-        <li>
+        <li class="<%= klass0 %>">
           <% if params[:auto_refresh] == "1" %>
             <%= clean_link_to(fa_icon("toggle-on") + " Autorefresh", :auto_refresh => 0) %>
           <% else %>
             <%= clean_link_to(fa_icon("toggle-off") + " Autorefresh", :auto_refresh => 1) %>
           <% end %>
         </li>
-        <li>
+        <li class="<%= klass0 %>">
           <%= clean_link_to(fa_icon("file-text-o") + " API Response", :format => :json) %>
         </li>
-        <li>
+        <li class="<%= klass0 %>">
           <%= clean_link_to(fa_icon("user-secret") + " User Agents", action: "user_agents") %>
         </li>
-        <li>
+        <li class="<%= klass0 %>">
           <%= link_to(fa_icon("cogs") + " Admin Space", admin_storage_path) %>
         </li>
-        <li>
+        <li class="<%= klass0 %>">
           <%= clean_link_to(fa_icon("database") + " DB Info", action: "database_information") %>
         </li>
         <% if url = Logjam.github_issue_url %>

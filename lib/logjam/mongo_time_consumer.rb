@@ -13,7 +13,7 @@ module Logjam
         return unless logger.debug?
 
         p = event.payload
-        debug "MONGO %s returned %d rows (%.1fms)" % [p[:query], p[:rows], event.duration]
+        debug "MONGO %s returned %d rows (%.1fms)" % [p[:query], p[:rows] || 0, event.duration]
       end
       Subscriber.attach_to :logjam
     end

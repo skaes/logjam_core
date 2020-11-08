@@ -713,7 +713,7 @@ module Logjam
     private
 
     def database_info
-      @database_info ||= Logjam::DatabaseInfo.new
+      @database_info ||= Logjam::DatabaseInfo.new(date_from_params)
     end
 
     def default_date
@@ -732,15 +732,19 @@ module Logjam
       session[:last_app] = @app
       @default_env ||= database_info.default_env(@app)
       @env ||= (params[:env] ||= @default_env)
-      @envs ||= database_info.envs(@app)
+      @envs ||= database_info.all_envs
       @only_one_app = database_info.only_one_app?
-      @only_one_env = database_info.only_one_env?(@app)
+      @only_one_env = database_info.only_one_env?
       @stream = Logjam.streams["#{@app}-#{@env}"]
+    end
+
+    def date_from_params
+       params[:year].blank? ? nil : "#{params[:year]}-#{params[:month]}-#{params[:day]}".to_date
     end
 
     def get_date
       get_app_env
-      @date = "#{params['year']}-#{params['month']}-#{params['day']}".to_date unless params[:year].blank?
+      @date = date_from_params
       @date ||= default_date
       @days = database_info.days(@app, @env)
     end
@@ -752,6 +756,7 @@ module Logjam
 
     def prepare_params
       get_date
+      return false unless database_info.valid?
       begin
         @db = Logjam.db(@date, @app, @env)
       rescue
@@ -811,13 +816,14 @@ module Logjam
 
     def redirect_on_empty_dataset(strip_namespace = false)
       dataset_from_params(strip_namespace) or return true
-      logger.debug "DATASET BE EMTPTY = #{@dataset.empty?}"
+      logger.debug "DATASET BE EMPTY = #{@dataset.empty?}"
       if @dataset.empty?
         if !@dataset.top_level? && !request.referer.to_s.include?("app=#{@app}")
           new_params = FilteredDataset.clean_url_params(params.merge(:page => ''), params)
           redirect_to new_params.to_hash
         else
-          render "empty_dataset"
+          @warning = "No data found for application «#{@app}» in environment «#{@env}» on #{@date.to_s(:long_ordinal)}."
+          render "warning", status: 200
         end
         return true
       elsif @section == :frontend && !@dataset.has_frontend?
@@ -838,7 +844,6 @@ module Logjam
       if selected_date.to_s =~ /\A(\d\d\d\d)-(\d\d)-(\d\d)\z/ || params[:page] == '::'
         new_params = FilteredDataset.clean_url_params({
           :auto_refresh => params[:auto_refresh] == "1" ? "1" : nil,
-          :default_app => @default_app, :default_env => @default_env,
           :controller => params[:controller], :action => params[:action],
           :year => $1, :month => $2, :day => $3, :interval => params[:interval],
           :start_minute => params[:start_minute], :end_minute => params[:end_minute],
@@ -865,12 +870,20 @@ module Logjam
 
     def verify_date
       get_date
+      unless database_info.valid?
+        @warning = "Could not connect to database server! Please try again later."
+        respond_to do |format|
+          format.html { render "warning", :status => 500 }
+          format.json { render :json => {:error => 'no database connection'}, :status => 500 }
+        end
+        return
+      end
       today = Date.today
       if @date > today || @date < today - Logjam.database_cleaning_threshold
-        msg = "Invalid date"
+        @warning = "No data found for application «#{@app}» in environment «#{@env}» on #{@date.to_s(:long_ordinal)}."
         respond_to do |format|
-          format.html { render :plain => msg, :status => 404 }
-          format.json { render :json => {:error => msg}, :status => 404 }
+          format.html { render "warning", :status => 404 }
+          format.json { render :json => {:error => @warning}, :status => 404 }
         end
       end
     end
@@ -878,20 +891,31 @@ module Logjam
     def verify_app_env
       get_app_env
       unless @apps.include?(@app)
-        msg = "Application '#{@app}' doesn't exist."
+        @warning = "Application «#{@app}» is not known to exist."
+        @app = @default_app
+        params[:app] = @app
         respond_to do |format|
-          format.html { render :plain => msg, :status => 404 }
-          format.json { render :json => {:error => msg}, :status => 404 }
+          format.html { render "warning", :status => 404 }
+          format.json { render :json => {:error => @warning}, :status => 404 }
         end
         return
       end
       unless @envs.include?(@env)
-        msg = "Environment '#{@env}' doesn't exist for Application '#{@app}'."
+        @warning = "Environment «#{@env}» doesn't exist for application «#{@app}»."
+        @env = @default_env
+        params[:env] = @env
         respond_to do |format|
-          format.html { render :plain => msg, :status => 404 }
-          format.json { render :json => {:error => msg}, :status => 404 }
+          format.html { render "warning", :status => 404 }
+          format.json { render :json => {:error => @warning}, :status => 404 }
         end
         return
+      end
+      unless @stream
+        @warning = "No data found for application «#{@app}» in environment «#{@env}» on #{@date.to_s(:long_ordinal)}."
+        respond_to do |format|
+          format.html { render "warning", :status => 404 }
+          format.json { render :json => {:error => @warning}, :status => 404 }
+        end
       end
     end
 
