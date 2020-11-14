@@ -33,7 +33,6 @@ module Logjam
         end
       end
       @databases.compact!
-      @databases.sort!
       @all_envs = envs.to_a.sort.reverse
     end
 
