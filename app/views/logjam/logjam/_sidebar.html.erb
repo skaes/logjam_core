@@ -103,7 +103,7 @@
       </ul>
 
       <ul class="logjam-menu separator">
-        <% dropdown_klass = @dataset && @dataset.has_distribution_plot? ? "dropdown enabled" : "dropdown disabled" %>
+        <% dropdown_klass = @dataset.present? ? "dropdown enabled" : "dropdown disabled" %>
         <li class="<%= dropdown_klass %>"><a <%= raw html_attributes_for_resource_type(:time) %>><i class="fa fa-clock-o"></i> Backend Time</a>
           <ul>
             <% collected_time_resources.reverse.each do |r| %>
