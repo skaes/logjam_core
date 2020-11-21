@@ -496,7 +496,23 @@ module Logjam
 
   def ensure_known_database(dbname)
     connection = connection_for(dbname)
-    meta_collection(connection).find(:name => 'databases').update_one({'$addToSet' => {:value => dbname}}, :upsert => true)
+    mc = meta_collection(connection)
+    mc.find(:name => 'databases').update_one({'$addToSet' => {:value => dbname}}, :upsert => true)
+    app, env, date = extract_db_params(dbname)
+    if app && env && date
+      key = "value.#{app}-#{env}"
+      mc.find(:name => 'streams').update_one({'$addToSet' => {key => date}}, :upsert => true)
+    end
+  end
+
+  def stream_info(databases)
+    hash = Hash.new{|h,k| h[k] = []}
+    databases.each_with_object(hash) do |db_name, info|
+      app, env, date = extract_db_params(db_name)
+      next unless app && env && date
+      info["#{app}-#{env}"] << date
+    end
+    hash.each_value{|dates| dates.sort!}
   end
 
   def update_known_databases
@@ -506,8 +522,10 @@ module Logjam
     connections.each do |_,connection|
       names = connection.database_names
       known_databases = grep(names).reject{|name| db_date(name) > today}.sort
-      meta_collection(connection).indexes.create_one(name: 1)
-      meta_collection(connection).find(:name => 'databases').update_one({'$set' => {:value => known_databases}}, :upsert => true)
+      mc = meta_collection(connection)
+      mc.indexes.create_one(name: 1)
+      mc.find(:name => 'databases').update_one({'$set' => {:value => known_databases}}, :upsert => true)
+      mc.find(:name => 'streams').update_one({'$set' => {:value => stream_info(databases)}}, :upsert => true)
       all_known_databases.concat(known_databases)
     end
     if all_known_databases.empty?
