@@ -38,7 +38,7 @@ module Logjam
     private
 
     def get_data(page, resources)
-      databases = Logjam.grep(Logjam.databases, :app => @app, :env => @env)
+      databases = DatabaseManager.get_cached_databases(:app => @app, :env => @env)
       data = []
       today = Date.today
       databases.each do |db_name|

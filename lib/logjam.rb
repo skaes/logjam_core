@@ -249,6 +249,26 @@ module Logjam
     tag.blank? ? @@streams : @@streams.slice(*@@streams.values.select{|v| v.tag == tag}.map(&:name))
   end
 
+  def apps
+    @@apps ||= production_streams.values.map(&:app).sort.uniq
+  end
+
+  def envs
+    @@envs ||= production_streams.values.map(&:env).sort.uniq.reverse
+  end
+
+  def fallback_database
+    db_name(Date.today, fallback_app, fallback_env)
+  end
+
+  def fallback_app
+    apps.first
+  end
+
+  def fallback_env
+    envs.first
+  end
+
   def production_streams
     streams.reject{|name,stream| stream.is_a?(LiveStream) || stream.env == "development"}
   end
@@ -399,6 +419,10 @@ module Logjam
     connection.use(name).database
   end
 
+  def db_name_with_iso_date(date, app, env)
+    "logjam-#{app}-#{env}-#{date}"
+  end
+
   def db_name(date, app, env)
     "logjam-#{app}-#{env}-#{sanitize_date(date)}"
   end
@@ -486,6 +510,7 @@ module Logjam
   end
 
   def update_known_databases
+    DatabaseManager.update_known_databases
     all_known_databases = []
     today = Date.today
     connections.each do |_,connection|

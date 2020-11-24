@@ -10,6 +10,8 @@ module Logjam
     before_action :print_params if Rails.env=="development"
     after_action :allow_cross_domain_ajax
 
+    rescue_from Mongo::Error::NoServerAvailable, :with => :render_no_connection
+
     def auto_complete_for_controller_action_page
       respond_to do |format|
         format.json do
@@ -102,7 +104,7 @@ module Logjam
     def leaders
       redirect_on_empty_dataset and return
       resources = %w(apdex papdex xapdex severity exceptions total_time)
-      databases = Logjam.grep(Logjam.databases, :env => @env, :date => @date)
+      databases = DatabaseManager.get_cached_databases(:env => @env, :date => @date)
       @applications = []
 
       databases.each do |db_name|
@@ -526,7 +528,7 @@ module Logjam
       filter_regexp = /#{filter}/i unless filter.blank?
       transform = get_relationship_key(group)
       data = Hash.new(0)
-      databases = Logjam.grep(Logjam.databases, :env => @env, :date => @date)
+      databases = DatabaseManager.get_cached_databases(:env => @env, :date => @date)
       databases.each do |db_name|
         begin
           stream = Logjam.stream_for(db_name)
@@ -712,17 +714,20 @@ module Logjam
 
     private
 
-    def database_info
-      @database_info ||= Logjam::DatabaseInfo.new(date_from_params)
-    end
-
-    def default_date
-      (database_info.days(params[:app], params[:env]).first || Date.today).to_date
-    end
-
     def get_app_env
-      @apps ||= database_info.apps
-      @default_app ||= database_info.default_app
+      @apps ||= Logjam.apps
+      @envs ||= Logjam.envs
+      @default_db ||=
+        begin
+          if default_db = DatabaseManager.default_database
+            @default_app, @default_env, default_date = Logjam.extract_db_params(default_db)
+            @default_date = Date.parse(default_date) rescue Date.today
+          else
+            @default_app, @default_env, @default_date = @apps.first, @envs.first, Date.today
+            default_db = Logjam.db_name(@default_date, @default_app, @default_env)
+          end
+          default_db
+        end
       last_app = session[:last_app]
       if last_app && @apps.include?(last_app) && !params[:app]
         @app = params[:app] = last_app
@@ -730,11 +735,9 @@ module Logjam
         @app ||= (params[:app] || @default_app)
       end
       session[:last_app] = @app
-      @default_env ||= database_info.default_env(@app)
       @env ||= (params[:env] ||= @default_env)
-      @envs ||= database_info.all_envs
-      @only_one_app = database_info.only_one_app?
-      @only_one_env = database_info.only_one_env?
+      @only_one_app = @apps.size == 1
+      @only_one_env = @envs.size == 1
       @stream = Logjam.streams["#{@app}-#{@env}"]
     end
 
@@ -745,8 +748,8 @@ module Logjam
     def get_date
       get_app_env
       @date = date_from_params
-      @date ||= default_date
-      @days = database_info.days(@app, @env)
+      @date ||= @default_date
+      @days = DatabaseManager.get_cached_dates(:app => @app, :env => @env)
     end
 
     def permit_params
@@ -756,7 +759,6 @@ module Logjam
 
     def prepare_params
       get_date
-      return false unless database_info.valid?
       begin
         @db = Logjam.db(@date, @app, @env)
       rescue
@@ -792,8 +794,8 @@ module Logjam
 
       @plot_kind = Resource.resource_type(params[:resource])
       @attributes = Resource.resources_for_type(@plot_kind)
-      @collected_resources = Totals.new(@db).collected_resources
       @page = params[:page].to_s
+      @collected_resources = Totals.new(@db).collected_resources
     end
 
     def dataset_from_params(strip_namespace = false)
@@ -822,6 +824,7 @@ module Logjam
           new_params = FilteredDataset.clean_url_params(params.merge(:page => ''), params)
           redirect_to new_params.to_hash
         else
+          @collected_resources = []
           @warning = "No data found for application «#{@app}» in environment «#{@env}» on #{@date.to_s(:long_ordinal)}."
           render "warning", status: 200
         end
@@ -838,7 +841,7 @@ module Logjam
       return if request.format.to_s =~ /json/
       get_app_env
       py, pm, pd = params.values_at(:year, :month, :day).map(&:to_i)
-      dd = default_date
+      dd = @default_date
       selected_date = dd.to_s(:db) if params[:auto_refresh] == "1" && (dd.year != py || dd.month != pm || dd.day != pd)
       selected_date ||= dd.to_s(:db) unless (params[:year] && params[:month] && params[:day])
       if selected_date.to_s =~ /\A(\d\d\d\d)-(\d\d)-(\d\d)\z/ || params[:page] == '::'
@@ -868,16 +871,21 @@ module Logjam
       # p request.format
     end
 
+    def render_no_connection
+      @warning = "Could not connect to database server! Please try again later."
+      @app ||= params[:app] || Logjam.fallback_app
+      @env ||= params[:env] || Logjam.fallback_env
+      @date ||= Date.today
+      @days ||= [ @date ]
+      @dataset = nil
+      respond_to do |format|
+        format.html { render "warning", :status => 500 }
+        format.json { render :json => {:error => 'no database connection'}, :status => 500 }
+      end
+    end
+
     def verify_date
       get_date
-      unless database_info.valid?
-        @warning = "Could not connect to database server! Please try again later."
-        respond_to do |format|
-          format.html { render "warning", :status => 500 }
-          format.json { render :json => {:error => 'no database connection'}, :status => 500 }
-        end
-        return
-      end
       today = Date.today
       if @date > today || @date < today - Logjam.database_cleaning_threshold
         @warning = "No data found for application «#{@app}» in environment «#{@env}» on #{@date.to_s(:long_ordinal)}."

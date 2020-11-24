@@ -65,7 +65,7 @@ namespace :logjam do
 
     desc "list known databases"
     task :list_known_databases => :environment do
-      puts Logjam.databases_sorted_by_date
+      puts Logjam::DatabaseManager.databases_sorted_by_date
     end
 
     desc "list empty databases"

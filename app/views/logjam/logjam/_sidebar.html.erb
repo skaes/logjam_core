@@ -21,7 +21,7 @@
 
       <ul class="logjam-menu" id="backend-menu">
 
-        <% klass = params[:section] == "backend" ? "enabled" : "disabled" %>
+        <% klass = params[:section] == "backend" && @dataset.present? && !@dataset.empty? ? "enabled" : "disabled" %>
         <% active1, active2 = params[:grouping] == "request" ? %w(active inactive) : %w(inactive active) %>
         <li class="<%= klass %>">
           <%= clean_link_to(fa_icon("tachometer", :title => "Actions") + " Actions", {:id => nil, :action => 'index', :grouping => "page"}, :class => active2) %>
@@ -32,7 +32,7 @@
       </ul>
 
       <ul class="logjam-menu separator">
-        <% klass = (@dataset && @dataset.live_stream?) ? "enabled" : "disabled" %>
+        <% klass = (@dataset && !@dataset.empty? && @dataset.live_stream?) ? "enabled" : "disabled"; puts @dataset.inspect %>
         <li class="<%= klass %>">
           <%= link_to(fa_icon("play-circle", :title => "view live stream") + " Livestream", action: "live_stream") %>
         </li>
@@ -41,7 +41,7 @@
           <%= clean_link_to(fa_icon("history", :title => "Performace History") + " History", action: "history") %>
         </li>
 
-        <% klass = @dataset && @dataset.has_distribution_plot? ? "enabled" : "disabled" %>
+        <% klass = @dataset && !@dataset.empty? && @dataset.has_distribution_plot? ? "enabled" : "disabled" %>
         <% resource = @dataset ? @dataset.resource : Logjam::FilteredDataset::DEFAULTS[:resource] %>
         <li class="<%= klass %>">
           <%= clean_link_to(:page => without_module(@page), :action => distribution_kind(resource),
@@ -104,15 +104,17 @@
 
       <ul class="logjam-menu separator">
         <% dropdown_klass = @dataset.present? ? "dropdown enabled" : "dropdown disabled" %>
-        <li class="<%= dropdown_klass %>"><a <%= raw html_attributes_for_resource_type(:time) %>><i class="fa fa-clock-o"></i> Backend Time</a>
-          <ul>
-            <% collected_time_resources.reverse.each do |r| %>
-              <li <% if params[:resource] == r %>class="active"<% end %>>
-                <a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a>
-              </li>
-            <% end %>
-          </ul>
-        </li>
+        <% unless collected_frontend_time_resources.empty? %>
+          <li class="<%= dropdown_klass %>"><a <%= raw html_attributes_for_resource_type(:time) %>><i class="fa fa-clock-o"></i> Backend Time</a>
+            <ul>
+              <% collected_time_resources.reverse.each do |r| %>
+                <li <% if params[:resource] == r %>class="active"<% end %>>
+                  <a onclick="view_resource('<%=r%>')"><%= hrn(r) %></a>
+                </li>
+              <% end %>
+            </ul>
+          </li>
+        <% end %>
 
         <% unless collected_frontend_time_resources.empty? %>
           <li class="<%= dropdown_klass %>"><a <%= raw html_attributes_for_resource_type(:frontend) %>><i class="fa fa-clock-o"></i> Frontend Time</a>
@@ -151,7 +153,7 @@
         <% end %>
 
         <% unless collected_heap_resources.empty? %>
-          <li class="dropdown"><a <%= raw html_attributes_for_resource_type(:heap) %>><i class="fa fa-bars"></i> Heap</a>
+          <li class="<%= dropdown_klass %>"><a <%= raw html_attributes_for_resource_type(:heap) %>><i class="fa fa-bars"></i> Heap</a>
             <ul>
               <% collected_heap_resources.reverse.each do |r| %>
                 <li <% if params[:resource] == r %>class="active"<% end %>>
