@@ -104,7 +104,7 @@
 
       <ul class="logjam-menu separator">
         <% dropdown_klass = @dataset.present? ? "dropdown enabled" : "dropdown disabled" %>
-        <% unless collected_frontend_time_resources.empty? %>
+        <% unless collected_time_resources.empty? %>
           <li class="<%= dropdown_klass %>"><a <%= raw html_attributes_for_resource_type(:time) %>><i class="fa fa-clock-o"></i> Backend Time</a>
             <ul>
               <% collected_time_resources.reverse.each do |r| %>
