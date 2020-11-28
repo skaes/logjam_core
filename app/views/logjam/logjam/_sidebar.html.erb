@@ -32,7 +32,7 @@
       </ul>
 
       <ul class="logjam-menu separator">
-        <% klass = (@dataset && !@dataset.empty? && @dataset.live_stream?) ? "enabled" : "disabled"; puts @dataset.inspect %>
+        <% klass = (@dataset && !@dataset.empty? && @dataset.live_stream?) ? "enabled" : "disabled" %>
         <li class="<%= klass %>">
           <%= link_to(fa_icon("play-circle", :title => "view live stream") + " Livestream", action: "live_stream") %>
         </li>
