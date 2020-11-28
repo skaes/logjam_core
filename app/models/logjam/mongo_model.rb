@@ -142,26 +142,26 @@ module Logjam
 
     def build_query(name, selector, opts = {})
       query = @collection.find(selector)
-      log = "#{name}(#{selector.to_json})"
+      log = "#{name}(#{Oj.dump(selector)})"
 
       if projection = opts[:projection]
         query = query.projection(projection)
-        log << ".projection(#{projection.to_json})"
+        log << ".projection(#{Oj.dump(projection)})"
       end
 
       if sort = opts[:sort]
         query = query.sort(sort)
-        log << ".sort(#{sort.to_json})"
+        log << ".sort(#{Oj.dump(sort)})"
       end
 
       if limit = opts[:limit]
         query = query.limit(limit)
-        log << ".limit(#{limit.to_json})"
+        log << ".limit(#{Oj.dump(limit)})"
       end
 
       if skip = opts[:skip]
         query = query.skip(skip)
-        log << ".skip(#{skip.to_json})"
+        log << ".skip(#{Oj.dump(skip)})"
       end
 
       [query, log]
