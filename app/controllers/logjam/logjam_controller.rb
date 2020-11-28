@@ -104,7 +104,7 @@ module Logjam
     def leaders
       redirect_on_empty_dataset and return
       resources = %w(apdex papdex xapdex severity exceptions total_time)
-      databases = DatabaseManager.get_cached_databases(:env => @env, :date => @date)
+      databases = DatabaseManager.get_cached_databases(:env => @env, :date => @date.to_s(:db))
       @applications = []
 
       databases.each do |db_name|
@@ -528,7 +528,7 @@ module Logjam
       filter_regexp = /#{filter}/i unless filter.blank?
       transform = get_relationship_key(group)
       data = Hash.new(0)
-      databases = DatabaseManager.get_cached_databases(:env => @env, :date => @date)
+      databases = DatabaseManager.get_cached_databases(:env => @env, :date => @date.to_s(:db))
       databases.each do |db_name|
         begin
           stream = Logjam.stream_for(db_name)
