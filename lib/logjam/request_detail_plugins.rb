@@ -24,6 +24,7 @@ module Logjam
       if severity = request["severity"]
         locals["severity"] = format_severity(severity)
       end
+
       if caller_id = request["caller_id"]
         locals["caller_id"] = sometimes_link_to_request(caller_id)
       end
