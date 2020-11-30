@@ -310,7 +310,7 @@ module Logjam
       oid = parts.pop
       env = parts.pop
       app = parts.join('-')
-      if @database_info.db_exists?(@date, app, env) && Requests.exists?(@date, app, env, oid)
+      if Requests.exists?(@date, app, env, oid)
         params = { :app => app, :env => env, :action => "show", :id => oid }
         clean_link_to(request_id, params, :"data-tooltip" => "show request")
       else
