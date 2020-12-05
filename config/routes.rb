@@ -66,7 +66,7 @@ Rails.application.routes.draw do
     get "/totals_overview" => :totals_overview
     get "/user_agents" => :user_agents
 
-    get "/" => :index, :page => "::"
+    get "/" => :index
   end
 
   controller "logjam/admin" do
