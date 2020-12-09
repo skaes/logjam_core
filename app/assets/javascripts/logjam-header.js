@@ -134,7 +134,7 @@ function initialize_header() {
   });*/
 
   $("#namespace-suggest").select2({
-    width: 300,
+    width: 'fit-content',
     minimumInputLength: 0,
     ajax: {
       url: action_auto_complete_url,
