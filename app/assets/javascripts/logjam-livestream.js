@@ -425,8 +425,10 @@ function logjam_live_stream_chart(params){
   var timeoutID = null;
 
   function reconnect(){
+    if (document.hidden)
+      return;
     var button = $('#stream-toggle');
-    if ( button.val() == "not-paused") {
+    if (button.val() == "not-paused") {
       change_connection_status("connecting");
       if (timeoutID != null)
         window.clearTimeout(timeoutID);
@@ -470,11 +472,14 @@ function logjam_live_stream_chart(params){
 
   /* disconnect from the data stream */
   function disconnect_chart() {
-    ws.close();
-    ws = null;
+    if (ws != null) {
+      ws.close();
+      ws = null;
+    }
+    change_connection_status("disconnected");
   }
 
-  /* toggle stream conection */
+  /* toggle stream conenction */
   function toggle_stream(button) {
     button.toggleClass('active');
     if (button.val() == "paused") {
@@ -510,6 +515,18 @@ function logjam_live_stream_chart(params){
     }
   }
 
+  /* pause the livestream if tab is not visible */
+  /* avoids browser becoming unresponsive due to throttled JS when hidden */
+  function pause_on_hide(button){
+    if (button.val() == "paused")
+      return;
+    if (document.hidden) {
+        disconnect_chart();
+    } else {
+        connect_chart();
+    }
+  }
+
   /* automatically connect to the data stream when the ducoment is ready */
   $(function(){
     initialize_filter();
@@ -517,6 +534,7 @@ function logjam_live_stream_chart(params){
     $("#stream-toggle").on("click", function(){ toggle_stream($(this)); });
     $("#warnin-toggle").on("click", function(){ toggle_warnings($(this)); });
     $("#smooth-toggle").on("click", function(){ toggle_smoothness($(this)) ;});
+    $(document).on("visibilitychange", function(){ pause_on_hide($("#stream-toggle")); });
     connect_chart();
   });
 }
