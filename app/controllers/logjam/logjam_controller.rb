@@ -15,14 +15,14 @@ module Logjam
     def auto_complete_for_controller_action_page
       respond_to do |format|
         format.json do
-          params[:page] = params.delete(:query)
+          params[:page] = params.delete(:query).to_s
           prepare_params
           show_modules = [":", "::"].include?(@page)
           re = show_modules ? /^::/ : /#{@page}/i
           pages = Totals.new(@db).page_names.select {|name| name =~ re && name != 'all_pages'}
           pages.collect!{|p| p.gsub(/^::/,'')}
           completions = pages.sort  # [0..34]
-          render :json => {query: params[:page], suggestions: completions}
+          render :json => {query: params[:page], items: completions}
         end
       end
     end
@@ -31,7 +31,7 @@ module Logjam
       respond_to do |format|
         format.json do
           suggestions = @apps.select{|a| a.start_with?(params[:query]) }
-          render :json => {query: params[:query], suggestions: suggestions }
+          render :json => {query: params[:query], items: suggestions }
         end
       end
     end

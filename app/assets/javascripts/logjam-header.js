@@ -134,20 +134,23 @@ function initialize_header() {
   });*/
 
   $("#namespace-suggest").select2({
-    width: 300,
+    width: '300px',
+    theme: 'classic',
+    placeholder: 'by namespace or action',
+    selectOnClose: false,
     minimumInputLength: 0,
     ajax: {
       url: action_auto_complete_url,
       dataType: 'json',
-      data: function (term, page) {
-        return { query: term };
+      data: function (params) {
+        return { query: params.term };
       },
-      results: function (data, page) {
+      processResults: function (data) {
         var array = [];
         /* add the current term to the list */
-        if(data.query.length > 0) { array.push({id: 0, text: data.query}) }
+        if(data.query.length > 0) { array.push({id: 0, text: data.query}); }
 
-        data.suggestions.forEach(function(item, index){
+        data.items.forEach(function(item, index){
           array.push({id: index+1, text: item});
         });
         return {results: array};
@@ -155,28 +158,35 @@ function initialize_header() {
     }
   });
 
-  $("#namespace-suggest").on("change", function(value){
-    $('#page').val( value.added.text );
+  $("#namespace-suggest").on("select2:select", function(e){
+    $('#page').val(e.params.data.text);
     submit_filter_form();
   });
 
-  $("#namespace-suggest").on("blur", function(value){
+  $("#namespace-suggest").on("change", function(e){
+    console.log(e);
+  });
+
+  $("#namespace-suggest").on("blur", function(e){
+    console.log(e);
     $("#namespace-suggest").select2('close');
     submit_filter_form();
   });
 
   $("#application-suggest").select2({
-    width: 150,
+    theme: 'classic',
+    width: '150px',
+    selectOnClose: false,
     minimumInputLength: 0
   });
 
-  $("#application-suggest").on("change", function(value){
-      $('#app').val( value.added.text );
+  $("#application-suggest").on("select2:select", function(e){
+      $('#app').val(e.params.data.text);
       submit_filter_form();
   });
 
-  $("#application-suggest").on("blur", function(value){
-    // console.log('blur');
+  $("#application-suggest").on("blur", function(e){
+    console.log(e);
     $("#application-suggest").select2('close');
     submit_filter_form();
   });

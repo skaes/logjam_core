@@ -15,7 +15,7 @@ var parameters = <%= raw Oj.dump(params.to_hash) %>,
   <h1 class="logo">LOGJAM</h1>
   <% unless @only_one_app %>
     <div class="application-chooser filter-item">
-        <select id="application-suggest">
+        <select tabindex="1" id="application-suggest">
           <% @apps.each do |app| %>
             <option value="<%= app %>" <% if params[:app] == app %>selected<% end %>><%= app %></option>
           <% end %>
@@ -33,15 +33,12 @@ var parameters = <%= raw Oj.dump(params.to_hash) %>,
   </div>
 
   <div class="namespace-chooser filter-item">
-    <%
-      unless params[:page].blank?
-        value = params[:page]
-      else
-        value = 'by namespace or action'
-      end
-    %>
-    <input tabindex="3" id="namespace-suggest" placeholder="<%= value %>" name="page" type="text">
-    <% if value != 'by namespace or action' %>
+    <select tabindex="3" id="namespace-suggest" name="page">
+      <% if (value = params[:page]).present? %>
+      <option value="<%= value %>"><%= value %></option>
+      <% end %>
+    </select>
+    <% if value.present? %>
       <i class="fa fa-times"></i>
     <% end %>
   </div>
@@ -73,14 +70,6 @@ var parameters = <%= raw Oj.dump(params.to_hash) %>,
     $('.namespace-chooser .fa.fa-times').on('click', function(){
       $('#page').val('');
       submit_filter_form();
-    })
-
-    /* fix for: https://github.com/skaes/logjam_core/issues/22 */
-    $('#namespace-suggest').on('keyup blur', function(event){
-      if((event.keyCode == 13 || event.type == 'blur') && event.target.value.length > 0) {
-        $('#page').val(event.target.value);
-        submit_filter_form();
-      }
     })
   });
 </script>
