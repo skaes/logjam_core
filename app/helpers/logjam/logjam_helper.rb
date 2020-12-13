@@ -228,22 +228,22 @@ module Logjam
 
     def sometimes_link_grouping_result(result, grouping, params)
       value = result.send(grouping)
+      _scope, action = value.split('#')
+      if value.length > 40
+        if action.to_s.length > 25
+          tooltip = value.gsub(/\A(.*)#/, "\u2026#")
+        else
+          tooltip = value
+        end
+      end
       ppage = params[:page]
       if grouping.to_sym == :page && ppage !~ /\AOthers/ && (ppage != @page || ppage =~ /^::/)
         params = params.merge(grouping => value)
         params[:page] = without_module(ppage) # unless @page == "::"
         params[:action] = "index"
-        _scope, action = value.split('#')
-        if value.length > 40
-          if action.to_s.length > 25
-            tooltip = value.gsub(/\A(.*)#/, "\u2026#")
-          else
-            tooltip = value
-          end
-        end
         clean_link_to(value, params, :title => tooltip)
       else
-        content_tag(:span, value, :class => 'dead-link')
+        content_tag(:span, value, :class => 'dead-link', :title => tooltip)
       end
     end
 
