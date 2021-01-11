@@ -240,7 +240,7 @@ module Logjam
                               end
             @resources = %w(severity)
             qopts = { :severity => severity }
-            eselector = ->(minutes) { minutes.severity_above(severity.to_s) }
+            eselector = ->(minutes) { minutes.select_severity_equals(severity.to_s) }
           end
           totals = Totals.new(@db, @resources, @page.blank? ? 'all_pages' : @page)
           minutes = Minutes.new(@db, @resources, @page, totals.page_names, 2)

@@ -75,10 +75,10 @@ module Logjam
       @severity ||= extract_sub_hash('severity')
     end
 
-    def severity_above(sev)
-      i = sev.to_i
-      severity.each_with_object(Hash.new(0)) do |(k,h),s|
-        h.each{|m,c| s[m] += c} if k.to_i >= i
+    def select_severity_equals(selected_severity)
+      selected_severity = selected_severity.to_i
+      severity.each_with_object(Hash.new(0)) do |(sev,minutes),filtered|
+        minutes.each{ |m,c| filtered[m] += c } if sev.to_i == selected_severity
       end
     end
 
