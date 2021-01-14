@@ -233,10 +233,10 @@ module Logjam
           else
             severity, @title, @error_count =
                               case params[:error_type]
-                              when "logged_warning" then [2, "Logged Warnings", @dataset.logged_error_count(2)]
-                              when "logged_error"; then [3, "Logged Errors", @dataset.logged_error_count_above(3)]
+                              when "logged_warning" then [2, "Logged Warnings and above", @dataset.logged_error_count(2)]
+                              when "logged_error"; then [3, "Logged Errors and above", @dataset.logged_error_count_above(3)]
                               when "logged_fatal"; then [4, "Logged Fatal Errors", @dataset.logged_error_count_above(4)]
-                              else [3, "Logged Errors", @dataset.logged_error_count_above(3)]
+                              else [3, "Logged Errors and above", @dataset.logged_error_count_above(3)]
                               end
             @resources = %w(severity)
             qopts = { :severity => severity }
