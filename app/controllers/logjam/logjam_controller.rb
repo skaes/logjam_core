@@ -188,7 +188,8 @@ module Logjam
       redirect_on_empty_dataset and return
       logjam_request_id = [@app, @env, params[:id]].join('-')
       @js_exceptions = Logjam::JsExceptions.new(@db).find_by_request(logjam_request_id)
-      @request = Requests.new(@db).find(params[:id])
+      @request_id = params[:id]
+      @request = Requests.new(@db).find(@request_id)
       respond_to do |format|
         format.html do
           unless @request || @js_exceptions.present?

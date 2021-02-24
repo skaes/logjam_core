@@ -10,7 +10,7 @@
   <% if params[:auto_refresh] == "1" %>
   <meta http-equiv="refresh" content="60">
   <% end %>
-  <title>Logjam</title>
+  <title><%= page_title %></title>
   <%= stylesheet_link_tag "application" %>
   <%= javascript_include_tag "application" %>
 </head>

@@ -20,6 +20,17 @@ module Logjam
       tag(:meta, :name => "logjam-timings-collector", :content => collector_url)
     end
 
+    def page_title
+      title = "Logjam"
+      title += ": #{@app}-#{@env}" if @app.present? && @env.present?
+      if @page.present?
+        namespace = @page.split("::").first
+        title += ": #{namespace}" if namespace.present?
+      end
+      title += ": #{@request_id}" if defined?(@request_id)
+      title
+    end
+
     def frontend?
       @section == :frontend
     end
