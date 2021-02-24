@@ -22,12 +22,12 @@ module Logjam
 
     def page_title
       title = "Logjam"
-      title += ": #{@app}-#{@env}" if @app.present? && @env.present?
+      title += " | #{@app}-#{@env}" if @app.present? && @env.present?
       if @page.present?
         namespace = @page.split("::").first
-        title += ": #{namespace}" if namespace.present?
+        title += " | #{namespace}" if namespace.present?
       end
-      title += ": #{@request_id}" if defined?(@request_id)
+      title += " | #{@request_id}" if defined?(@request_id)
       title
     end
 
