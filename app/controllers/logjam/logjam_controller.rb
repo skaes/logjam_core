@@ -246,7 +246,7 @@ module Logjam
           minutes = Minutes.new(@db, @resources, @page, totals.page_names, 2)
           @timeline = eselector.call(minutes)
           qopts.merge!(:limit => @page_size, :skip => offset)
-          if (restricted = params.include?(:starte_minute) || params.include?(:end_minute))
+          if (restricted = params.include?(:start_minute) || params.include?(:end_minute))
             qopts[:start_minute] = params[:start_minute].to_i
             qopts[:end_minute] = params[:end_minute].to_i
           end
