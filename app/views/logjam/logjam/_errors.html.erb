@@ -12,7 +12,7 @@
       </td>
     </tr>
     <% n = @dataset.logged_error_count(3) %>
-    <% error_url, error_options = error_link_options(n, :logged_error, :title => "show logged errors") %>
+    <% error_url, error_options = error_link_options(n, :logged_error, :title => "show logged errors (and above)") %>
     <tr class="<%= error_options[:tr_class] %>" data-href="<%= error_url %>" title="<%= error_options[:title] %>">
       <td>errors</td>
       <td class="number <%= error_options[:class] %>">
@@ -20,7 +20,7 @@
       </td>
     </tr>
     <% n = @dataset.logged_error_count(2) %>
-    <% error_url, error_options = error_link_options(n, :logged_warning, :title => "show logged warnings") %>
+    <% error_url, error_options = error_link_options(n, :logged_warning, :title => "show logged warnings (and above)") %>
     <tr class="<%= error_options[:tr_class] %>" data-href="<%= error_url %>" title="<%= error_options[:title] %>">
       <td>warnings</td>
       <td class="number <%= error_options[:class] %>">

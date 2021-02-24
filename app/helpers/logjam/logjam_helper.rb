@@ -390,7 +390,8 @@ module Logjam
         [nil, {}]
       else code.to_s =~ /xx\z/
         params[:above] = code.to_s.sub('xx', '00') unless code == "0xx"
-        [ clean_url_for(params), {:tr_class => "clickable", :class => "error", :title => "show requests with response #{code}"}]
+        title = params[:above] ? "show requests with response above #{code}" : "show requests with response code #{code}"
+        [ clean_url_for(params), {:tr_class => "clickable", :class => "error", :title => title}]
       end
     end
 
