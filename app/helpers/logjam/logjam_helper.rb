@@ -387,7 +387,7 @@ module Logjam
       elsif code.to_s =~ /xx\z/
         params[:above] = code.to_s.sub('xx', '00')
         if force_link
-          clean_link_to(text, params, :class => "green", :"data-tooltip" => "show requests with response above #{params[:above].gsub("000","0")}")
+          clean_link_to(text, params, :class => "green", :"data-tooltip" => "show requests with response #{code}")
         else
           clean_link_to(text, params, :class => "error", :"data-tooltip" => "show requests with response #{code}")
         end

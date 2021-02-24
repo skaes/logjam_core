@@ -96,6 +96,9 @@ module Logjam
       if rc = @options[:response_code]
         if @options[:above]
           query_opts.merge!(:response_code => {'$gte' => rc})
+          if rc < 500
+            query_opts.merge!(:response_code => {'$lt' => 500})
+          end
         else
           query_opts.merge!(:response_code => rc)
         end
@@ -107,11 +110,7 @@ module Logjam
         query_opts.merge!(:soft_exceptions => exs)
       end
       if severity = @options[:severity]
-        if severity.to_i < 3
-          query_opts.merge!(:severity => severity)
-        else
-          query_opts.merge!(:severity => {'$gte' => severity})
-        end
+        query_opts.merge!(:severity => severity)
       end
       if pattern.present? && pattern != "all_pages"
         if page_names.include?(pattern)

@@ -233,10 +233,10 @@ module Logjam
           else
             severity, @title, @error_count =
                               case params[:error_type]
-                              when "logged_warning" then [2, "Logged Warnings and above", @dataset.logged_error_count(2)]
-                              when "logged_error"; then [3, "Logged Errors and above", @dataset.logged_error_count_above(3)]
-                              when "logged_fatal"; then [4, "Logged Fatal Errors", @dataset.logged_error_count_above(4)]
-                              else [3, "Logged Errors and above", @dataset.logged_error_count_above(3)]
+                              when "logged_warning" then [2, "Logged Warnings", @dataset.logged_error_count(2)]
+                              when "logged_error"; then [3, "Logged Errors", @dataset.logged_error_count(3)]
+                              when "logged_fatal"; then [4, "Logged Fatal Errors", @dataset.logged_error_count(4)]
+                              else [3, "Logged Errors", @dataset.logged_error_count(3)]
                               end
             @resources = %w(severity)
             qopts = { :severity => severity }
@@ -307,9 +307,12 @@ module Logjam
             @title = "Requests"
             @error_count = @dataset.stored_requests
             @show_code = false
-          elsif params[:above].present? && @response_code >= 400
+          elsif params[:above].present? && @response_code >= 500
             @title = "Requests with response code above #{@response_code}"
             @error_count = @dataset.response_codes_above(@response_code)
+          elsif params[:above].present? && @response_code >= 400
+            @title = "Requests with response code in the range #{@response_code} to 499"
+            @error_count = @dataset.response_codes_in_range(@response_code..499)
           else
             @title = "Requests with response code #{@response_code}"
             @error_count = @dataset.response_codes[@response_code] || 0
@@ -333,7 +336,7 @@ module Logjam
           else
             @timeline = minutes.response[@response_code.to_s]
           end
-          qopts = { :response_code => @response_code, :limit => @page_size, :skip => params[:offset].to_i, :above => params[:above].present? }
+          qopts = { :response_code => @response_code, :limit => @page_size, :skip => params[:offset].to_i }
           if params.include?(:starte_minute) || params.include?(:end_minute)
             qopts[:start_minute] = params[:start_minute].to_i
             qopts[:end_minute] = params[:end_minute].to_i
