@@ -95,9 +95,10 @@ module Logjam
       end
       if rc = @options[:response_code]
         if @options[:above]
-          query_opts.merge!(:response_code => {'$gte' => rc})
           if rc < 500
-            query_opts.merge!(:response_code => {'$lt' => 500})
+            query_opts.merge!(:response_code => {'$gte' => rc, '$lt' => 500})
+          else
+            query_opts.merge!(:response_code => {'$gte' => rc})
           end
         else
           query_opts.merge!(:response_code => rc)

@@ -71,6 +71,12 @@ module Logjam
       end
     end
 
+    def response_in_range(range)
+      response.each_with_object(Hash.new(0)) do |(k,h),s|
+        h.each{|m,c| s[m] += c} if range.include?(k.to_i)
+      end
+    end
+
     def severity
       @severity ||= extract_sub_hash('severity')
     end

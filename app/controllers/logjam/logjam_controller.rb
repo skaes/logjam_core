@@ -332,12 +332,14 @@ module Logjam
           resources = %w(response)
           totals = Totals.new(@db, resources, @page.blank? ? 'all_pages' : @page)
           minutes = Minutes.new(@db, resources, @page, totals.page_names, 2)
-          if params[:above].present?
-            @timeline = minutes.response_above(@response_code.to_s)
+          if params[:above].present? && @response_code >= 500
+            @timeline = minutes.response_above(@response_code)
+          elsif params[:above].present? && @response_code >= 400
+            @timeline = minutes.response_in_range(@response_code..499)
           else
-            @timeline = minutes.response[@response_code.to_s]
+            @timeline = minutes.response[@response_code]
           end
-          qopts = { :response_code => @response_code, :limit => @page_size, :skip => params[:offset].to_i }
+          qopts = { :response_code => @response_code, :limit => @page_size, :skip => params[:offset].to_i, :above => params[:above].present? }
           if params.include?(:starte_minute) || params.include?(:end_minute)
             qopts[:start_minute] = params[:start_minute].to_i
             qopts[:end_minute] = params[:end_minute].to_i
