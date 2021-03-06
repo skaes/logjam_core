@@ -753,6 +753,18 @@ module Logjam
       end.gsub('&&', "\\&&").gsub('||', "\\||")
     end
 
+    def graylog_time_range
+      restricted = params[:start_minute] != FilteredDataset::DEFAULTS[:start_minute] || params[:end_minute] != FilteredDataset::DEFAULTS[:end_minute]
+      if @date.nil? || (@date == Date.today && !restricted)
+        { relative: 300 }
+      else
+        date = @date.in_time_zone(Time.now.zone)
+        start_time = date + params[:start_minute].to_i.minutes
+        end_time = date + params[:end_minute].to_i.minutes
+        { rangetype: :absolute, from: start_time.iso8601, to: end_time.iso8601 }
+      end
+    end
+
     def graylog_uri(app, env, page = nil, options = {})
       app = graylog_escape("#{app}-#{env}")
       page = graylog_escape(page.to_s)
@@ -764,7 +776,7 @@ module Logjam
         query << " AND message:#{page}"
       end
       uri = URI.parse(Logjam.graylog_base_urls[env.to_sym])
-      uri.query = {fields: fields, q:  query, relative: 3600}.to_query
+      uri.query = {fields: fields, q:  query}.merge(graylog_time_range).to_query
       uri.to_s
     end
 
