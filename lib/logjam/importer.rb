@@ -9,7 +9,6 @@ module Logjam
       generate_frontend
       generate_backend
       generate_metrics
-      generate_statsd
       config
     end
 
@@ -71,13 +70,6 @@ module Logjam
       Resource.resources_for_type(t.to_sym).sort.each do |r|
         indented(2, r)
       end
-    end
-
-    def generate_statsd
-      return unless Logjam.statsd_endpoint
-      indented(0, "statsd")
-      indented(1, "endpoint = \"%s\"" % Logjam.statsd_endpoint)
-      indented(1, "namespace = \"%s\"" % Logjam.statsd_namespace)
     end
 
     def indented(level, s)

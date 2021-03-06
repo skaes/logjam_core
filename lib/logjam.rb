@@ -38,25 +38,6 @@ module Logjam
     @@bind_ip == "0.0.0.0" ? "*" : @@bind_ip
   end
 
-  @@statsd_endpoint = nil
-  # either udp://host:port or tcp://host:port
-  def statsd_endpoint=(spec)
-    @@statsd_endpoint = spec
-  end
-
-  def statsd_endpoint
-    @@statsd_endpoint
-  end
-
-  @@statsd_namespace = "logjam"
-  def statsd_namespace=(namespace)
-    @@statsd_namespace = namespace
-  end
-
-  def statsd_namespace
-    @@statsd_namespace
-  end
-
   @@importer_subscriber_threads = 1
   def importer_subscriber_threads
     @@importer_subscriber_threads
