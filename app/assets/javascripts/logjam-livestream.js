@@ -291,6 +291,7 @@ function logjam_live_stream_chart(params){
   function update_errors(errors) {
     var table = $('#recent-errors');
     var list = $('#recent-errors-head');
+    var today = new Date().toISOString().slice(0, 10);
     for (var i = 0, len = errors.length; i < len; ++i) {
       var e = errors[i];
       var severity_value = e["severity"];
@@ -303,7 +304,8 @@ function logjam_live_stream_chart(params){
       }
       var severity = severity_image(severity_value);
       var action = e["action"];
-      var time = e["time"].slice(11,19);
+      var date = e["time"].slice(0,10);
+      var time = date == today ? e["time"].slice(11,19) : e["time"];
       var desc = e["description"].substring(0,80);
       var url = error_url(e["request_id"], e["time"]);
       var new_row = $("<tr class='full_stats'><td>" + severity + "</td><td>" + response_code + "</td><td>" + time + "</td><td>" + action + "</td><td>" + desc + "</td></tr>");
