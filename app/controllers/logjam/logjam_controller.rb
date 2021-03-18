@@ -496,7 +496,8 @@ module Logjam
           end
         end
         format.json do
-          page = @page == 'all_pages' ? '::' : @page
+          all_pages = @page == 'all_pages' || @page.to_s.empty?
+          page = all_pages ? '::' : @page.to_s
           page.sub!(/\A::/,'')
           app = page == '' ? @app : "#{@app}::"
           target = "#{app}#{page}"
