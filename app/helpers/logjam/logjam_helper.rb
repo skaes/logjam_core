@@ -758,7 +758,7 @@ module Logjam
       if @date.nil? || (@date == Date.today && !restricted)
         { relative: 300 }
       else
-        date = @date.in_time_zone(Time.now.zone)
+        date = @date.to_time.localtime
         start_time = date + params[:start_minute].to_i.minutes
         end_time = date + params[:end_minute].to_i.minutes
         { rangetype: :absolute, from: start_time.iso8601, to: end_time.iso8601 }
