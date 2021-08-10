@@ -15,6 +15,9 @@ module Logjam
     end
 
     DEFAULT_REQUEST_DETAILS_PLUGIN = ->(request) do
+      env = request.first
+      request = request.second
+
       fields = request.keys - ::Logjam::Resource.all_resources
 
       fields.reject!{|k| k =~ /(^_id|lines|minute|page|_sq|request_info)$/}
@@ -27,6 +30,10 @@ module Logjam
 
       if caller_id = request["caller_id"]
         locals["caller_id"] = sometimes_link_to_request(caller_id)
+      end
+
+      if trace_id = request["trace_id"]
+        locals["trace_id"] = graylog_trace_id_link(env, request["started_at"], trace_id)
       end
 
       { :title => "Request attributes", :fields => locals }

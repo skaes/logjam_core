@@ -160,7 +160,7 @@
     </div>
 
     <% Logjam::RequestDetailPlugins.all.each do |plugin| %>
-      <%= render "request_details_fieldset", instance_exec(@request, &plugin) %>
+      <%= render "request_details_fieldset", instance_exec([@env, @request], &plugin) %>
     <% end %>
 
     <% unless (lines = @request["lines"]).blank? -%>

@@ -780,6 +780,24 @@ module Logjam
       uri.to_s
     end
 
+    def graylog_time_range_for_given_time(started_at)
+      request_time = Time.parse(started_at)
+      start_time = request_time.advance(hours: -2)
+      end_time = request_time.advance(hours: 2)
+      { rangetype: :absolute, from: start_time.iso8601, to: end_time.iso8601 }
+    end
+
+    def graylog_trace_id_link(env, started_at, trace_id)
+      fields = "source,app,message,code"
+      query = "trace_id:#{trace_id}"
+      graylog_uri = Logjam.graylog_base_urls[env.to_sym]
+      return trace_id unless graylog_uri
+      uri = URI.parse(graylog_uri)
+      time_range = graylog_time_range_for_given_time(started_at)
+      uri.query = {fields: fields, q:  query, }.merge(time_range).to_query
+      link_to(trace_id, uri.to_s)
+    end
+
     def cached_database_storage_size
       Rails.cache.fetch("#{@app}-#{@env}-#{@date}.database_storage_size", :expires_in => 5.minutes) do
         @dataset.database_storage_size
