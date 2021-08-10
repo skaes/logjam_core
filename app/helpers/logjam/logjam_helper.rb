@@ -795,7 +795,7 @@ module Logjam
       uri = URI.parse(graylog_uri)
       time_range = graylog_time_range_for_given_time(started_at)
       uri.query = {fields: fields, q:  query, }.merge(time_range).to_query
-      link_to(trace_id, uri.to_s)
+      link_to(trace_id, uri.to_s, target: "_blank")
     end
 
     def cached_database_storage_size
