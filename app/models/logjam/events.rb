@@ -1,8 +1,6 @@
 module Logjam
   class Events < MongoModel
 
-    include Helpers
-
     def initialize(db)
       super(db, "events")
     end

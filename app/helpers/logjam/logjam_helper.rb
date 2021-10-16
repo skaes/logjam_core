@@ -3,6 +3,10 @@ module Logjam
 
   # Methods added to this helper will be available to all templates in the application.
   module LogjamHelper
+    def extract_minute_from_iso8601(iso_string)
+      60 * iso_string[11..12].to_i + iso_string[14..15].to_i
+    end
+
     def logjam_header_request_id
       if rid = LogjamAgent.request.try(:id)
         tag(:meta, :name => "logjam-request-id", :content => rid)

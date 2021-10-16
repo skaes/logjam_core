@@ -1,8 +1,6 @@
 module Logjam
   class JsExceptions < MongoModel
 
-    include Helpers
-
     def self.request_id_from_exception(exception)
       exception["request_id"] = exception["logjam_request_id"].split('-').last
     end
