@@ -104,7 +104,7 @@ module Logjam
     def leaders
       redirect_on_empty_dataset and return
       resources = %w(apdex papdex xapdex severity exceptions total_time)
-      databases = DatabaseManager.get_cached_databases(:env => @env, :date => @date.to_s(:db))
+      databases = DatabaseManager.get_cached_databases(:env => @env, :date => @date.to_formatted_s(:db))
       @applications = []
 
       databases.each do |db_name|
@@ -535,7 +535,7 @@ module Logjam
       filter_regexp = /#{filter}/i unless filter.blank?
       transform = get_relationship_key(group)
       data = Hash.new(0)
-      databases = DatabaseManager.get_cached_databases(:env => @env, :date => @date.to_s(:db))
+      databases = DatabaseManager.get_cached_databases(:env => @env, :date => @date.to_formatted_s(:db))
       databases.each do |db_name|
         begin
           stream = Logjam.stream_for(db_name)
@@ -832,7 +832,7 @@ module Logjam
           redirect_to new_params.to_hash
         else
           @collected_resources = []
-          @warning = "No data found for application «#{@app}» in environment «#{@env}» on #{@date.to_s(:long_ordinal)}."
+          @warning = "No data found for application «#{@app}» in environment «#{@env}» on #{@date.to_formatted_s(:long_ordinal)}."
           render "warning", status: 200
         end
         return true
@@ -849,8 +849,8 @@ module Logjam
       get_app_env
       py, pm, pd = params.values_at(:year, :month, :day).map(&:to_i)
       dd = @default_date
-      selected_date = dd.to_s(:db) if params[:auto_refresh] == "1" && (dd.year != py || dd.month != pm || dd.day != pd)
-      selected_date ||= dd.to_s(:db) unless (params[:year] && params[:month] && params[:day])
+      selected_date = dd.to_formatted_s(:db) if params[:auto_refresh] == "1" && (dd.year != py || dd.month != pm || dd.day != pd)
+      selected_date ||= dd.to_formatted_s(:db) unless (params[:year] && params[:month] && params[:day])
       if selected_date.to_s =~ /\A(\d\d\d\d)-(\d\d)-(\d\d)\z/ || params[:page] == '::'
         new_params = FilteredDataset.clean_url_params({
           :auto_refresh => params[:auto_refresh] == "1" ? "1" : nil,

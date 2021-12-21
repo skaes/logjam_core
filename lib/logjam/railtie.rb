@@ -9,6 +9,8 @@ module Logjam
       load File.join(Logjam::BaseDir, "lib/logjam/tasks/logjam.rake")
     end
 
+    config.autoload_once_paths << File.join(Logjam::BaseDir, "lib")
+
     # fix a bug in rack (more a brainfuck actually)
     config.to_prepare do
       ::Rack::Utils::HeaderHash.class_eval <<-_EVA_

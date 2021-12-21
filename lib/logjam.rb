@@ -532,7 +532,7 @@ module Logjam
   def sanitize_date(date_str)
     case date_str
     when Time, Date, DateTime
-      date_str = date_str.to_s(:db)
+      date_str = date_str.to_formatted_s(:db)
     end
     raise "invalid date: #{date_str.inspect}" unless date_str =~ /^\d\d\d\d-\d\d-\d\d/
     date_str[0..9]
