@@ -156,12 +156,12 @@
 
 
 th.sortable:hover {
-  background: $white image-url('table_sort_desc.png') top right no-repeat;
+  background: $white url('table_sort_desc.png') top right no-repeat;
   background-size: 16px 12px;
 }
 
 th.sorted {
-  background: $lightest-grey image-url('table_sorted_desc.png') top right no-repeat;
+  background: $lightest-grey url('table_sorted_desc.png') top right no-repeat;
   background-size: 16px 12px;
 }
 
@@ -383,7 +383,7 @@ tr {
   width: 24px;
   height: 24px;
   background-size: 24px 24px;
-  background-image: image-url('spinner24.gif');
+  background-image: url('spinner24.gif');
 }
 
 #livestream-updated-at {

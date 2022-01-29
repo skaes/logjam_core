@@ -44,7 +44,7 @@
 
     &:before {
       content: " ";
-      background-image: image-url('icon.png');
+      background-image: url('icon.png');
       height: 20px;
       width: 20px;
       position: absolute;

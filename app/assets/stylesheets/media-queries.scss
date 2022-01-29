@@ -4,15 +4,15 @@
 // retina display
 @media only screen and (-webkit-min-device-pixel-ratio: 2) {
   th.sorted {
-    background-image: image-url('table_sorted_desc2x.png');
+    background-image: url('table_sorted_desc2x.png');
 
     &:hover {
-      background-image: image-url('table_sort_desc2x.png');
+      background-image: url('table_sort_desc2x.png');
     }
   }
 
   #spinner img {
-    background-image: image-url('spinner48.gif');
+    background-image: url('spinner48.gif');
   }
 }
 

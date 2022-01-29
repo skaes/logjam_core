@@ -1,12 +1,12 @@
 @import 'mixins.scss';
 @import 'constants.scss';
 
-.bgdebug   { @include bgimg; background-image: image-url('debug.svg')   ;  }
-.bginfo    { @include bgimg; background-image: image-url('info.svg')    ;  }
-.bgwarn    { @include bgimg; background-image: image-url('warn.svg')    ;  }
-.bgerror   { @include bgimg; background-image: image-url('error.svg')   ;  }
-.bgfatal   { @include bgimg; background-image: image-url('fatal.svg')   ;  }
-.bgunknown { @include bgimg; background-image: image-url('unknown.svg') ;  }
+.bgdebug   { @include bgimg; background-image: url('debug.svg')   ;  }
+.bginfo    { @include bgimg; background-image: url('info.svg')    ;  }
+.bgwarn    { @include bgimg; background-image: url('warn.svg')    ;  }
+.bgerror   { @include bgimg; background-image: url('error.svg')   ;  }
+.bgfatal   { @include bgimg; background-image: url('fatal.svg')   ;  }
+.bgunknown { @include bgimg; background-image: url('unknown.svg') ;  }
 
 .red { color: red; }
 .info { color: #005ddd; }
