@@ -19,3 +19,6 @@ import "./logjam-call-graph";
 import "./logjam-ready";
 import "./logjam-mobile";
 import "./logjam-keyboard-controls";
+// need to make d3 available for page js
+import * as d3 from "d3";
+window.d3 = d3;
