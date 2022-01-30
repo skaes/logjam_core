@@ -19,3 +19,5 @@ import "./logjam-call-graph";
 import "./logjam-ready";
 import "./logjam-mobile";
 import "./logjam-keyboard-controls";
+import { max } from "d3-array";
+window.d3max = max;

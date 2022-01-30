@@ -233,7 +233,7 @@
     $(document).ready(function(){
        install_logjam_lines_filter();
        var resizable = $('.resource-fields.resize');
-       var max = d3.max(resizable.map(function(){ return $(this).height(); }));
+       var max = d3max(resizable.map(function(){ return $(this).height(); }));
        resizable.each(function(){ $(this).height(max); });
      });
   <% end %>
