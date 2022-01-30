@@ -1,3 +1,5 @@
+import * as d3 from "d3";
+
 function logjam_apdex_chart(params) {
   var data = params.data;
   var max_y = params.max_y;
@@ -101,3 +103,5 @@ function logjam_apdex_chart(params) {
     .text(tooltip_formatter(max_y))
   ;
 }
+
+window.logjam_apdex_chart = logjam_apdex_chart;

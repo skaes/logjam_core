@@ -1,3 +1,5 @@
+import * as d3 from "d3";
+
 function logjam_history_bar_chart(data, divid, metric, params, kind) {
 
   var week_end_colors = params.week_end_colors;
@@ -140,3 +142,5 @@ function logjam_history_bar_chart(data, divid, metric, params, kind) {
     title: function() { return bar_tooltip_text; }
   });
 }
+
+window.logjam_history_bar_chart =  logjam_history_bar_chart;

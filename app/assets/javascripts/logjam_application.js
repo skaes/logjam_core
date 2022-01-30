@@ -1,37 +1,21 @@
-// This is a manifest file that'll be compiled into application.js, which will include all the files
-// listed below.
-//
-// Any JavaScript/Coffee file within this directory, lib/assets/javascripts, vendor/assets/javascripts,
-// or vendor/assets/javascripts of plugins, if any, can be referenced here using a relative path.
-//
-// It's not advisable to add code directly here, but if you do, it'll appear at the bottom of the
-// the compiled file.
-//
-// WARNING: THE FIRST BLANK LINE MARKS THE END OF WHAT'S TO BE PROCESSED, ANY BLANK LINE SHOULD
-// GO AFTER THE REQUIRES BELOW.
-//
-//= require logjam-monitoring
-//= require jquery-2.1.1
-//= require jquery-migrate-1.2.1.min
-//= require jquery.jdpicker.1.1
-//= require jquery.autocomplete
-//= require jquery.tipsy
-//= require select2
-//= require d3.v5.min
-//= require logjam-filter
-//= require uri
-//= require logjam-header
-//= require logjam-echart
-//= require logjam-apdex-chart
-//= require logjam-page-pie
-//= require logjam-simple-pie
-//= require logjam-resource-plot
-//= require logjam-quants-plot
-//= require logjam-heatmap-plot
-//= require logjam-history-bar-chart
-//= require logjam-livestream
-//= require logjam-call-graph
-//= require logjam-ready
-//= require logjam-mobile
-//= require logjam-keyboard-controls
-
+import "./logjam-monitoring";
+import "./jquery";
+import "jquery-migrate";
+import "./jquery.jdpicker.1.1";
+import "./jquery.autocomplete";
+import "./jquery.tipsy";
+import "./select2";
+import "./logjam-filter";
+import "./logjam-header";
+import "./logjam-echart";
+import "./logjam-apdex-chart";
+import "./logjam-simple-pie.js";
+import "./logjam-resource-plot";
+import "./logjam-quants-plot";
+import "./logjam-heatmap-plot";
+import "./logjam-history-bar-chart";
+import "./logjam-livestream";
+import "./logjam-call-graph";
+import "./logjam-ready";
+import "./logjam-mobile";
+import "./logjam-keyboard-controls";

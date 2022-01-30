@@ -1,3 +1,5 @@
+import * as d3 from "d3";
+
 function logjam_resource_plot(params) {
   var events               = params.events,
       data                 = params.data,
@@ -709,3 +711,5 @@ function logjam_resource_plot(params) {
   $('.event').tipsy(event_tip_options);
   $('.eventLine').tipsy(event_tip_options);
 }
+
+window.logjam_resource_plot = logjam_resource_plot;

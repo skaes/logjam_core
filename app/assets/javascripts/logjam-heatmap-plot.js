@@ -1,3 +1,5 @@
+import * as d3 from "d3";
+
 function logjam_heatmap_plot(params) {
   var data      = params.data,
       interval  = params.interval,
@@ -208,3 +210,5 @@ function logjam_heatmap_plot(params) {
     .style("stroke", "none")
     .style("fill", function(d, i ) { return color((maxValue*1.0/legendWidth)*i); });
 }
+
+window.logjam_heatmap_plot = logjam_heatmap_plot;

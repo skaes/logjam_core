@@ -1,3 +1,5 @@
+import * as d3 from "d3";
+
 function logjam_live_stream_chart(params){
   var resources = params.resources;
   var colors = params.colors;
@@ -540,3 +542,5 @@ function logjam_live_stream_chart(params){
     connect_chart();
   });
 }
+
+window.logjam_live_stream_chart = logjam_live_stream_chart;

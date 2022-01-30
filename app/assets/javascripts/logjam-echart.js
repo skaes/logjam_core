@@ -1,3 +1,5 @@
+import * as d3 from "d3";
+
 function logjam_echart(params) {
   var data = params.data,
       events= params.events,
@@ -281,3 +283,6 @@ function adjustWidthOfFirstTwoColumns() {
     num.width(maxNumWidth);
   });
 }
+
+window.logjam_echart = logjam_echart;
+window.adjustWidthOfFirstTwoColumns = adjustWidthOfFirstTwoColumns;

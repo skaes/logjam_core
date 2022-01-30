@@ -1,3 +1,5 @@
+import * as d3 from "d3";
+
 function logjam_quants_plot(params, resource, id, label, scale) {
 
   function get_height() {
@@ -214,3 +216,5 @@ function logjam_quants_plot(params, resource, id, label, scale) {
   });
 
 }
+
+window.logjam_quants_plot = logjam_quants_plot;

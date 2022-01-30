@@ -120,3 +120,5 @@ function install_logjam_lines_filter() {
 
   initialize();
 }
+
+window.install_logjam_lines_filter = install_logjam_lines_filter;

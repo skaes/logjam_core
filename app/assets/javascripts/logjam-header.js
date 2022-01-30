@@ -1,3 +1,5 @@
+var URI = require('urijs');
+
 function submit_filter_form() {
   var selected_date = $("#datepicker").val().replace(/-/g,'/');
   if (selected_date.match(/\d\d\d\d\/\d\d\/\d\d/)) {
@@ -29,6 +31,8 @@ function submit_filter_form() {
   document.location.href = uri.toString();
 }
 
+window.submit_filter_form = submit_filter_form;
+
 function go_home() {
   $("#page").val(parameter_defaults.page);
   $("#grouping").val(parameter_defaults.grouping);
@@ -47,6 +51,8 @@ function go_home() {
   $("#filter-form").submit();
 }
 
+window.go_home = go_home;
+
 function view_selected_pages(){
 
   if (parameters.time_range == "date") {
@@ -58,12 +64,16 @@ function view_selected_pages(){
   $("#filter-form").submit();
 }
 
+window.view_selected_pages = view_selected_pages;
+
 function view_grouping(grouping){
   $("#grouping").val(grouping);
   $("#time-range").val(parameter_defaults.time_range);
   $("#filter-form").attr("action", home_url);
   $("#filter-form").submit();
 }
+
+window.view_grouping = view_grouping;
 
 function view_resource(resource){
   $("#resource").val(resource);
@@ -85,6 +95,8 @@ function view_resource(resource){
   $("#filter-form").submit();
 }
 
+window.view_resource = view_resource;
+
 function view_time_range(time_range){
   $("#time-range").val(time_range);
   if (time_range == "date") {
@@ -95,6 +107,8 @@ function view_time_range(time_range){
   $("#filter-form").submit();
 }
 
+window.view_time_range = view_time_range;
+
 function view_date(date) {
   $("#datepicker").val(date.toJSON().substr(0,10));
   $("#time-range").val("date");
@@ -102,10 +116,14 @@ function view_date(date) {
   submit_filter_form();
 }
 
+window.view_date = view_date;
+
 function sort_by(order){
   $('#grouping-function').val(order);
   $('#filter-form').submit();
 }
+
+window.sort_by = sort_by;
 
 function initialize_header() {
   $("#filter-form").on("submit", function(event) {
@@ -235,3 +253,5 @@ function initialize_header() {
     }
   });*/
 }
+
+window.initialize_header = initialize_header;

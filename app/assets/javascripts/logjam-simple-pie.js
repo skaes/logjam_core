@@ -1,3 +1,5 @@
+import * as d3 from "d3";
+
 function logjam_simple_pie(params){
   var data = params.data;
   var legend = params.legend;
@@ -20,7 +22,7 @@ function logjam_simple_pie(params){
   if (params.onclick) {
     vis
       .style("cursor", "pointer")
-      .on("click", function(){ return eval(params.onclick); });
+      .on("click", function(){ return window.eval(params.onclick); });
   }
 
   //  .append("g")
@@ -51,3 +53,5 @@ function logjam_simple_pie(params){
   //    .attr("title", function(d,i){ return legend[i];})
     .text(function(d, i) { return (100*d.value/s).toFixed()+"%"; });
 }
+
+window.logjam_simple_pie = logjam_simple_pie;

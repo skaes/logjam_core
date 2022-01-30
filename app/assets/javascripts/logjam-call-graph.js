@@ -1,3 +1,5 @@
+import * as d3 from "d3";
+
 function logjam_graph_app_data(appCallers) {
 
   var r1 = 800 / 2,
@@ -178,3 +180,5 @@ function logjam_load_graph_data(group, json_urls) {
     $("#spinner").hide();
   });
 }
+
+window.logjam_load_graph_data = logjam_load_graph_data;
