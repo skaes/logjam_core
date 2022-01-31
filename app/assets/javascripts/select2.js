@@ -169,7 +169,7 @@ the specific language governing permissions and limitations under the Apache Lic
         var val, i, l;
         if (string === null || string.length < 1) return [];
         val = string.split(separator);
-        for (i = 0, l = val.length; i < l; i = i + 1) val[i] = $.trim(val[i]);
+        for (i = 0, l = val.length; i < l; i = i + 1) val[i] = val[i].trim();
         return val;
     }
 
@@ -320,10 +320,10 @@ the specific language governing permissions and limitations under the Apache Lic
     function syncCssClasses(dest, src, adapter) {
         var classes, replacements = [], adapted;
 
-        classes = $.trim(dest.attr("class"));
+        classes = dest.attr("class");
 
         if (classes) {
-            classes = '' + classes; // for IE which returns object
+            classes = '' + classes.trim(); // for IE which returns object
 
             $(classes.split(/\s+/)).each2(function() {
                 if (this.indexOf("select2-") === 0) {
@@ -332,10 +332,10 @@ the specific language governing permissions and limitations under the Apache Lic
             });
         }
 
-        classes = $.trim(src.attr("class"));
+        classes = src.attr("class");
 
         if (classes) {
-            classes = '' + classes; // for IE which returns object
+            classes = '' + classes.trim(); // for IE which returns object
 
             $(classes.split(/\s+/)).each2(function() {
                 if (this.indexOf("select2-") !== 0) {
@@ -1054,7 +1054,7 @@ the specific language governing permissions and limitations under the Apache Lic
                     } else if ("tags" in opts) {
                         opts.query = tags(opts.tags);
                         if (opts.createSearchChoice === undefined) {
-                            opts.createSearchChoice = function (term) { return {id: $.trim(term), text: $.trim(term)}; };
+                            opts.createSearchChoice = function (term) { return {id: term.trim(), text: term.trim()}; };
                         }
                         if (opts.initSelection === undefined) {
                             opts.initSelection = function (element, callback) {
@@ -1879,7 +1879,7 @@ the specific language governing permissions and limitations under the Apache Lic
                     //Determine the placeholder option based on the specified placeholderOption setting
                     return (this.opts.placeholderOption === "first" && firstOption) ||
                            (typeof this.opts.placeholderOption === "function" && this.opts.placeholderOption(this.select));
-                } else if ($.trim(firstOption.text()) === "" && firstOption.val() === "") {
+                } else if (firstOption.text().trim() === "" && firstOption.val() === "") {
                     //No explicit placeholder option specified, use the first if it's blank
                     return firstOption;
                 }

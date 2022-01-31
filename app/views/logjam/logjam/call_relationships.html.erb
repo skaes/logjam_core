@@ -74,7 +74,7 @@
       if (index == 0) return;
       var caller = $(row).children().first();
       var callee = caller.next();
-      var text = $.trim(caller.text()) + "," + $.trim(callee.text());
+      var text = caller.text().trim() + "," + callee.text().trim();
       if (text.match(filter_regexp)) {
         $(row).show();
         visible_count += 1;

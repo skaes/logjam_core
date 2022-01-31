@@ -497,7 +497,7 @@
                 return value;
             }
             parts = value.split(delimiter);
-            return $.trim(parts[parts.length - 1]);
+            return parts[parts.length - 1].trim();
         },
 
         getSuggestionsLocal: function (query) {
@@ -756,7 +756,7 @@
         },
 
         validateOrientation: function(orientation, fallback) {
-            orientation = $.trim(orientation || '').toLowerCase();
+            orientation = (orientation || '').trim().toLowerCase();
 
             if($.inArray(orientation, ['auto', 'bottom', 'top']) === -1){
                 orientation = fallback;
