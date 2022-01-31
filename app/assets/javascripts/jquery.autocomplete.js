@@ -540,7 +540,7 @@
             if (that.isLocal) {
                 response = that.getSuggestionsLocal(q);
             } else {
-                if ($.isFunction(serviceUrl)) {
+                if (typeof serviceUrl === "function") {
                     serviceUrl = serviceUrl.call(that.element, q);
                 }
                 cacheKey = serviceUrl + '?' + $.param(params || {});
@@ -664,7 +664,7 @@
                 container.children().first().addClass(classSelected);
             }
 
-            if ($.isFunction(beforeRender)) {
+            if (typeof beforeRender === "function") {
                 beforeRender.call(that.element, container);
             }
 
@@ -890,7 +890,7 @@
             that.suggestions = [];
             that.selection = suggestion;
 
-            if ($.isFunction(onSelectCallback)) {
+            if (typeof onSelectCallback === "function") {
                 onSelectCallback.call(that.element, suggestion);
             }
         },
