@@ -191,11 +191,10 @@
     if (!options.live) this.each(function() { get(this); });
 
     if (options.trigger != 'manual') {
-      var binder   = options.live ? 'on' : 'bind',
-          eventIn  = options.trigger == 'hover' ? 'mouseenter' : 'focus',
+      var eventIn  = options.trigger == 'hover' ? 'mouseenter' : 'focus',
           eventOut = options.trigger == 'hover' ? 'mouseleave' : 'blur',
           eventMove = 'mousemove';
-      this[binder](eventIn, enter)[binder](eventOut, leave)[binder](eventMove, move);
+      this.on(eventIn, enter).on(eventOut, leave).on(eventMove, move);
     }
 
     return this;
