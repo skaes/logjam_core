@@ -11,6 +11,8 @@
     }
   }
 
+  let pixels = (n) => n.toString()+"px";
+
   function Tipsy(element, options) {
     this.$element = $(element);
     this.options = options;
@@ -65,9 +67,9 @@
         $tip.css(tp).addClass('tipsy-' + gravity);
 
         if (this.options.fade) {
-          $tip.stop().css({opacity: 0, display: 'block', visibility: 'visible'}).animate({opacity: this.options.opacity});
+          $tip.stop().css({opacity: "0", display: 'block', visibility: 'visible'}).animate({opacity: this.options.opacity});
         } else {
-          $tip.css({visibility: 'visible', opacity: this.options.opacity});
+          $tip.css({visibility: 'visible', opacity: pixels(this.options.opacity)});
         }
       }
     },
@@ -168,11 +170,11 @@
             var x = event.pageX - (tow/2);
           }
         }
-        $(tipsy.$tip).css('left', x+options.offsetX);
-        $(tipsy.$tip).css('top', event.pageY-(toh/2)+options.offsetY);
+        $(tipsy.$tip).css('left', pixels(x+options.offsetX));
+        $(tipsy.$tip).css('top', pixels(event.pageY-(toh/2)+options.offsetY));
       } else if (options.follow == 'y') {
         if (/^w|^e/.test(options.gravity) ) {
-          $(tipsy.$tip).css('top', event.pageY-(toh/2));
+          $(tipsy.$tip).css('top', pixels(event.pageY-(toh/2)));
         }
       }
 
