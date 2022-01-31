@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import $ from "jquery";
 
 function logjam_resource_plot(params) {
   var events               = params.events,
@@ -270,7 +271,7 @@ function logjam_resource_plot(params) {
     .attr("class", "legend")
     .attr("x", function(d,i){return 10+(120*(Math.floor(i/2)));})
     .attr("y", function(d,i){return h+50+14*(i%2);})
-    .on("click", submit_resource)
+    .on("click", (e,d) => submit_resource(d,e))
     .style("font", "10px sans-serif")
     .style("cursor", "pointer")
     .text(String);
@@ -283,7 +284,7 @@ function logjam_resource_plot(params) {
     .attr("cx", function(d,i){return 10+(120*(Math.floor(i/2)));})
     .attr("cy", function(d,i){return h+50+14*(i%2);})
     .attr("r", 4)
-    .on("click", submit_resource)
+    .on("click", (e,d) => submit_resource(d,e))
     .style("cursor", "pointer")
     .style("stroke", function(d,i){ return colors[i]; })
     .style("fill", function(d,i){ return colors[i]; });
