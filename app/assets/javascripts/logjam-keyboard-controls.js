@@ -12,7 +12,7 @@ $(document).on('keydown', function(event){
    */
   if(event.ctrlKey && !event.shiftKey && event.keyCode === 70) {
     event.preventDefault();
-    $('.date_clearer').click();
+    $('.date_clearer').trigger("click");
     $('#application-suggest').select2("close");
     $('#namespace-suggest').select2("open");
 
@@ -24,7 +24,7 @@ $(document).on('keydown', function(event){
    */
   if(event.ctrlKey && event.shiftKey && event.keyCode === 65 && $('.application-chooser').length > -1) {
     event.preventDefault();
-    $('.date_clearer').click()
+    $('.date_clearer').trigger("click");
     $('#namespace-suggest').select2("close");
     $('#application-suggest').select2("open");
   }
@@ -37,7 +37,7 @@ $(document).on('keydown', function(event){
     event.preventDefault();
     $('#namespace-suggest').select2("close");
     $('#application-suggest').select2("close");
-    $('#datepicker').focus();
+    $('#datepicker').trigger("focus");
   }
 
   /**
@@ -46,7 +46,7 @@ $(document).on('keydown', function(event){
    */
   if(event.ctrlKey && event.shiftKey && event.keyCode === 82) {
     event.preventDefault();
-    $('#auto-refresh').click();
+    $('#auto-refresh').trigger("click");
   }
 
   /**

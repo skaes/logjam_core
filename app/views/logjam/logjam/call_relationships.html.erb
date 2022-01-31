@@ -85,6 +85,6 @@
     });
     $('#callers #call-count').text(visible_count);
   };
-  filter.keyup(filter_fun);
+  filter.on("keyup", filter_fun);
   $(document).ready(filter_fun);
 </script>

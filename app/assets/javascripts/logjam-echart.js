@@ -260,7 +260,7 @@ function logjam_echart(params) {
   }
 
   if (allow_selection) {
-    $(document).mouseup(function() {
+    $(document).on("mouseup", function() {
       finish_time_selection();
     });
   }

@@ -58,13 +58,15 @@ jdPicker.DEFAULT_OPTS = {
   date_format: "YYYY/mm/dd"
 };
 jdPicker.prototype = {
+  context_hidden: function() { return this.input.parent().is(":hidden"); },
+
   build: function() {
 
   this.wrapp = this.input.wrap('<div class="jdpicker_w">');
 
-  if(this.input.context.type!="hidden"){
+  if(!this.context_hidden()){
     var clearer = $('<span class="date_clearer">&times;</span>');
-    clearer.click(this.bindToObj(function(){this.selectDate();}));
+    clearer.on("click", this.bindToObj(function(){this.selectDate();}));
     this.input.after(clearer);
   }
 
@@ -132,12 +134,12 @@ jdPicker.prototype = {
       '</p>');
 
     this.monthNameSpan = $(".month_name", monthNav);
-    $(".prev", monthNav).click(this.bindToObj(function() { this.moveMonthBy(-1); return false; }));
-    $(".next", monthNav).click(this.bindToObj(function() { this.moveMonthBy(1); return false; }));
+    $(".prev", monthNav).on("click", this.bindToObj(function() { this.moveMonthBy(-1); return false; }));
+    $(".next", monthNav).on("click", this.bindToObj(function() { this.moveMonthBy(1); return false; }));
 
-  this.monthNameSpan.dblclick(this.bindToObj(function(){
+    this.monthNameSpan.on("dblclick", this.bindToObj(function(){
     this.monthNameSpan.empty().append(this.getMonthSelect());
-    $('select', this.monthNameSpan).change(this.bindToObj(function(){
+      $('select', this.monthNameSpan).on("change", this.bindToObj(function(){
       this.moveMonthBy(parseInt($('select :selected', this.monthNameSpan).val()) - this.currentMonth.getMonth());
     }));
   }));
@@ -149,10 +151,10 @@ jdPicker.prototype = {
       '</p>');
 
     this.yearNameSpan = $(".year_name", yearNav);
-    $(".prev", yearNav).click(this.bindToObj(function() { this.moveMonthBy(-12); return false; }));
-    $(".next", yearNav).click(this.bindToObj(function() { this.moveMonthBy(12); return false; }));
+    $(".prev", yearNav).on("click", this.bindToObj(function() { this.moveMonthBy(-12); return false; }));
+    $(".next", yearNav).on("click", this.bindToObj(function() { this.moveMonthBy(12); return false; }));
 
-    this.yearNameSpan.dblclick(this.bindToObj(function(){
+    this.yearNameSpan.on("dblclick", this.bindToObj(function(){
 
       if($('.year_name input', this.rootLayers).length==0){
       var initialDate = this.yearNameSpan.html();
@@ -160,15 +162,15 @@ jdPicker.prototype = {
       var yearNameInput = $('<input type="text" class="text year_input" value="'+initialDate+'" />');
       this.yearNameSpan.empty().append(yearNameInput);
 
-      $(".year_input", yearNav).keyup(this.bindToObj(function(){
+      $(".year_input", yearNav).on("keyup", this.bindToObj(function(){
         if($('input',this.yearNameSpan).val().length == 4 && $('input',this.yearNameSpan).val() != initialDate && parseInt($('input',this.yearNameSpan).val()) == $('input',this.yearNameSpan).val()){
           this.moveMonthBy(parseInt(parseInt(parseInt($('input',this.yearNameSpan).val()) - initialDate)*12));
         }else if($('input',this.yearNameSpan).val().length>4)
           $('input',this.yearNameSpan).val($('input',this.yearNameSpan).val().substr(0, 4));
       }));
 
-      $('input',this.yearNameSpan).focus();
-      $('input',this.yearNameSpan).select();
+        $('input',this.yearNameSpan).trigger("focus");
+        $('input',this.yearNameSpan).trigger("select");
       }
 
     }));
@@ -187,13 +189,13 @@ jdPicker.prototype = {
 
     tableShell += "</tr></thead><tbody></tbody></table>";
 
-    var style = (this.input.context.type=="hidden")?' style="display:block; position:static; margin:0 auto"':'';
+    var style = (this.context_hidden())?' style="display:block; position:static; margin:0 auto"':'';
 
     this.dateSelector = this.rootLayers = $('<div class="date_selector" '+style+'></div>').append(nav, tableShell).insertAfter(this.input);
 
     this.tbody = $("tbody", this.dateSelector);
 
-    this.input.change(this.bindToObj(function() { this.selectDate(); }));
+    this.input.on("change", this.bindToObj(function() { this.selectDate(); }));
     this.selectDate();
 
   },
@@ -239,22 +241,22 @@ jdPicker.prototype = {
       this.yearNameSpan.empty().append(this.currentMonth.getFullYear());
 
       if(this.select_week == 0){
-        $(".selectable_day", this.tbody).click(this.bindToObj(function(event) {
+        $(".selectable_day", this.tbody).on("click", this.bindToObj(function(event) {
         this.changeInput($(event.target).attr("date"));
         }));
       }else{
-        $(".selectable_week", this.tbody).click(this.bindToObj(function(event) {
+        $(".selectable_week", this.tbody).on("click", this.bindToObj(function(event) {
         this.changeInput($(event.target.parentNode).attr("date"));
         }));
       }
 
       $("td[date='" + this.dateToString(new Date()) + "']", this.tbody).addClass("today");
       if(this.select_week == 1){
-        $("tr", this.tbody).mouseover(function() { $(this).addClass("hover"); });
-        $("tr", this.tbody).mouseout(function() { $(this).removeClass("hover"); });
+        $("tr", this.tbody).on("mouseover", function() { $(this).addClass("hover"); });
+        $("tr", this.tbody).on("mouseout", function() { $(this).removeClass("hover"); });
       }else{
-        $("td.selectable_day", this.tbody).mouseover(function() { $(this).addClass("hover"); });
-        $("td.selectable_day", this.tbody).mouseout(function() { $(this).removeClass("hover"); });
+        $("td.selectable_day", this.tbody).on("mouseover", function() { $(this).addClass("hover"); });
+        $("td.selectable_day", this.tbody).on("mouseout", function() { $(this).removeClass("hover"); });
       }
     };
 
@@ -299,28 +301,28 @@ jdPicker.prototype = {
   },
 
   changeInput: function(dateString) {
-    this.input.val(dateString).change();
-    if(this.input.context.type!="hidden")
+    this.input.val(dateString).trigger("change");
+    if(!this.context_hidden())
        this.hide();
   },
 
   show: function() {
   $('.error_msg', this.rootLayers).css('display', 'none');
     this.rootLayers.show();
-    $([window, document.body]).click(this.hideIfClickOutside);
-    this.input.unbind("focus", this.show);
+    $([window, document.body]).on("click", this.hideIfClickOutside);
+    this.input.off("focus", this.show);
   this.input.attr('readonly', true);
-    $(document.body).keydown(this.keydownHandler);
+    $(document.body).on("keydown", this.keydownHandler);
     this.setPosition();
   },
 
   hide: function() {
-  if(this.input.context.type!="hidden"){
-    this.input.removeAttr('readonly');
+  if(!this.context_hidden()){
+    this.input.prop('readonly', false);
     this.rootLayers.hide();
-    $([window, document.body]).unbind("click", this.hideIfClickOutside);
-    this.input.focus(this.show);
-    $(document.body).unbind("keydown", this.keydownHandler);
+    $([window, document.body]).off("click", this.hideIfClickOutside);
+    this.input.on("focus", this.show);
+    $(document.body).off("keydown", this.keydownHandler);
   }
   },
 

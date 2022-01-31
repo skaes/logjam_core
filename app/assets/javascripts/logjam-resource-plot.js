@@ -373,7 +373,7 @@ function logjam_resource_plot(params) {
       .attr("display", (start_minute>0||end_minute<1440) ? null : "none");
   }
 
-  $(document).mouseup(function() {
+  $(document).on("mouseup", function() {
     finish_time_selection();
   });
 

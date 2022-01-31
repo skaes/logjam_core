@@ -48,7 +48,7 @@ function go_home() {
   $("#time-range").val(parameter_defaults.time_range);
   $("#auto_refresh").val(parameter_defaults.auto_refresh);
   $("#filter-form").attr("action", home_url);
-  $("#filter-form").submit();
+  $("#filter-form").trigger("submit");
 }
 
 window.go_home = go_home;
@@ -61,7 +61,7 @@ function view_selected_pages(){
   else {
     $("#filter-form").attr("action", history_url);
   }
-  $("#filter-form").submit();
+  $("#filter-form").trigger("submit");
 }
 
 window.view_selected_pages = view_selected_pages;
@@ -70,7 +70,7 @@ function view_grouping(grouping){
   $("#grouping").val(grouping);
   $("#time-range").val(parameter_defaults.time_range);
   $("#filter-form").attr("action", home_url);
-  $("#filter-form").submit();
+  $("#filter-form").trigger("submit");
 }
 
 window.view_grouping = view_grouping;
@@ -92,7 +92,7 @@ function view_resource(resource){
     $('#section').val('backend');
   }
 
-  $("#filter-form").submit();
+  $("#filter-form").trigger("submit");
 }
 
 window.view_resource = view_resource;
@@ -104,7 +104,7 @@ function view_time_range(time_range){
   } else {
     $("#filter-form").attr("action", history_url);
   }
-  $("#filter-form").submit();
+  $("#filter-form").trigger("submit");
 }
 
 window.view_time_range = view_time_range;
@@ -120,7 +120,7 @@ window.view_date = view_date;
 
 function sort_by(order){
   $('#grouping-function').val(order);
-  $('#filter-form').submit();
+  $("#filter-form").trigger("submit");
 }
 
 window.sort_by = sort_by;
