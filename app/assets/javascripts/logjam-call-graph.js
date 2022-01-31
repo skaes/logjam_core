@@ -38,7 +38,7 @@ function logjam_graph_app_data(appCallers) {
 
   var indexByName = {},
       nameByIndex = {},
-      appNames = d3.set(),
+      appNames = Set(),
       n = 0;
 
   var scale =  d3.scaleLog().domain(d3.extent(appCallers, function(d){ return d.count;}));

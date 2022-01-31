@@ -67,7 +67,7 @@ function logjam_echart(params) {
     title: function() { return tooltip_text; }
   });
 
-  function mouse_click_event() {
+  function mouse_click_event(e) {
     if (ignore_click) {
       ignore_click = false;
       return;
@@ -75,8 +75,8 @@ function logjam_echart(params) {
     if (url) document.location = url;
   }
 
-  function mouse_down_event(d, i) {
-    var p = d3.mouse(this);
+  function mouse_down_event(e, d) {
+    var p = d3.pointer(e);
     var di = Math.ceil(x.invert(p[0]))-1;
     if (allow_selection) {
       mouse_down_start = di;
@@ -85,9 +85,9 @@ function logjam_echart(params) {
     }
   }
 
-  function mouse_up_event(d, i) {
-    d3.event.stopPropagation();
-    var p = d3.mouse(this);
+  function mouse_up_event(e, d) {
+    e.stopPropagation();
+    var p = d3.pointer(e);
     var di = Math.ceil(x.invert(p[0]))-1;
     update_time_selection(di);
     if (allow_selection) {
@@ -95,8 +95,8 @@ function logjam_echart(params) {
     }
   }
 
-  function mouse_over_event(d, i) {
-    var p = d3.mouse(this);
+  function mouse_over_event(e, d) {
+    var p = d3.pointer(e);
     var di = Math.ceil(x.invert(p[0]))-1;
     if (di<0) di=0;
     var xc = data[di];

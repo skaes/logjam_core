@@ -59,8 +59,8 @@ function logjam_apdex_chart(params) {
     title: function() { return tooltip_text; }
   });
 
-  function mouse_over_event(d, i) {
-    var p = d3.mouse(this);
+  function mouse_over_event(e, d) {
+    var p = d3.pointer(e);
     var di = Math.ceil(x.invert(p[0]))-1;
     if (di<0) di=0;
     var xc = data[di];
