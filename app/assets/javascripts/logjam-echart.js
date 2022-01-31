@@ -1,5 +1,7 @@
 import * as d3 from "d3";
 
+var URI = require('urijs');
+
 function logjam_echart(params) {
   var data = params.data,
       events= params.events,
