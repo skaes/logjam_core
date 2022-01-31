@@ -337,7 +337,7 @@ function logjam_live_stream_chart(params){
 
   /* update chart or error list */
   function update_view(value) {
-    if ($.isArray(value)) {
+    if (Array.isArray(value)) {
       update_errors(value);
     }
     else if ("anomaly" in value)
