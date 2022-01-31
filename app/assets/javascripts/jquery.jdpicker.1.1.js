@@ -191,15 +191,6 @@ jdPicker.prototype = {
 
     this.dateSelector = this.rootLayers = $('<div class="date_selector" '+style+'></div>').append(nav, tableShell).insertAfter(this.input);
 
-    if ($.browser.msie && $.browser.version < 7) {
-
-      this.ieframe = $('<iframe class="date_selector_ieframe" frameborder="0" src="#"></iframe>').insertBefore(this.dateSelector);
-      this.rootLayers = this.rootLayers.add(this.ieframe);
-
-      $(".button", nav).mouseover(function() { $(this).addClass("hover"); });
-      $(".button", nav).mouseout(function() { $(this).removeClass("hover"); });
-    };
-
     this.tbody = $("tbody", this.dateSelector);
 
     this.input.change(this.bindToObj(function() { this.selectDate(); }));
