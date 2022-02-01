@@ -38,7 +38,7 @@ function logjam_graph_app_data(appCallers) {
 
   var indexByName = {},
       nameByIndex = {},
-      appNames = Set(),
+      appNames = new Set(),
       n = 0;
 
   var scale =  d3.scaleLog().domain(d3.extent(appCallers, function(d){ return d.count;}));
@@ -51,7 +51,7 @@ function logjam_graph_app_data(appCallers) {
     appNames.add(app.source);
     appNames.add(app.target);
   });
-  appNames.values().sort().forEach(function(name) {
+  Array.from(appNames.values()).sort().forEach(function(name) {
     name = appName(name);
     if (!(name in indexByName)) {
       nameByIndex[n] = name;
