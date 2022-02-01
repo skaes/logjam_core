@@ -10,9 +10,7 @@ function logjam_graph_app_data(appCallers) {
       ch = 420;
 
   function colors(s) {
-    return s.match(/.{6}/g).map(function(x) {
-      return "#" + x;
-    });
+    return s.match(/.{6}/g).map((x) => "#" + x);
   };
 
   var category20c = colors("1f77b4aec7e8ff7f0effbb782ca02c98df8ad62728ff98969467bdc5b0d58c564bc49c94e377c2f7b6d27f7f7fc7c7c7bcbd22dbdb8d17becf9edae5");
@@ -90,8 +88,8 @@ function logjam_graph_app_data(appCallers) {
         si = d.source.index,
         caller = nameByIndex[ti],
         callee = nameByIndex[si],
-        n = matrix[si][d.source.subindex],
-        m = matrix[ti][d.target.subindex];
+        n = matrix[si][ti],
+        m = matrix[ti][si];
 
     var text = caller + " called " + callee + " " + formatter(n) + " times.";
     if (m>0) {
@@ -106,37 +104,38 @@ function logjam_graph_app_data(appCallers) {
   var group = g.append("g")
         .attr("class", "groups")
         .selectAll("g")
-        .data(function(chords) { return chords.groups; })
+        .data((chords) => chords.groups)
         .enter().append("g");
 
   group.append("path")
-    .style("fill", function(d) { return fill(d.index); })
-    .style("stroke", function(d) { return fill(d.index); })
+    .style("fill", (d) => fill(d.index))
+    .style("stroke", (d) => fill(d.index))
     .attr("d", arc)
-    .on("mouseover", function(g, i) {
+    .on("mouseover", function(e, d) {
       svg.selectAll("path.chord")
-        .classed("active", function(d) { return d.source.index == i || d.target.index == i; });
+        .classed("active", (x) => x.source.index == d.index || x.target.index == d.index);
     })
-    .on("mouseout", function(d) {
-      // leave the arc selection, hard to read otherwise: svg.selectAll(".active").classed("active", false);
+    .on("mouseout", function(e, d) {
+      // leave the arc selection, hard to read otherwise:
+      // svg.selectAll(".active").classed("active", false);
     });
 
   group.append("text")
-    .each(function(d) { d.angle = (d.startAngle + d.endAngle) / 2; })
+    .each((d,i) => { d.angle = (d.startAngle + d.endAngle)/2; })
     .attr("dy", ".35em")
-    .attr("fill", function(d) { return d.value == 0 ? "green" : "black" ;})
-    .attr("text-anchor", function(d) { return d.angle > Math.PI ? "end" : null; })
-    .attr("transform", function(d) {
-      return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
+    .attr("fill", (d) => d.value == 0 ? "green" : "black")
+    .attr("text-anchor", (d) => d.angle > Math.PI ? "end" : null)
+    .attr("transform", (d) =>
+      "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
         + "translate(" + (r0 + 45) + ")"
-        + (d.angle > Math.PI ? "rotate(180)" : "");
-    })
-    .text(function(d) { return nameByIndex[d.index]; })
-    .on("mouseover", function(g, i) {
+        + (d.angle > Math.PI ? "rotate(180)" : "")
+    )
+    .text((d) => nameByIndex[d.index])
+    .on("mouseover", function(e, d) {
       svg.selectAll("path.chord")
-        .classed("active", function(d) { return d.source.index == i || d.target.index == i; });
+        .classed("active", (x) => x.source.index == d.index || x.target.index == d.index);
     })
-    .on("mouseout", function(d) {
+    .on("mouseout", function(e, d) {
       // leave the arc selection, hard to read otherwise: svg.selectAll(".active").classed("active", false);
     });
 
@@ -145,27 +144,27 @@ function logjam_graph_app_data(appCallers) {
   g.append("g")
     .attr("class", "ribbons")
     .selectAll("path")
-    .data(function(chords) { return chords; })
+    .data((chords) => chords)
     .enter().append("path")
     .attr("class", "chord")
     .attr("d", d3.ribbon().radius(r0))
-    .style("fill", function(d) { return fill(d.source.index); })
-    .style("stroke", function(d) { return d3.rgb(fill(d.source.index)).darker(); })
-    .on("mouseover", function(d) {
+    .style("fill", (d) => fill(d.source.index))
+    .style("stroke", (d) => d3.rgb(fill(d.source.index)).darker())
+    .on("mouseover", (e,d) => {
       svg.selectAll(".active").classed("active", false);
       // using :hover now instead of:  svg.selectAll("path.chord").classed("active", function(p) { return p === d; });
       info.html(call_info_text(d));
     })
-    .on("mouseout", function(d) {
+    .on("mouseout", (e,d) => {
       svg.selectAll(".active").classed("active", false);
       info.text("");
     });
 
   // Returns an event handler for fading a given chord group.
   function fade(opacity) {
-    return function(g, i) {
+    return (g, i) => {
       svg.selectAll("path.chord")
-        .filter(function(d) { return d.source.index != i && d.target.index != i; })
+        .filter((d) => d.source.index != i && d.target.index != i)
         .transition()
         .style("opacity", opacity);
     };
@@ -175,7 +174,7 @@ function logjam_graph_app_data(appCallers) {
 function logjam_load_graph_data(group, json_urls) {
   d3.selectAll("svg").remove();
   $("#spinner").show();
-  d3.json(json_urls[group]).then(function(appCallers) {
+  d3.json(json_urls[group]).then((appCallers) => {
     logjam_graph_app_data(appCallers);
     $("#spinner").hide();
   });
