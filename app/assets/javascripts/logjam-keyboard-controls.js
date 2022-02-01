@@ -1,3 +1,6 @@
+import $ from "jquery";
+import {submit_filter_form} from "./logjam-header.js";
+
 /**
  * creates keyboard handles for the most common actions
  */
@@ -70,4 +73,4 @@ $(document).on('keydown', function(event){
 
   }
 
-})
+});

@@ -1,3 +1,5 @@
+import $ from "jquery";
+
 $(function(){
   $("#mobile-trigger").on("click", function(event){
     event.preventDefault();

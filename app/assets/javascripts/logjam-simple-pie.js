@@ -22,7 +22,7 @@ function logjam_simple_pie(params){
   if (params.onclick) {
     vis
       .style("cursor", "pointer")
-      .on("click", function(){ return window.eval(params.onclick); });
+      .on("click", () => window.eval(params.onclick));
   }
 
   //  .append("g")
@@ -41,17 +41,17 @@ function logjam_simple_pie(params){
         .attr("transform", "translate(" + r + "," + r + ")");
 
   arcs.append("path")
-    .attr("fill", function(d, i) { return color(i); })
+    .attr("fill", (d, i) => color(i))
     .attr("d", arc);
 
   arcs.append("text")
     .style("cursor", "default")
-    .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
+    .attr("transform", (d) => "translate(" + arc.centroid(d) + ")")
     .attr("dy", ".35em")
     .attr("text-anchor", "middle")
-    .attr("display", function(d) { return d.value/s > .1 ? null : "none"; })
-  //    .attr("title", function(d,i){ return legend[i];})
-    .text(function(d, i) { return (100*d.value/s).toFixed()+"%"; });
+    .attr("display", (d) =>  d.value/s > .1 ? null : "none")
+//  .attr("title", (d,i) => legend[i])
+    .text((d, i) => (100*d.value/s).toFixed()+"%");
 }
 
 window.logjam_simple_pie = logjam_simple_pie;

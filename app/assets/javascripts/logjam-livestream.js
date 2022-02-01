@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import $ from "jquery";
 
 function logjam_live_stream_chart(params){
   var resources = params.resources;
@@ -448,7 +449,7 @@ function logjam_live_stream_chart(params){
   /* connect to the data stream */
   function connect_chart() {
     if ( ws == null ) {
-      var Socket = "MozWebSocket" in window ? MozWebSocket : WebSocket;
+      var Socket = "MozWebSocket" in window ? window.MozWebSocket : window.WebSocket;
       ws = new Socket(params.socket_url);
       ws.onmessage = function(evt) {
         update_view(JSON.parse(evt.data));

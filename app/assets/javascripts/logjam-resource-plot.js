@@ -1,5 +1,7 @@
 import * as d3 from "d3";
 import $ from "jquery";
+import context from "./page-context.js";
+import {submit_filter_form} from "./logjam-header.js";
 
 function logjam_resource_plot(params) {
   var events               = params.events,
@@ -51,7 +53,7 @@ function logjam_resource_plot(params) {
     }
     if (resource != "requests/second" && resource != "free slots") {
       $('#resource').val(resource.replace(/ /g,'_'));
-      $('#filter-form').attr("action", home_url);
+      $('#filter-form').attr("action", context.home_url);
       // console.log("submit_filter_form");
       // console.trace();
       submit_filter_form();

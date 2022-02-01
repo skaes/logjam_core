@@ -1,4 +1,6 @@
 import * as d3 from "d3";
+import $ from "jquery";
+import {view_date} from "./logjam-header.js";
 
 function logjam_history_bar_chart(data, divid, metric, params, kind) {
 
@@ -33,13 +35,13 @@ function logjam_history_bar_chart(data, divid, metric, params, kind) {
       width = document.getElementById('request-history').offsetWidth - margin.left - margin.right - 80,
       height = 150 - margin.top - margin.bottom,
 
-      date_min = d3.min(data, function(d){ return d.date; }),
-      date_max = d3.max(data, function(d){ return d.date; }),
+      date_min = d3.min(data, (d) => d.date),
+      date_max = d3.max(data, (d) => d.date),
 
-      relevant_data = data.filter(function(d){ return is_metric() ? (metric in d) : (metric in d.exception_counts); }),
+      relevant_data = data.filter((d) => is_metric() ? (metric in d) : (metric in d.exception_counts)),
 
-      data_min = d3.min(relevant_data, function(d){ return is_metric() ? d[metric] : d.exception_counts[metric]; }),
-      data_max = d3.max(relevant_data, function(d){ return is_metric() ? d[metric] : d.exception_counts[metric]; });
+      data_min = d3.min(relevant_data, (d) => is_metric() ? d[metric] : d.exception_counts[metric]),
+      data_max = d3.max(relevant_data, (d) => is_metric() ? d[metric] : d.exception_counts[metric]);
 
   if (typeof data_min == 'undefined' || (data_min == 0 && data_max == 0))
     return; // no data
@@ -109,9 +111,14 @@ function logjam_history_bar_chart(data, divid, metric, params, kind) {
   var tooltip_formatter = d3.format(",r");
   var date_formatter = d3.timeFormat("%b %d");
   var exception_formatter = d3.format(",d");
-  function mouse_over_bar(d,e) {
+
+  function mouse_over_bar(e,d) {
     bar_tooltip_text = date_formatter(d.date) + " ~ " +
       (is_metric() ? tooltip_formatter(d[metric]) : exception_formatter(d.exception_counts[metric]));
+  }
+
+  function mouse_out_of_bar(e,d) {
+    bar_tooltip_text = "";
   }
 
   var bar_width = x(data[data.length-1].date) - x(data[data.length-2].date) - 0.1;
@@ -119,17 +126,17 @@ function logjam_history_bar_chart(data, divid, metric, params, kind) {
   svg.selectAll(".bar")
       .data(relevant_data)
     .enter().append("rect")
-      .attr("class", function(d){ return bar_class(d.date); })
-      .attr("x", function(d) { return x(d.date); })
+    .attr("class", (d) => bar_class(d.date))
+      .attr("x", (d) => x(d.date))
       .attr("width", bar_width)
-      .attr("y", function(d) { return y(is_metric() ? d[metric] : d.exception_counts[metric]); })
-      .attr("height", function(d) { return height - y(is_metric() ? d[metric] : d.exception_counts[metric]); })
+      .attr("y", (d) => y(is_metric() ? d[metric] : d.exception_counts[metric]))
+      .attr("height", (d) => height - y(is_metric() ? d[metric] : d.exception_counts[metric]))
       .attr("cursor", "pointer")
-      .style("fill", function(d) { return bar_color(d.date, metric); })
-      .on("click", function(d) { view_date(d.date); })
-      .on("mousemove", function(d,i){ mouse_over_bar(d, this); })
-      .on("mouseover", function(d,i){ mouse_over_bar(d, this); })
-      .on("mouseout", function(d,i){ bar_tooltip_text = ""; });
+      .style("fill", (d) => bar_color(d.date, metric))
+      .on("click", (d) => view_date(d.date))
+      .on("mousemove", mouse_over_bar)
+      .on("mouseover", mouse_over_bar)
+      .on("mouseout", mouse_out_of_bar);
 
   $(".bar").tipsy({
     trigger: 'hover',
@@ -139,7 +146,7 @@ function logjam_history_bar_chart(data, divid, metric, params, kind) {
     offsetY: -20,
     gravity: 's',
     html: false,
-    title: function() { return bar_tooltip_text; }
+    title: () => bar_tooltip_text,
   });
 }
 

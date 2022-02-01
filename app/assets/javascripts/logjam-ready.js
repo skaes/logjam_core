@@ -1,3 +1,5 @@
+import $ from "jquery";
+
 $(document).ready(function() {
 
   var mobile = navigator.userAgent.match(/iPad|iPhone/i) != null;

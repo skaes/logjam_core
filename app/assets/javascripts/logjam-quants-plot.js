@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import $ from "jquery";
 
 function logjam_quants_plot(params, resource, id, label, scale) {
 
@@ -10,15 +11,14 @@ function logjam_quants_plot(params, resource, id, label, scale) {
       return 500;
   }
 
-
   var w = document.getElementById(id).offsetWidth - 120,
       h  = get_height(),
-//      x = d3.scaleLog().domain([params.xmin, params.max_x]).range([0, w]).nice(),
-//      y = d3.scaleLog().domain([1, params.max_y]).range([0, h]).nice(),
+      // x = d3.scaleLog().domain([params.xmin, params.max_x]).range([0, w]).nice(),
+      // y = d3.scaleLog().domain([1, params.max_y]).range([0, h]).nice(),
       legend = params.legend,
       color = params.color_map[resource],
       formatter = d3.format(".0s"),
-      bucket_values = params.buckets.map(function (d){return d.bucket;})
+      bucket_values = params.buckets.map((d) => d.bucket)
   ;
 
   // console.log(resource, id, w, h);
@@ -65,8 +65,8 @@ function logjam_quants_plot(params, resource, id, label, scale) {
     .data(bucket_values)
     .enter().append("line")
     .attr("class", "xtick")
-    .attr("x1", function (d){ return x(d) + x.bandwidth();})
-    .attr("x2", function (d){ return x(d) + x.bandwidth();})
+    .attr("x1", (d) => x(d) + x.bandwidth())
+    .attr("x2", (d) => x(d) + x.bandwidth())
     .attr("y1", h)
     .attr("y2", h + 5)
     .style("fill", "#999")
@@ -76,7 +76,7 @@ function logjam_quants_plot(params, resource, id, label, scale) {
     .data(bucket_values)
     .enter().append("text")
     .attr("class", "xlabel")
-    .attr("x", function (d){ return x(d) + x.bandwidth();})
+    .attr("x", (d) => x(d) + x.bandwidth())
     .attr("y", h)
     .attr("dy", 17)
     .attr("text-anchor", "middle")
@@ -111,17 +111,17 @@ function logjam_quants_plot(params, resource, id, label, scale) {
     .attr("y2", y)
     .style("fill", "#999")
     .style("stroke", "#999")
-    .attr("display", function(d,i){ return (i>0 && i % 9 == 0) ? null : "none"; });
+    .attr("display", (d,i) => (i > 0 && i%9 == 0) ? null : "none");
 
   vis.selectAll(".ylabel")
     .data(y.ticks())
     .enter().append("text")
     .attr("class", "ylabel")
     .attr("x", 0)
-    .attr("y", function(d){ return y(d); })
+    .attr("y", (d) => y(d))
     .attr("dx", -17)
     .attr("text-anchor", "middle")
-    .attr("display", function(d,i){ return (i>0 && i % 9 == 0) ? null : "none"; })
+    .attr("display", (d,i) => (i > 0 && i%9 == 0) ? null : "none")
     .style("font", "9px sans-serif")
     .text(formatter);
 
@@ -184,20 +184,20 @@ function logjam_quants_plot(params, resource, id, label, scale) {
     .enter().append("rect")
     .attr("class", "bar")
     .style("fill", color)
-    .attr("x", function(d) { return x(d.bucket); })
-    .attr("y", function(d) { return y(d[resource]); })
+    .attr("x", (d) => x(d.bucket))
+    .attr("y", (d) => y(d[resource]))
     .attr("width", x.bandwidth())
-    .attr("height", function(d) { return h - y(d[resource]); })
-    .on("mousemove", function(d,i){ mouse_over_bar(d, this); })
-    .on("mouseover", function(d,i){ mouse_over_bar(d, this); })
-    .on("mouseout", function(d,i){ mouse_over_out(); });
+    .attr("height", (d) =>  h - y(d[resource]))
+    .on("mousemove", mouse_over_bar)
+    .on("mouseover", mouse_over_bar)
+    .on("mouseout", mouse_over_out)
   ;
 
   var tooltip_text = "";
   var tooltip_formatter = d3.format(".2s");
 
-  function mouse_over_bar(d) {
-    tooltip_text =  tooltip_formatter(d[resource]) + " requests";
+  function mouse_over_bar(e, d) {
+    tooltip_text = tooltip_formatter(d[resource]) + " requests";
   }
 
   function mouse_over_out() {
@@ -212,7 +212,7 @@ function logjam_quants_plot(params, resource, id, label, scale) {
     offsetY: -20,
     gravity: 's',
     html: false,
-    title: function() { return tooltip_text; }
+    title: () => tooltip_text,
   });
 
 }

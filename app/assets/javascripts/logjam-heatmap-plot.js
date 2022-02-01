@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import $ from "jquery";
 
 function logjam_heatmap_plot(params) {
   var data      = params.data,
@@ -34,11 +35,9 @@ function logjam_heatmap_plot(params) {
         "bucket": i,
         "value": d
       };
-    }).filter(function(e){
-      return e.value > 0;
-    }));
+    }).filter((e) => e.value > 0));
 
-  var origMaxValue = d3.max(tiles, function(d){ return d.value; });
+  var origMaxValue = d3.max(tiles, (d) => d.value);
 
   if (params.scale == 'logarithmic') {
     tiles.forEach(function(d){
@@ -160,9 +159,9 @@ function logjam_heatmap_plot(params) {
     .attr("class", "card")
     .attr("width", cardWidth)
     .attr("height", cardHeight)
-    .on("mousemove", function(d){ tooltip_text = format(d.value);})
-    .on("mouseover", function(d){ tooltip_text = format(d.value);})
-    .on("mouseout", function(d){ tooltip_text = ""; })
+    .on("mousemove", function(e, d){ tooltip_text = format(d.value);})
+    .on("mouseover", function(e, d){ tooltip_text = format(d.value);})
+    .on("mouseout", function(e, d){ tooltip_text = ""; })
     .style("stroke-width", 0)
     .style("fill", function(d){ return color(d.value);});
 

@@ -1,3 +1,6 @@
+import $ from "jquery";
+import {submit_filter_form} from "./logjam-header.js";
+
 /* Toggle sidebar for mobile view */
 $(function(){
   $('.sidebar-collapse', '#logjam-sidebar').on('click', function(){

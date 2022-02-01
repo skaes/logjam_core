@@ -1,24 +1,25 @@
 <%= content_for(:page_scripts) do %>
-  var parameters = <%= raw Oj.dump(params) %>;
-  var parameter_defaults = <%= raw Oj.dump(default_header_parameters) %>;
-  var self_url = '<%= raw self_url %>';
-  var home_url = '<%= raw home_url %>';
-  var history_url = '<%= raw history_url %>';
+page_context.parameters = <%= raw Oj.dump(params) %>;
+page_context.parameter_defaults = <%= raw Oj.dump(default_header_parameters) %>;
+page_context.self_url = '<%= raw self_url %>';
+page_context.home_url = '<%= raw home_url %>';
+page_context.history_url = '<%= raw history_url %>';
 <% if @days %>
-  var selectable_days = <%= raw Oj.dump(@days.map(&:to_s)) %>;
-  <% end %>
-  var auto_complete_url = '<%= raw auto_complete_url_for_action_page %>';
-  $(document).ready(initialize_header);
+page_context.selectable_days = <%= raw Oj.dump(@days.map(&:to_s)) %>;
+<% end %>
+page_context.auto_complete_url = '<%= raw auto_complete_url_for_action_page %>';
 
-  $(function(){
-    $('.tabs a', '#logjam-sidebar').on('click', function(event) {
-      event.preventDefault();
-      event.stopPropagation();
+$(document).ready(initialize_header);
 
-      $('.tabs a', '#logjam-sidebar').removeClass('active');
-      $(this).addClass('active');
-    })
+$(function(){
+  $('.tabs a', '#logjam-sidebar').on('click', function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    $('.tabs a', '#logjam-sidebar').removeClass('active');
+    $(this).addClass('active');
   })
+})
 <% end %>
 
 <section id="logjam-sidebar">

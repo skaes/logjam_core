@@ -1,6 +1,6 @@
 import * as d3 from "d3";
-
-var URI = require('urijs');
+import $ from "jquery";
+import URI from "urijs";
 
 function logjam_echart(params) {
   var data = params.data,
@@ -33,7 +33,7 @@ function logjam_echart(params) {
      .on("mouseover", mouse_over_event)
      .on("mousemove", mouse_over_event)
      .on("mouseout",  mouse_over_out)
-     .style("cursor", function(){ return url ? "pointer" : "arrow"; })
+     .style("cursor", () => url ? "pointer" : "arrow")
      .on("click", mouse_click_event)
   ;
 
@@ -50,9 +50,9 @@ function logjam_echart(params) {
   ;
 
   var line = d3.line()
-        .x(function(d,i) { return x(d[0]); })
-        .y(function(d) { return y(d[1]); })
-        .curve(d3.curveMonotoneY)
+      .x((d) => x(d[0]))
+      .y((d) => y(d[1]))
+      .curve(d3.curveMonotoneY)
   ;
 
   var tooltip = $(params.parent + ' svg');
@@ -64,7 +64,7 @@ function logjam_echart(params) {
     offsetY: -20,
     gravity: 's',
     html: false,
-    title: function() { return tooltip_text; }
+    title: () => tooltip_text,
   });
 
   function mouse_click_event(e) {
@@ -158,7 +158,7 @@ function logjam_echart(params) {
           p2      = [xCenter + 4, y],
           p3      = [xCenter, y - 5];
 
-      var what = [p1, p2, p3].map(function(point) { return point[0] + "," + point[1]; }).join(" ");
+      var what = [p1, p2, p3].map((point) => point[0] + "," + point[1]).join(" ");
       return what;
     })
     .style("stroke", "rgba(255,0,0,0)")
@@ -170,8 +170,8 @@ function logjam_echart(params) {
 
   var event_tooltip_text = "";
 
-  function mouse_over_triangle_event(d, i) {
-    event_tooltip_text = d[1].split("\n").map(function(s){return $("<p>").text(s).html();}).join("<br>");
+  function mouse_over_triangle_event(e, d) {
+    event_tooltip_text = d[1].split("\n").map((s)=> $("<p>").text(s).html()).join("<br>");
   }
 
   function mouse_over_triangle_out() {
@@ -186,7 +186,7 @@ function logjam_echart(params) {
     offsetY: 20,
     gravity: 'w',
     html: true,
-    title: function() { return event_tooltip_text; }
+    title: () => event_tooltip_text,
   };
 
   if (events.length > 0) {
@@ -262,21 +262,15 @@ function logjam_echart(params) {
   }
 
   if (allow_selection) {
-    $(document).on("mouseup", function() {
-      finish_time_selection();
-    });
+    $(document).on("mouseup", finish_time_selection);
   }
 }
 
 function adjustWidthOfFirstTwoColumns() {
   var rows = $('tr.full_stats');
-  var nameWidths = rows.map(function(){
-    return $(this).children().first().width();
-  });
+  var nameWidths = rows.map(() => $(this).children().first().width());
   var maxNameWidth = Math.max.apply(null, nameWidths);
-  var numWidths = rows.map(function(){
-    return $(this).children().first().next().width();
-  });
+  var numWidths = rows.map(() => $(this).children().first().next().width());
   var maxNumWidth = Math.max.apply(null, numWidths);
   rows.each(function(){
     var name = $(this).children().first();
