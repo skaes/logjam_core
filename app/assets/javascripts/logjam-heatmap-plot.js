@@ -20,7 +20,7 @@ function logjam_heatmap_plot(params) {
 
   var w = (document.getElementById(container.slice(1)).offsetWidth - 60 < 400) ? 626 : document.getElementById(container.slice(1)).offsetWidth - 60,
       h = get_height(),
-      xticks = d3.range(25).map(function(h){ return h/interval*60; }),
+      xticks = d3.range(25).map((h) => h/interval*60),
       x      = d3.scaleLinear().domain([0, 1440/interval]).range([0, w]),
       y      = d3.scaleLinear().domain([0, B]).range([h, 0]).nice(),
       cardWidth = x(2)-x(1)+1,
@@ -29,26 +29,26 @@ function logjam_heatmap_plot(params) {
   /* tiles */
   var tiles = [];
   for (var key in data)
-    tiles = tiles.concat(data[key].map(function(d,i){
+    tiles = tiles.concat(data[key].map((d,i) => {
       return {
-        "minute": +key,
-        "bucket": i,
-        "value": d
+        minute: +key,
+        bucket: i,
+        value: d
       };
     }).filter((e) => e.value > 0));
 
   var origMaxValue = d3.max(tiles, (d) => d.value);
 
   if (params.scale == 'logarithmic') {
-    tiles.forEach(function(d){
+    tiles.forEach((d) => {
       d.value = Math.log(d.value);
     });
   };
 
   // console.log(tiles);
 
-  var maxValue = d3.max(tiles, function(d){ return d.value; });
-  var maxBucket = d3.max(tiles, function(d){ return d.bucket; });
+  var maxValue = d3.max(tiles, (d) => d.value);
+  var maxBucket = d3.max(tiles, (d) => d.bucket);
 
   //d3.interpolateRgb.gamma(3)("rgb(168, 204, 255)", "rgb(0,0,255)"))
 
@@ -102,7 +102,7 @@ function logjam_heatmap_plot(params) {
     .attr("dy", 12)
     .attr("text-anchor", "middle")
     .style("font", "8px Helvetica Neue")
-    .text(function(d){return (d*interval)/60;});
+    .text((d) => (d*interval)/60);
 
   /* Y-label */
   vis.append("svg:text")
@@ -137,10 +137,10 @@ function logjam_heatmap_plot(params) {
       .attr("dy", 0)
       .attr("text-anchor", "end")
       .style("font", "8px Helvetica Neue")
-      .text(function(d,i){return ylabels[i];});
+      .text((d,i) => ylabels[i]);
 
   var cards = vis.selectAll(".card")
-       .data(tiles, function(d) { return d.minute+':'+d.bucket; });
+       .data(tiles, (d) => d.minute+':'+d.bucket);
 
   var tooltip_text = "";
   var tooltip_formatter = d3.format(",d");
@@ -154,8 +154,8 @@ function logjam_heatmap_plot(params) {
   cards.append("title");
 
   cards.enter().append("rect")
-    .attr("x", function(d) { return x(d.minute); })
-    .attr("y", function(d) { return y(d.bucket+1); })
+    .attr("x", (d) => x(d.minute))
+    .attr("y", (d) => y(d.bucket+1))
     .attr("class", "card")
     .attr("width", cardWidth)
     .attr("height", cardHeight)

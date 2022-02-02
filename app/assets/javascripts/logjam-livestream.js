@@ -22,7 +22,9 @@ function logjam_live_stream_chart(params){
   var c = color_map.range();
 
   /* Data */
-  function zeros(){ return d3.range(600/slice+2).map(function(){ return 0;}); }
+  function zeros(){
+    return d3.range(600/slice+2).map(()=> 0);
+  }
   var data = d3.range(resources.length).map(zeros);
   var request_counts = zeros();
 
@@ -61,7 +63,7 @@ function logjam_live_stream_chart(params){
     .enter()
     .append("line")
     .attr("class", "yrule")
-    .style("stroke", function(d, i){ return (i%60)==0 ?"#999" : "rgba(128,128,128,.2)"; })
+    .style("stroke", (d, i) => (i%60)==0 ?"#999" : "rgba(128,128,128,.2)")
     .attr("x1", x)
     .attr("y1", 0)
     .attr("x2", x)
@@ -80,8 +82,8 @@ function logjam_live_stream_chart(params){
     .style("font", "10px Helvetica Neue")
     .style("fill", "#000")
     .style("stroke", "none")
-    .attr("display", function(d){ return (d && ((d/slice)%10==0)) ? null : "none";})
-    .text(function(d){ return "t"+ (d/slice-60);});
+    .attr("display", (d) => (d && (d/slice)%10 == 0) ? null : "none")
+    .text((d) => "t"+ (d/slice-60));
 
   /* top x axis */
   vis.append("line")
@@ -105,13 +107,13 @@ function logjam_live_stream_chart(params){
     .text("Response time (ms)");
 
   function init_row(r) {
-    return r.map(function(d,i) {
+    return r.map((d,i) => {
         return {x:i, y:d, y0:0};
     });
   }
 
   function init_stack(data) {
-    return data.map(function(r){
+    return data.map((r) => {
       return init_row(r);
     });
   }
@@ -127,9 +129,9 @@ function logjam_live_stream_chart(params){
   compute_stack(ldata);
 
   var area = d3.area()
-        .x(function(d) { return x(d.x*slice); })
-        .y0(function(d) { return y(d.y0); })
-        .y1(function(d) { return y(d.y + d.y0); })
+        .x((d) => x(d.x*slice))
+        .y0((d) => y(d.y0))
+        .y1((d) => y(d.y + d.y0))
         .curve(d3.curveMonotoneX);
 
   vis.append("svg:clipPath")
@@ -147,17 +149,17 @@ function logjam_live_stream_chart(params){
     .data(ldata)
     .enter().append("path")
     .attr("class", "layer")
-    .style("fill", function(d,i) { return colors[i]; })
-    .style("stroke", function(d,i) { return colors[i]; })
+    .style("fill", (d,i) => colors[i])
+    .style("stroke", (d,i) => colors[i])
     .attr("d", area);
 
 
   /* Request counts. */
   var request_area = d3.area()
-        .x(function(d) { return x(d.x*slice); })
-        .y0(function(d) { return y2(d.y0); })
-        .y1(function(d) { return y2(d.y + d.y0); })
-        .curve(d3.curveMonotoneX);
+      .x((d) => x(d.x*slice))
+      .y0((d) => y2(d.y0))
+      .y1((d) => y2(d.y + d.y0))
+      .curve(d3.curveMonotoneX);
 
   var request_data = init_row(request_counts);
 
@@ -174,8 +176,8 @@ function logjam_live_stream_chart(params){
     .data(legend)
     .enter().append("svg:text")
     .attr("class", "legend")
-    .attr("x", function(d,i){ return 10+(120*(Math.floor(i/2))); })
-    .attr("y", function(d,i){ return h+30+14*(i%2); })
+    .attr("x", (d,i) => 10 + 120*Math.floor(i/2))
+    .attr("y", (d,i) => h + 30 + 14*(i%2))
     .style("font", "10px Helvetica Neue")
     .style("stroke", "none")
     .style("fill", "#000")
@@ -186,11 +188,11 @@ function logjam_live_stream_chart(params){
     .enter().append("svg:circle")
     .attr("class", "legendmark")
     .attr("transform", "translate(-7,-3)")
-    .attr("cx", function(d,i){ return 10+(120*(Math.floor(i/2))); })
-    .attr("cy", function(d,i){ return h+30+14*(i%2); })
+    .attr("cx", (d,i) => 10 + 120*Math.floor(i/2))
+    .attr("cy", (d,i)=> h + 30 + 14*(i%2))
     .attr("r", 4)
-    .style("stroke", function(d,i){ return colors[i]; })
-    .style("fill", function(d,i){ return colors[i]; });
+    .style("stroke", (d,i) => colors[i])
+    .style("fill", (d,i) => colors[i]);
 
   var request_count_formatter = d3.format(",.2r");
   var perf_data_formatter = d3.format(",.2r");
@@ -204,9 +206,9 @@ function logjam_live_stream_chart(params){
     .attr("class", "rlabel")
     .style("font", "10px Helvetica Neue")
     .attr("text-anchor", "end")
-    .attr("y", function(d,i){ return 50-i*25-1; })
-    .attr("x", w-1)
-    .text(function(d){ return request_count_formatter(y2.invert(d)); });
+    .attr("y", (d,i) => 50 - i*25 - 1)
+    .attr("x", w - 1)
+    .text((d) => request_count_formatter(y2.invert(d)));
 
   /* recompute the Y-scale. */
   function re_scale() {
@@ -286,7 +288,7 @@ function logjam_live_stream_chart(params){
   function initialize_filter() {
     var exclude_response = get_parameter_by_name("exclude_response");
     if (exclude_response) {
-      response_filter = exclude_response.split(",").map(function(value) { return parseInt(value,10) });
+      response_filter = exclude_response.split(",").map((value) => parseInt(value,10));
     }
   }
 
@@ -377,7 +379,7 @@ function logjam_live_stream_chart(params){
     vis.selectAll(".rlabel").data([50,25,0])
       .transition()
       .duration(100)
-      .text(function(d){ return request_count_formatter(y2.invert(d)); });
+      .text((d) => request_count_formatter(y2.invert(d)));
 
     /* Horizontal grid lines */
     var vgrid = vis.selectAll(".xrule").data(y.ticks(10));
@@ -385,7 +387,7 @@ function logjam_live_stream_chart(params){
     vgrid.enter()
       .append("line")
       .attr("class", "xrule")
-      .style("stroke", function(d,i){ return d ? "rgba(128,128,128,.2)" : "#999";})
+      .style("stroke", (d,i) => d ? "rgba(128,128,128,.2)" : "#999")
       .attr("y1", y)
       .attr("x1", 0)
       .attr("y2", y)
@@ -451,20 +453,20 @@ function logjam_live_stream_chart(params){
     if ( ws == null ) {
       var Socket = "MozWebSocket" in window ? window.MozWebSocket : window.WebSocket;
       ws = new Socket(params.socket_url);
-      ws.onmessage = function(evt) {
+      ws.onmessage = (evt) => {
         update_view(JSON.parse(evt.data));
       };
-      ws.onclose = function() {
+      ws.onclose = () => {
         console.log("received close on websocket");
         change_connection_status("disconnected");
         ws = null;
         reconnect();
       };
-      ws.onopen = function() {
+      ws.onopen = () => {
         change_connection_status("connected");
         ws.send(params.socket_greeting);
       };
-      ws.onerror = function() {
+      ws.onerror = () => {
         console.log("websocket error");
         change_connection_status("disconnected");
         ws = null;

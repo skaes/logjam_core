@@ -39,17 +39,17 @@ function logjam_graph_app_data(appCallers) {
       appNames = new Set(),
       n = 0;
 
-  var scale =  d3.scaleLog().domain(d3.extent(appCallers, function(d){ return d.count;}));
+  var scale = d3.scaleLog().domain(d3.extent(appCallers, (d) => d.count));
 
   function appName(name) {
     return name;
   }
 
-  appCallers.forEach(function(app) {
+  appCallers.forEach((app) => {
     appNames.add(app.source);
     appNames.add(app.target);
   });
-  Array.from(appNames.values()).sort().forEach(function(name) {
+  Array.from(appNames.values()).sort().forEach((name) => {
     name = appName(name);
     if (!(name in indexByName)) {
       nameByIndex[n] = name;
@@ -66,7 +66,7 @@ function logjam_graph_app_data(appCallers) {
       scaled_matrix[i][j] = 0;
     }
   }
-  appCallers.forEach(function(d) {
+  appCallers.forEach((d) => {
     var source = indexByName[appName(d.target)],
         row = matrix[source],
         scaled_row = scaled_matrix[source],
@@ -111,11 +111,11 @@ function logjam_graph_app_data(appCallers) {
     .style("fill", (d) => fill(d.index))
     .style("stroke", (d) => fill(d.index))
     .attr("d", arc)
-    .on("mouseover", function(e, d) {
+    .on("mouseover", (e, d) => {
       svg.selectAll("path.chord")
         .classed("active", (x) => x.source.index == d.index || x.target.index == d.index);
     })
-    .on("mouseout", function(e, d) {
+    .on("mouseout", (e, d) => {
       // leave the arc selection, hard to read otherwise:
       // svg.selectAll(".active").classed("active", false);
     });
@@ -131,11 +131,11 @@ function logjam_graph_app_data(appCallers) {
         + (d.angle > Math.PI ? "rotate(180)" : "")
     )
     .text((d) => nameByIndex[d.index])
-    .on("mouseover", function(e, d) {
+    .on("mouseover", (e, d) => {
       svg.selectAll("path.chord")
         .classed("active", (x) => x.source.index == d.index || x.target.index == d.index);
     })
-    .on("mouseout", function(e, d) {
+    .on("mouseout", (e, d) => {
       // leave the arc selection, hard to read otherwise: svg.selectAll(".active").classed("active", false);
     });
 

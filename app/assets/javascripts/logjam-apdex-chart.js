@@ -35,14 +35,14 @@ function logjam_apdex_chart(params) {
   ;
 
   var goal = d3.line()
-        .x(function(d,i) { return x(d[0]); })
-        .y(function(){ return y(0.94); })
+        .x((d,i) => x(d[0]))
+        .y(() => y(0.94))
   ;
 
   var area = d3.area()
-        .x(function(d,i) { return x(d[0]); })
-        .y0(function(d) { return y(0); })
-        .y1(function(d) { return y(d[1]); })
+        .x((d,i) => x(d[0]))
+        .y0((d) => y(0))
+        .y1((d) => y(d[1]))
         .curve(d3.curveMonotoneX)
   ;
 
@@ -56,7 +56,7 @@ function logjam_apdex_chart(params) {
     offsetY: -20,
     gravity: 's',
     html: false,
-    title: function() { return tooltip_text; }
+    title: () => tooltip_text,
   });
 
   function mouse_over_event(e, d) {

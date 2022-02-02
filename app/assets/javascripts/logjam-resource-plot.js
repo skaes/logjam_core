@@ -34,7 +34,7 @@ function logjam_resource_plot(params) {
   /* Sizing and scales. */
   var w = (document.getElementById(container.slice(1)).offsetWidth - 60 < 400) ? 626 : document.getElementById(container.slice(1)).offsetWidth - 60,
       h = get_height(),
-      xticks = d3.range(25).map(function(h){ return h/interval*60; }),
+      xticks = d3.range(25).map((h) => h/interval*60),
       x      = d3.scaleLinear().domain([0, 1440/interval]).range([0, w]),
       y      = d3.scaleLinear().domain([0, zoomed_max_y]).range([h, 0]).nice(),
       y2     = d3.scaleLinear().domain([0, max_request_count]).range([50,0]).nice();
@@ -182,7 +182,7 @@ function logjam_resource_plot(params) {
     .enter()
     .append("line")
     .attr("class", "yrule")
-    .style("stroke", function(d, i){ return (i%24)==0 ? "#999" : "rgba(128,128,128,.2)"; })
+    .style("stroke", (d, i) => (i%24)==0 ? "#999" : "rgba(128,128,128,.2)")
     .attr("x1", x)
     .attr("y1", 0)
     .attr("x2", x)
@@ -193,14 +193,14 @@ function logjam_resource_plot(params) {
   var tooltip_formatter;
 
   if (params.plot_kind == "memory" || params.plot_kind == "heap") {
-    y_ticks_formatter = function(d){ return d3.format(".0f")(d/1000) + "k"; };
-    tooltip_formatter = function(d){ return d3.format(".0f")(d/1000) + "k"; };
+    y_ticks_formatter = (d) => d3.format(".0f")(d/1000) + "k";
+    tooltip_formatter = (d) => d3.format(".0f")(d/1000) + "k";
   }
   else {
     y_tick_precision = (params.max_y < 10 || params.zoomed_max_y < 10) ? ".1f" : ".0f";
     y_ticks_formatter = d3.format(y_tick_precision);
     if (params.plot_kind == "time")
-      tooltip_formatter = function(d){ return d3.format(".1f")(d) + " ms"; };
+      tooltip_formatter = (d) => d3.format(".1f")(d) + " ms";
     else
       tooltip_formatter = d3.format("s");
   }
@@ -215,7 +215,7 @@ function logjam_resource_plot(params) {
     .attr("dy", 12)
     .attr("text-anchor", "middle")
     .style("font", "8px Helvetica Neue")
-    .text(function(d){return (d*interval)/60;});
+    .text((d) => (d*interval)/60);
 
   /* Y-label */
   vis.append("svg:text")
@@ -234,7 +234,7 @@ function logjam_resource_plot(params) {
     vgrid.enter()
       .append("line")
       .attr("class", "xrule")
-      .style("stroke", function(d, i){ return (i==0) ? "#999" : "rgba(128,128,128,.2)"; })
+      .style("stroke", (d, i) => (i==0) ? "#999" : "rgba(128,128,128,.2)")
       .attr("y1", y)
       .attr("x1", 0)
       .attr("y2", y)
@@ -271,8 +271,8 @@ function logjam_resource_plot(params) {
     .data(legend)
     .enter().append("svg:text")
     .attr("class", "legend")
-    .attr("x", function(d,i){return 10+(120*(Math.floor(i/2)));})
-    .attr("y", function(d,i){return h+50+14*(i%2);})
+    .attr("x", (d,i) => 10 + 120*Math.floor(i/2))
+    .attr("y", (d,i) => h + 50 + 14*(i%2))
     .on("click", (e,d) => submit_resource(d,e))
     .style("font", "10px sans-serif")
     .style("cursor", "pointer")
@@ -283,13 +283,13 @@ function logjam_resource_plot(params) {
     .enter().append("svg:circle")
     .attr("class", "legendmark")
     .attr("transform", "translate(-7,-3)")
-    .attr("cx", function(d,i){return 10+(120*(Math.floor(i/2)));})
-    .attr("cy", function(d,i){return h+50+14*(i%2);})
+    .attr("cx", (d,i) => 10 + 120*Math.floor(i/2))
+    .attr("cy", (d,i) => h + 50 + 14*(i%2))
     .attr("r", 4)
     .on("click", (e,d) => submit_resource(d,e))
     .style("cursor", "pointer")
-    .style("stroke", function(d,i){ return colors[i]; })
-    .style("fill", function(d,i){ return colors[i]; });
+    .style("stroke", (d,i) => colors[i])
+    .style("fill", (d,i) => colors[i]);
 
   var request_count_formatter = d3.format((max_request_count < 10) ? ",.1f" : ",.0f");
 
@@ -300,17 +300,17 @@ function logjam_resource_plot(params) {
     .attr("class", "rlabel")
     .style("font", "10px Helvetica Neue")
     .attr("text-anchor", "end")
-    .attr("y", function(d,i){ return 50-i*25-1; })
-    .attr("x", w-1)
-    .text(function(d){ return request_count_formatter(y2.invert(d)); });
+    .attr("y", (d,i) => 50 - i*25 - 1)
+    .attr("x", w - 1)
+    .text((d) => request_count_formatter(y2.invert(d)));
 
   var request_area = d3.area()
-        .x(function(d) { return x(d.x+0.5); })
-        .y0(function(d) { return y2(d.y0); })
-        .y1(function(d) { return y2(d.y + d.y0); })
+        .x((d)=> x(d.x+0.5))
+        .y0((d) => y2(d.y0))
+        .y1((d) => y2(d.y + d.y0))
         .curve(d3.curveMonotoneX);
 
-  var request_data = request_counts.map(function(d,i){ return {x:i, y:d, y0:0};});
+  var request_data = request_counts.map((d,i) => ({x:i, y:d, y0:0}));
 
   vis.append("rect")
     .style("cursor", "pointer")
@@ -327,7 +327,7 @@ function logjam_resource_plot(params) {
   function mouse_over_event(e, d) {
     var mouseCoords = d3.pointer(e);
     d3.select("#eventLine"+i).style("stroke", "rgba(255,0,0,.5)");
-    event_tooltip_text = d[1].split("\n").map(function(s){return $("<p>").text(s).html();}).join("<br>");
+    event_tooltip_text = d[1].split("\n").map((s) => $("<p>").text(s).html()).join("<br>");
   }
 
   function mouse_over_out() {
@@ -340,12 +340,12 @@ function logjam_resource_plot(params) {
     .enter()
     .append("line")
     .attr("class", "eventLine")
-    .attr("id", function(d,i){ return("eventLine" + i);})
+    .attr("id", (d,i) => "eventLine" + i)
     .style("stroke", "rgba(255,0,0,.0)")
     .style("stroke-width", "3")
-    .attr("x1", function(d,i) { return x(d[0] / interval); })
+    .attr("x1", (d,i) => x(d[0] / interval))
     .attr("y1", 0)
-    .attr("x2", function(d,i) { return x(d[0] / interval); })
+    .attr("x2", (d,i) => x(d[0] / interval))
     .attr("y2", h)
     .on("mouseover", mouse_over_event)
     .on("mousemove", mouse_over_event)
@@ -389,9 +389,7 @@ function logjam_resource_plot(params) {
       .attr("display", (start_minute>0||end_minute<1440) ? null : "none");
   }
 
-  $(document).on("mouseup", function() {
-    finish_time_selection();
-  });
+  $(document).on("mouseup", finish_time_selection);
 
   function start_time_selection(di, event) {
     if (event) {
@@ -510,7 +508,7 @@ function logjam_resource_plot(params) {
     offsetY: -20,
     gravity: 's',
     html: false,
-    title: function() { return request_tooltip_text; }
+    title: () => request_tooltip_text,
   });
 
   $('.selection').tipsy({
@@ -521,7 +519,7 @@ function logjam_resource_plot(params) {
     offsetY: -20,
     gravity: 's',
     html: false,
-    title: function() { return request_tooltip_text; }
+    title: () => request_tooltip_text,
   });
 
   var layer_tooltip_text = "";
@@ -557,16 +555,16 @@ function logjam_resource_plot(params) {
   }
 
   function stackup(d) {
-    for (i = 0; i < d[0].length; i++) {
+    for (let i = 0; i < d[0].length; i++) {
       d[0][i][2] = 0;
     }
-    for (i = 1; i < d.length; i++) {
-      for (j = 0; j < d[i].length; j++) {
+    for (let i = 1; i < d.length; i++) {
+      for (let j = 0; j < d[i].length; j++) {
         d[i][j][2] = d[i-1][j][1] + d[i-1][j][2];
       }
     }
-    for (i = 0; i < d.length; i++) {
-      for (j = 0; j < d[i].length; j++) {
+    for (let i = 0; i < d.length; i++) {
+      for (let j = 0; j < d[i].length; j++) {
         d[i][j].push(i);
       }
     }
@@ -574,22 +572,22 @@ function logjam_resource_plot(params) {
   stackup(data);
 
   var area = d3.area()
-        .x(function(d) { return x(d[0]+.5); })
-        .y0(function(d) { return y(d[2]); })
-        .y1(function(d) { return y(d[1]+d[2]); })
-        .curve(d3.curveMonotoneX);
+      .x((d) => x(d[0]+.5))
+      .y0((d) => y(d[2]))
+      .y1((d)=> y(d[1]+d[2]))
+      .curve(d3.curveMonotoneX);
 
   /* The stack layout. */
   vis.selectAll(".layer")
     .data(data)
     .enter().append("path")
     .attr("class", "layer")
-    .style("fill", function(d,i) { return colors[i]; })
-    .style("cursor", function(d,i) { return(legend[i] == "free slots" ? "arrow" : "pointer"); })
+    .style("fill", (d,i) => colors[i])
+    .style("cursor", (d,i) => legend[i] == "free slots" ? "arrow" : "pointer")
     .on("mousedown", mouse_down_over_layer)
     .on("mousemove", mouse_over_layer)
     .on("mouseover", mouse_over_layer)
-    .on("mouseout", function(e,d){ layer_tooltip_text = ""; })
+    .on("mouseout", (e,d) => { layer_tooltip_text = ""; })
     .style("stroke", "none")
     .attr("d", area);
 
@@ -601,14 +599,14 @@ function logjam_resource_plot(params) {
     offsetY: -20,
     gravity: 's',
     html: false,
-    title: function() { return layer_tooltip_text; }
+    title: () => layer_tooltip_text,
   });
 
   /* GC time */
   if (gc_time != null) {
     var gc_line = d3.line()
-          .x(function(d){ return x(d[0]+0.5); })
-          .y(function(d){ return y(d[1]); })
+          .x((d) => x(d[0]+0.5))
+          .y((d) => y(d[1]))
           .curve(d3.curveCardinal);
 
     var glg = vis.append("g")
@@ -624,8 +622,8 @@ function logjam_resource_plot(params) {
   /* Total time max */
   if (total_time_max != null) {
     var total_time_max_line = d3.line()
-          .x(function(d){ return x(d[0]+0.5); })
-          .y(function(d){ return y(d[1]); })
+          .x((d) => x(d[0]+0.5))
+          .y((d) => y(d[1]))
           .curve(d3.curveStepAfter);
 
     var dlg = vis.append("g")
@@ -641,8 +639,8 @@ function logjam_resource_plot(params) {
   /* Dom interative */
   if (dom_interactive != null) {
     var interactive_line = d3.line()
-          .x(function(d){ return x(d[0]+0.5); })
-          .y(function(d){ return y(d[1]); })
+          .x((d) => x(d[0]+0.5))
+          .y((d) => y(d[1]))
           .curve(d3.curveCardinal);
 
     var dlg = vis.append("g")
@@ -714,14 +712,14 @@ function logjam_resource_plot(params) {
     .enter()
     .append("polygon")
     .attr("class", "event")
-    .attr("points", function(d,i) {
+    .attr("points", (d,i) => {
       var xCenter = x(d[0] / interval),
           y       = h+5,
           p1      = [xCenter - 4, y],
           p2      = [xCenter + 4, y],
           p3      = [xCenter, y - 5];
 
-      var what = [p1, p2, p3].map(function(point) { return point[0] + "," + point[1]; }).join(" ");
+      var what = [p1, p2, p3].map((point) => point[0] + "," + point[1]).join(" ");
       return what;
     })
     .style("stroke", "rgba(255,0,0,0)")
@@ -738,7 +736,7 @@ function logjam_resource_plot(params) {
     offsetY: 20,
     gravity: 'w',
     html: true,
-    title: function() { return event_tooltip_text; }
+    title: () => event_tooltip_text,
   };
 
   $('.event').tipsy(event_tip_options);

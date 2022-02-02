@@ -151,7 +151,7 @@ function logjam_echart(params) {
     .enter()
     .append("polygon")
     .attr("class", "event")
-    .attr("points", function(d,i) {
+    .attr("points", (d,i) => {
       var xCenter = x(d[0] / 2),
           y       = h+5,
           p1      = [xCenter - 4, y],
