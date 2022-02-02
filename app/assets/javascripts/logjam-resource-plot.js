@@ -533,53 +533,50 @@ function logjam_resource_plot(params) {
 
   function mouse_down_over_layer(e, d) {
     // console.log("mouse down over layer");
-    // console.log(d[0]);
     var p = d3.pointer(e);
     var di = Math.ceil(x.invert(p[0]))-1;
     mouse_down_start = di;
     mouse_down_end = di;
-    var i = d[0][3];
-    mouse_down_resource = legend[i];
+    mouse_down_resource = d.key;
     start_time_selection(di);
   }
 
   function mouse_over_layer(e, d) {
     // console.log("mouse over layer");
-    // e.stopPropagation();
     var p = d3.pointer(e);
     var di = Math.ceil(x.invert(p[0]))-1;
-    var i = d[0][3];
-    var dp = data[i][di];
-    layer_tooltip_text = tooltip_formatter(dp[1]) + " " + legend[i] + time_suffix(dp[0]*interval);
+    var dp = data[d.index][di];
+    layer_tooltip_text = tooltip_formatter(dp[1]) + " " + d.key + time_suffix(dp[0]*interval);
     update_time_selection(dp[0]);
   }
 
-  function stackup(d) {
-    for (let i = 0; i < d[0].length; i++) {
-      d[0][i][2] = 0;
-    }
-    for (let i = 1; i < d.length; i++) {
-      for (let j = 0; j < d[i].length; j++) {
-        d[i][j][2] = d[i-1][j][1] + d[i-1][j][2];
+  function prepare_data(d) {
+    var res = [];
+    for (let minute = 0; minute < d[0].length; minute++) {
+      let e = { minute: minute };
+      for (let i = 0; i < d.length; i++) {
+        e[legend[i]] = d[i][minute][1];
       }
+      res.push(e);
     }
-    for (let i = 0; i < d.length; i++) {
-      for (let j = 0; j < d[i].length; j++) {
-        d[i][j].push(i);
-      }
-    }
+    return res;
   }
-  stackup(data);
+
+  function prepare_keys(d) {
+    return legend.slice(0, d.length);
+  }
+
+  var stackedData = d3.stack().keys(prepare_keys(data))(prepare_data(data));
 
   var area = d3.area()
-      .x((d) => x(d[0]+.5))
-      .y0((d) => y(d[2]))
-      .y1((d)=> y(d[1]+d[2]))
+      .x((d) => x(d.data.minute + 0.5))
+      .y0((d) => y(d[0]))
+      .y1((d)=> y(d[1]))
       .curve(d3.curveMonotoneX);
 
   /* The stack layout. */
   vis.selectAll(".layer")
-    .data(data)
+    .data(stackedData)
     .enter().append("path")
     .attr("class", "layer")
     .style("fill", (d,i) => colors[i])
