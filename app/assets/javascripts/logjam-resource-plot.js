@@ -20,6 +20,7 @@ function logjam_resource_plot(params) {
       container            = params.container,
       max_request_count    = d3.max(request_counts);
 
+
   /* Animation */
   var zoom_interval = 1;
 
@@ -325,8 +326,9 @@ function logjam_resource_plot(params) {
   var event_tooltip_text = "";
 
   function mouse_over_event(e, d) {
+    console.log(d);
     var mouseCoords = d3.pointer(e);
-    d3.select("#eventLine"+i).style("stroke", "rgba(255,0,0,.5)");
+    d3.select("#eventLine"+events.findIndex((x) => x == d)).style("stroke", "rgba(255,0,0,.5)");
     event_tooltip_text = d[1].split("\n").map((s) => $("<p>").text(s).html()).join("<br>");
   }
 

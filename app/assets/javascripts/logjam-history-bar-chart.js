@@ -133,7 +133,7 @@ function logjam_history_bar_chart(data, divid, metric, params, kind) {
       .attr("height", (d) => height - y(is_metric() ? d[metric] : d.exception_counts[metric]))
       .attr("cursor", "pointer")
       .style("fill", (d) => bar_color(d.date, metric))
-      .on("click", (d) => view_date(d.date))
+      .on("click", (e,d) => view_date(d.date))
       .on("mousemove", mouse_over_bar)
       .on("mouseover", mouse_over_bar)
       .on("mouseout", mouse_out_of_bar);
