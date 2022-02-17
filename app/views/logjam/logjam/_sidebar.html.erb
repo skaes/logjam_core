@@ -37,7 +37,7 @@
           <%= link_to(fa_icon("play-circle", :title => "view live stream") + " Livestream", action: "live_stream") %>
         </li>
 
-        <li class="<%= klass0 %>">
+        <li class="<%= @show_history ? 'enabled' : 'disabled'  %>">
           <%= clean_link_to(fa_icon("history", :title => "Performace History") + " History", action: "history") %>
         </li>
 

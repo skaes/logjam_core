@@ -905,7 +905,9 @@ module Logjam
 
     def verify_app_env
       get_app_env
-      unless @apps.include?(@app)
+      @show_history = false
+      @app_exists = @apps.include?(@app)
+      unless @app_exists
         @warning = "Application «#{@app}» is not known to exist."
         @app = @default_app
         params[:app] = @app
@@ -915,7 +917,8 @@ module Logjam
         end
         return
       end
-      unless @envs.include?(@env)
+      @env_exists = @envs.include?(@env)
+      unless @env_exists
         @warning = "Environment «#{@env}» doesn't exist for application «#{@app}»."
         @env = @default_env
         params[:env] = @env
@@ -925,6 +928,7 @@ module Logjam
         end
         return
       end
+      @show_history = true
       unless @stream
         @warning = "No data found for application «#{@app}» in environment «#{@env}» on #{@date.to_s(:long_ordinal)}."
         respond_to do |format|
