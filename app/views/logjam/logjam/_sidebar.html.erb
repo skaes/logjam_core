@@ -34,7 +34,7 @@
       <ul class="logjam-menu separator">
         <% klass = (@dataset && !@dataset.empty? && @dataset.live_stream?) ? "enabled" : "disabled" %>
         <li class="<%= klass %>">
-          <%= link_to(fa_icon("play-circle", :title => "view live stream") + " Livestream", action: "live_stream") %>
+          <%= link_to(fa_icon("play-circle", :title => "view live stream") + " Livestream", {action: "live_stream", page: @page}.reject{|_,v| v.blank?}) %>
         </li>
 
         <li class="<%= @show_history ? 'enabled' : 'disabled'  %>">
