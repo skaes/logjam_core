@@ -1,16 +1,15 @@
-= logjam_core
+# logjam_core
 
-logjam_core provides the engine which powers the main
-{logjam application}[http://github.com/skaes/logjam_app].
+logjam\_core provides the engine which powers the main [logjam
+application](http://github.com/skaes/logjam_app).
 
 It gets included into the main application as a git submodule.
 
-== Authors
+## Authors
 
-{Stefan Kaes}[http://github.com/skaes] <skaes@railsexpress.de>
-and {David Anderson}[http://github.com/alpinegizmo] <david@alpinegizmo.com>.
+[Stefan Kaes](https://github.com/skaes) and [David Anderson](https://github.com/alpinegizmo).
 
-== License
+## License
 
 Older versions of this code were MIT licensed. The current license version is GPLv3.
 
