@@ -61,7 +61,7 @@ module Logjam
           Rails.logger.debug "adding new database: #{db.name}"
           bulk_writes << { :insert_one => {:app => db.stream.app, :env => db.stream.env, :date => db.date} }
         end
-        unless collection(connection).bulk_write(bulk_writes, :ordered => false)
+        if bulk_writes.present? && !collection(connection).bulk_write(bulk_writes, :ordered => false)
           Rails.logger.fatal "updating known database collection failed"
         end
       end
