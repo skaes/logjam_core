@@ -216,7 +216,7 @@ module Logjam
     @@github_issue_url = r
   end
 
-  @@devices = nil
+  @@devices = []
   def devices
     @@devices
   end
