@@ -1,0 +1,22 @@
+#!/bin/bash
+exec 2>&1
+if [ -x /opt/logjam/bin/logjam-prometheus-exporter ]; then
+    exporter=/opt/logjam/bin/logjam-prometheus-exporter
+elif [ -x /usr/local/bin/logjam-prometheus-exporter ]; then
+    exporter=/usr/local/bin/logjam-prometheus-exporter
+elif [ "$(which logjam-exporter)" != "" ]; then
+    exporter=logjam-prometheus-exporter
+else
+  echo "ERROR: no logjam-prometheus-exporter binary found"
+  sleep 10
+  exit 1
+fi
+
+if test -f /etc/default/logjam; then
+    set -a; source /etc/default/logjam; set +a
+    LOGJAM_URI=${LOGJAM_URI:-LOGJAM_URL}
+else
+    LOGJAM_URI=LOGJAM_URL
+fi
+
+exec $exporter -l $LOGJAM_URI "$@"

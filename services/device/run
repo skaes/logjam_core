@@ -1,0 +1,22 @@
+#!/bin/bash
+exec 2>&1
+if [ -x /opt/logjam/bin/logjam-device ]; then
+    device=/opt/logjam/bin/logjam-device
+elif [ -x /usr/local/bin/logjam-device ]; then
+    device=/usr/local/bin/logjam-device
+elif [ "$(which logjam-device)" != "" ]; then
+    device=logjam-device
+else
+  echo "ERROR: no logjam-device binary found"
+  sleep 10
+  exit 1
+fi
+
+if test -f /etc/default/logjam; then
+    set -a; source /etc/default/logjam; set +a
+fi
+
+ZSYS_ZERO_COPY_RECV=0
+export ZSYS_ZERO_COPY_RECV
+
+exec $device -d 1 -A "$@"

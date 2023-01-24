@@ -255,6 +255,14 @@ namespace :logjam do
         installed_services << install_service("httpd", "httpd", :HTTPD_PORT => collector_port.to_s)
       end
 
+      unless ENV['LOGJAM_DEVICE_INSTALL'] == '0'
+        installed_services << install_service("device", "device")
+      end
+
+      unless ENV['LOGJAM_EXPORTER_INSTALL'] == '0'
+        installed_services << install_service("exporter", "exporter")
+      end
+
       old_services = service_paths.map{|f| f.split("/").compact.last} - installed_services
       old_services.each do |old_service|
         puts "removing old service #{old_service}"
