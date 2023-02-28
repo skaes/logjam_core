@@ -1,7 +1,7 @@
 require 'mongo'
 require 'oj'
 
-Oj.default_options = {:mode => :custom, :time_format => :ruby, :use_to_hash => true}
+Oj.default_options = {:mode => :custom, :time_format => :ruby, :use_to_hash => true, :escape_mode => :xss_safe}
 
 module Logjam
   extend self
