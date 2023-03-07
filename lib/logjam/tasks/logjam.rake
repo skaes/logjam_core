@@ -30,7 +30,9 @@ namespace :logjam do
     desc "drop old databases DELAY=5"
     task :drop_old => :environment do
       delay = (ENV['DELAY'] || 5).to_i
-      Logjam.drop_old_databases(delay)
+      dryrun = (ENV['DRYRUN'] || 0).to_i == 1
+      app = ENV['APPLICATION'] || '.+'
+      Logjam.drop_old_databases(app: app, delay: delay, dryrun: dryrun)
     end
 
     desc "drop empty databases APPLICATION=regexp DELAY=5"
@@ -52,11 +54,16 @@ namespace :logjam do
       Logjam.drop_environments(ENV['ENVS'].to_s.split(/\s*,\s*/), delay)
     end
 
-    desc "remove old data DELAY=5"
-    task :clean => :drop_old do
+    desc "remove old requests DELAY=5"
+    task :remove_old => :environment do
       delay = (ENV['DELAY'] || 5).to_i
-      Logjam.remove_old_requests(delay)
+      dryrun = (ENV['DRYRUN'] || 0).to_i == 1
+      app = ENV['APPLICATION'] || '.+'
+      Logjam.remove_old_requests(app: app, delay: delay, dryrun: dryrun)
     end
+
+    desc "remove old data DELAY=5"
+    task :clean => [:drop_old, :remove_old]
 
     desc "update known databases"
     task :update_known_databases => :environment do

@@ -622,17 +622,23 @@ module Logjam
     end
   end
 
-  def remove_old_requests(delay = 60)
+  def remove_old_requests(app: '.+', delay: 60, dryrun: false)
+    db_match = db_name_format(:app => app)
     databases_sorted_by_date_with_connections.each do |db_name, connection|
       begin
+        next unless db_name =~ db_match
         if request_collection_expired?(db_name)
           db = connection.use(db_name).database
           collection_names = db.collection_names
           %w(requests metrics).each do |collection_name|
             next unless collection_names.include?(collection_name)
-            puts "removing collection #{collection_name} from #{db_name}"
-            db[collection_name].drop
-            sleep delay
+            if dryrun
+              puts "would remove collection #{collection_name} from #{db_name}"
+            else
+              puts "removing collection #{collection_name} from #{db_name}"
+              db[collection_name].drop
+              sleep delay
+            end
           end
         end
       rescue => e
@@ -642,22 +648,28 @@ module Logjam
     end
   end
 
-  def drop_old_databases(delay = 60)
+  def drop_old_databases(app: '.+', delay: 60, dryrun: false)
     dropped = 0
+    db_match = db_name_format(:app => app)
     databases_sorted_by_date_with_connections.each do |db_name, connection|
       begin
+        next unless db_name =~ db_match
         date = db_date(db_name)
         stream = stream_for(db_name) || Logjam
         # puts "db cleaning threshold for #{db_name}: #{stream.database_cleaning_threshold}"
         if Date.today - stream.database_cleaning_threshold > date
-          puts "removing old database: #{db_name}"
-          begin
-            connection.use(db_name).database.drop
-          rescue => e
-            puts e.message
+          if dryrun
+            puts "would remove old database: #{db_name}"
+          else
+            puts "removing old database: #{db_name}"
+            begin
+              connection.use(db_name).database.drop unless dryrun
+            rescue => e
+              puts e.message
+            end
+            sleep delay
+            dropped += 1
           end
-          sleep delay
-          dropped += 1
         end
       rescue => e
         $stderr.puts "error dropping old database: #{db_name}"
