@@ -738,7 +738,7 @@ module Logjam
     update_known_databases if dropped > 0
   end
 
-  def drop_applications(apps, delay = 10)
+  def drop_applications(apps, delay: 10, dryrun: false)
     return if apps.blank?
     dropped = 0
     db_match = db_name_format(:app => apps.join("|"))
@@ -746,10 +746,14 @@ module Logjam
       names = connection.database_names
       names.each do |name|
         next unless name =~ db_match
-        puts "dropping database: #{name}"
-        connection.use(name).database.drop
-        sleep delay
-        dropped += 1
+        if dryrun
+          puts "would drop database: #{name}"
+        else
+          puts "dropping database: #{name}"
+          connection.use(name).database.drop
+          sleep delay
+          dropped += 1
+        end
       end
     end
     update_known_databases if dropped > 0

@@ -45,7 +45,9 @@ namespace :logjam do
     desc "drop applications APPLICATIONS=a,b,c DELAY=5"
     task :drop_apps => :environment do
       delay = (ENV['DELAY'] || 5).to_i
-      Logjam.drop_applications(ENV['APPLICATIONS'].to_s.split(/\s*,\s*/), delay)
+      dryrun = (ENV['DRYRUN'] || 0).to_i == 1
+      apps = ENV['APPLICATIONS'].to_s.split(/\s*,\s*/)
+      Logjam.drop_applications(apps, delay: delay, dryrun: dryrun)
     end
 
     desc "drop environments ENVS=a,b,c DELAY=5"
