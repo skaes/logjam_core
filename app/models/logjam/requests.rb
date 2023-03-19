@@ -211,7 +211,22 @@ module Logjam
           []
         end
       end
-      rows.first
+      rows.first.tap do |row|
+        obfuscate_cookie(row&.dig("request_info", "headers"))
+      end
+    end
+
+    KEY_RE = '[^&;=\s]+'
+    VAL_RE = '[^&;=]+'
+    PAIR_RE = %r{(#{KEY_RE})=(#{VAL_RE})}
+
+    def obfuscate_cookie(headers)
+      return unless headers
+      cookie_key = headers.keys.grep(/cookie/i).first
+      return unless cookie_key && (cookie = headers[cookie_key])
+      headers[cookie_key] = cookie.gsub(PAIR_RE) do |_|
+        LogjamAgent.cookie_obfuscator.filter($1 => $2).first.join("=")
+      end
     end
 
     def convert_metrics(row)
