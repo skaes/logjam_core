@@ -318,6 +318,15 @@ module Logjam
     @@import_thresholds
   end
 
+  @@sensitive_cookies = []
+  def sensitive_cookies
+    @@sensitive_cookies
+  end
+
+  def sensitive_cookies=(cookies)
+    @@sensitive_cookies = cookies
+  end
+
   @@request_cleaning_threshold = 120
   def request_cleaning_threshold=(request_cleaning_threshold)
     @@request_cleaning_threshold = request_cleaning_threshold.to_i

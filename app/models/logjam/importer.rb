@@ -40,6 +40,7 @@ module Logjam
       indented(2, "updaters = %d" % [Logjam.importer_updater_threads])
       indented(2, "writers = %d" % [Logjam.importer_writer_threads])
       indented(2, "zmq_io = %d" % [Logjam.importer_io_threads])
+      indented(1, "sensitive_cookies = \"%s\"" % [Logjam.sensitive_cookies.join(",")]) if Logjam.sensitive_cookies.any?
     end
 
     def generate_backend
