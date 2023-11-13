@@ -895,7 +895,7 @@ module Logjam
       get_date
       today = Date.today
       if @date > today || @date < today - Logjam.database_cleaning_threshold
-        @warning = "No data found for application «#{@app}» in environment «#{@env}» on #{@date.to_s(:long_ordinal)}."
+        @warning = "No data found for application «#{@app}» in environment «#{@env}» on #{@date.to_formatted_s(:long_ordinal)}."
         respond_to do |format|
           format.html { render "warning", :status => 404 }
           format.json { render :json => {:error => @warning}, :status => 404 }
@@ -930,7 +930,7 @@ module Logjam
       end
       @show_history = true
       unless @stream
-        @warning = "No data found for application «#{@app}» in environment «#{@env}» on #{@date.to_s(:long_ordinal)}."
+        @warning = "No data found for application «#{@app}» in environment «#{@env}» on #{@date.to_formatted_s(:long_ordinal)}."
         respond_to do |format|
           format.html { render "warning", :status => 404 }
           format.json { render :json => {:error => @warning}, :status => 404 }
