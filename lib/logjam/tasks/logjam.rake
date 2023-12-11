@@ -39,7 +39,10 @@ namespace :logjam do
     task :drop_empty => :environment do
       delay = (ENV['DELAY'] || 5).to_i
       app = ENV['APPLICATION'] || '.+?'
-      Logjam.drop_empty_databases(app, delay)
+      from_date = (ENV['FROM_DATE'] || Date.new(1970,1,1)).to_date
+      to_date = (ENV['TO_DATE'] || Date.today-1).to_date
+      dryrun = (ENV['DRYRUN'] || 0).to_i == 1
+      Logjam.drop_empty_databases(app, delay, from_date: from_date, to_date: to_date, dryrun: dryrun)
     end
 
     desc "drop applications APPLICATIONS=a,b,c DELAY=5"

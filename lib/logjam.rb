@@ -712,17 +712,21 @@ module Logjam
     object_count.to_a.sort_by{|n,c| [c,n]}.map{|n,c| "#{n}:#{c}"}.join("\n")
   end
 
-  def drop_empty_databases(app = '.+', delay = 60)
+  def drop_empty_databases(app = '.+', delay = 60, from_date: nil, to_date: nil, dryrun: false)
     dropped = 0
     db_match = db_name_format(:app => app)
     connections.each do |_,connection|
       names = connection.database_names
       names.each do |name|
         next unless name =~ db_match
+        date = Date.parse($3)
+        next if from_date && date < from_date
+        next if to_date && date > to_date
         db = connection.use(name).database
         stats = db.command(:dbStats => 1).first
         next unless stats.present? && (stats[:objects] || stats["objects"]) == 0
         puts "dropping empty database: #{name}"
+        next if dryrun
         connection.use(name).database.drop
         sleep delay
         dropped += 1
