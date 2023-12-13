@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
   <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+  <% if @redirect_path %>
+  <meta http-equiv="refresh" content="1; url='<%=@redirect_path%>'" />
+  <% end %>
   <link rel="shortcut icon" href='<%= asset_path "favicon.ico"%>' type="image/ico">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1" />
   <%= logjam_header_request_id %>

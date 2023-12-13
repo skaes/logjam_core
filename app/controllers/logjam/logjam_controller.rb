@@ -729,6 +729,10 @@ module Logjam
           if default_db = DatabaseManager.default_database
             @default_app, @default_env, default_date = Logjam.extract_db_params(default_db)
             @default_date = Date.parse(default_date) rescue Date.today
+            if !@apps.include?(@default_app)
+              @default_app = @apps.first
+              default_db = Logjam.db_name(@default_date, @default_app, @default_env)
+            end
           else
             @default_app, @default_env, @default_date = @apps.first, @envs.first, Date.today
             default_db = Logjam.db_name(@default_date, @default_app, @default_env)
@@ -909,10 +913,14 @@ module Logjam
       @app_exists = @apps.include?(@app)
       unless @app_exists
         @warning = "Application «#{@app}» is not known to exist."
-        @app = @default_app
-        params[:app] = @app
         respond_to do |format|
-          format.html { render "warning", :status => 404 }
+          format.html do
+            if @app != @default_app
+              @redirect_path = url_for(params: {app: @default_app})
+              @warning += " Redirecting to default application: #{@default_app}."
+            end
+            render "warning", :status => 404
+          end
           format.json { render :json => {:error => @warning}, :status => 404 }
         end
         return
