@@ -11,14 +11,5 @@ module Logjam
 
     config.autoload_once_paths << File.join(Logjam::BaseDir, "lib")
 
-    # fix a bug in rack (more a brainfuck actually)
-    config.to_prepare do
-      ::Rack::Utils::HeaderHash.class_eval <<-_EVA_
-          def [](k)
-            super(@names[k] || @names[k.downcase])
-          end
-        _EVA_
-    end
-
   end
 end
