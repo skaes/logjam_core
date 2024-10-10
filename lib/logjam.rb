@@ -251,7 +251,7 @@ module Logjam
   end
 
   def production_streams
-    streams.reject{|name,stream| stream.is_a?(LiveStream) || stream.env == "development"}
+    streams.reject{|name,stream| stream.is_a?(LiveStream) || (stream.env == "development" && Rails.env != "development")}
   end
 
   # declare a performance data stream
